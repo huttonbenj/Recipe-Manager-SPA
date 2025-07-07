@@ -1,57 +1,74 @@
 # Recipe Manager SPA
 
-## Project Overview
+A modern, full-stack Single Page Application for managing recipes, built with TypeScript, React, and Node.js.
 
-The Recipe Manager is a full-stack Single Page Application (SPA) designed to allow users to browse, search, and manage recipes. The application is built using React for the frontend and Node.js with Express for the backend, connected to a PostgreSQL database.
+## 📚 Documentation Index
 
-## Quick Start
+- [Getting Started](./docs/getting-started.md) - Setup and run the project
+- [Architecture](./docs/architecture.md) - System design and structure
+- [Development Guide](./docs/development.md) - Development workflow and guidelines
+- [Branch Management](./docs/branch-management.md) - Git workflow and branch strategy
+- [Testing](./docs/testing.md) - Testing strategy and guidelines
+- [API Documentation](./docs/api.md) - API endpoints and usage
+- [Contributing](./CONTRIBUTING.md) - How to contribute to the project
 
-1. **Clone the repository**
+## 🚀 Quick Start
 
-   ```bash
-   git clone <repository-url>
-   cd Recipe-Manager-SPA
-   ```
+```bash
+# Install dependencies
+npm install
 
-2. **Install dependencies**
+# Start development servers
+npm run dev
 
-   ```bash
-   npm install
-   cd client && npm install
-   cd ../server && npm install
-   ```
+# Run tests
+npm run test
 
-3. **Set up the database**
-   - Ensure PostgreSQL is running.
-   - Create a database named `recipe_manager`.
-   - Run the database migration and seed scripts.
+# Build for production
+npm run build
+```
 
-4. **Run the application**
+## 📦 Project Structure
 
-   ```bash
-   npm run dev
-   ```
+```plaintext
+Recipe-Manager-SPA/
+├── packages/
+│   ├── client/          # React frontend
+│   ├── server/          # Express backend
+│   ├── shared/          # Shared types and utilities
+│   └── e2e/             # End-to-end tests
+├── scripts/             # Development and utility scripts
+├── docs/               # Documentation
+└── package.json        # Root package.json for workspace management
+```
 
-## Tech Stack
+## 🛠 Available Scripts
 
-- **Frontend**: React, Vite, TypeScript, Tailwind CSS
-- **Backend**: Node.js, Express, Prisma
-- **Database**: PostgreSQL
-- **Testing**: Jest, Playwright
-- **Containerization**: Docker
+- `npm run dev` - Start development environment
+- `npm run build` - Build all packages
+- `npm run test` - Run all tests
+- `npm run lint` - Lint all packages
+- `npm run status` - Check repository status
+- `npm run branch:checkout` - Create/checkout feature branch
+- `npm run branch:update` - Update current branch
+- `npm run push` - Push changes with checks
+- `npm run pr` - Create pull request
 
-## Features
+## 🔍 Status Check System
 
-- Recipe CRUD operations
-- Responsive design for mobile, tablet, and desktop
-- Search functionality by title or ingredients
-- Image upload support
-- Authentication with session-based security
+The project includes an automated status check system that helps maintain code quality and proper development workflow. To check your current status:
 
-## Deployment
+```bash
+npm run status
+```
 
-- **Frontend**: Vercel
-- **Backend**: Render
-- **Database**: Supabase
+This will show:
 
-For detailed setup and deployment instructions, refer to the documentation in the `docs` directory.
+- Current branch
+- Uncommitted changes
+- Unpushed commits
+- Development branch status
+
+## 📝 License
+
+MIT License - see [LICENSE](./LICENSE) for details
