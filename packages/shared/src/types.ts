@@ -1,1 +1,40 @@
-export interface Recipe {\n  id: string;\n  title: string;\n  description: string;\n  ingredients: Ingredient[];\n  instructions: string[];\n  prepTime: number; // in minutes\n  cookTime: number; // in minutes\n  servings: number;\n  difficulty: 'easy' | 'medium' | 'hard';\n  imageUrl?: string;\n  createdAt: Date;\n  updatedAt: Date;\n  userId: string;\n}\n\nexport interface Ingredient {\n  name: string;\n  amount: number;\n  unit: string;\n}\n\nexport interface User {\n  id: string;\n  email: string;\n  name: string;\n  createdAt: Date;\n  updatedAt: Date;\n}\n\nexport interface AuthResponse {\n  user: User;\n  token: string;\n}\n\nexport interface ApiError {\n  message: string;\n  code: string;\n  status: number;\n}
+export interface Ingredient {
+  name: string;
+  amount: number;
+  unit: string;
+}
+
+export interface Recipe {
+  id: string;
+  title: string;
+  description: string;
+  ingredients: Ingredient[];
+  instructions: string[];
+  prepTime: number; // in minutes
+  cookTime: number; // in minutes
+  servings: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  imageUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+export interface ApiError {
+  message: string;
+  code: string;
+  status: number;
+}
