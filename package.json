@@ -6,17 +6,18 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=packages/client & npm run dev --workspace=packages/server",
-    "build": "npm run build --workspaces",
-    "test": "npm run test --workspaces",
-    "lint": "npm run lint --workspaces",
+    "dev": "npm run status && npm run dev --workspace=packages/client & npm run dev --workspace=packages/server",
+    "build": "npm run status && npm run build --workspaces",
+    "test": "npm run status && npm run test --workspaces",
+    "lint": "npm run status && npm run lint --workspaces",
     "clean": "npm run clean --workspaces",
     "prepare": "husky install",
+    "status": "node scripts/status-check.js",
     "branch:update": "node scripts/branch-manager.js update",
     "branch:checkout": "node scripts/branch-manager.js checkout",
-    "precommit": "npm run lint && npm run test",
-    "push": "npm run branch:update && git push origin HEAD",
-    "pr": "gh pr create --web"
+    "precommit": "npm run status && npm run lint && npm run test",
+    "push": "npm run status && npm run branch:update && git push origin HEAD",
+    "pr": "npm run status && gh pr create --web"
   },
   "engines": {
     "node": ">=18.0.0",
