@@ -82,7 +82,7 @@ export const RecipeList: React.FC = () => {
             if (difficultyFilter) params.append('difficulty', difficultyFilter);
             if (cuisineFilter) params.append('cuisineType', cuisineFilter);
 
-            const response = await apiClient.get<RecipeListResponse>(`/recipes?${params}`);
+            const response = await apiClient.get<RecipeListResponse>(`/api/recipes?${params}`);
 
             setRecipes(response.recipes);
             setTotalPages(response.totalPages);
@@ -135,7 +135,7 @@ export const RecipeList: React.FC = () => {
         }
 
         try {
-            await apiClient.delete(`/recipes/${recipeId}`);
+            await apiClient.delete(`/api/recipes/${recipeId}`);
             setRecipes(recipes.filter(recipe => recipe.id !== recipeId));
             setTotalRecipes(prev => prev - 1);
         } catch (err) {

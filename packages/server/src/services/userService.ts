@@ -106,7 +106,7 @@ export class UserService {
 
   static async findByEmailWithPassword(email: string): Promise<(User & { passwordHash: string }) | null> {
     const query = `
-      SELECT id, email, password_hash, name, created_at, updated_at
+      SELECT id, email, password_hash as "passwordHash", name, created_at, updated_at
       FROM users
       WHERE email = $1
     `;
@@ -177,7 +177,7 @@ export class UserService {
 
   private static async findByIdWithPassword(id: string): Promise<(User & { passwordHash: string }) | null> {
     const query = `
-      SELECT id, email, password_hash, name, created_at, updated_at
+      SELECT id, email, password_hash as "passwordHash", name, created_at, updated_at
       FROM users
       WHERE id = $1
     `;

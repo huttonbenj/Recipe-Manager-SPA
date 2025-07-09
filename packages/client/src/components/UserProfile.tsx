@@ -45,7 +45,7 @@ export const UserProfile: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await apiClient.get<{ user: UserProfileData }>('/users/profile');
+            const response = await apiClient.get<{ user: UserProfileData }>('/api/users/profile');
             setProfile(response.user);
             setProfileForm({ name: response.user.name });
         } catch (err) {
@@ -69,7 +69,7 @@ export const UserProfile: React.FC = () => {
             setError(null);
             setSuccess(null);
 
-            const response = await apiClient.put<{ user: UserProfileData }>('/users/profile', {
+            const response = await apiClient.put<{ user: UserProfileData }>('/api/users/profile', {
                 name: profileForm.name.trim()
             });
 
@@ -107,7 +107,7 @@ export const UserProfile: React.FC = () => {
             setError(null);
             setSuccess(null);
 
-            await apiClient.put('/users/password', {
+            await apiClient.put('/api/users/password', {
                 currentPassword: passwordForm.currentPassword,
                 newPassword: passwordForm.newPassword
             });
