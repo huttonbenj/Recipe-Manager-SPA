@@ -1,6 +1,7 @@
 {
   "name": "recipe-manager-spa",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "workspaces": [
     "packages/shared",
