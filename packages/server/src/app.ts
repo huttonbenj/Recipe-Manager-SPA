@@ -6,6 +6,7 @@ import { errorHandler } from './middleware/error';
 import { db } from './config/database';
 import authRoutes from './routes/auth';
 import recipeRoutes from './routes/recipes';
+import userRoutes from './routes/user';
 import logger from './utils/logger';
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(morgan('combined', {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check endpoint
 app.get('/health', (_req: Request, res: Response) => {
