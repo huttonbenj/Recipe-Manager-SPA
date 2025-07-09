@@ -32,8 +32,27 @@ export const RegisterForm: React.FC = () => {
                         // Fallback to generic message
                         setValidationErrors(['Please check the password requirements below.']);
                     }
+                } else if (errorMessage.includes('Validation Error')) {
+                    errorMessage = 'Password does not meet the following requirements:';
+                    // Handle Zod validation errors (different format)
+                    const errorWithDetails = err as Error & { details?: any[] };
+                    if (errorWithDetails.details && Array.isArray(errorWithDetails.details)) {
+                        const validationMessages = errorWithDetails.details.map((detail: any) => {
+                            if (typeof detail === 'string') {
+                                return detail;
+                            } else if (detail && detail.message) {
+                                return detail.message;
+                            }
+                            return 'Invalid field';
+                        });
+                        setValidationErrors(validationMessages);
+                    } else {
+                        setValidationErrors(['Please check the password requirements below.']);
+                    }
                 } else if (errorMessage.includes('already exists')) {
                     errorMessage = 'An account with this email already exists. Please use a different email or try logging in.';
+                } else if (errorMessage.includes('Validation')) {
+                    errorMessage = 'Please check the form fields and try again.';
                 }
 
                 setError(errorMessage);
