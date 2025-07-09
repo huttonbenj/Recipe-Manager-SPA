@@ -21,21 +21,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     // Set token in API client
                     apiClient.setAccessToken(accessToken);
 
-                    // TODO: Verify token by fetching user profile
-                    // For now, we'll implement this when we have the user profile endpoint
-                    // const userProfile = await apiClient.get<User>('/api/users/me');
-                    // setUser(userProfile);
-
-                    // Temporary: Just check if the token works with a health check
-                    await apiClient.healthCheck();
-
-                    // If health check passes, assume token is valid
-                    // In a real app, you'd decode the JWT or call a profile endpoint
-                    setUser({
-                        id: 'temp-user-id',
-                        email: 'user@example.com',
-                        name: 'Current User'
-                    });
+                    // Verify token by fetching user profile
+                    const response = await apiClient.get<{ user: User }>('/api/auth/me');
+                    setUser(response.user);
                 } catch (error) {
                     // Token is invalid, clear it
                     localStorage.removeItem('accessToken');

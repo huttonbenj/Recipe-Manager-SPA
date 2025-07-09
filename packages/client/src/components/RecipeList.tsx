@@ -56,6 +56,23 @@ const difficultyLabels = {
     hard: 'Hard'
 };
 
+// Custom hook for debouncing
+const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+};
+
 export const RecipeList: React.FC = () => {
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [loading, setLoading] = useState(true);
@@ -71,7 +88,10 @@ export const RecipeList: React.FC = () => {
     const { user } = useAuth();
     const limit = 12;
 
-    const fetchRecipes = useCallback(async () => {
+    // Debounce search term to avoid API calls on every keystroke
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+    const fetchRecipes = useCallback(async (searchQuery: string) => {
         try {
             setLoading(true);
             setError(null);
@@ -81,7 +101,7 @@ export const RecipeList: React.FC = () => {
                 limit: limit.toString()
             });
 
-            if (searchTerm) params.append('search', searchTerm);
+            if (searchQuery) params.append('search', searchQuery);
             if (difficultyFilter) params.append('difficulty', difficultyFilter);
             if (cuisineFilter) params.append('cuisineType', cuisineFilter);
 
@@ -104,16 +124,17 @@ export const RecipeList: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [currentPage, searchTerm, difficultyFilter, cuisineFilter, limit]);
+    }, [currentPage, difficultyFilter, cuisineFilter, limit]);
 
+    // Effect for initial load and filter changes
     useEffect(() => {
-        fetchRecipes();
-    }, [fetchRecipes]);
+        fetchRecipes(debouncedSearchTerm);
+    }, [fetchRecipes, debouncedSearchTerm]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         setCurrentPage(1);
-        fetchRecipes();
+        fetchRecipes(searchTerm);
     };
 
     const handleFilterChange = (filterType: string, value: string) => {
@@ -185,7 +206,7 @@ export const RecipeList: React.FC = () => {
                         </div>
                         <p className="text-red-600 text-lg">{error}</p>
                         <button
-                            onClick={fetchRecipes}
+                            onClick={() => fetchRecipes(debouncedSearchTerm)}
                             className="mt-4 btn-primary"
                         >
                             Try Again
