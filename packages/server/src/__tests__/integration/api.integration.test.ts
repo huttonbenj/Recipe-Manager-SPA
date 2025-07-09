@@ -176,7 +176,7 @@ describe('API Integration Tests', () => {
         .post('/api/auth/register')
         .send({
           email: 'test-integration@integration.test',
-          password: 'password123',
+          password: 'password123', // Test password - not used in production
           name: 'Test User'
         })
         .expect(201);
@@ -210,7 +210,7 @@ describe('API Integration Tests', () => {
         .post('/api/auth/login')
         .send({
           email: 'test-integration@integration.test',
-          password: 'password123'
+          password: 'password123' // Test password - not used in production
         })
         .expect(200);
 

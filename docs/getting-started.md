@@ -73,7 +73,7 @@ npm run dev
 
 This will start:
 
-- Frontend: <http://localhost:5173>
+- Frontend: <http://localhost:3000>
 - Backend: <http://localhost:3001>
 - API Documentation: <http://localhost:3001/api-docs>
 

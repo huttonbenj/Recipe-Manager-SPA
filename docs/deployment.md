@@ -24,7 +24,7 @@
 
 3. **Access the application**
    - Frontend: `http://localhost:3000`
-   - Backend: `http://localhost:5000`
+   - Backend: `http://localhost:3001`
 
 ## Cloud Deployment
 
