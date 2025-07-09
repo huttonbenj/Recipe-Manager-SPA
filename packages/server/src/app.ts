@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { errorHandler } from './middleware/error';
 import { db } from './config/database';
+import authRoutes from './routes/auth';
 import logger from './utils/logger';
 
 const app = express();
@@ -17,6 +18,9 @@ app.use(morgan('combined', {
     write: (message: string) => logger.info(message.trim())
   }
 }));
+
+// Routes
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/health', (_req: Request, res: Response) => {

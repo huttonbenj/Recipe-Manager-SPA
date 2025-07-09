@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
+import { ValidationError } from '@recipe-manager/shared';
 import logger from '../utils/logger';
 
 export class ApiError extends Error {
@@ -24,8 +25,16 @@ export const errorHandler = (
     error: err.message,
     stack: err.stack,
     path: req.path,
-    method: req.method
+    method: req.method,
+    errorType: err.constructor.name
   });
+
+  if (err instanceof ValidationError) {
+    return res.status(400).json({
+      error: 'Validation Error',
+      details: err.errors.errors
+    });
+  }
 
   if (err instanceof z.ZodError) {
     return res.status(400).json({
