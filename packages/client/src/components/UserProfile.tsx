@@ -5,8 +5,8 @@ interface UserProfileData {
     id: string;
     name: string;
     email: string;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
 }
 
 interface ProfileFormData {
@@ -271,7 +271,7 @@ export const UserProfile: React.FC = () => {
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Member Since</label>
                                         <p className="mt-1 text-sm text-gray-900">
-                                            {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
+                                            {profile?.created_at ? formatDate(profile.created_at) : 'N/A'}
                                         </p>
                                     </div>
                                 </div>
