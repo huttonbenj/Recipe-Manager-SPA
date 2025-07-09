@@ -70,7 +70,8 @@ export const RecipeForm: React.FC = () => {
             const fetchRecipe = async () => {
                 try {
                     setLoading(true);
-                    const recipe = await apiClient.get<Recipe>(`/api/recipes/${id}`);
+                    const response = await apiClient.get<{ message: string; recipe: Recipe }>(`/api/recipes/${id}`);
+                    const recipe = response.recipe;
 
                     // Check if user owns this recipe
                     if (recipe.userId !== user?.id) {
@@ -172,8 +173,8 @@ export const RecipeForm: React.FC = () => {
                     state: { message: 'Recipe updated successfully' }
                 });
             } else {
-                const response = await apiClient.post<Recipe>('/api/recipes', cleanedData);
-                navigate(`/recipes/${response.id}`, {
+                const response = await apiClient.post<{ message: string; recipe: Recipe }>('/api/recipes', cleanedData);
+                navigate(`/recipes/${response.recipe.id}`, {
                     state: { message: 'Recipe created successfully' }
                 });
             }

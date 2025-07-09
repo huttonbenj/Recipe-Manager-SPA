@@ -53,8 +53,8 @@ export const RecipeDetail: React.FC = () => {
             try {
                 setLoading(true);
                 setError('');
-                const response = await apiClient.get<Recipe>(`/api/recipes/${id}`);
-                setRecipe(response);
+                const response = await apiClient.get<{ message: string; recipe: Recipe }>(`/api/recipes/${id}`);
+                setRecipe(response.recipe);
             } catch (err) {
                 setError('Failed to load recipe. Please try again.');
                 console.error('Error fetching recipe:', err);

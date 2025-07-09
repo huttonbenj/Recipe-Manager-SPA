@@ -34,11 +34,14 @@ interface Recipe {
 }
 
 interface RecipeListResponse {
+    message: string;
     recipes: Recipe[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        pages: number;
+    };
 }
 
 const difficultyColors = {
@@ -85,8 +88,8 @@ export const RecipeList: React.FC = () => {
             const response = await apiClient.get<RecipeListResponse>(`/api/recipes?${params}`);
 
             setRecipes(response.recipes);
-            setTotalPages(response.totalPages);
-            setTotalRecipes(response.total);
+            setTotalPages(response.pagination.pages);
+            setTotalRecipes(response.pagination.total);
 
             // Extract unique cuisine types for filter dropdown
             const uniqueCuisines = [...new Set(response.recipes
