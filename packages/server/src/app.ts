@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { errorHandler } from './middleware/error';
+import { db } from './config/database';
 import logger from './utils/logger';
 
 const app = express();
@@ -20,6 +21,35 @@ app.use(morgan('combined', {
 // Health check endpoint
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok' });
+});
+
+// Database health check endpoint
+app.get('/health/db', async (_req: Request, res: Response) => {
+  try {
+    const isHealthy = await db.healthCheck();
+    const stats = db.getPoolStats();
+    
+    if (isHealthy) {
+      res.json({ 
+        status: 'ok', 
+        database: 'connected',
+        pool: stats
+      });
+    } else {
+      res.status(503).json({ 
+        status: 'error', 
+        database: 'disconnected',
+        pool: stats
+      });
+    }
+  } catch (error) {
+    logger.error('Database health check failed', { error });
+    res.status(503).json({ 
+      status: 'error', 
+      database: 'error',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
 });
 
 // Error handling
