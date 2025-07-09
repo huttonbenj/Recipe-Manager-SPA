@@ -7,6 +7,8 @@ import { Dashboard } from './components/Dashboard';
 import { RecipeList } from './components/RecipeList';
 import { RecipeDetail } from './components/RecipeDetail';
 import { RecipeForm } from './components/RecipeForm';
+import { UserProfile } from './components/UserProfile';
+import { Layout } from './components/Layout';
 import { useAuth } from './hooks/useAuth';
 
 function AppContent() {
@@ -26,7 +28,9 @@ function AppContent() {
                 path="/dashboard"
                 element={
                     <ProtectedRoute>
-                        <Dashboard />
+                        <Layout>
+                            <Dashboard />
+                        </Layout>
                     </ProtectedRoute>
                 }
             />
@@ -34,7 +38,9 @@ function AppContent() {
                 path="/recipes"
                 element={
                     <ProtectedRoute>
-                        <RecipeList />
+                        <Layout>
+                            <RecipeList />
+                        </Layout>
                     </ProtectedRoute>
                 }
             />
@@ -42,7 +48,9 @@ function AppContent() {
                 path="/recipes/new"
                 element={
                     <ProtectedRoute>
-                        <RecipeForm />
+                        <Layout>
+                            <RecipeForm />
+                        </Layout>
                     </ProtectedRoute>
                 }
             />
@@ -50,7 +58,9 @@ function AppContent() {
                 path="/recipes/:id"
                 element={
                     <ProtectedRoute>
-                        <RecipeDetail />
+                        <Layout>
+                            <RecipeDetail />
+                        </Layout>
                     </ProtectedRoute>
                 }
             />
@@ -58,7 +68,19 @@ function AppContent() {
                 path="/recipes/:id/edit"
                 element={
                     <ProtectedRoute>
-                        <RecipeForm />
+                        <Layout>
+                            <RecipeForm />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/profile"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <UserProfile />
+                        </Layout>
                     </ProtectedRoute>
                 }
             />

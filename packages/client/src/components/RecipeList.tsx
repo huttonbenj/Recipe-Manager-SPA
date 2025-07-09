@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { apiClient } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
@@ -68,11 +68,7 @@ export const RecipeList: React.FC = () => {
     const { user } = useAuth();
     const limit = 12;
 
-    useEffect(() => {
-        fetchRecipes();
-    }, [currentPage, searchTerm, difficultyFilter, cuisineFilter]);
-
-    const fetchRecipes = async () => {
+    const fetchRecipes = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -105,7 +101,11 @@ export const RecipeList: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [currentPage, searchTerm, difficultyFilter, cuisineFilter, limit]);
+
+    useEffect(() => {
+        fetchRecipes();
+    }, [fetchRecipes]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
