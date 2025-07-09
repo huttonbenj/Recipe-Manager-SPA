@@ -46,7 +46,12 @@ export class UserService {
       throw new ApiError(500, 'Failed to create user');
     }
 
-    return result[0];
+    const user = result[0];
+    if (!user) {
+      throw new ApiError(500, 'Failed to create user');
+    }
+
+    return user;
   }
 
   static async login(credentials: UserCredentials): Promise<LoginResult> {
@@ -130,7 +135,12 @@ export class UserService {
       throw new ApiError(404, 'User not found');
     }
 
-    return result[0];
+    const user = result[0];
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    return user;
   }
 
   static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {

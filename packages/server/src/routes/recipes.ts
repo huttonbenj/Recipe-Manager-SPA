@@ -65,7 +65,22 @@ router.get('/', asyncHandler(async (req: Request, res: Response) => {
   
   const { page = 1, limit = 10, ...recipeFilters } = filters;
   
-  const result = await RecipeService.getRecipes(recipeFilters, { page, limit });
+  // Filter out undefined values for exactOptionalPropertyTypes compliance
+  const cleanFilters: {
+    difficulty?: 'easy' | 'medium' | 'hard';
+    cuisineType?: string;
+    maxPrepTime?: number;
+    maxCookTime?: number;
+    search?: string;
+  } = {};
+  
+  if (recipeFilters.difficulty !== undefined) cleanFilters.difficulty = recipeFilters.difficulty;
+  if (recipeFilters.cuisineType !== undefined) cleanFilters.cuisineType = recipeFilters.cuisineType;
+  if (recipeFilters.maxPrepTime !== undefined) cleanFilters.maxPrepTime = recipeFilters.maxPrepTime;
+  if (recipeFilters.maxCookTime !== undefined) cleanFilters.maxCookTime = recipeFilters.maxCookTime;
+  if (recipeFilters.search !== undefined) cleanFilters.search = recipeFilters.search;
+  
+  const result = await RecipeService.getRecipes(cleanFilters, { page, limit });
   
   res.json({
     message: 'Recipes retrieved successfully',
@@ -80,10 +95,23 @@ router.get('/my', authenticate, asyncHandler(async (req: Request, res: Response)
   
   const { page = 1, limit = 10, ...recipeFilters } = filters;
   
-  const result = await RecipeService.getRecipes(
-    { ...recipeFilters, userId: user.userId },
-    { page, limit }
-  );
+  // Filter out undefined values for exactOptionalPropertyTypes compliance
+  const cleanFilters: {
+    userId: string;
+    difficulty?: 'easy' | 'medium' | 'hard';
+    cuisineType?: string;
+    maxPrepTime?: number;
+    maxCookTime?: number;
+    search?: string;
+  } = { userId: user.userId };
+  
+  if (recipeFilters.difficulty !== undefined) cleanFilters.difficulty = recipeFilters.difficulty;
+  if (recipeFilters.cuisineType !== undefined) cleanFilters.cuisineType = recipeFilters.cuisineType;
+  if (recipeFilters.maxPrepTime !== undefined) cleanFilters.maxPrepTime = recipeFilters.maxPrepTime;
+  if (recipeFilters.maxCookTime !== undefined) cleanFilters.maxCookTime = recipeFilters.maxCookTime;
+  if (recipeFilters.search !== undefined) cleanFilters.search = recipeFilters.search;
+  
+  const result = await RecipeService.getRecipes(cleanFilters, { page, limit });
   
   res.json({
     message: 'Your recipes retrieved successfully',

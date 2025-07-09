@@ -3,21 +3,23 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/shared",
+    "packages/server",
+    "packages/client"
   ],
   "scripts": {
-    "dev": "npm run status && npm run dev --workspace=packages/client & npm run dev --workspace=packages/server",
-    "build": "npm run status && npm run build --workspaces",
-    "test": "npm run status && npm run test --workspaces",
-    "lint": "npm run status && npm run lint --workspaces",
-    "clean": "npm run clean --workspaces",
-    "prepare": "husky install",
-    "status": "node scripts/status-check.js",
-    "branch:update": "node scripts/branch-manager.js update",
-    "branch:checkout": "node scripts/branch-manager.js checkout",
-    "precommit": "npm run status && npm run lint && npm run test",
-    "push": "npm run status && npm run branch:update && git push origin HEAD",
-    "pr": "npm run status && gh pr create --web"
+    "build": "npm run build --workspaces",
+    "dev:server": "npm run dev --workspace=packages/server",
+    "dev:client": "npm run dev --workspace=packages/client",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "test": "npm run test --workspaces",
+    "test:server": "npm run test --workspace=packages/server",
+    "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "typecheck:strict": "npm run typecheck:strict --workspaces",
+    "check:all": "npm run typecheck && npm run typecheck:strict && npm run lint",
+    "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules",
+    "install:all": "npm install && npm install --workspaces"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.36.0",
     "@typescript-eslint/parser": "^8.36.0",
+    "concurrently": "^9.2.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0"
   },
