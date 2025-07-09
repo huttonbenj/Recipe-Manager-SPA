@@ -172,6 +172,74 @@ describe('RecipeService', () => {
       expect(mockClient.query).toHaveBeenCalledWith('ROLLBACK');
       expect(mockClient.release).toHaveBeenCalled();
     });
+
+    it('should throw error for invalid ingredient', async () => {
+      const mockRecipeRow = {
+        id: mockRecipeId,
+        user_id: mockUserId,
+        title: mockCreateData.title,
+        description: mockCreateData.description,
+        prep_time_minutes: mockCreateData.prepTime,
+        cook_time_minutes: mockCreateData.cookTime,
+        servings: mockCreateData.servings,
+        difficulty_level: mockCreateData.difficulty,
+        cuisine_type: mockCreateData.cuisineType,
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [mockRecipeRow] }); // Recipe insert
+
+      const invalidData = {
+        ...mockCreateData,
+        ingredients: [null as unknown as typeof mockCreateData.ingredients[0], { name: 'Valid', amount: 1, unit: 'cup' }]
+      };
+
+      await expect(RecipeService.createRecipe(mockUserId, invalidData))
+        .rejects.toThrow('Invalid ingredient at index 0');
+    });
+
+    it('should throw error for invalid step', async () => {
+      const mockRecipeRow = {
+        id: mockRecipeId,
+        user_id: mockUserId,
+        title: mockCreateData.title,
+        description: mockCreateData.description,
+        prep_time_minutes: mockCreateData.prepTime,
+        cook_time_minutes: mockCreateData.cookTime,
+        servings: mockCreateData.servings,
+        difficulty_level: mockCreateData.difficulty,
+        cuisine_type: mockCreateData.cuisineType,
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+
+      const mockIngredientRow = {
+        id: 'ingredient-id-1',
+        recipe_id: mockRecipeId,
+        name: 'Tomatoes',
+        amount: 2,
+        unit: 'cups',
+        notes: null,
+        order_index: 0
+      };
+
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [mockRecipeRow] }) // Recipe insert
+        .mockResolvedValueOnce({ rows: [mockIngredientRow] }) // Ingredient insert
+        .mockResolvedValueOnce({ rows: [mockIngredientRow] }); // Second ingredient insert
+
+      const invalidData = {
+        ...mockCreateData,
+        steps: [null as unknown as typeof mockCreateData.steps[0], { stepNumber: 2, instruction: 'Valid step' }]
+      };
+
+      await expect(RecipeService.createRecipe(mockUserId, invalidData))
+        .rejects.toThrow('Invalid step at index 0');
+    });
   });
 
   describe('getRecipeById', () => {
@@ -293,6 +361,43 @@ describe('RecipeService', () => {
         expect.stringContaining('WHERE'),
         expect.arrayContaining(['easy', 'Italian', 30, '%pasta%'])
       );
+    });
+
+    it('should apply maxCookTime filter', async () => {
+      mockDb.query
+        .mockResolvedValueOnce([{ total: '0' }])
+        .mockResolvedValueOnce([]);
+
+      await RecipeService.getRecipes({
+        maxCookTime: 45
+      });
+
+      expect(mockDb.query).toHaveBeenCalledWith(
+        expect.stringContaining('WHERE'),
+        expect.arrayContaining([45])
+      );
+    });
+
+    it('should apply userId filter', async () => {
+      mockDb.query
+        .mockResolvedValueOnce([{ total: '0' }])
+        .mockResolvedValueOnce([]);
+
+      await RecipeService.getRecipes({
+        userId: mockUserId
+      });
+
+      expect(mockDb.query).toHaveBeenCalledWith(
+        expect.stringContaining('WHERE'),
+        expect.arrayContaining([mockUserId])
+      );
+    });
+
+    it('should throw error when count query fails', async () => {
+      mockDb.query.mockResolvedValueOnce([]); // Empty result for count query
+
+      await expect(RecipeService.getRecipes({}))
+        .rejects.toThrow('Failed to get recipe count');
     });
   });
 
