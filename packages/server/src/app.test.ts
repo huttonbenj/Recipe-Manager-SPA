@@ -39,13 +39,13 @@ describe('App', () => {
         .expect(200);
 
       expect(response.body).toEqual({
-        status: 'ok',
+        status: 'healthy',
         database: 'connected',
         pool: {
           totalCount: 10,
           idleCount: 5,
-          waitingCount: 2,
-        },
+          waitingCount: 2
+        }
       });
     });
 
@@ -57,13 +57,13 @@ describe('App', () => {
         .expect(503);
 
       expect(response.body).toEqual({
-        status: 'error',
+        status: 'unhealthy',
         database: 'disconnected',
         pool: {
           totalCount: 10,
           idleCount: 5,
-          waitingCount: 2,
-        },
+          waitingCount: 2
+        }
       });
     });
 
@@ -78,12 +78,12 @@ describe('App', () => {
       expect(response.body).toEqual({
         status: 'error',
         database: 'error',
-        message: 'Database connection failed',
+        error: 'Database connection failed',
       });
     });
 
     it('should handle unknown errors', async () => {
-      db.healthCheck.mockRejectedValue('Unknown error');
+      (db.healthCheck as jest.Mock).mockRejectedValue(new Error());
 
       const response = await request(app)
         .get('/health/db')
@@ -92,7 +92,7 @@ describe('App', () => {
       expect(response.body).toEqual({
         status: 'error',
         database: 'error',
-        message: 'Unknown error',
+        error: '',
       });
     });
   });
