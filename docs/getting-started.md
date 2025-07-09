@@ -37,8 +37,9 @@ Configure your environment variables:
 
 - `packages/server/.env`:
   - `DATABASE_URL`: PostgreSQL connection string
+  - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`: Database connection details
   - `JWT_SECRET`: Secret for JWT tokens
-  - `PORT`: Server port (default: 3000)
+  - `PORT`: Server port (default: 3001)
 
 - `packages/client/.env`:
   - `VITE_API_URL`: Backend API URL
@@ -47,14 +48,18 @@ Configure your environment variables:
 1. **Database Setup**
 
 ```bash
+# Start PostgreSQL with Docker Compose
+docker-compose up -d db
+
 # Navigate to server package
 cd packages/server
 
-# Run migrations
-npm run prisma:migrate
+# Run database migrations
+npm run migrate:up
 
-# Seed initial data (optional)
-npm run prisma:seed
+# Verify database connection
+npm run dev
+# Visit http://localhost:3001/health/db to check database status
 ```
 
 ## Development Workflow
@@ -69,8 +74,8 @@ npm run dev
 This will start:
 
 - Frontend: <http://localhost:5173>
-- Backend: <http://localhost:3000>
-- API Documentation: <http://localhost:3000/api-docs>
+- Backend: <http://localhost:3001>
+- API Documentation: <http://localhost:3001/api-docs>
 
 1. **Check Status**
 
@@ -123,7 +128,7 @@ npm run build
 Common issues and solutions:
 
 1. **Port Conflicts**
-   - Check if ports 3000 or 5173 are in use
+   - Check if ports 3001 or 5173 are in use
    - Modify ports in .env files if needed
 
 2. **Database Connection**
