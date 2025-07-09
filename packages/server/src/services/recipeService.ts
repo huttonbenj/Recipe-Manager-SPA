@@ -82,6 +82,10 @@ export class RecipeService {
       const ingredients: RecipeIngredient[] = [];
       for (let i = 0; i < recipeData.ingredients.length; i++) {
         const ingredient = recipeData.ingredients[i];
+        if (!ingredient) {
+          throw new ApiError(400, `Invalid ingredient at index ${i}`);
+        }
+        
         const ingredientQuery = `
           INSERT INTO recipe_ingredients (recipe_id, name, amount, unit, notes, order_index)
           VALUES ($1, $2, $3, $4, $5, $6)
@@ -113,6 +117,10 @@ export class RecipeService {
       const steps: RecipeStep[] = [];
       for (let i = 0; i < recipeData.steps.length; i++) {
         const step = recipeData.steps[i];
+        if (!step) {
+          throw new ApiError(400, `Invalid step at index ${i}`);
+        }
+        
         const stepQuery = `
           INSERT INTO recipe_steps (recipe_id, step_number, instruction, time_minutes, temperature)
           VALUES ($1, $2, $3, $4, $5)
@@ -139,6 +147,10 @@ export class RecipeService {
       }
 
       await client.query('COMMIT');
+
+      if (!recipe) {
+        throw new ApiError(500, 'Failed to create recipe');
+      }
 
       return {
         id: recipe.id,
@@ -218,6 +230,10 @@ export class RecipeService {
       temperature: row.temperature as string
     }));
 
+    if (!recipe) {
+      return null;
+    }
+
     return {
       id: recipe.id,
       userId: recipe.user_id,
@@ -291,7 +307,11 @@ export class RecipeService {
       ${whereClause}
     `;
     const countResult = await db.query(countQuery, queryParams);
-    const total = parseInt(countResult[0].total);
+    const countRow = countResult[0];
+    if (!countRow) {
+      throw new ApiError(500, 'Failed to get recipe count');
+    }
+    const total = parseInt(countRow.total);
 
     // Get recipes
     const recipesQuery = `
@@ -455,6 +475,10 @@ export class RecipeService {
         // Insert new ingredients
         for (let i = 0; i < updateData.ingredients.length; i++) {
           const ingredient = updateData.ingredients[i];
+          if (!ingredient) {
+            throw new ApiError(400, `Invalid ingredient at index ${i}`);
+          }
+          
           const ingredientQuery = `
             INSERT INTO recipe_ingredients (recipe_id, name, amount, unit, notes, order_index)
             VALUES ($1, $2, $3, $4, $5, $6)
@@ -479,6 +503,10 @@ export class RecipeService {
         // Insert new steps
         for (let i = 0; i < updateData.steps.length; i++) {
           const step = updateData.steps[i];
+          if (!step) {
+            throw new ApiError(400, `Invalid step at index ${i}`);
+          }
+          
           const stepQuery = `
             INSERT INTO recipe_steps (recipe_id, step_number, instruction, time_minutes, temperature)
             VALUES ($1, $2, $3, $4, $5)
