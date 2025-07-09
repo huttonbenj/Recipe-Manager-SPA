@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export const Dashboard: React.FC = () => {
@@ -58,12 +59,12 @@ export const Dashboard: React.FC = () => {
                         </div>
 
                         <div className="mt-8">
-                            <button className="btn-primary mr-4">
+                            <Link to="/recipes/new" className="btn-primary mr-4">
                                 Add New Recipe
-                            </button>
-                            <button className="btn-secondary">
+                            </Link>
+                            <Link to="/recipes" className="btn-secondary">
                                 Browse Recipes
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

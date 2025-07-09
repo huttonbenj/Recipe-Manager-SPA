@@ -4,6 +4,9 @@ import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Dashboard } from './components/Dashboard';
+import { RecipeList } from './components/RecipeList';
+import { RecipeDetail } from './components/RecipeDetail';
+import { RecipeForm } from './components/RecipeForm';
 import { useAuth } from './hooks/useAuth';
 
 function AppContent() {
@@ -24,6 +27,38 @@ function AppContent() {
                 element={
                     <ProtectedRoute>
                         <Dashboard />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/recipes"
+                element={
+                    <ProtectedRoute>
+                        <RecipeList />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/recipes/new"
+                element={
+                    <ProtectedRoute>
+                        <RecipeForm />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/recipes/:id"
+                element={
+                    <ProtectedRoute>
+                        <RecipeDetail />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/recipes/:id/edit"
+                element={
+                    <ProtectedRoute>
+                        <RecipeForm />
                     </ProtectedRoute>
                 }
             />
