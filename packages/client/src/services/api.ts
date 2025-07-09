@@ -52,7 +52,8 @@ class ApiClient {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-        throw new ApiError(response.status, errorData.message || 'Request failed', errorData);
+        const errorMessage = errorData.error || errorData.message || 'Request failed';
+        throw new ApiError(response.status, errorMessage, errorData);
       }
 
       return await response.json();
