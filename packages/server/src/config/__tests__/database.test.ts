@@ -93,6 +93,13 @@ describe('Database', () => {
 
       await expect(database.query('SELECT * FROM test')).rejects.toThrow('Query failed');
     });
+
+    it('should handle query errors with non-Error object', async () => {
+      const error = 'String error';
+      mockPool.query.mockRejectedValue(error);
+
+      await expect(database.query('SELECT * FROM test')).rejects.toEqual('String error');
+    });
   });
 
   describe('getClient', () => {
@@ -126,6 +133,15 @@ describe('Database', () => {
       expect(isHealthy).toBe(false);
     });
 
+    it('should handle health check error with non-Error object', async () => {
+      const error = 'String error';
+      mockPool.query.mockRejectedValue(error);
+
+      const isHealthy = await database.healthCheck();
+
+      expect(isHealthy).toBe(false);
+    });
+
     it('should return false when query returns no results', async () => {
       mockPool.query.mockResolvedValue({ rows: [], rowCount: 0 });
 
@@ -146,6 +162,13 @@ describe('Database', () => {
 
     it('should handle close errors', async () => {
       const error = new Error('Close failed');
+      mockPool.end.mockRejectedValue(error);
+
+      await expect(database.close()).resolves.not.toThrow();
+    });
+
+    it('should handle close errors with non-Error object', async () => {
+      const error = 'String error';
       mockPool.end.mockRejectedValue(error);
 
       await expect(database.close()).resolves.not.toThrow();
