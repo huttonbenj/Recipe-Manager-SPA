@@ -72,7 +72,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUser(response.user);
         } catch (error) {
             if (error instanceof ApiError) {
-                throw new Error(error.message);
+                // Create a custom error object that includes the details
+                const customError = new Error(error.message) as Error & { details?: any };
+                customError.details = error.data?.details;
+                throw customError;
             }
             throw new Error('Registration failed. Please try again.');
         } finally {

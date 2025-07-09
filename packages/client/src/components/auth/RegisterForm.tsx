@@ -6,16 +6,40 @@ export const RegisterForm: React.FC = () => {
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [error, setError] = useState('');
+    const [validationErrors, setValidationErrors] = useState<string[]>([]);
     const { register, loading } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setValidationErrors([]);
 
         try {
             await register({ email, password, name });
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Registration failed');
+        } catch (err: any) {
+            if (err instanceof Error) {
+                // Try to parse the error message for better display
+                let errorMessage = err.message;
+
+                // If it's a validation error, try to extract the details
+                if (errorMessage.includes('Invalid password')) {
+                    errorMessage = 'Password does not meet the following requirements:';
+                    // Check if there are validation details in the error
+                    const errorWithDetails = err as Error & { details?: string[] };
+                    if (errorWithDetails.details && Array.isArray(errorWithDetails.details)) {
+                        setValidationErrors(errorWithDetails.details);
+                    } else {
+                        // Fallback to generic message
+                        setValidationErrors(['Please check the password requirements below.']);
+                    }
+                } else if (errorMessage.includes('already exists')) {
+                    errorMessage = 'An account with this email already exists. Please use a different email or try logging in.';
+                }
+
+                setError(errorMessage);
+            } else {
+                setError('Registration failed. Please try again.');
+            }
         }
     };
 
@@ -83,12 +107,29 @@ export const RegisterForm: React.FC = () => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
+                                <div className="mt-2 text-xs text-gray-600">
+                                    <p className="font-medium mb-1">Password must contain:</p>
+                                    <ul className="list-disc list-inside space-y-1">
+                                        <li>At least 8 characters</li>
+                                        <li>One lowercase letter</li>
+                                        <li>One uppercase letter</li>
+                                        <li>One number</li>
+                                        <li>One special character (@$!%*?&)</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 
                         {error && (
                             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
                                 <p className="text-sm text-red-600">{error}</p>
+                                {validationErrors.length > 0 && (
+                                    <ul className="mt-2 text-sm text-red-600 list-disc list-inside">
+                                        {validationErrors.map((validationError, index) => (
+                                            <li key={index}>{validationError}</li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
                         )}
 
