@@ -26,6 +26,9 @@ jest.mock('bcryptjs', () => ({
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
+// Get the JWT secret from environment or use fallback
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
+
 describe('AuthUtils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -82,7 +85,7 @@ describe('AuthUtils', () => {
 
       expect(jwt.sign).toHaveBeenCalledWith(
         payload,
-        'dev-secret-key',
+        JWT_SECRET,
         { expiresIn: '7d' }
       );
       expect(result).toBe(token);
@@ -100,7 +103,7 @@ describe('AuthUtils', () => {
 
       expect(jwt.sign).toHaveBeenCalledWith(
         payload,
-        'dev-secret-key',
+        JWT_SECRET,
         { expiresIn: '30d' }
       );
       expect(result).toBe(token);
@@ -136,7 +139,7 @@ describe('AuthUtils', () => {
 
       const result = AuthUtils.verifyToken(token);
 
-      expect(jwt.verify).toHaveBeenCalledWith(token, 'dev-secret-key');
+      expect(jwt.verify).toHaveBeenCalledWith(token, JWT_SECRET);
       expect(result).toEqual(payload);
     });
 
