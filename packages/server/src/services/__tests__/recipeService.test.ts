@@ -43,6 +43,13 @@ describe('RecipeService', () => {
       ]
     };
 
+    it('should handle database connection error', async () => {
+      mockDb.getClient.mockRejectedValueOnce(new Error('Connection failed'));
+
+      await expect(RecipeService.createRecipe(mockUserId, mockCreateData))
+        .rejects.toThrow('Connection failed');
+    });
+
     it('should create a recipe successfully', async () => {
       const mockRecipeRow = {
         id: mockRecipeId,
