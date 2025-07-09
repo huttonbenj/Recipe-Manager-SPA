@@ -88,7 +88,13 @@ router.put('/profile', authenticate, asyncHandler(async (req: Request, res: Resp
   const { userId } = (req as AuthenticatedRequest).user;
   const updates = validate(UpdateProfileSchema, req.body);
   
-  const user = await UserService.updateProfile(userId, updates);
+  // Filter out undefined values for exactOptionalPropertyTypes compliance
+  const filteredUpdates: Partial<Pick<{ name: string }, 'name'>> = {};
+  if (updates.name !== undefined) {
+    filteredUpdates.name = updates.name;
+  }
+  
+  const user = await UserService.updateProfile(userId, filteredUpdates);
   
   res.json({
     message: 'Profile updated successfully',
