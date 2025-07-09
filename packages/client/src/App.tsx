@@ -1,29 +1,47 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthProvider';
-import { AuthPage } from './components/auth/AuthPage';
+import { LoginForm } from './components/auth/LoginForm';
+import { RegisterForm } from './components/auth/RegisterForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Dashboard } from './components/Dashboard';
+import { useAuth } from './hooks/useAuth';
 
-function App() {
-    // Simple routing without React Router for now - will implement proper routing next
-    const currentPath = window.location.pathname;
-
-    const renderContent = () => {
-        if (currentPath === '/auth') {
-            return <AuthPage />;
-        }
-
-        // Default to dashboard (protected)
-        return (
-            <ProtectedRoute>
-                <Dashboard />
-            </ProtectedRoute>
-        );
-    };
+function AppContent() {
+    const { isAuthenticated } = useAuth();
 
     return (
-        <AuthProvider>
-            {renderContent()}
-        </AuthProvider>
+        <Routes>
+            <Route
+                path="/login"
+                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginForm />}
+            />
+            <Route
+                path="/register"
+                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterForm />}
+            />
+            <Route
+                path="/dashboard"
+                element={
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/"
+                element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />}
+            />
+        </Routes>
+    );
+}
+
+function App() {
+    return (
+        <BrowserRouter>
+            <AuthProvider>
+                <AppContent />
+            </AuthProvider>
+        </BrowserRouter>
     );
 }
 
