@@ -20,7 +20,8 @@
     "typecheck:strict": "npm run typecheck:strict --workspaces",
     "check:all": "npm run typecheck && npm run typecheck:strict && npm run lint",
     "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules",
-    "install:all": "npm install && npm install --workspaces"
+    "install:all": "npm install && npm install --workspaces",
+    "seed": "cd packages/server && npx ts-node src/scripts/seed.ts"
   },
   "engines": {
     "node": ">=18.0.0",
