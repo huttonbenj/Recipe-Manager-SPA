@@ -14,9 +14,9 @@
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit",
     "typecheck:strict": "tsc --noEmit --strict --noUnusedLocals --noUnusedParameters --exactOptionalPropertyTypes --noImplicitReturns --noUncheckedIndexedAccess",
-    "migrate:up": "node-pg-migrate up",
-    "migrate:down": "node-pg-migrate down",
-    "migrate:create": "node-pg-migrate create"
+    "migrate:up": "DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/recipe_manager} node-pg-migrate up",
+    "migrate:down": "DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/recipe_manager} node-pg-migrate down",
+    "migrate:create": "DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/recipe_manager} node-pg-migrate create"
   },
   "dependencies": {
     "@recipe-manager/shared": "1.0.0",

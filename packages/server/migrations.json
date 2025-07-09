@@ -1,5 +1,7 @@
 {
-  "database-url": "postgresql://postgres:postgres@localhost:5432/recipe_manager",
+  "database-url": {
+    "ENV": "DATABASE_URL"
+  },
   "migrations-dir": "migrations",
   "migrations-table": "migrations",
   "migration-file-language": "sql"
