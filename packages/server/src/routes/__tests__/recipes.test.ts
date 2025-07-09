@@ -221,6 +221,70 @@ describe('Recipe Routes', () => {
         })
         .expect(400);
     });
+
+    it('should handle all filter combinations', async () => {
+      mockRecipeService.getRecipes.mockResolvedValue(mockRecipesResult);
+
+      // Test with all possible filters to cover all conditional branches
+      await request(app)
+        .get('/api/recipes')
+        .query({
+          difficulty: 'medium',
+          cuisineType: 'Mexican',
+          maxPrepTime: 45,
+          maxCookTime: 60,
+          search: 'tacos',
+          page: 1,
+          limit: 5
+        })
+        .expect(200);
+
+      expect(mockRecipeService.getRecipes).toHaveBeenCalledWith(
+        {
+          difficulty: 'medium',
+          cuisineType: 'Mexican',
+          maxPrepTime: 45,
+          maxCookTime: 60,
+          search: 'tacos'
+        },
+        { page: 1, limit: 5 }
+      );
+    });
+
+    it('should handle partial filter combinations', async () => {
+      mockRecipeService.getRecipes.mockResolvedValue(mockRecipesResult);
+
+      // Test with only some filters to cover different branch paths
+      await request(app)
+        .get('/api/recipes')
+        .query({
+          difficulty: 'hard',
+          maxCookTime: 30
+        })
+        .expect(200);
+
+      expect(mockRecipeService.getRecipes).toHaveBeenCalledWith(
+        {
+          difficulty: 'hard',
+          maxCookTime: 30
+        },
+        { page: 1, limit: 10 }
+      );
+    });
+
+    it('should handle empty filters', async () => {
+      mockRecipeService.getRecipes.mockResolvedValue(mockRecipesResult);
+
+      // Test with no filters to cover the case where all conditionals are false
+      await request(app)
+        .get('/api/recipes')
+        .expect(200);
+
+      expect(mockRecipeService.getRecipes).toHaveBeenCalledWith(
+        {}, // Empty filters object
+        { page: 1, limit: 10 }
+      );
+    });
   });
 
   describe('GET /api/recipes/my', () => {
@@ -270,6 +334,75 @@ describe('Recipe Routes', () => {
       await request(app)
         .get('/api/recipes/my')
         .expect(200);
+    });
+
+    it('should handle all filter combinations for user recipes', async () => {
+      mockRecipeService.getRecipes.mockResolvedValue(mockUserRecipesResult);
+
+      // Test with all possible filters to cover all conditional branches
+      await request(app)
+        .get('/api/recipes/my')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .query({
+          difficulty: 'easy',
+          cuisineType: 'Italian',
+          maxPrepTime: 20,
+          maxCookTime: 40,
+          search: 'pasta',
+          page: 2,
+          limit: 8
+        })
+        .expect(200);
+
+      expect(mockRecipeService.getRecipes).toHaveBeenCalledWith(
+        {
+          userId: mockUserId,
+          difficulty: 'easy',
+          cuisineType: 'Italian',
+          maxPrepTime: 20,
+          maxCookTime: 40,
+          search: 'pasta'
+        },
+        { page: 2, limit: 8 }
+      );
+    });
+
+    it('should handle partial filter combinations for user recipes', async () => {
+      mockRecipeService.getRecipes.mockResolvedValue(mockUserRecipesResult);
+
+      // Test with only some filters to cover different branch paths
+      await request(app)
+        .get('/api/recipes/my')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .query({
+          cuisineType: 'Asian',
+          maxPrepTime: 15
+        })
+        .expect(200);
+
+      expect(mockRecipeService.getRecipes).toHaveBeenCalledWith(
+        {
+          userId: mockUserId,
+          cuisineType: 'Asian',
+          maxPrepTime: 15
+        },
+        { page: 1, limit: 10 }
+      );
+    });
+
+    it('should handle empty filters for user recipes', async () => {
+      mockRecipeService.getRecipes.mockResolvedValue(mockUserRecipesResult);
+
+      // Test with no filters to cover the case where all conditionals are false
+      await request(app)
+        .get('/api/recipes/my')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .expect(200);
+
+      expect(mockRecipeService.getRecipes).toHaveBeenCalledWith(
+        { userId: mockUserId }, // Only userId filter
+        { page: 1, limit: 10 }
+      );
     });
   });
 

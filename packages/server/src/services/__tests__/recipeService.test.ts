@@ -372,6 +372,149 @@ describe('RecipeService', () => {
         [mockRecipeId]
       );
     });
+
+    it('should update all fields when provided', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      const completeUpdate = {
+        title: 'New Title',
+        description: 'New Description',
+        prepTime: 25,
+        cookTime: 45,
+        servings: 6,
+        difficulty: 'hard' as const,
+        cuisineType: 'Mexican'
+      };
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, completeUpdate);
+
+      // Should call update with all fields
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('title = $1'),
+        expect.arrayContaining(['New Title', 'New Description', 25, 45, 6, 'hard', 'Mexican'])
+      );
+    });
+
+    it('should update steps when provided', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      const updateWithSteps = {
+        steps: [{ stepNumber: 1, instruction: 'New step', timeMinutes: 10, temperature: '350°F' }]
+      };
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, updateWithSteps);
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        'DELETE FROM recipe_steps WHERE recipe_id = $1',
+        [mockRecipeId]
+      );
+    });
+
+    it('should handle partial updates with only some fields', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      // Test updating only prepTime and cuisineType to cover different conditional branches
+      const partialUpdate = {
+        prepTime: 20,
+        cuisineType: 'French'
+      };
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, partialUpdate);
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('prep_time_minutes = $1'),
+        expect.arrayContaining([20, 'French'])
+      );
+    });
+
+    it('should handle empty update object', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      // Test with empty update to cover the case where no fields are updated
+      const emptyUpdate = {};
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, emptyUpdate);
+
+      // Should still work but not update any fields
+      expect(mockClient.query).toHaveBeenCalledWith('BEGIN');
+      expect(mockClient.query).toHaveBeenCalledWith('COMMIT');
+    });
   });
 
   describe('deleteRecipe', () => {
