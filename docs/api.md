@@ -4,7 +4,7 @@
 
 The Recipe Manager API follows RESTful principles and uses JSON for request/response payloads.
 
-Base URL: `http://localhost:3000/api/v1`
+Base URL: `http://localhost:3001/api`
 
 ## Authentication
 
