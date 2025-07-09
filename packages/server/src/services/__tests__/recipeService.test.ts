@@ -173,6 +173,18 @@ describe('RecipeService', () => {
       expect(mockClient.release).toHaveBeenCalled();
     });
 
+    it('should throw error when recipe insert returns null', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }); // Recipe insert returns empty
+
+      await expect(RecipeService.createRecipe(mockUserId, mockCreateData))
+        .rejects.toThrow(ApiError);
+      
+      expect(mockClient.query).toHaveBeenCalledWith('ROLLBACK');
+      expect(mockClient.release).toHaveBeenCalled();
+    });
+
     it('should throw error for invalid ingredient', async () => {
       const mockRecipeRow = {
         id: mockRecipeId,
@@ -619,6 +631,171 @@ describe('RecipeService', () => {
       // Should still work but not update any fields
       expect(mockClient.query).toHaveBeenCalledWith('BEGIN');
       expect(mockClient.query).toHaveBeenCalledWith('COMMIT');
+    });
+
+    it('should handle individual field updates to cover all branches', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      // Test updating only title to cover specific branch
+      const titleUpdate = { title: 'Only Title Update' };
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, titleUpdate);
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('title = $1'),
+        expect.arrayContaining(['Only Title Update'])
+      );
+    });
+
+    it('should handle description-only update', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      // Test updating only description to cover specific branch
+      const descriptionUpdate = { description: 'Only Description Update' };
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, descriptionUpdate);
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('description = $1'),
+        expect.arrayContaining(['Only Description Update'])
+      );
+    });
+
+    it('should handle servings-only update', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      // Test updating only servings to cover specific branch
+      const servingsUpdate = { servings: 8 };
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, servingsUpdate);
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('servings = $1'),
+        expect.arrayContaining([8])
+      );
+    });
+
+    it('should handle cookTime-only update', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      // Test updating only cookTime to cover specific branch
+      const cookTimeUpdate = { cookTime: 60 };
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, cookTimeUpdate);
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('cook_time_minutes = $1'),
+        expect.arrayContaining([60])
+      );
+    });
+
+    it('should handle difficulty-only update', async () => {
+      const mockRecipe = {
+        id: mockRecipeId,
+        userId: mockUserId,
+        title: 'Test Recipe',
+        description: 'A test recipe',
+        prepTime: 15,
+        cookTime: 30,
+        servings: 4,
+        difficulty: 'medium' as const,
+        cuisineType: 'Italian',
+        ingredients: [],
+        steps: [],
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      jest.spyOn(RecipeService, 'getRecipeById')
+        .mockResolvedValueOnce(mockRecipe)
+        .mockResolvedValueOnce(mockRecipe);
+
+      // Test updating only difficulty to cover specific branch
+      const difficultyUpdate = { difficulty: 'easy' as const };
+
+      await RecipeService.updateRecipe(mockRecipeId, mockUserId, difficultyUpdate);
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('difficulty_level = $1'),
+        expect.arrayContaining(['easy'])
+      );
     });
   });
 

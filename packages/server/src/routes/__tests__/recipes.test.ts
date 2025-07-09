@@ -438,6 +438,23 @@ describe('Recipe Routes', () => {
         .get('/api/recipes/invalid-id')
         .expect(400);
     });
+
+    it('should handle various invalid UUID formats', async () => {
+      const invalidIds = [
+        'not-a-uuid',
+        '123',
+        'abc-def-ghi',
+        '123e4567-e89b-12d3-a456-42661417400', // too short
+        '123e4567-e89b-12d3-a456-4266141740000', // too long
+        '123e4567-e89b-12d3-a456-426614174zzz', // invalid chars
+      ];
+
+      for (const invalidId of invalidIds) {
+        await request(app)
+          .get(`/api/recipes/${invalidId}`)
+          .expect(400);
+      }
+    });
   });
 
   describe('PUT /api/recipes/:id', () => {
@@ -494,6 +511,25 @@ describe('Recipe Routes', () => {
         .expect(400);
     });
 
+    it('should handle various invalid UUID formats in PUT', async () => {
+      const invalidIds = [
+        'not-a-uuid',
+        '123',
+        'abc-def-ghi',
+        '123e4567-e89b-12d3-a456-42661417400', // too short
+        '123e4567-e89b-12d3-a456-4266141740000', // too long
+        '123e4567-e89b-12d3-a456-426614174zzz', // invalid chars
+      ];
+
+      for (const invalidId of invalidIds) {
+        await request(app)
+          .put(`/api/recipes/${invalidId}`)
+          .set('Authorization', `Bearer ${mockToken}`)
+          .send(updateData)
+          .expect(400);
+      }
+    });
+
     it('should validate update data', async () => {
       const invalidUpdateData = {
         prepTime: -10, // negative prep time
@@ -542,6 +578,24 @@ describe('Recipe Routes', () => {
         .delete('/api/recipes/invalid-id')
         .set('Authorization', `Bearer ${mockToken}`)
         .expect(400);
+    });
+
+    it('should handle various invalid UUID formats in DELETE', async () => {
+      const invalidIds = [
+        'not-a-uuid',
+        '123',
+        'abc-def-ghi',
+        '123e4567-e89b-12d3-a456-42661417400', // too short
+        '123e4567-e89b-12d3-a456-4266141740000', // too long
+        '123e4567-e89b-12d3-a456-426614174zzz', // invalid chars
+      ];
+
+      for (const invalidId of invalidIds) {
+        await request(app)
+          .delete(`/api/recipes/${invalidId}`)
+          .set('Authorization', `Bearer ${mockToken}`)
+          .expect(400);
+      }
     });
   });
 }); 
