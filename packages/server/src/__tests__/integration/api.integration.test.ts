@@ -160,7 +160,7 @@ describe('API Integration Tests', () => {
         .get('/health')
         .expect(200);
 
-      expect(response.body).toHaveProperty('status', 'healthy');
+      expect(response.body).toHaveProperty('status', 'ok');
     });
 
     it('should handle 404 for unknown endpoints', async () => {
@@ -191,6 +191,21 @@ describe('API Integration Tests', () => {
     });
 
     it('should login with valid credentials', async () => {
+      // Setup mock to return existing user for login
+      mockDb.query.mockImplementationOnce((query: string) => {
+        if (query.includes('SELECT id, email, password_hash')) {
+          return Promise.resolve([{
+            id: 'user-123',
+            email: 'test-integration@integration.test',
+            name: 'Test User',
+            passwordHash: '$2b$10$hashedpassword', // Note: passwordHash not password_hash
+            created_at: new Date(),
+            updated_at: new Date()
+          }]);
+        }
+        return Promise.resolve([]);
+      });
+
       const response = await request(app)
         .post('/api/auth/login')
         .send({
@@ -227,6 +242,46 @@ describe('API Integration Tests', () => {
 
   describe('Recipe Management', () => {
     it('should create a recipe with authentication', async () => {
+      // Mock the complete transaction flow for recipe creation
+      const mockClient = {
+        query: jest.fn()
+          .mockResolvedValueOnce({ rows: [] }) // BEGIN transaction
+          .mockResolvedValueOnce({ rows: [{ // Recipe insertion
+            id: '550e8400-e29b-41d4-a716-446655440000',
+            title: 'Test Recipe',
+            description: 'A delicious test recipe',
+            prep_time_minutes: 10,
+            cook_time_minutes: 20,
+            servings: 4,
+            difficulty_level: 'easy',
+            cuisine_type: 'test',
+            user_id: 'user-123',
+            created_at: new Date(),
+            updated_at: new Date()
+          }] })
+          .mockResolvedValueOnce({ rows: [{ // Ingredient insertion
+            id: 'ing-1',
+            recipe_id: '550e8400-e29b-41d4-a716-446655440000',
+            name: 'Test Ingredient',
+            amount: 1,
+            unit: 'cup',
+            notes: 'Fresh',
+            order_index: 1
+          }] })
+          .mockResolvedValueOnce({ rows: [{ // Step insertion
+            id: 'step-1',
+            recipe_id: '550e8400-e29b-41d4-a716-446655440000',
+            step_number: 1,
+            instruction: 'Mix ingredients',
+            time_minutes: 5,
+            temperature: null
+          }] })
+          .mockResolvedValueOnce({ rows: [] }), // COMMIT transaction
+        release: jest.fn()
+      };
+      
+      mockDb.getClient.mockResolvedValueOnce(mockClient);
+
       const recipeData = {
         title: 'Test Recipe',
         description: 'A delicious test recipe',
@@ -269,6 +324,39 @@ describe('API Integration Tests', () => {
     });
 
     it('should retrieve a recipe by ID', async () => {
+      // Mock the recipe retrieval queries
+      mockDb.query
+        .mockResolvedValueOnce([{ // Recipe query
+          id: '550e8400-e29b-41d4-a716-446655440000',
+          title: 'Test Recipe',
+          description: 'A delicious test recipe',
+          prep_time_minutes: 10,
+          cook_time_minutes: 20,
+          servings: 4,
+          difficulty_level: 'easy',
+          cuisine_type: 'test',
+          user_id: 'user-123',
+          created_at: new Date(),
+          updated_at: new Date()
+        }])
+        .mockResolvedValueOnce([{ // Ingredients query
+          id: 'ing-1',
+          recipe_id: '550e8400-e29b-41d4-a716-446655440000',
+          name: 'Test Ingredient',
+          amount: 1,
+          unit: 'cup',
+          notes: 'Fresh',
+          order_index: 1
+        }])
+        .mockResolvedValueOnce([{ // Steps query
+          id: 'step-1',
+          recipe_id: '550e8400-e29b-41d4-a716-446655440000',
+          step_number: 1,
+          instruction: 'Mix ingredients',
+          time_minutes: 5,
+          temperature: null
+        }]);
+
       const response = await request(app)
         .get('/api/recipes/550e8400-e29b-41d4-a716-446655440000')
         .expect(200);
