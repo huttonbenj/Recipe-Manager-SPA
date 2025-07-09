@@ -36,8 +36,8 @@ jobs:
       DB_NAME: recipe_manager_test
       DB_USER: postgres
       DB_PASSWORD: postgres
-      JWT_SECRET: test-jwt-secret-key-for-ci
-      JWT_REFRESH_SECRET: test-jwt-refresh-secret-key-for-ci
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_manager_test
 
     steps:
