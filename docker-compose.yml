@@ -1,46 +1,64 @@
 version: "3.8"
 
 services:
-  client:
-    build:
-      context: .
-      target: builder
-    command: npm run dev:client
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
+  postgres:
+    image: postgres:15-alpine
+    container_name: recipe-manager-db
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://localhost:5000
+      POSTGRES_DB: recipe_manager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./packages/server/src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   server:
     build:
       context: .
-      target: builder
-    command: npm run dev:server
-    ports:
-      - "5000:5000"
-    volumes:
-      - .:/app
-      - /app/node_modules
+      dockerfile: packages/server/Dockerfile
+    container_name: recipe-manager-server
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/recipe_manager
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/recipe_manager
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      PORT: 3001
+    ports:
+      - "3001:3001"
     depends_on:
-      - db
-
-  db:
-    image: postgres:15-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=recipe_manager
+      postgres:
+        condition: service_healthy
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./packages/server/src:/app/src
+      - ./packages/shared:/app/shared
+      - /app/node_modules
+    command: npm run dev
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      dockerfile: packages/client/Dockerfile
+    container_name: recipe-manager-client
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    volumes:
+      - ./packages/client/src:/app/src
+      - ./packages/shared:/app/shared
+      - /app/node_modules
+    command: npm run dev
+    restart: unless-stopped
 
 volumes:
   postgres_data:
