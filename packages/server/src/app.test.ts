@@ -95,5 +95,19 @@ describe('App', () => {
         error: '',
       });
     });
+
+    it('should handle non-Error objects', async () => {
+      (db.healthCheck as jest.Mock).mockRejectedValue('String error');
+
+      const response = await request(app)
+        .get('/health/db')
+        .expect(503);
+
+      expect(response.body).toEqual({
+        status: 'error',
+        database: 'error',
+        error: 'Unknown error',
+      });
+    });
   });
 }); 
