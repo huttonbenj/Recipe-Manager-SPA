@@ -87,6 +87,8 @@ describe('UserService', () => {
 
       await expect(UserService.createUser(validUserData)).rejects.toThrow(ApiError);
     });
+
+
   });
 
   describe('login', () => {
@@ -215,6 +217,8 @@ describe('UserService', () => {
 
       await expect(UserService.updateProfile(userId, updates)).rejects.toThrow(ApiError);
     });
+
+
   });
 
   describe('changePassword', () => {

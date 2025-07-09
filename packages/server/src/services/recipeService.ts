@@ -78,6 +78,10 @@ export class RecipeService {
 
       const recipe = recipeResult.rows[0];
 
+      if (!recipe) {
+        throw new ApiError(500, 'Failed to create recipe');
+      }
+
       // Insert ingredients
       const ingredients: RecipeIngredient[] = [];
       for (let i = 0; i < recipeData.ingredients.length; i++) {
@@ -147,10 +151,6 @@ export class RecipeService {
       }
 
       await client.query('COMMIT');
-
-      if (!recipe) {
-        throw new ApiError(500, 'Failed to create recipe');
-      }
 
       return {
         id: recipe.id,
