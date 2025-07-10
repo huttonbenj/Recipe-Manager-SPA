@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiClient } from '../services/api';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 
 interface Recipe {
@@ -74,16 +75,16 @@ const useDebounce = (value: string, delay: number) => {
 };
 
 export const RecipeList: React.FC = () => {
-    const [recipes, setRecipes] = useState<Recipe[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+
+
+
     const [searchTerm, setSearchTerm] = useState('');
     const [difficultyFilter, setDifficultyFilter] = useState<string>('');
     const [cuisineFilter, setCuisineFilter] = useState<string>('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalRecipes, setTotalRecipes] = useState(0);
-    const [cuisineTypes, setCuisineTypes] = useState<string[]>([]);
+
+
+
 
     const { user } = useAuth();
     const limit = 12;
@@ -91,7 +92,41 @@ export const RecipeList: React.FC = () => {
     // Debounce search term to avoid API calls on every keystroke
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-    const fetchRecipes = useCallback(async (searchQuery: string) => {
+    // React Query hooks
+    const queryClient = useQueryClient();
+
+    const queryKey = ['recipes', currentPage, debouncedSearchTerm, difficultyFilter, cuisineFilter];
+
+    const { data, isLoading, isFetching, error: queryError, refetch } = useQuery<RecipeListResponse>({
+        queryKey,
+        queryFn: async () => {
+            const params = new URLSearchParams({
+                page: currentPage.toString(),
+                limit: limit.toString()
+            });
+            if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
+            if (difficultyFilter) params.append('difficulty', difficultyFilter);
+            if (cuisineFilter) params.append('cuisineType', cuisineFilter);
+            return apiClient.get<RecipeListResponse>(`/api/recipes?${params}`);
+        },
+
+            staleTime: 1000 * 60 * 5
+        }
+    );
+
+    const recipes = data?.recipes ?? [];
+    const totalPages = data?.pagination?.pages ?? 1;
+    const totalRecipes = data?.pagination?.total ?? 0;
+
+    const cuisineTypes: string[] = [...new Set(recipes.map((r: Recipe) => r.cuisineType).filter(Boolean))] as string[];
+
+    const loading = isLoading || isFetching;
+    const error = queryError ? 'Failed to fetch recipes' : null;
+
+    
+
+    /* fetchRecipes replaced by React Query */
+    /* const fetchRecipes = useCallback(async (searchQuery: string) => {
         try {
             setLoading(true);
             setError(null);
@@ -124,17 +159,15 @@ export const RecipeList: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [currentPage, difficultyFilter, cuisineFilter, limit]);
+    }, [currentPage, difficultyFilter, cuisineFilter, limit]); */
 
     // Reset to first page whenever the search term itself (debounced) changes
     useEffect(() => {
         setCurrentPage(1);
     }, [debouncedSearchTerm]);
 
-    // Fetch data whenever relevant dependencies change
-    useEffect(() => {
-        fetchRecipes(debouncedSearchTerm);
-    }, [fetchRecipes, debouncedSearchTerm]);
+    // React Query automatically refetches when its queryKey changes
+
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -166,8 +199,7 @@ export const RecipeList: React.FC = () => {
 
         try {
             await apiClient.delete(`/api/recipes/${recipeId}`);
-            setRecipes(recipes.filter(recipe => recipe.id !== recipeId));
-            setTotalRecipes(prev => prev - 1);
+            await queryClient.invalidateQueries({ queryKey: ['recipes'] });
         } catch (err) {
             console.error('Error deleting recipe:', err);
             alert('Failed to delete recipe');
@@ -208,7 +240,7 @@ export const RecipeList: React.FC = () => {
                         </div>
                         <p className="text-red-600 text-lg">{error}</p>
                         <button
-                            onClick={() => fetchRecipes(debouncedSearchTerm)}
+                            onClick={() => refetch()}
                             className="mt-4 btn-primary"
                         >
                             Try Again
@@ -325,7 +357,7 @@ export const RecipeList: React.FC = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {recipes.map((recipe) => (
+                        {recipes.map((recipe: Recipe) => (
                             <div key={recipe.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                                 {/* Recipe Image */}
                                 <div className="aspect-w-16 aspect-h-12 bg-gray-200">
@@ -351,8 +383,8 @@ export const RecipeList: React.FC = () => {
                                             {recipe.title}
                                         </h3>
                                         {recipe.difficulty && (
-                                            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${difficultyColors[recipe.difficulty]}`}>
-                                                {difficultyLabels[recipe.difficulty]}
+                                            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${difficultyColors[recipe.difficulty as keyof typeof difficultyColors]}`}>
+                                                {difficultyLabels[recipe.difficulty as keyof typeof difficultyLabels]}
                                             </span>
                                         )}
                                     </div>
