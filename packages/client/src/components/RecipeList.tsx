@@ -126,15 +126,21 @@ export const RecipeList: React.FC = () => {
         }
     }, [currentPage, difficultyFilter, cuisineFilter, limit]);
 
-    // Effect for initial load and filter changes
+    // Reset to first page whenever the search term itself (debounced) changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [debouncedSearchTerm]);
+
+    // Fetch data whenever relevant dependencies change
     useEffect(() => {
         fetchRecipes(debouncedSearchTerm);
     }, [fetchRecipes, debouncedSearchTerm]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        setCurrentPage(1);
-        fetchRecipes(searchTerm);
+        // The form submit is optional now; typing triggers debounced search automatically.
+        // Keep it for accessibility (enter key) but it simply updates the debounced value via state.
+        setSearchTerm(searchTerm.trim());
     };
 
     const handleFilterChange = (filterType: string, value: string) => {

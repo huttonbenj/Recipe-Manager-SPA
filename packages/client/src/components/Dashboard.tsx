@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { apiClient } from '../services/api';
 
@@ -16,30 +16,29 @@ export const Dashboard: React.FC = () => {
     });
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchDashboardStats();
-    }, []);
+    const fetchedOnce = useRef(false);
 
-    const fetchDashboardStats = async () => {
+    const fetchDashboardStats = useCallback(async () => {
+        if (fetchedOnce.current) return; // Avoid duplicate calls in React.StrictMode
+        fetchedOnce.current = true;
+
         try {
             setLoading(true);
-            // Fetch recipes to get total count
-            const recipesResponse = await apiClient.get<{
-                recipes: any[];
-                pagination: {
-                    total: number;
-                };
-            }>('/api/recipes?page=1&limit=1');
 
-            // Count unique cuisine types for categories (fetch up to 50 recipes)
-            const allRecipesResponse = await apiClient.get<{
-                recipes: Array<{ cuisineType: string | null }>;
-            }>('/api/recipes?page=1&limit=50');
+            const [recipesResponse, allRecipesResponse] = await Promise.all([
+                apiClient.get<{
+                    recipes: any[];
+                    pagination: { total: number };
+                }>('/api/recipes?page=1&limit=1'),
+                apiClient.get<{
+                    recipes: Array<{ cuisineType: string | null }>;
+                }>('/api/recipes?page=1&limit=50')
+            ]);
 
             const uniqueCuisines = new Set(
                 allRecipesResponse.recipes
                     .map(recipe => recipe.cuisineType)
-                    .filter(cuisine => cuisine !== null)
+                    .filter((cuisine): cuisine is string => cuisine !== null)
             );
 
             setStats({
@@ -52,7 +51,11 @@ export const Dashboard: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchDashboardStats();
+    }, [fetchDashboardStats]);
 
     return (
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
