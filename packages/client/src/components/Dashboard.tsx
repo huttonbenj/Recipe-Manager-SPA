@@ -1,104 +1,292 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import {
+    PlusCircle,
+    ChefHat,
+    Clock,
+    Star,
+    TrendingUp,
+    Users,
+    BookOpen,
+    Heart
+} from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import { apiClient } from '../services/api';
 
-interface DashboardStats {
-    totalRecipes: number;
-    totalFavorites: number;
-    totalCategories: number;
-}
+export const Dashboard = () => {
+    const { user } = useAuth();
+    const [greeting, setGreeting] = useState('');
 
-export const Dashboard: React.FC = () => {
-    const [stats, setStats] = useState<DashboardStats>({
-        totalRecipes: 0,
-        totalFavorites: 0,
-        totalCategories: 0
-    });
-    const [loading, setLoading] = useState(true);
-
-    const fetchedOnce = useRef(false);
-
-    const fetchDashboardStats = useCallback(async () => {
-        if (fetchedOnce.current) return; // Avoid duplicate calls in React.StrictMode
-        fetchedOnce.current = true;
-
-        try {
-            setLoading(true);
-
-            const [recipesResponse, allRecipesResponse] = await Promise.all([
-                apiClient.get<{
-                    recipes: any[];
-                    pagination: { total: number };
-                }>('/api/recipes?page=1&limit=1'),
-                apiClient.get<{
-                    recipes: Array<{ cuisineType: string | null }>;
-                }>('/api/recipes?page=1&limit=50')
-            ]);
-
-            const uniqueCuisines = new Set(
-                allRecipesResponse.recipes
-                    .map(recipe => recipe.cuisineType)
-                    .filter((cuisine): cuisine is string => cuisine !== null)
-            );
-
-            setStats({
-                totalRecipes: recipesResponse.pagination.total,
-                totalFavorites: 0, // TODO: Implement favorites feature
-                totalCategories: uniqueCuisines.size
-            });
-        } catch (error) {
-            console.error('Error fetching dashboard stats:', error);
-        } finally {
-            setLoading(false);
+    useEffect(() => {
+        const hour = new Date().getHours();
+        if (hour < 12) {
+            setGreeting('Good morning');
+        } else if (hour < 17) {
+            setGreeting('Good afternoon');
+        } else {
+            setGreeting('Good evening');
         }
     }, []);
 
-    useEffect(() => {
-        fetchDashboardStats();
-    }, [fetchDashboardStats]);
+    // Fetch user stats
+    const { data: stats } = useQuery({
+        queryKey: ['user-stats'],
+        queryFn: apiClient.getUserStats,
+    });
+
+    // Fetch recent recipes
+    const { data: recentRecipes } = useQuery({
+        queryKey: ['recent-recipes'],
+        queryFn: () => apiClient.getRecipes({ limit: 3 }),
+    });
+
+    // Fetch user's recipes
+    const { data: userRecipes } = useQuery({
+        queryKey: ['user-recipes'],
+        queryFn: () => apiClient.getUserRecipes(user?.id, { limit: 3 }),
+    });
+
+    const quickActions = [
+        {
+            title: 'Add New Recipe',
+            description: 'Create a new recipe to share with the community',
+            icon: PlusCircle,
+            to: '/recipes/new',
+            color: 'bg-blue-500 hover:bg-blue-600',
+        },
+        {
+            title: 'Browse Recipes',
+            description: 'Explore recipes from other users',
+            icon: BookOpen,
+            to: '/recipes',
+            color: 'bg-green-500 hover:bg-green-600',
+        },
+        {
+            title: 'Search Recipes',
+            description: 'Find recipes by ingredients or cuisine',
+            icon: ChefHat,
+            to: '/recipes/search',
+            color: 'bg-purple-500 hover:bg-purple-600',
+        },
+    ];
+
+    const statCards = [
+        {
+            title: 'Your Recipes',
+            value: stats?.totalRecipes || 0,
+            icon: BookOpen,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50',
+        },
+        {
+            title: 'Total Likes',
+            value: stats?.totalLikes || 0,
+            icon: Heart,
+            color: 'text-red-600',
+            bgColor: 'bg-red-50',
+        },
+        {
+            title: 'Avg Rating',
+            value: stats?.averageRating ? stats.averageRating.toFixed(1) : '0.0',
+            icon: Star,
+            color: 'text-yellow-600',
+            bgColor: 'bg-yellow-50',
+        },
+        {
+            title: 'Total Views',
+            value: stats?.totalViews || 0,
+            icon: TrendingUp,
+            color: 'text-green-600',
+            bgColor: 'bg-green-50',
+        },
+    ];
 
     return (
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div className="px-4 py-6 sm:px-0">
-                <div className="card p-6">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Dashboard
-                    </h2>
-                    <p className="text-gray-600 mb-6">
-                        Welcome to your Recipe Manager dashboard. Here you can manage your recipes,
-                        create new ones, and organize your culinary collection.
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="card p-4 text-center">
-                            <div className="text-3xl font-bold text-primary-600 mb-2">
-                                {loading ? '...' : stats.totalRecipes}
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">
+                            {greeting}, {user?.name}! 👋
+                        </h1>
+                        <p className="mt-2 text-gray-600">
+                            Welcome back to your recipe dashboard. Ready to cook something amazing?
+                        </p>
+                    </div>
+                    <div className="hidden md:block">
+                        <div className="flex items-center space-x-4">
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-blue-600">
+                                    {stats?.totalRecipes || 0}
+                                </div>
+                                <div className="text-sm text-gray-500">Recipes</div>
                             </div>
-                            <div className="text-sm text-gray-600">Total Recipes</div>
-                        </div>
-
-                        <div className="card p-4 text-center">
-                            <div className="text-3xl font-bold text-primary-600 mb-2">
-                                {loading ? '...' : stats.totalFavorites}
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-red-600">
+                                    {stats?.totalLikes || 0}
+                                </div>
+                                <div className="text-sm text-gray-500">Likes</div>
                             </div>
-                            <div className="text-sm text-gray-600">Favorites</div>
-                        </div>
-
-                        <div className="card p-4 text-center">
-                            <div className="text-3xl font-bold text-primary-600 mb-2">
-                                {loading ? '...' : stats.totalCategories}
-                            </div>
-                            <div className="text-sm text-gray-600">Categories</div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div className="mt-8">
-                        <Link to="/recipes/new" className="btn-primary mr-4">
-                            Add New Recipe
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {statCards.map((card) => {
+                    const Icon = card.icon;
+                    return (
+                        <div key={card.title} className="bg-white rounded-lg shadow p-6">
+                            <div className="flex items-center">
+                                <div className={`p-3 rounded-full ${card.bgColor}`}>
+                                    <Icon className={`h-6 w-6 ${card.color}`} />
+                                </div>
+                                <div className="ml-4">
+                                    <p className="text-sm font-medium text-gray-500">{card.title}</p>
+                                    <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {quickActions.map((action) => {
+                        const Icon = action.icon;
+                        return (
+                            <Link
+                                key={action.title}
+                                to={action.to}
+                                className={`p-4 rounded-lg text-white transition-colors ${action.color}`}
+                            >
+                                <Icon className="h-8 w-8 mb-2" />
+                                <h3 className="font-semibold">{action.title}</h3>
+                                <p className="text-sm opacity-90">{action.description}</p>
+                            </Link>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Your Recent Recipes */}
+                <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-900">Your Recent Recipes</h2>
+                        <Link
+                            to="/recipes?filter=my-recipes"
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        >
+                            View all
                         </Link>
-                        <Link to="/recipes" className="btn-secondary">
-                            Browse Recipes
+                    </div>
+                    <div className="space-y-4">
+                        {userRecipes?.data?.length ? (
+                            userRecipes.data.map((recipe) => (
+                                <div key={recipe.id} className="flex items-center space-x-4">
+                                    <div className="flex-shrink-0">
+                                        {recipe.image_url ? (
+                                            <img
+                                                className="h-12 w-12 rounded-lg object-cover"
+                                                src={recipe.image_url}
+                                                alt={recipe.title}
+                                            />
+                                        ) : (
+                                            <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                <ChefHat className="h-6 w-6 text-gray-400" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <Link
+                                            to={`/recipes/${recipe.id}`}
+                                            className="text-sm font-medium text-gray-900 hover:text-blue-600"
+                                        >
+                                            {recipe.title}
+                                        </Link>
+                                        <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                            <Clock className="h-3 w-3" />
+                                            <span>{recipe.cook_time} mins</span>
+                                            <span>•</span>
+                                            <span>{recipe.difficulty}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8">
+                                <ChefHat className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                <p className="text-gray-500">No recipes yet</p>
+                                <Link
+                                    to="/recipes/new"
+                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                >
+                                    Create your first recipe
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Recent Community Recipes */}
+                <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-900">Recent Community Recipes</h2>
+                        <Link
+                            to="/recipes"
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        >
+                            View all
                         </Link>
+                    </div>
+                    <div className="space-y-4">
+                        {recentRecipes?.data?.length ? (
+                            recentRecipes.data.map((recipe) => (
+                                <div key={recipe.id} className="flex items-center space-x-4">
+                                    <div className="flex-shrink-0">
+                                        {recipe.image_url ? (
+                                            <img
+                                                className="h-12 w-12 rounded-lg object-cover"
+                                                src={recipe.image_url}
+                                                alt={recipe.title}
+                                            />
+                                        ) : (
+                                            <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                <ChefHat className="h-6 w-6 text-gray-400" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <Link
+                                            to={`/recipes/${recipe.id}`}
+                                            className="text-sm font-medium text-gray-900 hover:text-blue-600"
+                                        >
+                                            {recipe.title}
+                                        </Link>
+                                        <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                            <Users className="h-3 w-3" />
+                                            <span>By {recipe.user?.name}</span>
+                                            <span>•</span>
+                                            <Clock className="h-3 w-3" />
+                                            <span>{recipe.cook_time} mins</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8">
+                                <ChefHat className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                <p className="text-gray-500">No recipes available</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

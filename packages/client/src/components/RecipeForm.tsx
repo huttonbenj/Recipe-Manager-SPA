@@ -1,569 +1,400 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+    Save,
+    X,
+    Upload,
+    ArrowLeft,
+    ChefHat,
+    Clock,
+    Users
+} from 'lucide-react';
 import { apiClient } from '../services/api';
-import { useAuth } from '../hooks/useAuth';
-
-interface RecipeIngredient {
-    id?: string;
-    name: string;
-    amount?: number;
-    unit?: string;
-    notes?: string;
-    orderIndex?: number;
-}
-
-interface RecipeStep {
-    id?: string;
-    stepNumber: number;
-    instruction: string;
-    timeMinutes?: number;
-    temperature?: string;
-}
+import toast from 'react-hot-toast';
 
 interface RecipeFormData {
     title: string;
-    description?: string;
+    ingredients: string;
+    instructions: string;
+    cook_time: number;
     servings: number;
-    prepTime: number;
-    cookTime: number;
-    difficulty?: 'easy' | 'medium' | 'hard';
-    cuisineType?: string;
-    ingredients: RecipeIngredient[];
-    steps: RecipeStep[];
+    difficulty: 'Easy' | 'Medium' | 'Hard';
+    category: string;
+    tags: string;
 }
 
-interface Recipe extends RecipeFormData {
-    id: string;
-    tags: string[];
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-}
-
-const initialFormData: RecipeFormData = {
-    title: '',
-    description: '',
-    servings: 4,
-    prepTime: 15,
-    cookTime: 30,
-    difficulty: 'medium',
-    cuisineType: '',
-    ingredients: [{ name: '', unit: '', notes: '' }],
-    steps: [{ stepNumber: 1, instruction: '', temperature: '' }]
-};
-
-export const RecipeForm: React.FC = () => {
+export const RecipeForm = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { user } = useAuth();
-    const isEditing = !!id;
+    const queryClient = useQueryClient();
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState<Partial<RecipeFormData>>({});
 
-    const [formData, setFormData] = useState<RecipeFormData>(initialFormData);
-    const [loading, setLoading] = useState(false);
-    const [submitLoading, setSubmitLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [formData, setFormData] = useState<RecipeFormData>({
+        title: '',
+        ingredients: '',
+        instructions: '',
+        cook_time: 30,
+        servings: 4,
+        difficulty: 'Medium',
+        category: '',
+        tags: '',
+    });
 
-    // Load recipe data for editing
+    const isEditing = Boolean(id);
+
+    // Fetch existing recipe if editing
+    const { data: existingRecipe, isLoading } = useQuery({
+        queryKey: ['recipe', id],
+        queryFn: () => apiClient.getRecipe(id!),
+        enabled: isEditing,
+    });
+
+    // Update form when editing existing recipe
     useEffect(() => {
-        if (isEditing && id) {
-            const fetchRecipe = async () => {
-                try {
-                    setLoading(true);
-                    const response = await apiClient.get<{ message: string; recipe: Recipe }>(`/api/recipes/${id}`);
-                    const recipe = response.recipe;
+        if (existingRecipe && isEditing) {
+            setFormData({
+                title: existingRecipe.title,
+                ingredients: existingRecipe.ingredients,
+                instructions: existingRecipe.instructions,
+                cook_time: existingRecipe.cook_time || 30,
+                servings: existingRecipe.servings || 4,
+                difficulty: existingRecipe.difficulty || 'Medium',
+                category: existingRecipe.category || '',
+                tags: existingRecipe.tags || '',
+            });
 
-                    // Check if user owns this recipe
-                    if (recipe.userId !== user?.id) {
-                        navigate('/recipes', {
-                            state: { error: 'You can only edit your own recipes' }
-                        });
-                        return;
-                    }
-
-                    setFormData({
-                        title: recipe.title,
-                        description: recipe.description || '',
-                        servings: recipe.servings,
-                        prepTime: recipe.prepTime,
-                        cookTime: recipe.cookTime,
-                        difficulty: recipe.difficulty || 'medium',
-                        cuisineType: recipe.cuisineType || '',
-                        ingredients: recipe.ingredients.length > 0 ? recipe.ingredients : [{ name: '', unit: '', notes: '' }],
-                        steps: recipe.steps.length > 0 ? recipe.steps : [{ stepNumber: 1, instruction: '', temperature: '' }]
-                    });
-                } catch (err) {
-                    setError('Failed to load recipe. Please try again.');
-                    console.error('Error fetching recipe:', err);
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            fetchRecipe();
+            if (existingRecipe.image_url) {
+                setImagePreview(existingRecipe.image_url);
+            }
         }
-    }, [id, isEditing, user?.id, navigate]);
+    }, [existingRecipe, isEditing]);
 
-    const validateForm = (): boolean => {
-        const newErrors: Record<string, string> = {};
+    // Simple validation
+    const validateForm = () => {
+        const newErrors: Partial<RecipeFormData> = {};
 
-        if (!formData.title.trim()) {
-            newErrors.title = 'Recipe title is required';
-        }
-
-        if (formData.servings <= 0) {
-            newErrors.servings = 'Servings must be greater than 0';
-        }
-
-        if (formData.prepTime <= 0) {
-            newErrors.prepTime = 'Prep time must be greater than 0';
-        }
-
-        if (formData.cookTime <= 0) {
-            newErrors.cookTime = 'Cook time must be greater than 0';
-        }
-
-        // Validate ingredients
-        const validIngredients = formData.ingredients.filter(ing => ing.name.trim());
-        if (validIngredients.length === 0) {
-            newErrors.ingredients = 'At least one ingredient is required';
-        }
-
-        // Validate steps
-        const validSteps = formData.steps.filter(step => step.instruction.trim());
-        if (validSteps.length === 0) {
-            newErrors.steps = 'At least one instruction step is required';
-        }
+        if (!formData.title.trim()) newErrors.title = 'Title is required';
+        if (!formData.ingredients.trim()) newErrors.ingredients = 'Ingredients are required';
+        if (!formData.instructions.trim()) newErrors.instructions = 'Instructions are required';
+        if (formData.cook_time < 1) newErrors.cook_time = 1;
+        if (formData.servings < 1) newErrors.servings = 1;
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
-
-        try {
-            setSubmitLoading(true);
-            setError('');
-
-            // Filter out empty ingredients and steps
-            const cleanedData = {
-                ...formData,
-                ingredients: formData.ingredients
-                    .filter(ing => ing.name.trim())
-                    .map((ing, index) => ({
-                        ...ing,
-                        orderIndex: index
-                    })),
-                steps: formData.steps
-                    .filter(step => step.instruction.trim())
-                    .map((step, index) => ({
-                        ...step,
-                        stepNumber: index + 1
-                    }))
+    // Create/Update recipe mutation
+    const saveRecipeMutation = useMutation({
+        mutationFn: async (data: RecipeFormData) => {
+            const recipeData = {
+                title: data.title,
+                ingredients: data.ingredients,
+                instructions: data.instructions,
+                cook_time: data.cook_time,
+                servings: data.servings,
+                difficulty: data.difficulty,
+                category: data.category,
+                tags: data.tags,
             };
 
             if (isEditing) {
-                await apiClient.put(`/api/recipes/${id}`, cleanedData);
-                navigate(`/recipes/${id}`, {
-                    state: { message: 'Recipe updated successfully' }
-                });
+                return apiClient.updateRecipe(id!, recipeData);
             } else {
-                const response = await apiClient.post<{ message: string; recipe: Recipe }>('/api/recipes', cleanedData);
-                navigate(`/recipes/${response.recipe.id}`, {
-                    state: { message: 'Recipe created successfully' }
-                });
+                return apiClient.createRecipe(recipeData);
             }
-        } catch (err) {
-            setError('Failed to save recipe. Please try again.');
-            console.error('Error saving recipe:', err);
+        },
+        onSuccess: (recipe) => {
+            toast.success(isEditing ? 'Recipe updated!' : 'Recipe created!');
+            queryClient.invalidateQueries({ queryKey: ['recipes'] });
+            navigate(`/recipes/${recipe.id}`);
+        },
+        onError: (error) => {
+            toast.error('Failed to save recipe');
+            console.error('Error saving recipe:', error);
+        },
+    });
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImagePreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removeImage = () => {
+        setImagePreview(null);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        setIsSubmitting(true);
+        try {
+            await saveRecipeMutation.mutateAsync(formData);
         } finally {
-            setSubmitLoading(false);
+            setIsSubmitting(false);
         }
     };
 
     const updateFormData = (field: keyof RecipeFormData, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        // Clear error when user starts typing
         if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: '' }));
+            setErrors(prev => ({ ...prev, [field]: undefined }));
         }
     };
 
-    const addIngredient = () => {
-        setFormData(prev => ({
-            ...prev,
-            ingredients: [...prev.ingredients, { name: '', unit: '', notes: '' }]
-        }));
-    };
-
-    const removeIngredient = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            ingredients: prev.ingredients.filter((_, i) => i !== index)
-        }));
-    };
-
-    const updateIngredient = (index: number, field: keyof RecipeIngredient, value: any) => {
-        setFormData(prev => ({
-            ...prev,
-            ingredients: prev.ingredients.map((ing, i) =>
-                i === index ? { ...ing, [field]: value } : ing
-            )
-        }));
-    };
-
-    const addStep = () => {
-        setFormData(prev => ({
-            ...prev,
-            steps: [...prev.steps, {
-                stepNumber: prev.steps.length + 1,
-                instruction: '',
-                temperature: ''
-            }]
-        }));
-    };
-
-    const removeStep = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            steps: prev.steps.filter((_, i) => i !== index).map((step, i) => ({
-                ...step,
-                stepNumber: i + 1
-            }))
-        }));
-    };
-
-    const updateStep = (index: number, field: keyof RecipeStep, value: any) => {
-        setFormData(prev => ({
-            ...prev,
-            steps: prev.steps.map((step, i) =>
-                i === index ? { ...step, [field]: value } : step
-            )
-        }));
-    };
-
-    if (loading) {
+    if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading recipe...</p>
-                </div>
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto">
             {/* Header */}
-            <div className="bg-white shadow-sm">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex items-center justify-between">
-                        <nav className="flex items-center space-x-2 text-sm">
-                            <Link to="/recipes" className="text-primary-600 hover:text-primary-700">
-                                Recipes
-                            </Link>
-                            <span className="text-gray-400">/</span>
-                            <span className="text-gray-600">
-                                {isEditing ? 'Edit Recipe' : 'New Recipe'}
-                            </span>
-                        </nav>
-                        <Link to="/recipes" className="btn-secondary">
-                            Cancel
-                        </Link>
+            <div className="mb-6">
+                <button
+                    onClick={() => navigate('/recipes')}
+                    className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
+                >
+                    <ArrowLeft className="h-5 w-5 mr-2" />
+                    Back to Recipes
+                </button>
+
+                <h1 className="text-3xl font-bold text-gray-900">
+                    {isEditing ? 'Edit Recipe' : 'Create New Recipe'}
+                </h1>
+                <p className="text-gray-600 mt-2">
+                    {isEditing ? 'Update your recipe details' : 'Share your culinary creation with the world'}
+                </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Basic Information */}
+                <div className="bg-white p-6 rounded-lg shadow">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Recipe Title *
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.title}
+                                onChange={(e) => updateFormData('title', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Enter recipe title"
+                                required
+                            />
+                            {errors.title && (
+                                <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <Clock className="inline h-4 w-4 mr-1" />
+                                Cook Time (minutes) *
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.cook_time}
+                                onChange={(e) => updateFormData('cook_time', parseInt(e.target.value) || 0)}
+                                min="1"
+                                max="600"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="30"
+                                required
+                            />
+                            {errors.cook_time && (
+                                <p className="mt-1 text-sm text-red-600">Cook time must be at least 1 minute</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <Users className="inline h-4 w-4 mr-1" />
+                                Servings *
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.servings}
+                                onChange={(e) => updateFormData('servings', parseInt(e.target.value) || 0)}
+                                min="1"
+                                max="50"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="4"
+                                required
+                            />
+                            {errors.servings && (
+                                <p className="mt-1 text-sm text-red-600">Servings must be at least 1</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Difficulty
+                            </label>
+                            <select
+                                value={formData.difficulty}
+                                onChange={(e) => updateFormData('difficulty', e.target.value as 'Easy' | 'Medium' | 'Hard')}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Category
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.category}
+                                onChange={(e) => updateFormData('category', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="e.g., Breakfast, Dinner, Dessert"
+                            />
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Tags (comma-separated)
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.tags}
+                                onChange={(e) => updateFormData('tags', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="e.g., healthy, quick, vegetarian"
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Form */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* Basic Information */}
-                    <div className="card p-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6">Basic Information</h2>
+                {/* Recipe Image */}
+                <div className="bg-white p-6 rounded-lg shadow">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Recipe Image</h2>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="md:col-span-2">
-                                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Recipe Title *
-                                </label>
-                                <input
-                                    id="title"
-                                    type="text"
-                                    value={formData.title}
-                                    onChange={(e) => updateFormData('title', e.target.value)}
-                                    className={`input-field ${errors.title ? 'border-red-500' : ''}`}
-                                    placeholder="Enter recipe title"
+                    <div className="space-y-4">
+                        {imagePreview ? (
+                            <div className="relative">
+                                <img
+                                    src={imagePreview}
+                                    alt="Recipe preview"
+                                    className="w-full h-64 object-cover rounded-lg"
                                 />
-                                {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
-                            </div>
-
-                            <div className="md:col-span-2">
-                                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Description
-                                </label>
-                                <textarea
-                                    id="description"
-                                    rows={3}
-                                    value={formData.description}
-                                    onChange={(e) => updateFormData('description', e.target.value)}
-                                    className="input-field"
-                                    placeholder="Brief description of the recipe"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="servings" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Servings *
-                                </label>
-                                <input
-                                    id="servings"
-                                    type="number"
-                                    min="1"
-                                    value={formData.servings}
-                                    onChange={(e) => updateFormData('servings', parseInt(e.target.value) || 1)}
-                                    className={`input-field ${errors.servings ? 'border-red-500' : ''}`}
-                                />
-                                {errors.servings && <p className="mt-1 text-sm text-red-600">{errors.servings}</p>}
-                            </div>
-
-                            <div>
-                                <label htmlFor="difficulty" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Difficulty
-                                </label>
-                                <select
-                                    id="difficulty"
-                                    value={formData.difficulty || ''}
-                                    onChange={(e) => updateFormData('difficulty', e.target.value as 'easy' | 'medium' | 'hard')}
-                                    className="input-field"
+                                <button
+                                    type="button"
+                                    onClick={removeImage}
+                                    className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-2 hover:bg-red-700"
                                 >
-                                    <option value="">Select difficulty</option>
-                                    <option value="easy">Easy</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="hard">Hard</option>
-                                </select>
+                                    <X className="h-4 w-4" />
+                                </button>
                             </div>
-
-                            <div>
-                                <label htmlFor="prepTime" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Prep Time (minutes) *
+                        ) : (
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                                <ChefHat className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                <p className="text-gray-600 mb-4">Upload a photo of your recipe</p>
+                                <label className="cursor-pointer">
+                                    <span className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 inline-flex items-center">
+                                        <Upload className="h-4 w-4 mr-2" />
+                                        Choose Image
+                                    </span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
                                 </label>
-                                <input
-                                    id="prepTime"
-                                    type="number"
-                                    min="1"
-                                    value={formData.prepTime}
-                                    onChange={(e) => updateFormData('prepTime', parseInt(e.target.value) || 1)}
-                                    className={`input-field ${errors.prepTime ? 'border-red-500' : ''}`}
-                                />
-                                {errors.prepTime && <p className="mt-1 text-sm text-red-600">{errors.prepTime}</p>}
-                            </div>
-
-                            <div>
-                                <label htmlFor="cookTime" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Cook Time (minutes) *
-                                </label>
-                                <input
-                                    id="cookTime"
-                                    type="number"
-                                    min="1"
-                                    value={formData.cookTime}
-                                    onChange={(e) => updateFormData('cookTime', parseInt(e.target.value) || 1)}
-                                    className={`input-field ${errors.cookTime ? 'border-red-500' : ''}`}
-                                />
-                                {errors.cookTime && <p className="mt-1 text-sm text-red-600">{errors.cookTime}</p>}
-                            </div>
-
-                            <div className="md:col-span-2">
-                                <label htmlFor="cuisineType" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Cuisine Type
-                                </label>
-                                <input
-                                    id="cuisineType"
-                                    type="text"
-                                    value={formData.cuisineType}
-                                    onChange={(e) => updateFormData('cuisineType', e.target.value)}
-                                    className="input-field"
-                                    placeholder="e.g., Italian, Mexican, Asian"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Ingredients */}
-                    <div className="card p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">Ingredients</h2>
-                            <button
-                                type="button"
-                                onClick={addIngredient}
-                                className="btn-primary"
-                            >
-                                Add Ingredient
-                            </button>
-                        </div>
-
-                        {errors.ingredients && <p className="mb-4 text-sm text-red-600">{errors.ingredients}</p>}
-
-                        <div className="space-y-4">
-                            {formData.ingredients.map((ingredient, index) => (
-                                <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                                    <div className="md:col-span-4">
-                                        <input
-                                            type="text"
-                                            value={ingredient.name}
-                                            onChange={(e) => updateIngredient(index, 'name', e.target.value)}
-                                            className="input-field"
-                                            placeholder="Ingredient name"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            value={ingredient.amount || ''}
-                                            onChange={(e) => updateIngredient(index, 'amount', parseFloat(e.target.value) || undefined)}
-                                            className="input-field"
-                                            placeholder="Amount"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <input
-                                            type="text"
-                                            value={ingredient.unit || ''}
-                                            onChange={(e) => updateIngredient(index, 'unit', e.target.value)}
-                                            className="input-field"
-                                            placeholder="Unit"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-3">
-                                        <input
-                                            type="text"
-                                            value={ingredient.notes || ''}
-                                            onChange={(e) => updateIngredient(index, 'notes', e.target.value)}
-                                            className="input-field"
-                                            placeholder="Notes (optional)"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-1">
-                                        {formData.ingredients.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeIngredient(index)}
-                                                className="w-full h-10 text-red-600 hover:text-red-800 font-medium"
-                                            >
-                                                Remove
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Instructions */}
-                    <div className="card p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">Instructions</h2>
-                            <button
-                                type="button"
-                                onClick={addStep}
-                                className="btn-primary"
-                            >
-                                Add Step
-                            </button>
-                        </div>
-
-                        {errors.steps && <p className="mb-4 text-sm text-red-600">{errors.steps}</p>}
-
-                        <div className="space-y-6">
-                            {formData.steps.map((step, index) => (
-                                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="font-medium text-gray-900">Step {index + 1}</h3>
-                                        {formData.steps.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeStep(index)}
-                                                className="text-red-600 hover:text-red-800 font-medium"
-                                            >
-                                                Remove Step
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div className="md:col-span-3">
-                                            <textarea
-                                                rows={3}
-                                                value={step.instruction}
-                                                onChange={(e) => updateStep(index, 'instruction', e.target.value)}
-                                                className="input-field"
-                                                placeholder="Describe this step in detail..."
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Time (minutes)
-                                            </label>
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                value={step.timeMinutes || ''}
-                                                onChange={(e) => updateStep(index, 'timeMinutes', parseInt(e.target.value) || undefined)}
-                                                className="input-field"
-                                                placeholder="Optional"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Temperature
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={step.temperature || ''}
-                                                onChange={(e) => updateStep(index, 'temperature', e.target.value)}
-                                                className="input-field"
-                                                placeholder="e.g., 350°F"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Submit */}
-                    <div className="card p-6">
-                        {error && (
-                            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                                <p className="text-sm text-red-600">{error}</p>
                             </div>
                         )}
-
-                        <div className="flex justify-end space-x-4">
-                            <Link to="/recipes" className="btn-secondary">
-                                Cancel
-                            </Link>
-                            <button
-                                type="submit"
-                                disabled={submitLoading}
-                                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {submitLoading
-                                    ? (isEditing ? 'Updating...' : 'Creating...')
-                                    : (isEditing ? 'Update Recipe' : 'Create Recipe')
-                                }
-                            </button>
-                        </div>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                {/* Ingredients */}
+                <div className="bg-white p-6 rounded-lg shadow">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Ingredients *</h2>
+
+                    <div>
+                        <textarea
+                            value={formData.ingredients}
+                            onChange={(e) => updateFormData('ingredients', e.target.value)}
+                            rows={8}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter each ingredient on a new line, e.g.:&#10;2 cups flour&#10;1 tsp salt&#10;1 cup milk"
+                            required
+                        />
+                        {errors.ingredients && (
+                            <p className="mt-1 text-sm text-red-600">{errors.ingredients}</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Instructions */}
+                <div className="bg-white p-6 rounded-lg shadow">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Instructions *</h2>
+
+                    <div>
+                        <textarea
+                            value={formData.instructions}
+                            onChange={(e) => updateFormData('instructions', e.target.value)}
+                            rows={10}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter cooking instructions step by step, e.g.:&#10;1. Preheat oven to 350°F&#10;2. Mix dry ingredients in a bowl&#10;3. Add wet ingredients and stir until combined"
+                            required
+                        />
+                        {errors.instructions && (
+                            <p className="mt-1 text-sm text-red-600">{errors.instructions}</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Submit Buttons */}
+                <div className="flex items-center justify-end space-x-4">
+                    <button
+                        type="button"
+                        onClick={() => navigate('/recipes')}
+                        className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="h-4 w-4 mr-2" />
+                                {isEditing ? 'Update Recipe' : 'Create Recipe'}
+                            </>
+                        )}
+                    </button>
+                </div>
+            </form>
         </div>
     );
 }; 

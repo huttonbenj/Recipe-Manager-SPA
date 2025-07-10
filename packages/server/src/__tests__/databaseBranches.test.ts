@@ -1,7 +1,7 @@
-import { db } from '../config/database';
+import { dbManager } from '../config/database';
 
 /**
- * These tests exercise the success-path branches inside Database.query, Database.close and getPoolStats
+ * These tests exercise the success-path branches inside Database manager
  * to raise overall branch coverage without requiring a live database connection.
  */
 
@@ -10,48 +10,40 @@ describe('Database utility branches', () => {
     jest.restoreAllMocks();
   });
 
-  it('query should resolve rows and log on success path', async () => {
-    // Arrange: patch the pool.query method to simulate a successful query
-    const mockRows = [{ id: 1 }];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const originalQuery = (db as any).pool.query;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (db as any).pool.query = jest.fn().mockResolvedValue({ rowCount: 1, rows: mockRows });
+  it('should connect to database successfully', async () => {
+    // Arrange: Mock the Prisma client connect method
+    const mockConnect = jest.fn().mockResolvedValue(undefined);
+    jest.spyOn(dbManager.getClient(), '$connect').mockImplementation(mockConnect);
 
     // Act
-    const result = await db.query('SELECT 1');
+    await dbManager.connect();
 
     // Assert
-    expect(result).toEqual(mockRows);
-
-    // Cleanup
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (db as any).pool.query = originalQuery;
+    expect(mockConnect).toHaveBeenCalled();
   });
 
-  it('close should call pool.end and log on success', async () => {
-    // Arrange: patch the pool.end method
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const originalEnd = (db as any).pool.end;
-    const mockEnd = jest.fn().mockResolvedValue(undefined);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (db as any).pool.end = mockEnd;
+  it('should disconnect from database successfully', async () => {
+    // Arrange: Mock the Prisma client disconnect method
+    const mockDisconnect = jest.fn().mockResolvedValue(undefined);
+    jest.spyOn(dbManager.getClient(), '$disconnect').mockImplementation(mockDisconnect);
 
     // Act
-    await db.close();
+    await dbManager.disconnect();
 
     // Assert
-    expect(mockEnd).toHaveBeenCalled();
-
-    // Cleanup
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (db as any).pool.end = originalEnd;
+    expect(mockDisconnect).toHaveBeenCalled();
   });
 
-  it('getPoolStats should return numeric counters', () => {
-    const stats = db.getPoolStats();
-    expect(stats).toHaveProperty('totalCount');
-    expect(stats).toHaveProperty('idleCount');
-    expect(stats).toHaveProperty('waitingCount');
+  it('should perform health check successfully', async () => {
+    // Arrange: Mock the Prisma client queryRaw method
+    const mockQueryRaw = jest.fn().mockResolvedValue([{ result: 1 }]);
+    jest.spyOn(dbManager.getClient(), '$queryRaw').mockImplementation(mockQueryRaw);
+
+    // Act
+    const result = await dbManager.healthCheck();
+
+    // Assert
+    expect(result).toBe(true);
+    expect(mockQueryRaw).toHaveBeenCalled();
   });
 }); 

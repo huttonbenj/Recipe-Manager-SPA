@@ -1,177 +1,366 @@
 import { Router, Request, Response } from 'express';
-import { z } from 'zod';
-import { RecipeService, CreateRecipeData, UpdateRecipeData } from '../services/recipeService';
+import { RecipeService } from '../services/recipeService';
 import { authenticate, AuthenticatedRequest } from '../middleware/auth';
-import { ApiError } from '../middleware/error';
-import { validate } from '@recipe-manager/shared';
 import { asyncHandler } from '../utils/asyncHandler';
+import { body, param, query, validationResult } from 'express-validator';
+import logger from '../utils/logger';
 
 const router = Router();
 
-// Create recipe schema
-const CreateRecipeSchema = z.object({
-  title: z.string().min(1).max(255),
-  description: z.string().optional(),
-  prepTime: z.number().positive(),
-  cookTime: z.number().positive(),
-  servings: z.number().int().positive(),
-  difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
-  cuisineType: z.string().max(100).optional(),
-  ingredients: z.array(z.object({
-    name: z.string().min(1).max(255),
-    amount: z.number().positive().optional(),
-    unit: z.string().max(50).optional(),
-    notes: z.string().optional(),
-    orderIndex: z.number().int().nonnegative().optional()
-  })).min(1),
-  steps: z.array(z.object({
-    stepNumber: z.number().int().positive().optional(),
-    instruction: z.string().min(1),
-    timeMinutes: z.number().positive().optional(),
-    temperature: z.string().max(50).optional()
-  })).min(1)
-});
+// Validation middleware
+const createRecipeValidation = [
+  body('title')
+    .trim()
+    .isLength({ min: 1, max: 200 })
+    .withMessage('Title must be between 1 and 200 characters'),
+  body('ingredients')
+    .notEmpty()
+    .withMessage('Ingredients are required'),
+  body('instructions')
+    .trim()
+    .isLength({ min: 1, max: 5000 })
+    .withMessage('Instructions must be between 1 and 5000 characters'),
+  body('cook_time')
+    .optional()
+    .isInt({ min: 0, max: 1440 })
+    .withMessage('Cook time must be between 0 and 1440 minutes'),
+  body('servings')
+    .optional()
+    .isInt({ min: 1, max: 50 })
+    .withMessage('Servings must be between 1 and 50'),
+  body('difficulty')
+    .optional()
+    .isIn(['Easy', 'Medium', 'Hard'])
+    .withMessage('Difficulty must be Easy, Medium, or Hard'),
+  body('category')
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage('Category must be less than 100 characters'),
+  body('image_url')
+    .optional()
+    .isURL()
+    .withMessage('Image URL must be a valid URL'),
+  body('tags')
+    .optional()
+    .isString()
+    .withMessage('Tags must be a string'),
+];
 
-// Update recipe schema
-const UpdateRecipeSchema = CreateRecipeSchema.partial();
+const updateRecipeValidation = [
+  param('id')
+    .isString()
+    .withMessage('Recipe ID must be a string'),
+  body('title')
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 200 })
+    .withMessage('Title must be between 1 and 200 characters'),
+  body('ingredients')
+    .optional()
+    .notEmpty()
+    .withMessage('Ingredients cannot be empty'),
+  body('instructions')
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 5000 })
+    .withMessage('Instructions must be between 1 and 5000 characters'),
+  body('cook_time')
+    .optional()
+    .isInt({ min: 0, max: 1440 })
+    .withMessage('Cook time must be between 0 and 1440 minutes'),
+  body('servings')
+    .optional()
+    .isInt({ min: 1, max: 50 })
+    .withMessage('Servings must be between 1 and 50'),
+  body('difficulty')
+    .optional()
+    .isIn(['Easy', 'Medium', 'Hard'])
+    .withMessage('Difficulty must be Easy, Medium, or Hard'),
+  body('category')
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage('Category must be less than 100 characters'),
+  body('image_url')
+    .optional()
+    .isURL()
+    .withMessage('Image URL must be a valid URL'),
+  body('tags')
+    .optional()
+    .isString()
+    .withMessage('Tags must be a string'),
+];
 
-// Query filters schema
-const RecipeFiltersSchema = z.object({
-  difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
-  cuisineType: z.string().optional(),
-  maxPrepTime: z.coerce.number().positive().optional(),
-  maxCookTime: z.coerce.number().positive().optional(),
-  search: z.string().optional(),
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(50).default(10)
-});
+const paginationValidation = [
+  query('page')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Page must be a positive integer'),
+  query('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage('Limit must be between 1 and 100'),
+];
 
-// Create a new recipe
-router.post('/', authenticate, asyncHandler(async (req: Request, res: Response) => {
-  const user = (req as AuthenticatedRequest).user;
-  const recipeData = validate(CreateRecipeSchema, req.body);
-  
-  const recipe = await RecipeService.createRecipe(user.userId, recipeData as CreateRecipeData);
-  
-  res.status(201).json({
-    message: 'Recipe created successfully',
-    recipe
-  });
-}));
-
-// Get all recipes with filtering and pagination
-router.get('/', asyncHandler(async (req: Request, res: Response) => {
-  const filters = validate(RecipeFiltersSchema, req.query);
-  
-  const { page = 1, limit = 10, ...recipeFilters } = filters;
-  
-  // Filter out undefined values for exactOptionalPropertyTypes compliance
-  const cleanFilters: {
-    difficulty?: 'easy' | 'medium' | 'hard';
-    cuisineType?: string;
-    maxPrepTime?: number;
-    maxCookTime?: number;
-    search?: string;
-  } = {};
-  
-  if (recipeFilters.difficulty !== undefined) cleanFilters.difficulty = recipeFilters.difficulty;
-  if (recipeFilters.cuisineType !== undefined) cleanFilters.cuisineType = recipeFilters.cuisineType;
-  if (recipeFilters.maxPrepTime !== undefined) cleanFilters.maxPrepTime = recipeFilters.maxPrepTime;
-  if (recipeFilters.maxCookTime !== undefined) cleanFilters.maxCookTime = recipeFilters.maxCookTime;
-  if (recipeFilters.search !== undefined) cleanFilters.search = recipeFilters.search;
-  
-  const result = await RecipeService.getRecipes(cleanFilters, { page, limit }, false);
-  
-  res.json({
-    message: 'Recipes retrieved successfully',
-    ...result
-  });
-}));
-
-// Get current user's recipes
-router.get('/my', authenticate, asyncHandler(async (req: Request, res: Response) => {
-  const user = (req as AuthenticatedRequest).user;
-  const filters = validate(RecipeFiltersSchema, req.query);
-  
-  const { page = 1, limit = 10, ...recipeFilters } = filters;
-  
-  // Filter out undefined values for exactOptionalPropertyTypes compliance
-  const cleanFilters: {
-    userId: string;
-    difficulty?: 'easy' | 'medium' | 'hard';
-    cuisineType?: string;
-    maxPrepTime?: number;
-    maxCookTime?: number;
-    search?: string;
-  } = { userId: user.userId };
-  
-  if (recipeFilters.difficulty !== undefined) cleanFilters.difficulty = recipeFilters.difficulty;
-  if (recipeFilters.cuisineType !== undefined) cleanFilters.cuisineType = recipeFilters.cuisineType;
-  if (recipeFilters.maxPrepTime !== undefined) cleanFilters.maxPrepTime = recipeFilters.maxPrepTime;
-  if (recipeFilters.maxCookTime !== undefined) cleanFilters.maxCookTime = recipeFilters.maxCookTime;
-  if (recipeFilters.search !== undefined) cleanFilters.search = recipeFilters.search;
-  
-  const result = await RecipeService.getRecipes(cleanFilters, { page, limit }, false);
-  
-  res.json({
-    message: 'Your recipes retrieved successfully',
-    ...result
-  });
-}));
-
-// Get a specific recipe by ID
-router.get('/:id', asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  
-  if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-    throw new ApiError(400, 'Invalid recipe ID format');
+// Helper function to handle validation errors
+const handleValidationErrors = (req: Request, res: Response): boolean => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({
+      error: 'Validation failed',
+      details: errors.array()
+    });
+    return true;
   }
-  
-  const recipe = await RecipeService.getRecipeById(id);
-  
-  if (!recipe) {
-    throw new ApiError(404, 'Recipe not found');
-  }
-  
-  res.json({
-    message: 'Recipe retrieved successfully',
-    recipe
-  });
-}));
+  return false;
+};
 
-// Update a recipe (only by owner)
-router.put('/:id', authenticate, asyncHandler(async (req: Request, res: Response) => {
-  const user = (req as AuthenticatedRequest).user;
-  const { id } = req.params;
-  
-  if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-    throw new ApiError(400, 'Invalid recipe ID format');
-  }
-  
-  const updateData = validate(UpdateRecipeSchema, req.body);
-  
-  const recipe = await RecipeService.updateRecipe(id, user.userId, updateData as UpdateRecipeData);
-  
-  res.json({
-    message: 'Recipe updated successfully',
-    recipe
-  });
-}));
+// GET /api/recipes - Get all recipes with filtering and pagination
+router.get(
+  '/',
+  paginationValidation,
+  asyncHandler(async (req: Request, res: Response) => {
+    if (handleValidationErrors(req, res)) return;
 
-// Delete a recipe (only by owner)
-router.delete('/:id', authenticate, asyncHandler(async (req: Request, res: Response) => {
-  const user = (req as AuthenticatedRequest).user;
-  const { id } = req.params;
-  
-  if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-    throw new ApiError(400, 'Invalid recipe ID format');
-  }
-  
-  await RecipeService.deleteRecipe(id, user.userId);
-  
-  res.json({
-    message: 'Recipe deleted successfully'
-  });
-}));
+    const { page = 1, limit = 10, search, category, difficulty } = req.query;
+    
+    const filters = {
+      search: search as string,
+      category: category as string,
+      difficulty: difficulty as string,
+    };
+    
+    const pagination = {
+      page: parseInt(page as string, 10),
+      limit: parseInt(limit as string, 10),
+    };
+
+    const result = await RecipeService.getAllRecipes(filters, pagination);
+    
+    res.json({
+      success: true,
+      data: result.recipes,
+      pagination: {
+        page: pagination.page,
+        limit: pagination.limit,
+        totalCount: result.totalCount,
+        totalPages: result.totalPages,
+      },
+    });
+  })
+);
+
+// GET /api/recipes/search - Search recipes
+router.get(
+  '/search',
+  [
+    query('q')
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage('Search query is required'),
+    ...paginationValidation,
+  ],
+  asyncHandler(async (req: Request, res: Response) => {
+    if (handleValidationErrors(req, res)) return;
+
+    const { q, page = 1, limit = 10 } = req.query;
+    
+    const pagination = {
+      page: parseInt(page as string, 10),
+      limit: parseInt(limit as string, 10),
+    };
+
+    const result = await RecipeService.searchRecipes(q as string, pagination);
+    
+    res.json({
+      success: true,
+      data: result.recipes,
+      pagination: {
+        page: pagination.page,
+        limit: pagination.limit,
+        totalCount: result.totalCount,
+        totalPages: result.totalPages,
+      },
+    });
+  })
+);
+
+// GET /api/recipes/categories - Get all recipe categories
+router.get(
+  '/categories',
+  asyncHandler(async (req: Request, res: Response) => {
+    const categories = await RecipeService.getRecipeCategories();
+    
+    res.json({
+      success: true,
+      data: categories,
+    });
+  })
+);
+
+// GET /api/recipes/:id - Get recipe by ID
+router.get(
+  '/:id',
+  param('id').isString().withMessage('Recipe ID must be a string'),
+  asyncHandler(async (req: Request, res: Response) => {
+    if (handleValidationErrors(req, res)) return;
+
+    const { id } = req.params;
+    
+    const recipe = await RecipeService.getRecipeById(id);
+    
+    if (!recipe) {
+      res.status(404).json({
+        success: false,
+        error: 'Recipe not found'
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      data: recipe,
+    });
+  })
+);
+
+// POST /api/recipes - Create new recipe (requires authentication)
+router.post(
+  '/',
+  authenticate,
+  createRecipeValidation,
+  asyncHandler(async (req: Request, res: Response) => {
+    if (handleValidationErrors(req, res)) return;
+
+    const userId = (req as AuthenticatedRequest).user.userId;
+    const recipeData = {
+      ...req.body,
+      user_id: userId,
+    };
+
+    const recipe = await RecipeService.createRecipe(recipeData);
+    
+    logger.info(`User ${userId} created recipe: ${recipe.title}`);
+    
+    res.status(201).json({
+      success: true,
+      data: recipe,
+      message: 'Recipe created successfully'
+    });
+  })
+);
+
+// PUT /api/recipes/:id - Update recipe (requires authentication and ownership)
+router.put(
+  '/:id',
+  authenticate,
+  updateRecipeValidation,
+  asyncHandler(async (req: Request, res: Response) => {
+    if (handleValidationErrors(req, res)) return;
+
+    const { id } = req.params;
+    const userId = (req as AuthenticatedRequest).user.userId;
+    
+    // Check if recipe exists and user owns it
+    const existingRecipe = await RecipeService.getRecipeById(id);
+    if (!existingRecipe) {
+      res.status(404).json({
+        success: false,
+        error: 'Recipe not found'
+      });
+      return;
+    }
+
+    if (existingRecipe.user_id !== userId) {
+      res.status(403).json({
+        success: false,
+        error: 'You can only update your own recipes'
+      });
+      return;
+    }
+
+    const updatedRecipe = await RecipeService.updateRecipe(id, req.body);
+    
+    logger.info(`User ${userId} updated recipe: ${updatedRecipe.title}`);
+    
+    res.json({
+      success: true,
+      data: updatedRecipe,
+      message: 'Recipe updated successfully'
+    });
+  })
+);
+
+// DELETE /api/recipes/:id - Delete recipe (requires authentication and ownership)
+router.delete(
+  '/:id',
+  authenticate,
+  param('id').isString().withMessage('Recipe ID must be a string'),
+  asyncHandler(async (req: Request, res: Response) => {
+    if (handleValidationErrors(req, res)) return;
+
+    const { id } = req.params;
+    const userId = (req as AuthenticatedRequest).user.userId;
+    
+    // Check if recipe exists and user owns it
+    const existingRecipe = await RecipeService.getRecipeById(id);
+    if (!existingRecipe) {
+      res.status(404).json({
+        success: false,
+        error: 'Recipe not found'
+      });
+      return;
+    }
+
+    if (existingRecipe.user_id !== userId) {
+      res.status(403).json({
+        success: false,
+        error: 'You can only delete your own recipes'
+      });
+      return;
+    }
+
+    await RecipeService.deleteRecipe(id);
+    
+    logger.info(`User ${userId} deleted recipe: ${existingRecipe.title}`);
+    
+    res.json({
+      success: true,
+      message: 'Recipe deleted successfully'
+    });
+  })
+);
+
+// GET /api/recipes/category/:category - Get recipes by category
+router.get(
+  '/category/:category',
+  [
+    param('category').isString().withMessage('Category must be a string'),
+    ...paginationValidation,
+  ],
+  asyncHandler(async (req: Request, res: Response) => {
+    if (handleValidationErrors(req, res)) return;
+
+    const { category } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+    
+    const pagination = {
+      page: parseInt(page as string, 10),
+      limit: parseInt(limit as string, 10),
+    };
+
+    const result = await RecipeService.getRecipesByCategory(category, pagination);
+    
+    res.json({
+      success: true,
+      data: result.recipes,
+      pagination: {
+        page: pagination.page,
+        limit: pagination.limit,
+        totalCount: result.totalCount,
+        totalPages: result.totalPages,
+      },
+    });
+  })
+);
 
 export default router; 

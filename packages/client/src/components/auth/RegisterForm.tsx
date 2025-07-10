@@ -1,64 +1,61 @@
 import React, { useState } from 'react';
+import { Link, Navigate } from 'react-router-dom';
+import { Eye, EyeOff, Mail, Lock, User, UserPlus } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
-export const RegisterForm: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
-    const [error, setError] = useState('');
-    const [validationErrors, setValidationErrors] = useState<string[]>([]);
-    const { register, loading } = useAuth();
+interface RegisterFormData {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+}
+
+export const RegisterForm = () => {
+    const { register: registerUser, isLoading, isAuthenticated } = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [formData, setFormData] = useState<RegisterFormData>({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+    });
+    const [errors, setErrors] = useState<Partial<RegisterFormData>>({});
+
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-        setValidationErrors([]);
+
+        // Basic validation
+        const newErrors: Partial<RegisterFormData> = {};
+        if (!formData.name) newErrors.name = 'Name is required';
+        if (!formData.email) newErrors.email = 'Email is required';
+        if (!formData.password) newErrors.password = 'Password is required';
+        if (!formData.confirmPassword) newErrors.confirmPassword = 'Confirm password is required';
+        if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = "Passwords don't match";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
 
         try {
-            await register({ email, password, name });
-        } catch (err: any) {
-            if (err instanceof Error) {
-                // Try to parse the error message for better display
-                let errorMessage = err.message;
+            await registerUser(formData.email, formData.name, formData.password);
+        } catch (error) {
+            console.error('Registration failed:', error);
+        }
+    };
 
-                // If it's a validation error, try to extract the details
-                if (errorMessage.includes('Invalid password')) {
-                    errorMessage = 'Password does not meet the following requirements:';
-                    // Check if there are validation details in the error
-                    const errorWithDetails = err as Error & { details?: string[] };
-                    if (errorWithDetails.details && Array.isArray(errorWithDetails.details)) {
-                        setValidationErrors(errorWithDetails.details);
-                    } else {
-                        // Fallback to generic message
-                        setValidationErrors(['Please check the password requirements below.']);
-                    }
-                } else if (errorMessage.includes('Validation Error')) {
-                    errorMessage = 'Password does not meet the following requirements:';
-                    // Handle Zod validation errors (different format)
-                    const errorWithDetails = err as Error & { details?: any[] };
-                    if (errorWithDetails.details && Array.isArray(errorWithDetails.details)) {
-                        const validationMessages = errorWithDetails.details.map((detail: any) => {
-                            if (typeof detail === 'string') {
-                                return detail;
-                            } else if (detail && detail.message) {
-                                return detail.message;
-                            }
-                            return 'Invalid field';
-                        });
-                        setValidationErrors(validationMessages);
-                    } else {
-                        setValidationErrors(['Please check the password requirements below.']);
-                    }
-                } else if (errorMessage.includes('already exists')) {
-                    errorMessage = 'An account with this email already exists. Please use a different email or try logging in.';
-                } else if (errorMessage.includes('Validation')) {
-                    errorMessage = 'Please check the form fields and try again.';
-                }
-
-                setError(errorMessage);
-            } else {
-                setError('Registration failed. Please try again.');
-            }
+    const updateFormData = (field: keyof RegisterFormData, value: string) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+        if (errors[field]) {
+            setErrors(prev => ({ ...prev, [field]: undefined }));
         }
     };
 
@@ -66,112 +63,197 @@ export const RegisterForm: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div>
+                    <div className="mx-auto h-12 w-12 bg-green-600 rounded-full flex items-center justify-center">
+                        <UserPlus className="h-6 w-6 text-white" />
+                    </div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
                         Create your account
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Join Recipe Manager today
+                        Or{' '}
+                        <Link
+                            to="/login"
+                            className="font-medium text-blue-600 hover:text-blue-500"
+                        >
+                            sign in to your existing account
+                        </Link>
                     </p>
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="card p-6">
-                        <div className="space-y-4">
-                            <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                    Full Name
-                                </label>
+                    <div className="rounded-md shadow-sm space-y-4">
+                        <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                Full Name
+                            </label>
+                            <div className="mt-1 relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <User className="h-5 w-5 text-gray-400" />
+                                </div>
                                 <input
                                     id="name"
-                                    name="name"
                                     type="text"
                                     autoComplete="name"
-                                    required
-                                    className="mt-1 input-field"
-                                    placeholder="Enter your full name"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    value={formData.name}
+                                    onChange={(e) => updateFormData('name', e.target.value)}
+                                    className={`appearance-none relative block w-full px-3 py-2 pl-10 border ${errors.name
+                                        ? 'border-red-300 placeholder-red-400 focus:outline-none focus:ring-red-500 focus:border-red-500'
+                                        : 'border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+                                        } rounded-md text-gray-900 focus:z-10 sm:text-sm`}
+                                    placeholder="Full name"
                                 />
                             </div>
+                            {errors.name && (
+                                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                            )}
+                        </div>
 
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                    Email address
-                                </label>
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                Email address
+                            </label>
+                            <div className="mt-1 relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Mail className="h-5 w-5 text-gray-400" />
+                                </div>
                                 <input
                                     id="email"
-                                    name="email"
                                     type="email"
                                     autoComplete="email"
-                                    required
-                                    className="mt-1 input-field"
-                                    placeholder="Enter your email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={formData.email}
+                                    onChange={(e) => updateFormData('email', e.target.value)}
+                                    className={`appearance-none relative block w-full px-3 py-2 pl-10 border ${errors.email
+                                        ? 'border-red-300 placeholder-red-400 focus:outline-none focus:ring-red-500 focus:border-red-500'
+                                        : 'border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+                                        } rounded-md text-gray-900 focus:z-10 sm:text-sm`}
+                                    placeholder="Email address"
                                 />
                             </div>
+                            {errors.email && (
+                                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                            )}
+                        </div>
 
-                            <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                    Password
-                                </label>
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                Password
+                            </label>
+                            <div className="mt-1 relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Lock className="h-5 w-5 text-gray-400" />
+                                </div>
                                 <input
                                     id="password"
-                                    name="password"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     autoComplete="new-password"
-                                    required
-                                    className="mt-1 input-field"
-                                    placeholder="Enter your password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={formData.password}
+                                    onChange={(e) => updateFormData('password', e.target.value)}
+                                    className={`appearance-none relative block w-full px-3 py-2 pl-10 pr-10 border ${errors.password
+                                        ? 'border-red-300 placeholder-red-400 focus:outline-none focus:ring-red-500 focus:border-red-500'
+                                        : 'border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+                                        } rounded-md text-gray-900 focus:z-10 sm:text-sm`}
+                                    placeholder="Password"
                                 />
-                                <div className="mt-2 text-xs text-gray-600">
-                                    <p className="font-medium mb-1">Password must contain:</p>
-                                    <ul className="list-disc list-inside space-y-1">
-                                        <li>At least 8 characters</li>
-                                        <li>One lowercase letter</li>
-                                        <li>One uppercase letter</li>
-                                        <li>One number</li>
-                                        <li>One special character (@$!%*?&)</li>
-                                    </ul>
-                                </div>
+                                <button
+                                    type="button"
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                        <Eye className="h-5 w-5 text-gray-400" />
+                                    )}
+                                </button>
                             </div>
+                            {errors.password && (
+                                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                            )}
                         </div>
 
-                        {error && (
-                            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                                <p className="text-sm text-red-600">{error}</p>
-                                {validationErrors.length > 0 && (
-                                    <ul className="mt-2 text-sm text-red-600 list-disc list-inside">
-                                        {validationErrors.map((validationError, index) => (
-                                            <li key={index}>{validationError}</li>
-                                        ))}
-                                    </ul>
-                                )}
+                        <div>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                                Confirm Password
+                            </label>
+                            <div className="mt-1 relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Lock className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="confirmPassword"
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    autoComplete="new-password"
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => updateFormData('confirmPassword', e.target.value)}
+                                    className={`appearance-none relative block w-full px-3 py-2 pl-10 pr-10 border ${errors.confirmPassword
+                                        ? 'border-red-300 placeholder-red-400 focus:outline-none focus:ring-red-500 focus:border-red-500'
+                                        : 'border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+                                        } rounded-md text-gray-900 focus:z-10 sm:text-sm`}
+                                    placeholder="Confirm password"
+                                />
+                                <button
+                                    type="button"
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                >
+                                    {showConfirmPassword ? (
+                                        <EyeOff className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                        <Eye className="h-5 w-5 text-gray-400" />
+                                    )}
+                                </button>
                             </div>
-                        )}
-
-                        <div className="mt-6">
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? 'Creating account...' : 'Create account'}
-                            </button>
+                            {errors.confirmPassword && (
+                                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                            )}
                         </div>
                     </div>
-                </form>
 
-                <div className="text-center">
-                    <p className="text-sm text-gray-600">
-                        Already have an account?{' '}
-                        <a href="/login" className="font-medium text-primary-600 hover:text-primary-500">
-                            Sign in here
-                        </a>
-                    </p>
-                </div>
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <svg
+                                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    Creating account...
+                                </>
+                            ) : (
+                                <>
+                                    <UserPlus className="h-5 w-5 mr-2" />
+                                    Create Account
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    <div className="text-center">
+                        <p className="text-sm text-gray-600">
+                            By creating an account, you agree to our Terms of Service and Privacy Policy.
+                        </p>
+                    </div>
+                </form>
             </div>
         </div>
     );

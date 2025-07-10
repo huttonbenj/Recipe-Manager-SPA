@@ -1,490 +1,420 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { apiClient } from '../services/api';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../hooks/useAuth';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import {
+    Search,
+    Filter,
+    Clock,
+    Users,
+    Star,
+    ChefHat,
+    Eye,
+    Heart,
+    Plus,
+    Grid,
+    List as ListIcon
+} from 'lucide-react';
+import { apiClient, Recipe } from '../services/api';
 
-interface Recipe {
-    id: string;
-    title: string;
-    description?: string;
-    servings: number;
-    prepTime: number;
-    cookTime: number;
-    difficulty?: 'easy' | 'medium' | 'hard';
-    cuisineType?: string;
-    imageUrl?: string;
-    userId: string;
-    createdAt: string;
-    updatedAt: string;
-    ingredients: Array<{
-        id?: string;
-        name: string;
-        amount?: number;
-        unit?: string;
-        notes?: string;
-        orderIndex?: number;
-    }>;
-    steps: Array<{
-        id?: string;
-        stepNumber: number;
-        instruction: string;
-        timeMinutes?: number;
-        temperature?: string;
-    }>;
-}
+export const RecipeList = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+    const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+    const [selectedDifficulty, setSelectedDifficulty] = useState(searchParams.get('difficulty') || '');
+    const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'created_at');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>((searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc');
+    const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
 
-interface RecipeListResponse {
-    message: string;
-    recipes: Recipe[];
-    pagination: {
-        page: number;
-        limit: number;
-        total: number;
-        pages: number;
-    };
-}
+    // Fetch recipes with filters
+    const { data: recipesData, isLoading, error } = useQuery({
+        queryKey: ['recipes', {
+            search: searchTerm,
+            category: selectedCategory,
+            difficulty: selectedDifficulty,
+            sortBy,
+            sortOrder,
+            page: currentPage
+        }],
+        queryFn: () => {
+            const params: any = {
+                page: currentPage,
+                limit: 12,
+                sortBy: sortBy as any,
+                sortOrder
+            };
 
-const difficultyColors = {
-    easy: 'bg-green-100 text-green-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    hard: 'bg-red-100 text-red-800'
-};
+            if (searchTerm) params.search = searchTerm;
+            if (selectedCategory) params.category = selectedCategory;
+            if (selectedDifficulty) params.difficulty = selectedDifficulty as 'Easy' | 'Medium' | 'Hard';
 
-const difficultyLabels = {
-    easy: 'Easy',
-    medium: 'Medium',
-    hard: 'Hard'
-};
-
-// Custom hook for debouncing
-const useDebounce = (value: string, delay: number) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedValue(value);
-        }, delay);
-
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [value, delay]);
-
-    return debouncedValue;
-};
-
-export const RecipeList: React.FC = () => {
-
-
-
-    const [searchTerm, setSearchTerm] = useState('');
-    const [difficultyFilter, setDifficultyFilter] = useState<string>('');
-    const [cuisineFilter, setCuisineFilter] = useState<string>('');
-    const [currentPage, setCurrentPage] = useState(1);
-
-
-
-
-    const { user } = useAuth();
-    const limit = 12;
-
-    // Debounce search term to avoid API calls on every keystroke
-    const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
-    // React Query hooks
-    const queryClient = useQueryClient();
-
-    const queryKey = ['recipes', currentPage, debouncedSearchTerm, difficultyFilter, cuisineFilter];
-
-    const { data, isLoading, isFetching, error: queryError, refetch } = useQuery<RecipeListResponse>({
-        queryKey,
-        queryFn: async () => {
-            const params = new URLSearchParams({
-                page: currentPage.toString(),
-                limit: limit.toString()
-            });
-            if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
-            if (difficultyFilter) params.append('difficulty', difficultyFilter);
-            if (cuisineFilter) params.append('cuisineType', cuisineFilter);
-            return apiClient.get<RecipeListResponse>(`/api/recipes?${params}`);
+            return apiClient.getRecipes(params);
         },
+    });
 
-            staleTime: 1000 * 60 * 5
-        }
-    );
+    // Fetch categories for filter dropdown
+    const { data: categories } = useQuery({
+        queryKey: ['categories'],
+        queryFn: apiClient.getRecipeCategories,
+    });
 
-    const recipes = data?.recipes ?? [];
-    const totalPages = data?.pagination?.pages ?? 1;
-    const totalRecipes = data?.pagination?.total ?? 0;
-
-    const cuisineTypes: string[] = [...new Set(recipes.map((r: Recipe) => r.cuisineType).filter(Boolean))] as string[];
-
-    const loading = isLoading || isFetching;
-    const error = queryError ? 'Failed to fetch recipes' : null;
-
-    
-
-    /* fetchRecipes replaced by React Query */
-    /* const fetchRecipes = useCallback(async (searchQuery: string) => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const params = new URLSearchParams({
-                page: currentPage.toString(),
-                limit: limit.toString()
-            });
-
-            if (searchQuery) params.append('search', searchQuery);
-            if (difficultyFilter) params.append('difficulty', difficultyFilter);
-            if (cuisineFilter) params.append('cuisineType', cuisineFilter);
-
-            const response = await apiClient.get<RecipeListResponse>(`/api/recipes?${params}`);
-
-            setRecipes(response.recipes);
-            setTotalPages(response.pagination.pages);
-            setTotalRecipes(response.pagination.total);
-
-            // Extract unique cuisine types for filter dropdown
-            const uniqueCuisines = [...new Set(response.recipes
-                .map(recipe => recipe.cuisineType)
-                .filter(Boolean)
-            )] as string[];
-            setCuisineTypes(uniqueCuisines);
-
-        } catch (err) {
-            setError('Failed to fetch recipes');
-            console.error('Error fetching recipes:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, [currentPage, difficultyFilter, cuisineFilter, limit]); */
-
-    // Reset to first page whenever the search term itself (debounced) changes
+    // Update URL when filters change
     useEffect(() => {
-        setCurrentPage(1);
-    }, [debouncedSearchTerm]);
+        const params = new URLSearchParams();
+        if (searchTerm) params.set('search', searchTerm);
+        if (selectedCategory) params.set('category', selectedCategory);
+        if (selectedDifficulty) params.set('difficulty', selectedDifficulty);
+        if (sortBy !== 'created_at') params.set('sortBy', sortBy);
+        if (sortOrder !== 'desc') params.set('sortOrder', sortOrder);
+        if (currentPage !== 1) params.set('page', currentPage.toString());
 
-    // React Query automatically refetches when its queryKey changes
-
+        setSearchParams(params);
+    }, [searchTerm, selectedCategory, selectedDifficulty, sortBy, sortOrder, currentPage, setSearchParams]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        // The form submit is optional now; typing triggers debounced search automatically.
-        // Keep it for accessibility (enter key) but it simply updates the debounced value via state.
-        setSearchTerm(searchTerm.trim());
-    };
-
-    const handleFilterChange = (filterType: string, value: string) => {
         setCurrentPage(1);
-        if (filterType === 'difficulty') {
-            setDifficultyFilter(value);
-        } else if (filterType === 'cuisine') {
-            setCuisineFilter(value);
-        }
     };
 
     const clearFilters = () => {
         setSearchTerm('');
-        setDifficultyFilter('');
-        setCuisineFilter('');
+        setSelectedCategory('');
+        setSelectedDifficulty('');
+        setSortBy('created_at');
+        setSortOrder('desc');
         setCurrentPage(1);
     };
 
-    const handleDeleteRecipe = async (recipeId: string) => {
-        if (!window.confirm('Are you sure you want to delete this recipe?')) {
-            return;
-        }
+    const RecipeCard = ({ recipe }: { recipe: Recipe }) => (
+        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <div className="relative">
+                {recipe.image_url ? (
+                    <img
+                        src={recipe.image_url}
+                        alt={recipe.title}
+                        className="w-full h-48 object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <ChefHat className="h-12 w-12 text-gray-400" />
+                    </div>
+                )}
+                <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
+                    <Heart className="h-4 w-4 text-gray-400" />
+                </div>
+            </div>
 
-        try {
-            await apiClient.delete(`/api/recipes/${recipeId}`);
-            await queryClient.invalidateQueries({ queryKey: ['recipes'] });
-        } catch (err) {
-            console.error('Error deleting recipe:', err);
-            alert('Failed to delete recipe');
-        }
-    };
+            <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <Link to={`/recipes/${recipe.id}`} className="hover:text-blue-600">
+                        {recipe.title}
+                    </Link>
+                </h3>
 
-    const formatTime = (minutes: number): string => {
-        if (minutes < 60) {
-            return `${minutes}m`;
-        }
-        const hours = Math.floor(minutes / 60);
-        const remainingMinutes = minutes % 60;
-        return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
-    };
+                <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <Users className="h-4 w-4 mr-1" />
+                    <span>By {recipe.user?.name || 'Unknown'}</span>
+                </div>
 
-    const getTotalTime = (prepTime: number, cookTime: number): string => {
-        return formatTime(prepTime + cookTime);
-    };
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                    <div className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        <span>{recipe.cook_time || 'N/A'} mins</span>
+                    </div>
+                    <div className="flex items-center">
+                        <Star className="h-4 w-4 mr-1" />
+                        <span>4.5</span>
+                    </div>
+                </div>
 
-    // Replace full-page spinner with inline spinner so inputs retain focus during loading
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                        {recipe.difficulty && (
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                                recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-red-100 text-red-800'
+                                }`}>
+                                {recipe.difficulty}
+                            </span>
+                        )}
+                        {recipe.category && (
+                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                {recipe.category}
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-center text-gray-400">
+                        <Eye className="h-4 w-4 mr-1" />
+                        <span className="text-xs">125</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 
-    // Show a subtle spinner below filters while data is fetching (after initial mount)
-    const renderInlineLoader = () => (
-        <div className="flex justify-center py-6">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    const RecipeListItem = ({ recipe }: { recipe: Recipe }) => (
+        <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+            <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                    {recipe.image_url ? (
+                        <img
+                            src={recipe.image_url}
+                            alt={recipe.title}
+                            className="w-20 h-20 object-cover rounded-lg"
+                        />
+                    ) : (
+                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <ChefHat className="h-8 w-8 text-gray-400" />
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        <Link to={`/recipes/${recipe.id}`} className="hover:text-blue-600">
+                            {recipe.title}
+                        </Link>
+                    </h3>
+
+                    <div className="flex items-center text-sm text-gray-500 mb-2">
+                        <Users className="h-4 w-4 mr-1" />
+                        <span>By {recipe.user?.name || 'Unknown'}</span>
+                    </div>
+
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {recipe.instructions.substring(0, 150)}...
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <div className="flex items-center">
+                                <Clock className="h-4 w-4 mr-1" />
+                                <span>{recipe.cook_time || 'N/A'} mins</span>
+                            </div>
+                            <div className="flex items-center">
+                                <Star className="h-4 w-4 mr-1" />
+                                <span>4.5</span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                            {recipe.difficulty && (
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                                    recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-red-100 text-red-800'
+                                    }`}>
+                                    {recipe.difficulty}
+                                </span>
+                            )}
+                            {recipe.category && (
+                                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                    {recipe.category}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-50 py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <div className="text-red-600 mb-4">
-                            <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <p className="text-red-600 text-lg">{error}</p>
-                        <button
-                            onClick={() => refetch()}
-                            className="mt-4 btn-primary"
-                        >
-                            Try Again
-                        </button>
-                    </div>
-                </div>
+            <div className="text-center py-12">
+                <div className="text-red-600 mb-4">Error loading recipes</div>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                >
+                    Retry
+                </button>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Recipe Collection</h1>
-                            <p className="mt-2 text-gray-600">
-                                {totalRecipes} {totalRecipes === 1 ? 'recipe' : 'recipes'} found
-                            </p>
-                        </div>
-                        <div className="mt-4 sm:mt-0">
-                            <Link to="/recipes/new" className="btn-primary">
-                                Add New Recipe
-                            </Link>
-                        </div>
-                    </div>
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Recipes</h1>
+                    <p className="text-gray-600 mt-1">
+                        {recipesData?.pagination.totalCount || 0} recipes found
+                    </p>
                 </div>
+                <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                        <button
+                            onClick={() => setViewMode('grid')}
+                            className={`p-2 rounded-md ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}
+                        >
+                            <Grid className="h-5 w-5" />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('list')}
+                            className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}
+                        >
+                            <ListIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+                    <Link
+                        to="/recipes/new"
+                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Recipe
+                    </Link>
+                </div>
+            </div>
 
-                {/* Search and Filters */}
-                <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-                    <form onSubmit={handleSearch} className="mb-4">
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <div className="flex-1">
+            {/* Search and Filters */}
+            <div className="bg-white rounded-lg shadow p-6">
+                <form onSubmit={handleSearch} className="mb-4">
+                    <div className="flex gap-4">
+                        <div className="flex-1">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                                 <input
                                     type="text"
-                                    placeholder="Search recipes..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Search recipes..."
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
-                            <button type="submit" className="btn-primary">
-                                Search
-                            </button>
                         </div>
-                    </form>
-
-                    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                        <div className="flex flex-col sm:flex-row gap-4 flex-1">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Difficulty
-                                </label>
-                                <select
-                                    value={difficultyFilter}
-                                    onChange={(e) => handleFilterChange('difficulty', e.target.value)}
-                                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                >
-                                    <option value="">All Difficulties</option>
-                                    <option value="easy">Easy</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="hard">Hard</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Cuisine Type
-                                </label>
-                                <select
-                                    value={cuisineFilter}
-                                    onChange={(e) => handleFilterChange('cuisine', e.target.value)}
-                                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                >
-                                    <option value="">All Cuisines</option>
-                                    {cuisineTypes.map(cuisine => (
-                                        <option key={cuisine} value={cuisine}>
-                                            {cuisine}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-
-                        {(searchTerm || difficultyFilter || cuisineFilter) && (
-                            <button
-                                onClick={clearFilters}
-                                className="btn-secondary"
-                            >
-                                Clear Filters
-                            </button>
-                        )}
+                        <button
+                            type="submit"
+                            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+                        >
+                            Search
+                        </button>
                     </div>
-                </div>
+                </form>
 
-                {/* Inline loader */}
-                {loading && renderInlineLoader()}
-
-                {/* Recipe Grid */}
-                {recipes.length === 0 ? (
-                    <div className="text-center py-12">
-                        <div className="text-gray-400 mb-4">
-                            <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                            </svg>
-                        </div>
-                        <p className="text-gray-600 text-lg">No recipes found</p>
-                        <p className="text-gray-500 mt-2">Try adjusting your search or filters</p>
-                        <Link to="/recipes/new" className="btn-primary mt-4 inline-block">
-                            Create Your First Recipe
-                        </Link>
+                <div className="flex flex-wrap gap-4 items-center">
+                    <div className="flex items-center space-x-2">
+                        <Filter className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-700">Filters:</span>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {recipes.map((recipe: Recipe) => (
-                            <div key={recipe.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                                {/* Recipe Image */}
-                                <div className="aspect-w-16 aspect-h-12 bg-gray-200">
-                                    {recipe.imageUrl ? (
-                                        <img
-                                            src={recipe.imageUrl}
-                                            alt={recipe.title}
-                                            className="w-full h-48 object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                                            <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                        </div>
-                                    )}
-                                </div>
 
-                                {/* Recipe Content */}
-                                <div className="p-4">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">
-                                            {recipe.title}
-                                        </h3>
-                                        {recipe.difficulty && (
-                                            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${difficultyColors[recipe.difficulty as keyof typeof difficultyColors]}`}>
-                                                {difficultyLabels[recipe.difficulty as keyof typeof difficultyLabels]}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {recipe.description && (
-                                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                            {recipe.description}
-                                        </p>
-                                    )}
-
-                                    <div className="flex items-center text-sm text-gray-500 mb-3">
-                                        <div className="flex items-center mr-4">
-                                            <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            {getTotalTime(recipe.prepTime, recipe.cookTime)}
-                                        </div>
-                                        <div className="flex items-center">
-                                            <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                            {recipe.servings} servings
-                                        </div>
-                                    </div>
-
-                                    {recipe.cuisineType && (
-                                        <div className="mb-3">
-                                            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                                                {recipe.cuisineType}
-                                            </span>
-                                        </div>
-                                    )}
-
-                                    <div className="flex items-center justify-between">
-                                        <Link
-                                            to={`/recipes/${recipe.id}`}
-                                            className="text-blue-600 hover:text-blue-800 font-medium text-sm"
-                                        >
-                                            View Recipe
-                                        </Link>
-
-                                        {user?.id === recipe.userId && (
-                                            <div className="flex space-x-2">
-                                                <Link
-                                                    to={`/recipes/${recipe.id}/edit`}
-                                                    className="text-gray-600 hover:text-gray-800 text-sm"
-                                                >
-                                                    Edit
-                                                </Link>
-                                                <button
-                                                    onClick={() => handleDeleteRecipe(recipe.id)}
-                                                    className="text-red-600 hover:text-red-800 text-sm"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="">All Categories</option>
+                        {categories?.map((category) => (
+                            <option key={category} value={category}>
+                                {category}
+                            </option>
                         ))}
-                    </div>
-                )}
+                    </select>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="mt-8 flex items-center justify-center">
-                        <div className="flex items-center space-x-2">
-                            <button
-                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                disabled={currentPage === 1}
-                                className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Previous
-                            </button>
+                    <select
+                        value={selectedDifficulty}
+                        onChange={(e) => setSelectedDifficulty(e.target.value)}
+                        className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="">All Difficulties</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
 
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <select
+                        value={`${sortBy}_${sortOrder}`}
+                        onChange={(e) => {
+                            const [field, order] = e.target.value.split('_');
+                            setSortBy(field || 'created_at');
+                            setSortOrder(order as 'asc' | 'desc');
+                        }}
+                        className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="created_at_desc">Newest First</option>
+                        <option value="created_at_asc">Oldest First</option>
+                        <option value="title_asc">Title A-Z</option>
+                        <option value="title_desc">Title Z-A</option>
+                        <option value="cook_time_asc">Cook Time (Low to High)</option>
+                        <option value="cook_time_desc">Cook Time (High to Low)</option>
+                    </select>
+
+                    <button
+                        onClick={clearFilters}
+                        className="text-sm text-gray-600 hover:text-gray-800"
+                    >
+                        Clear Filters
+                    </button>
+                </div>
+            </div>
+
+            {/* Recipe List */}
+            {isLoading ? (
+                <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-4">Loading recipes...</p>
+                </div>
+            ) : recipesData?.data?.length ? (
+                <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+                    {recipesData.data.map((recipe) => (
+                        viewMode === 'grid' ? (
+                            <RecipeCard key={recipe.id} recipe={recipe} />
+                        ) : (
+                            <RecipeListItem key={recipe.id} recipe={recipe} />
+                        )
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-12">
+                    <ChefHat className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">No recipes found</p>
+                    <Link
+                        to="/recipes/new"
+                        className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+                    >
+                        Create Your First Recipe
+                    </Link>
+                </div>
+            )}
+
+            {/* Pagination */}
+            {recipesData?.pagination && recipesData.pagination.totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-4">
+                    <button
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 hover:bg-gray-50"
+                    >
+                        Previous
+                    </button>
+
+                    <div className="flex space-x-2">
+                        {Array.from({ length: Math.min(5, recipesData.pagination.totalPages) }, (_, i) => {
+                            const pageNumber = i + 1;
+                            return (
                                 <button
-                                    key={page}
-                                    onClick={() => setCurrentPage(page)}
-                                    className={`px-3 py-2 rounded-lg ${currentPage === page
+                                    key={pageNumber}
+                                    onClick={() => setCurrentPage(pageNumber)}
+                                    className={`px-3 py-1 rounded-md ${currentPage === pageNumber
                                         ? 'bg-blue-600 text-white'
-                                        : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                         }`}
                                 >
-                                    {page}
+                                    {pageNumber}
                                 </button>
-                            ))}
-
-                            <button
-                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                disabled={currentPage === totalPages}
-                                className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Next
-                            </button>
-                        </div>
+                            );
+                        })}
                     </div>
-                )}
-            </div>
+
+                    <button
+                        onClick={() => setCurrentPage(Math.min(recipesData.pagination.totalPages, currentPage + 1))}
+                        disabled={currentPage === recipesData.pagination.totalPages}
+                        className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 hover:bg-gray-50"
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 }; 

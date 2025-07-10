@@ -13,3 +13,37 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  password_hash String
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  recipes       Recipe[]
+
+  @@map("users")
+}
+
+model Recipe {
+  id           String   @id @default(cuid())
+  title        String
+  ingredients  String   // JSON string of ingredient list
+  instructions String   // Detailed cooking instructions
+  image_url    String?  // Optional recipe image URL
+  cook_time    Int?     // Cooking time in minutes
+  servings     Int?     // Number of servings
+  difficulty   String?  // Easy, Medium, Hard
+  category     String?  // Appetizer, Main Course, Dessert, etc.
+  tags         String?  // JSON string of tags array
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  user_id      String
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("recipes")
+  @@index([user_id])
+  @@index([title])
+  @@index([category])
+}
