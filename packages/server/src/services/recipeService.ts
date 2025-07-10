@@ -254,7 +254,8 @@ export class RecipeService {
 
   static async getRecipes(
     filters: RecipeFilters = {},
-    pagination: PaginationOptions = { page: 1, limit: 10 }
+    pagination: PaginationOptions = { page: 1, limit: 10 },
+    includeDetails: boolean = true // when false, skip ingredients/steps for list view
   ): Promise<PaginatedRecipes> {
     const offset = (pagination.page - 1) * pagination.limit;
     
@@ -313,7 +314,7 @@ export class RecipeService {
     }
     const total = parseInt(countRow.total);
 
-    // Get recipes
+    // Lightweight list: no ingredients/steps to avoid N+1 queries & heavy payloads
     const recipesQuery = `
       SELECT r.id, r.user_id, r.title, r.description, r.prep_time_minutes, r.cook_time_minutes,
              r.servings, r.difficulty_level, r.cuisine_type, r.created_at, r.updated_at
@@ -322,66 +323,62 @@ export class RecipeService {
       ORDER BY r.created_at DESC
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
-    
+
     queryParams.push(pagination.limit, offset);
     const recipesResult = await db.query(recipesQuery, queryParams);
 
-    const recipes: Recipe[] = [];
-    
-    for (const recipeRow of recipesResult) {
-      // Get ingredients for each recipe
-      const ingredientsQuery = `
-        SELECT id, recipe_id, name, amount, unit, notes, order_index
-        FROM recipe_ingredients
-        WHERE recipe_id = $1
-        ORDER BY order_index, id
-      `;
-      const ingredientsResult = await db.query(ingredientsQuery, [recipeRow.id]);
+    const recipes: Recipe[] = recipesResult.map((recipeRow: QueryResultRow) => ({
+      id: recipeRow.id,
+      userId: recipeRow.user_id,
+      title: recipeRow.title,
+      description: recipeRow.description,
+      prepTime: recipeRow.prep_time_minutes,
+      cookTime: recipeRow.cook_time_minutes,
+      servings: recipeRow.servings,
+      difficulty: recipeRow.difficulty_level,
+      cuisineType: recipeRow.cuisine_type,
+      ingredients: [], // may be populated below if includeDetails=true
+      steps: [],
+      tags: [],
+      createdAt: recipeRow.created_at,
+      updatedAt: recipeRow.updated_at
+    }));
 
-      // Get steps for each recipe
-      const stepsQuery = `
-        SELECT id, recipe_id, step_number, instruction, time_minutes, temperature
-        FROM recipe_steps
-        WHERE recipe_id = $1
-        ORDER BY step_number
-      `;
-      const stepsResult = await db.query(stepsQuery, [recipeRow.id]);
+    // Hydrate ingredients & steps only when explicitly requested
+    if (includeDetails) {
+      for (const recipe of recipes) {
+        const [ingredientsResult, stepsResult] = await Promise.all([
+          db.query(
+            `SELECT id, recipe_id, name, amount, unit, notes, order_index
+             FROM recipe_ingredients WHERE recipe_id = $1 ORDER BY order_index, id`,
+            [recipe.id]
+          ),
+          db.query(
+            `SELECT id, recipe_id, step_number, instruction, time_minutes, temperature
+             FROM recipe_steps WHERE recipe_id = $1 ORDER BY step_number`,
+            [recipe.id]
+          )
+        ]);
 
-      const ingredients = ingredientsResult.map((row: QueryResultRow): RecipeIngredient => ({
-        id: row.id as string,
-        recipeId: row.recipe_id as string,
-        name: row.name as string,
-        amount: row.amount as number,
-        unit: row.unit as string,
-        notes: row.notes as string,
-        orderIndex: row.order_index as number
-      }));
+        recipe.ingredients = ingredientsResult.map((row: QueryResultRow): RecipeIngredient => ({
+          id: row.id as string,
+          recipeId: row.recipe_id as string,
+          name: row.name as string,
+          amount: row.amount as number,
+          unit: row.unit as string,
+          notes: row.notes as string,
+          orderIndex: row.order_index as number
+        }));
 
-      const steps = stepsResult.map((row: QueryResultRow): RecipeStep => ({
-        id: row.id as string,
-        recipeId: row.recipe_id as string,
-        stepNumber: row.step_number as number,
-        instruction: row.instruction as string,
-        timeMinutes: row.time_minutes as number,
-        temperature: row.temperature as string
-      }));
-
-      recipes.push({
-        id: recipeRow.id,
-        userId: recipeRow.user_id,
-        title: recipeRow.title,
-        description: recipeRow.description,
-        prepTime: recipeRow.prep_time_minutes,
-        cookTime: recipeRow.cook_time_minutes,
-        servings: recipeRow.servings,
-        difficulty: recipeRow.difficulty_level,
-        cuisineType: recipeRow.cuisine_type,
-        ingredients,
-        steps,
-        tags: [],
-        createdAt: recipeRow.created_at,
-        updatedAt: recipeRow.updated_at
-      });
+        recipe.steps = stepsResult.map((row: QueryResultRow): RecipeStep => ({
+          id: row.id as string,
+          recipeId: row.recipe_id as string,
+          stepNumber: row.step_number as number,
+          instruction: row.instruction as string,
+          timeMinutes: row.time_minutes as number,
+          temperature: row.temperature as string
+        }));
+      }
     }
 
     return {
