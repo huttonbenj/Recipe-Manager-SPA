@@ -32,7 +32,7 @@ export const errorHandler = (
     return res.status(400).json({
       success: false,
       error: 'Validation Error',
-      details: err.errors.errors
+      details: err.errors.issues
     });
   }
 
@@ -40,7 +40,7 @@ export const errorHandler = (
     return res.status(400).json({
       success: false,
       error: 'Validation Error',
-      details: err.errors
+      details: err.issues
     });
   }
 

@@ -1,8 +1,9 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { AuthContext, AuthContextType } from './AuthContext';
-import { apiClient, User } from '../services/api';
+import { AuthContext } from './AuthContext';
+import type { User, AuthContextType, UserRegistration } from '@recipe-manager/shared';
+import { apiClient } from '../services/api';
 
 interface AuthProviderProps {
     children: ReactNode;
@@ -60,10 +61,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
-    const register = async (email: string, name: string, password: string) => {
+    const register = async (userData: UserRegistration) => {
         try {
             setIsLoading(true);
-            const response = await apiClient.register({ email, name, password });
+            const response = await apiClient.register(userData);
             setUser(response.user);
             toast.success('Account created successfully!');
             navigate('/dashboard');
@@ -107,10 +108,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
-    const changePassword = async (currentPassword: string, newPassword: string) => {
+    const changePassword = async (data: { currentPassword: string; newPassword: string }) => {
         try {
             setIsLoading(true);
-            await apiClient.changePassword({ currentPassword, newPassword });
+            await apiClient.changePassword(data);
             toast.success('Password changed successfully!');
         } catch (error) {
             toast.error(error instanceof Error ? error.message : 'Failed to change password');

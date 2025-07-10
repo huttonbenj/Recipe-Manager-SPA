@@ -1,28 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-    Save,
-    X,
-    Upload,
     ArrowLeft,
-    ChefHat,
+    ImageIcon,
+    X,
     Clock,
     Users
 } from 'lucide-react';
+import { RecipeFormData } from '@recipe-manager/shared';
 import { apiClient } from '../services/api';
 import toast from 'react-hot-toast';
-
-interface RecipeFormData {
-    title: string;
-    ingredients: string;
-    instructions: string;
-    cook_time: number;
-    servings: number;
-    difficulty: 'Easy' | 'Medium' | 'Hard';
-    category: string;
-    tags: string;
-}
 
 export const RecipeForm = () => {
     const { id } = useParams<{ id: string }>();
@@ -309,11 +297,11 @@ export const RecipeForm = () => {
                             </div>
                         ) : (
                             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                                <ChefHat className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                                 <p className="text-gray-600 mb-4">Upload a photo of your recipe</p>
                                 <label className="cursor-pointer">
                                     <span className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 inline-flex items-center">
-                                        <Upload className="h-4 w-4 mr-2" />
+                                        <ImageIcon className="h-4 w-4 mr-2" />
                                         Choose Image
                                     </span>
                                     <input
@@ -388,7 +376,7 @@ export const RecipeForm = () => {
                             </>
                         ) : (
                             <>
-                                <Save className="h-4 w-4 mr-2" />
+                                <ImageIcon className="h-4 w-4 mr-2" />
                                 {isEditing ? 'Update Recipe' : 'Create Recipe'}
                             </>
                         )}

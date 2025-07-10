@@ -19,8 +19,15 @@ export interface UserLoginData {
   password: string;
 }
 
+// Helper function to sanitize user response
+const sanitizeUser = (user: User): Omit<User, 'password_hash'> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password_hash, ...sanitizedUser } = user;
+  return sanitizedUser;
+};
+
 export class UserService {
-  static async createUser(userData: CreateUserData): Promise<User> {
+  static async createUser(userData: CreateUserData): Promise<Omit<User, 'password_hash'>> {
     try {
       // Check if user already exists
       const existingUser = await prisma.user.findUnique({
@@ -45,40 +52,40 @@ export class UserService {
 
       logger.info(`Created user: ${user.email}`);
 
-      return user;
+      return sanitizeUser(user);
     } catch (error) {
       logger.error('Error creating user:', error);
       throw error instanceof Error ? error : new Error('Failed to create user');
     }
   }
 
-  static async getUserById(id: string): Promise<User | null> {
+  static async getUserById(id: string): Promise<Omit<User, 'password_hash'> | null> {
     try {
       const user = await prisma.user.findUnique({
         where: { id },
       });
 
-      return user;
+      return user ? sanitizeUser(user) : null;
     } catch (error) {
       logger.error('Error fetching user by ID:', error);
       throw new Error('Failed to fetch user');
     }
   }
 
-  static async getUserByEmail(email: string): Promise<User | null> {
+  static async getUserByEmail(email: string): Promise<Omit<User, 'password_hash'> | null> {
     try {
       const user = await prisma.user.findUnique({
         where: { email },
       });
 
-      return user;
+      return user ? sanitizeUser(user) : null;
     } catch (error) {
       logger.error('Error fetching user by email:', error);
       throw new Error('Failed to fetch user');
     }
   }
 
-  static async updateUser(id: string, userData: UpdateUserData): Promise<User> {
+  static async updateUser(id: string, userData: UpdateUserData): Promise<Omit<User, 'password_hash'>> {
     try {
       // Check if user exists
       const existingUser = await prisma.user.findUnique({
@@ -111,7 +118,7 @@ export class UserService {
 
       logger.info(`Updated user: ${updatedUser.email}`);
 
-      return updatedUser;
+      return sanitizeUser(updatedUser);
     } catch (error) {
       logger.error('Error updating user:', error);
       throw error instanceof Error ? error : new Error('Failed to update user');
@@ -142,7 +149,7 @@ export class UserService {
     }
   }
 
-  static async authenticateUser(loginData: UserLoginData): Promise<User | null> {
+  static async authenticateUser(loginData: UserLoginData): Promise<Omit<User, 'password_hash'> | null> {
     try {
       // Find user by email
       const user = await prisma.user.findUnique({
@@ -165,7 +172,7 @@ export class UserService {
 
       logger.info(`User authenticated: ${user.email}`);
 
-      return user;
+      return sanitizeUser(user);
     } catch (error) {
       logger.error('Error authenticating user:', error);
       throw new Error('Failed to authenticate user');

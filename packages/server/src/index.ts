@@ -3,11 +3,12 @@ import app from './app';
 import { dbManager } from './config/database';
 import logger from './utils/logger';
 import { Server } from 'http';
+import { SERVER_CONFIG } from '@recipe-manager/shared';
 
 // Load environment variables
 dotenv.config();
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
 
 let server: Server;
 

@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="185" failures="0" errors="0" time="4.754136542">
+    <testsuite name="packages/shared/src/__tests__/types.test.ts" timestamp="2025-07-10T23:00:45.204Z" hostname="MacBookPro.attlocal.net" tests="24" failures="0" errors="0" skipped="0" time="0.030126375">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserSchema &gt; should validate a valid user object" time="0.004659834">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserSchema &gt; should reject invalid user objects" time="0.00310475">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserSchema &gt; should handle date parsing" time="0.000914541">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserCredentialsSchema &gt; should validate valid login requests" time="0.000448375">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserCredentialsSchema &gt; should reject invalid login requests" time="0.000419041">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserRegistrationSchema &gt; should validate valid registration requests" time="0.000269333">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserRegistrationSchema &gt; should reject invalid registration requests" time="0.000299542">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserRegistrationSchema &gt; should validate name length constraints" time="0.000183584">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeSchema &gt; should validate a valid recipe object" time="0.002592125">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeSchema &gt; should reject invalid recipe objects" time="0.003241">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeSchema &gt; should handle optional fields" time="0.000742041">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeCreateSchema &gt; should validate valid create recipe requests" time="0.00114075">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeCreateSchema &gt; should reject invalid create recipe requests" time="0.001296333">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeUpdateSchema &gt; should validate valid update recipe requests" time="0.001063167">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeUpdateSchema &gt; should allow partial updates" time="0.001769583">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeUpdateSchema &gt; should reject invalid update recipe requests" time="0.000568667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="API Types &gt; ApiResponseSchema &gt; should validate valid API responses" time="0.000794583">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="API Types &gt; ApiResponseSchema &gt; should reject invalid API responses" time="0.000621834">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="API Types &gt; ErrorResponseSchema &gt; should validate valid error responses" time="0.00053425">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="API Types &gt; ErrorResponseSchema &gt; should reject invalid error responses" time="0.000325">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Type Inference &gt; should infer correct types from schemas" time="0.000162333">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Type Inference &gt; should handle complex nested types" time="0.000200584">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Schema Composition &gt; should compose schemas correctly" time="0.000417833">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Schema Composition &gt; should handle schema picking and omitting" time="0.000264917">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/shared/src/__tests__/validation.test.ts" timestamp="2025-07-10T23:00:45.206Z" hostname="MacBookPro.attlocal.net" tests="25" failures="0" errors="0" skipped="0" time="0.012959167">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateEmail &gt; should return true for valid email addresses" time="0.001381791">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateEmail &gt; should return false for invalid email addresses" time="0.001189208">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateEmail &gt; should handle edge cases" time="0.000151916">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validatePassword &gt; should return valid result for strong passwords" time="0.000909292">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validatePassword &gt; should return invalid result for weak passwords" time="0.000944917">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validatePassword &gt; should handle edge cases" time="0.000317">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should return valid result for complete recipe data" time="0.000413042">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should return invalid result for missing required fields" time="0.000366583">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate title constraints" time="0.000331708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate ingredients format" time="0.000353625">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate cook_time constraints" time="0.000112583">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate servings constraints" time="0.0000835">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate difficulty values" time="0.000106833">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate tags format" time="0.000089542">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should handle optional fields" time="0.000096958">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should return valid result for complete user data" time="0.000283333">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should return invalid result for missing required fields" time="0.000155666">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should validate email format" time="0.000160541">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should validate name constraints" time="0.000103375">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should validate password strength" time="0.000098208">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="ValidationError Class &gt; should create ValidationError with proper properties" time="0.001024833">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="ValidationError Class &gt; should convert to API error format" time="0.000347209">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="validate function &gt; should return parsed data when validation succeeds" time="0.000269667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="validate function &gt; should throw ValidationError when validation fails" time="0.000311667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="validate function &gt; should handle complex nested validation" time="0.001082334">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/LoginForm.test.tsx" timestamp="2025-07-10T23:00:45.208Z" hostname="MacBookPro.attlocal.net" tests="4" failures="0" errors="0" skipped="0" time="0.025626833">
+        <testcase classname="packages/client/src/__tests__/components/LoginForm.test.tsx" name="LoginForm Component &gt; Authentication State &gt; should redirect to dashboard if already authenticated" time="0.0137945">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/LoginForm.test.tsx" name="LoginForm Component &gt; Authentication State &gt; should render form if not authenticated" time="0.008575958">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/LoginForm.test.tsx" name="LoginForm Component &gt; Mock Verification &gt; should have properly mocked auth functions" time="0.000237333">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/LoginForm.test.tsx" name="LoginForm Component &gt; Mock Verification &gt; should call login when invoked" time="0.000633458">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/Navigation.test.tsx" timestamp="2025-07-10T23:00:45.209Z" hostname="MacBookPro.attlocal.net" tests="15" failures="0" errors="0" skipped="0" time="0.111470333">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Unauthenticated State &gt; should render navigation items even when user is not authenticated" time="0.022122042">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render navigation items when authenticated" time="0.003899167">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render user menu button" time="0.009570417">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render navigation links with correct hrefs" time="0.006377916">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should highlight active navigation item" time="0.012016625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render mobile menu button" time="0.003697125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render user menu button for interaction" time="0.003229958">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Loading State &gt; should handle loading state appropriately" time="0.003355917">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Accessibility &gt; should have proper ARIA labels for navigation" time="0.005262791">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Accessibility &gt; should have proper focus management" time="0.006358708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Accessibility &gt; should support keyboard navigation" time="0.01809425">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Logo and Branding &gt; should display logo or brand name" time="0.002734875">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Logo and Branding &gt; should link logo to dashboard page" time="0.004296667">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Active Route Highlighting &gt; should highlight recipes page when on recipes route" time="0.004301375">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Active Route Highlighting &gt; should highlight add recipe page when on add recipe route" time="0.003522333">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/hooks/useAuth.test.tsx" timestamp="2025-07-10T23:00:45.210Z" hostname="MacBookPro.attlocal.net" tests="17" failures="0" errors="0" skipped="0" time="0.24444">
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Initial State &gt; should initialize with null user and loading state" time="0.020491875">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Initial State &gt; should restore user from storage if authenticated" time="0.054521417">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Initial State &gt; should clear auth if token is invalid" time="0.055889542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Login &gt; should login successfully and navigate to dashboard" time="0.0063265">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Login &gt; should handle login errors" time="0.005743625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Login &gt; should set loading state during login" time="0.055301083">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Register &gt; should register successfully and navigate to dashboard" time="0.00473025">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Register &gt; should handle registration errors" time="0.003876667">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Logout &gt; should logout successfully and navigate to login" time="0.005114833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Logout &gt; should handle logout errors gracefully" time="0.004800333">
+            <system-err>
+Logout failed: Error: Logout failed
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useAuth.test.tsx:329:52
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1574:12[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Profile Update &gt; should update profile successfully" time="0.004151292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Profile Update &gt; should handle profile update errors" time="0.004169625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Password Change &gt; should change password successfully" time="0.003500458">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Password Change &gt; should handle password change errors" time="0.002999917">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Refresh User &gt; should refresh user data successfully" time="0.0026635">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Refresh User &gt; should handle refresh user errors" time="0.00419675">
+            <system-err>
+Failed to refresh user: Error: Refresh failed
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useAuth.test.tsx:488:31
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1574:12[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Error Handling &gt; should throw error when used outside AuthProvider" time="0.002593417">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/services/api.test.ts" timestamp="2025-07-10T23:00:45.212Z" hostname="MacBookPro.attlocal.net" tests="21" failures="0" errors="0" skipped="0" time="0.005277292">
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should return true when authenticated" time="0.000769417">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should return false when not authenticated" time="0.000102625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should get stored user from localStorage" time="0.000391292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should return null when no user is stored" time="0.000127167">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should clear auth data" time="0.000550708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call getRecipes with correct parameters" time="0.000118667">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call getRecipe with correct ID" time="0.000123542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call createRecipe with recipe data" time="0.0000755">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call updateRecipe with ID and data" time="0.00025425">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call deleteRecipe with ID" time="0.000087083">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call login with credentials" time="0.000075458">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call register with user data" time="0.000067875">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call logout" time="0.000058125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call getCurrentUser" time="0.000057333">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call getUserStats" time="0.000054083">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call searchRecipes with parameters" time="0.00006525">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call getRecipeCategories" time="0.000052833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call uploadImage with file" time="0.000159041">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call getUserRecipes" time="0.000064167">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call updateProfile" time="0.000062334">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call changePassword" time="0.000055959">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/server/src/__tests__/unit/middleware/auth.test.ts" timestamp="2025-07-10T23:00:45.213Z" hostname="MacBookPro.attlocal.net" tests="11" failures="0" errors="0" skipped="0" time="0.013796875">
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should authenticate valid token and add user to request" time="0.006534625">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should throw ApiError for missing authorization header" time="0.000882167">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should throw ApiError for invalid token format" time="0.000544208">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should throw ApiError for expired token" time="0.000508833">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should throw ApiError for invalid token" time="0.000802292">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should handle ApiError from AuthUtils correctly" time="0.00035775">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should authenticate valid token and add user to request" time="0.000356958">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should continue without user for missing authorization header" time="0.000160875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should continue without user for invalid token format" time="0.000230916">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should continue without user for expired token" time="0.000135667">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should continue without user for invalid token" time="0.000099292">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/server/src/__tests__/unit/services/recipeService.test.ts" timestamp="2025-07-10T23:00:45.213Z" hostname="MacBookPro.attlocal.net" tests="20" failures="0" errors="0" skipped="0" time="0.018276542">
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should return paginated recipes with default pagination" time="0.005268334">
+            <system-out>
+[32minfo[39m: Retrieved 1 recipes (page 1/1) {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.913Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should filter recipes by search term" time="0.001189917">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes (page 1/0) {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.918Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should filter recipes by category" time="0.000396333">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes (page 1/0) {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.919Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should filter recipes by difficulty and user" time="0.000459833">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes (page 1/0) {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.919Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should handle custom pagination" time="0.000496792">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes (page 2/3) {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.920Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getRecipeById &gt; should return recipe by ID" time="0.000466917">
+            <system-out>
+[32minfo[39m: Retrieved recipe: Test Recipe {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.920Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getRecipeById &gt; should return null if recipe not found" time="0.00009225">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; createRecipe &gt; should create a new recipe successfully" time="0.000365875">
+            <system-out>
+[32minfo[39m: Created recipe: New Recipe {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.921Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; createRecipe &gt; should handle database errors" time="0.003475958">
+            <system-out>
+[31merror[39m: Error creating recipe: Database error {&quot;stack&quot;:&quot;Error: Database error\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/recipeService.test.ts:304:76\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (&lt;anonymous&gt;)\n    at runWithTimeout (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.924Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; updateRecipe &gt; should update recipe successfully" time="0.000773417">
+            <system-out>
+[32minfo[39m: Updated recipe: Updated Recipe {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.925Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; updateRecipe &gt; should handle database errors" time="0.000437292">
+            <system-out>
+[31merror[39m: Error updating recipe: Database error {&quot;stack&quot;:&quot;Error: Database error\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/recipeService.test.ts:364:76\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (&lt;anonymous&gt;)\n    at runWithTimeout (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.926Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; deleteRecipe &gt; should delete recipe successfully" time="0.000335125">
+            <system-out>
+[32minfo[39m: Deleted recipe: Recipe to Delete {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.926Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; deleteRecipe &gt; should throw error if recipe not found" time="0.000571792">
+            <system-out>
+[31merror[39m: Error deleting recipe: Recipe not found {&quot;stack&quot;:&quot;Error: Recipe not found\n    at Function.deleteRecipe (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/recipeService.ts:198:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.927Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getUserRecipes &gt; should return user recipes with pagination" time="0.000244417">
+            <system-out>
+[32minfo[39m: Retrieved 1 recipes for user user-1 {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.927Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; searchRecipes &gt; should search recipes by query" time="0.000270625">
+            <system-out>
+[32minfo[39m: Search for &quot;pasta&quot; returned 0 recipes {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.927Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getRecipesByCategory &gt; should return recipes by category" time="0.000192292">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes for category &quot;Main Course&quot; {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.928Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getRecipeCategories &gt; should return unique recipe categories" time="0.000125083">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; verifyRecipeOwnership &gt; should return true if user owns the recipe" time="0.000147209">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; verifyRecipeOwnership &gt; should return false if user does not own the recipe" time="0.000056625">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; verifyRecipeOwnership &gt; should return false if recipe not found" time="0.000050292">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/server/src/__tests__/unit/services/userService.test.ts" timestamp="2025-07-10T23:00:45.215Z" hostname="MacBookPro.attlocal.net" tests="21" failures="0" errors="0" skipped="0" time="0.01914775">
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; createUser &gt; should create a new user successfully" time="0.003693458">
+            <system-out>
+[32minfo[39m: Created user: test@example.com {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.906Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; createUser &gt; should throw error if user already exists" time="0.002328458">
+            <system-out>
+[31merror[39m: Error creating user: User with this email already exists {&quot;stack&quot;:&quot;Error: User with this email already exists\n    at Function.createUser (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/userService.ts:38:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.910Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; createUser &gt; should handle database errors" time="0.001271959">
+            <system-out>
+[31merror[39m: Error creating user: Database error {&quot;stack&quot;:&quot;Error: Database error\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/userService.test.ts:112:74\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (&lt;anonymous&gt;)\n    at runWithTimeout (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.912Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserById &gt; should return user by ID" time="0.000223">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserById &gt; should return null if user not found" time="0.000229416">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserById &gt; should handle database errors" time="0.0004835">
+            <system-out>
+[31merror[39m: Error fetching user by ID: Database error {&quot;stack&quot;:&quot;Error: Database error\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/userService.test.ts:154:78\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (&lt;anonymous&gt;)\n    at runWithTimeout (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.913Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserByEmail &gt; should return user by email" time="0.000250583">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserByEmail &gt; should return null if user not found" time="0.000069291">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; updateUser &gt; should update user successfully" time="0.000749042">
+            <system-out>
+[32minfo[39m: Updated user: updated@example.com {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.914Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; updateUser &gt; should throw error if user not found" time="0.000336167">
+            <system-out>
+[31merror[39m: Error updating user: User not found {&quot;stack&quot;:&quot;Error: User not found\n    at Function.updateUser (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/userService.ts:96:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.915Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; updateUser &gt; should throw error if email already exists" time="0.000299042">
+            <system-out>
+[31merror[39m: Error updating user: Email already in use {&quot;stack&quot;:&quot;Error: Email already in use\n    at Function.updateUser (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/userService.ts:106:17)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/userService.test.ts:281:7\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.915Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; deleteUser &gt; should delete user successfully" time="0.0003125">
+            <system-out>
+[32minfo[39m: Deleted user: test@example.com {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.915Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; deleteUser &gt; should throw error if user not found" time="0.001619375">
+            <system-out>
+[31merror[39m: Error deleting user: User not found {&quot;stack&quot;:&quot;Error: User not found\n    at Function.deleteUser (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/userService.ts:137:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.916Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; authenticateUser &gt; should authenticate user successfully" time="0.000418292">
+            <system-out>
+[32minfo[39m: User authenticated: test@example.com {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.917Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; authenticateUser &gt; should return null if user not found" time="0.000078708">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; authenticateUser &gt; should return null if password is invalid" time="0.000061125">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; changePassword &gt; should change password successfully" time="0.000952708">
+            <system-out>
+[32minfo[39m: Password changed for user: test@example.com {&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.918Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; changePassword &gt; should throw error if user not found" time="0.000365792">
+            <system-out>
+[31merror[39m: Error changing password: User not found {&quot;stack&quot;:&quot;Error: User not found\n    at Function.changePassword (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/userService.ts:194:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.919Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; changePassword &gt; should throw error if current password is invalid" time="0.000265208">
+            <system-out>
+[31merror[39m: Error changing password: Current password is incorrect {&quot;stack&quot;:&quot;Error: Current password is incorrect\n    at Function.changePassword (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/userService.ts:204:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/userService.test.ts:466:7\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20&quot;,&quot;timestamp&quot;:&quot;2025-07-10T23:00:40.919Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getAllUsers &gt; should return all users" time="0.000803125">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserStats &gt; should return user statistics" time="0.0012825">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/server/src/__tests__/unit/utils/auth.test.ts" timestamp="2025-07-10T23:00:45.219Z" hostname="MacBookPro.attlocal.net" tests="27" failures="0" errors="0" skipped="0" time="4.273015375">
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; hashPassword &gt; should hash a password" time="0.350159333">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; hashPassword &gt; should create different hashes for the same password" time="1.750628708">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; hashPassword &gt; should handle empty password" time="0.304007083">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; comparePassword &gt; should return true for matching password and hash" time="0.567854333">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; comparePassword &gt; should return false for non-matching password and hash" time="0.703236875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; comparePassword &gt; should return false for empty password" time="0.588392625">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; comparePassword &gt; should return false for invalid hash" time="0.000220834">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; generateTokens &gt; should generate access and refresh tokens" time="0.000306208">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; generateAccessToken &gt; should generate an access token" time="0.000772417">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; generateRefreshToken &gt; should generate a refresh token" time="0.000246333">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; verifyToken &gt; should verify a valid token" time="0.000193375">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; verifyToken &gt; should throw error for invalid token" time="0.0003945">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; verifyToken &gt; should throw error for expired token" time="0.000093167">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; verifyToken &gt; should throw generic error for other verification failures" time="0.000073875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should extract token from Authorization header" time="0.000050125">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should return null for missing Authorization header" time="0.000043167">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should return null for invalid Authorization header format" time="0.000039625">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should return null for missing Bearer prefix" time="0.000031583">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should return null for empty token" time="0.000031042">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should validate a strong password" time="0.000218917">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password that is too short" time="0.0001975">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password without lowercase" time="0.000064833">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password without uppercase" time="0.000059917">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password without number" time="0.000055417">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password without special character" time="0.000114875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should return multiple errors for weak password" time="0.000047959">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; sanitizeUserResponse &gt; should remove password_hash from user object" time="0.001760416">
+        </testcase>
+    </testsuite>
+</testsuites>

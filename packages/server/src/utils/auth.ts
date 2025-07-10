@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { User } from '@recipe-manager/shared';
+import { User, SERVER_CONFIG } from '@recipe-manager/shared';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
-const SALT_ROUNDS = 12;
+const JWT_SECRET = process.env.JWT_SECRET || SERVER_CONFIG.JWT_SECRET_FALLBACK;
+const SALT_ROUNDS = SERVER_CONFIG.SALT_ROUNDS;
 
 export interface JwtPayload {
   userId: string;

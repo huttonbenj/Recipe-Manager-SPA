@@ -43,7 +43,7 @@ Configure your environment variables:
 
 - `packages/client/.env`:
   - `VITE_API_URL`: Backend API URL
-  - `VITE_APP_PORT`: Frontend port (default: 5173)
+  - `VITE_APP_PORT`: Frontend port (default: 3000)
 
 1. **Database Setup**
 
@@ -128,7 +128,7 @@ npm run build
 Common issues and solutions:
 
 1. **Port Conflicts**
-   - Check if ports 3001 or 5173 are in use
+   - Check if ports 3001 or 3000 are in use
    - Modify ports in .env files if needed
 
 2. **Database Connection**

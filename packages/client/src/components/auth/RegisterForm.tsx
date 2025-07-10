@@ -46,7 +46,7 @@ export const RegisterForm = () => {
         }
 
         try {
-            await registerUser(formData.email, formData.name, formData.password);
+            await registerUser({ email: formData.email, name: formData.name, password: formData.password });
         } catch (error) {
             console.error('Registration failed:', error);
         }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { RecipeCreateSchema, RecipeUpdateSchema, RecipeSearchSchema } from './recipe';
 
 // Generic API Response Schema
 export const ApiResponseSchema = z.object({
@@ -22,18 +23,8 @@ export const PaginationInfoSchema = z.object({
   totalPages: z.number().int()
 });
 
-// Search/Filter Schemas
-export const RecipeSearchParamsSchema = z.object({
-  search: z.string().optional(),
-  category: z.string().optional(),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
-  tags: z.string().optional(),
-  user_id: z.string().optional(),
-  sortBy: z.enum(['created_at', 'updated_at', 'title', 'cook_time']).optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
-  page: z.number().int().positive().default(1),
-  limit: z.number().int().positive().max(100).default(10)
-});
+// Search/Filter Schemas - using imported schema from recipe.ts
+export const RecipeSearchParamsSchema = RecipeSearchSchema;
 
 // Auth API Types
 export const LoginRequestSchema = z.object({
@@ -61,30 +52,9 @@ export const UpdateProfileRequestSchema = z.object({
   email: z.string().email().optional()
 });
 
-// Recipe API Types
-export const CreateRecipeRequestSchema = z.object({
-  title: z.string().min(1).max(200),
-  ingredients: z.string().min(1),
-  instructions: z.string().min(1).max(5000),
-  image_url: z.string().url().optional(),
-  cook_time: z.number().positive().optional(),
-  servings: z.number().positive().optional(),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
-  category: z.string().max(50).optional(),
-  tags: z.string().optional()
-});
-
-export const UpdateRecipeRequestSchema = z.object({
-  title: z.string().min(1).max(200).optional(),
-  ingredients: z.string().min(1).optional(),
-  instructions: z.string().min(1).max(5000).optional(),
-  image_url: z.string().url().optional(),
-  cook_time: z.number().positive().optional(),
-  servings: z.number().positive().optional(),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
-  category: z.string().max(50).optional(),
-  tags: z.string().optional()
-});
+// Recipe API Types - using imported schemas from recipe.ts
+export const CreateRecipeRequestSchema = RecipeCreateSchema;
+export const UpdateRecipeRequestSchema = RecipeUpdateSchema;
 
 // File Upload Types
 export const FileUploadResponseSchema = z.object({
@@ -101,8 +71,8 @@ export const FileUploadResponseSchema = z.object({
 
 // Error Response Schema
 export const ErrorResponseSchema = z.object({
-  success: z.boolean(),
-  error: z.string(),
+  success: z.literal(false),
+  error: z.string().min(1),
   details: z.array(z.unknown()).optional(),
   code: z.number().optional(),
   timestamp: z.string().optional()

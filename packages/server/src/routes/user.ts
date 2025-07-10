@@ -3,36 +3,15 @@ import { UserService } from '../services/userService';
 import { RecipeService } from '../services/recipeService';
 import { authenticate, AuthenticatedRequest } from '../middleware/auth';
 import { asyncHandler } from '../utils/asyncHandler';
-import { query, param, validationResult } from 'express-validator';
+import {
+  validateParams,
+  validateQuery,
+  IdParamsSchema
+} from '../middleware/validation';
+import { PaginationParamsSchema } from '@recipe-manager/shared';
 import logger from '../utils/logger';
 
 const router = Router();
-
-// Validation middleware
-const paginationValidation = [
-  query('page')
-    .optional()
-    .isInt({ min: 1 })
-    .withMessage('Page must be a positive integer'),
-  query('limit')
-    .optional()
-    .isInt({ min: 1, max: 100 })
-    .withMessage('Limit must be between 1 and 100'),
-];
-
-// Helper function to handle validation errors
-const handleValidationErrors = (req: Request, res: Response): boolean => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.status(400).json({
-      success: false,
-      error: 'Validation failed',
-      details: errors.array()
-    });
-    return true;
-  }
-  return false;
-};
 
 // GET /api/users/me - Get current user profile (requires authentication)
 router.get(
@@ -70,10 +49,8 @@ router.get(
 router.get(
   '/me/recipes',
   authenticate,
-  paginationValidation,
+  validateQuery(PaginationParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const userId = (req as AuthenticatedRequest).user.userId;
     const { page = 1, limit = 10 } = req.query;
 
@@ -132,14 +109,12 @@ router.get(
 // GET /api/users/:id - Get user profile by ID (public endpoint)
 router.get(
   '/:id',
-  param('id').isString().withMessage('User ID must be a string'),
+  validateParams(IdParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const { id } = req.params;
 
     try {
-      const user = await UserService.getUserProfile(id);
+      const user = await UserService.getUserProfile(id!);
 
       if (!user) {
         res.status(404).json({
@@ -173,13 +148,9 @@ router.get(
 // GET /api/users/:id/recipes - Get user's recipes by ID (public endpoint)
 router.get(
   '/:id/recipes',
-  [
-    param('id').isString().withMessage('User ID must be a string'),
-    ...paginationValidation,
-  ],
+  validateParams(IdParamsSchema),
+  validateQuery(PaginationParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const { id } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
@@ -190,7 +161,7 @@ router.get(
 
     try {
       // First, verify the user exists
-      const user = await UserService.getUserProfile(id);
+      const user = await UserService.getUserProfile(id!);
       if (!user) {
         res.status(404).json({
           success: false,
@@ -199,7 +170,7 @@ router.get(
         return;
       }
 
-      const result = await RecipeService.getUserRecipes(id, pagination);
+      const result = await RecipeService.getUserRecipes(id!, pagination);
 
       res.json({
         success: true,
@@ -228,15 +199,13 @@ router.get(
 // GET /api/users/:id/stats - Get user's statistics by ID (public endpoint)
 router.get(
   '/:id/stats',
-  param('id').isString().withMessage('User ID must be a string'),
+  validateParams(IdParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const { id } = req.params;
 
     try {
       // First, verify the user exists
-      const user = await UserService.getUserProfile(id);
+      const user = await UserService.getUserProfile(id!);
       if (!user) {
         res.status(404).json({
           success: false,
@@ -245,7 +214,7 @@ router.get(
         return;
       }
 
-      const stats = await UserService.getUserStats(id);
+      const stats = await UserService.getUserStats(id!);
 
       res.json({
         success: true,

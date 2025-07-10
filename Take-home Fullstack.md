@@ -23,13 +23,13 @@ This full-stack app should feel like a lightweight CRM for recipe records — CR
 - Built with **React** and **React Router**
 - Styling with **Tailwind CSS** or **Bootstrap**
 - Views:
-    - List of all recipes (with optional cover thumbnails)
-    - Recipe detail view
-    - Add/edit form
+  - List of all recipes (with optional cover thumbnails)
+  - Recipe detail view
+  - Add/edit form
 - Fully responsive across:
-    - Mobile: ≤768px
-    - Tablet: 768–1024px
-    - Desktop: ≥1024px
+  - Mobile: ≤768px
+  - Tablet: 768–1024px
+  - Desktop: ≥1024px
 - Search by title or ingredients
 - Client-side validation and feedback
 
@@ -38,13 +38,13 @@ This full-stack app should feel like a lightweight CRM for recipe records — CR
 - RESTful API built with Express
 - **PostgreSQL** as the relational database
 - Tables should support:
-    - `recipes` with fields: `id`, `title`, `ingredients`, `instructions`, `image_url`, `created_at`, `updated_at`
+  - `recipes` with fields: `id`, `title`, `ingredients`, `instructions`, `image_url`, `created_at`, `updated_at`
 - REST Endpoints:
-    - `GET /recipes`
-    - `GET /recipes/:id`
-    - `POST /recipes`
-    - `PUT /recipes/:id`
-    - `DELETE /recipes/:id`
+  - `GET /recipes`
+  - `GET /recipes/:id`
+  - `POST /recipes`
+  - `PUT /recipes/:id`
+  - `DELETE /recipes/:id`
 - Input validation and status-based error responses
 - Include database seed script with at least **10 sample recipes**
 - Use an ORM like **Prisma** or **Sequelize** (recommended for clarity and migrations)
@@ -57,9 +57,9 @@ This full-stack app should feel like a lightweight CRM for recipe records — CR
 - Use **Context API** or **Redux** for state management
 - Secure routes with **JWT authentication**
 - Deploy:
-    - **Frontend** to Vercel, Netlify, or Firebase
-    - **Backend** to Render, Railway, or your preferred Node.js hosting platform
-    - PostgreSQL DB via **Neon**, **Supabase**, or **ElephantSQL**
+  - **Frontend** to Vercel, Netlify, or Firebase
+  - **Backend** to Render, Railway, or your preferred Node.js hosting platform
+  - PostgreSQL DB via **Neon**, **Supabase**, or **ElephantSQL**
 - Provide `.env.example` and SQL schema documentation
 - Add search optimization using Postgres full-text search or `ILIKE` queries
 
@@ -68,12 +68,12 @@ This full-stack app should feel like a lightweight CRM for recipe records — CR
 ### **Deliverables:**
 
 - GitHub repo containing:
-    - Frontend and backend codebases
-    - SQL schema and seed script
-    - Clear README with setup, installation, and deployment steps
+  - Frontend and backend codebases
+  - SQL schema and seed script
+  - Clear README with setup, installation, and deployment steps
 - A short write-up explaining:
-    - Your architecture and schema decisions
-    - API structure and data flow
-    - Special features or enhancements added
+  - Your architecture and schema decisions
+  - API structure and data flow
+  - Special features or enhancements added
 
 ---

@@ -281,9 +281,19 @@ async function seedRecipes() {
   
   const users = await prisma.user.findMany();
   
+  if (users.length === 0) {
+    logger.warn('No users found. Skipping recipe seeding.');
+    return;
+  }
+  
   for (let i = 0; i < sampleRecipes.length; i++) {
     const recipeData = sampleRecipes[i];
     const user = users[i % users.length]; // Distribute recipes among users
+    
+    if (!recipeData || !user) {
+      logger.warn(`Skipping recipe ${i}: invalid data`);
+      continue;
+    }
     
     const existingRecipe = await prisma.recipe.findFirst({
       where: { 
@@ -295,7 +305,15 @@ async function seedRecipes() {
     if (!existingRecipe) {
       await prisma.recipe.create({
         data: {
-          ...recipeData,
+          title: recipeData.title,
+          ingredients: recipeData.ingredients,
+          instructions: recipeData.instructions,
+          image_url: recipeData.image_url,
+          cook_time: recipeData.cook_time,
+          servings: recipeData.servings,
+          difficulty: recipeData.difficulty,
+          category: recipeData.category,
+          tags: recipeData.tags,
           user_id: user.id,
         }
       });

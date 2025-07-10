@@ -17,17 +17,17 @@ if (!fs.existsSync(uploadDir)) {
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, _file, cb) => {
     cb(null, uploadDir);
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const extension = path.extname(file.originalname);
     cb(null, `recipe-${uniqueSuffix}${extension}`);
   },
 });
 
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   // Check if file is an image
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
@@ -47,7 +47,10 @@ const upload = multer({
 // Upload single image
 router.post('/image', authenticate, upload.single('image'), asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) {
-    res.status(400).json({ error: 'No file uploaded' });
+    res.status(400).json({ 
+      success: false,
+      error: 'No file uploaded' 
+    });
     return;
   }
 
@@ -73,7 +76,13 @@ router.post('/image', authenticate, upload.single('image'), asyncHandler(async (
 
     res.json({
       success: true,
-      imageUrl,
+      data: {
+        url: imageUrl,
+        filename: `optimized-${req.file.filename}`,
+        originalName: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype
+      },
       message: 'Image uploaded successfully',
     });
   } catch (error) {
@@ -85,6 +94,7 @@ router.post('/image', authenticate, upload.single('image'), asyncHandler(async (
     }
     
     res.status(500).json({
+      success: false,
       error: 'Error processing image',
       message: 'Failed to process uploaded image',
     });
@@ -96,12 +106,21 @@ router.post('/images', authenticate, upload.array('images', 5), asyncHandler(asy
   const files = req.files as Express.Multer.File[];
   
   if (!files || files.length === 0) {
-    res.status(400).json({ error: 'No files uploaded' });
+    res.status(400).json({ 
+      success: false,
+      error: 'No files uploaded' 
+    });
     return;
   }
 
   try {
-    const imageUrls: string[] = [];
+    const uploadedFiles: Array<{
+      url: string;
+      filename: string;
+      originalName: string;
+      size: number;
+      mimetype: string;
+    }> = [];
     
     for (const file of files) {
       // Optimize each image
@@ -120,15 +139,21 @@ router.post('/images', authenticate, upload.array('images', 5), asyncHandler(asy
 
       // Generate URL for the optimized image
       const imageUrl = `/uploads/optimized-${file.filename}`;
-      imageUrls.push(imageUrl);
+      uploadedFiles.push({
+        url: imageUrl,
+        filename: `optimized-${file.filename}`,
+        originalName: file.originalname,
+        size: file.size,
+        mimetype: file.mimetype
+      });
     }
 
-    logger.info(`Multiple images uploaded successfully: ${imageUrls.length} images`);
+    logger.info(`Multiple images uploaded successfully: ${uploadedFiles.length} images`);
 
     res.json({
       success: true,
-      imageUrls,
-      message: `${imageUrls.length} images uploaded successfully`,
+      data: uploadedFiles,
+      message: `${uploadedFiles.length} images uploaded successfully`,
     });
   } catch (error) {
     logger.error('Error processing uploaded images:', error);
@@ -143,6 +168,7 @@ router.post('/images', authenticate, upload.array('images', 5), asyncHandler(asy
     }
     
     res.status(500).json({
+      success: false,
       error: 'Error processing images',
       message: 'Failed to process uploaded images',
     });

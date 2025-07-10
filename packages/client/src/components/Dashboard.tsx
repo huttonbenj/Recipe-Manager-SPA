@@ -37,13 +37,13 @@ export const Dashboard = () => {
     // Fetch recent recipes
     const { data: recentRecipes, isLoading: recentRecipesLoading } = useQuery({
         queryKey: ['recent-recipes'],
-        queryFn: () => apiClient.getRecipes({ limit: 3 }),
+        queryFn: () => apiClient.getRecipes({ page: 1, limit: 3 }),
     });
 
     // Fetch user's recipes
     const { data: userRecipes, isLoading: userRecipesLoading } = useQuery({
         queryKey: ['user-recipes'],
-        queryFn: () => apiClient.getUserRecipes(user?.id, { limit: 3 }),
+        queryFn: () => apiClient.getUserRecipes(user?.id, { page: 1, limit: 3 }),
     });
 
     const quickActions = [

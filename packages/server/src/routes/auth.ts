@@ -3,79 +3,23 @@ import { UserService } from '../services/userService';
 import { AuthUtils } from '../utils/auth';
 import { authenticate, AuthenticatedRequest } from '../middleware/auth';
 import { asyncHandler } from '../utils/asyncHandler';
-import { body, validationResult } from 'express-validator';
+import { validateBody } from '../middleware/validation';
+import { 
+  RegisterRequestSchema, 
+  LoginRequestSchema, 
+  RefreshTokenRequestSchema,
+  ChangePasswordRequestSchema,
+  UpdateProfileRequestSchema
+} from '@recipe-manager/shared';
 import logger from '../utils/logger';
 
 const router = Router();
 
-// Validation middleware
-const registerValidation = [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please provide a valid email address'),
-  body('name')
-    .trim()
-    .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters'),
-  body('password')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long'),
-];
-
-const loginValidation = [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please provide a valid email address'),
-  body('password')
-    .notEmpty()
-    .withMessage('Password is required'),
-];
-
-const changePasswordValidation = [
-  body('currentPassword')
-    .notEmpty()
-    .withMessage('Current password is required'),
-  body('newPassword')
-    .isLength({ min: 8 })
-    .withMessage('New password must be at least 8 characters long'),
-];
-
-const updateProfileValidation = [
-  body('name')
-    .optional()
-    .trim()
-    .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters'),
-  body('email')
-    .optional()
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please provide a valid email address'),
-];
-
-// Helper function to handle validation errors
-const handleValidationErrors = (req: Request, res: Response): boolean => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.status(400).json({
-      success: false,
-      error: 'Validation failed',
-      details: errors.array()
-    });
-    return true;
-  }
-  return false;
-};
-
 // POST /api/auth/register - Register a new user
 router.post(
   '/register',
-  registerValidation,
+  validateBody(RegisterRequestSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const { email, name, password } = req.body;
 
     // Validate password strength
@@ -140,10 +84,8 @@ router.post(
 // POST /api/auth/login - Login user
 router.post(
   '/login',
-  loginValidation,
+  validateBody(LoginRequestSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const { email, password } = req.body;
 
     try {
@@ -193,10 +135,8 @@ router.post(
 // POST /api/auth/refresh - Refresh access token
 router.post(
   '/refresh',
-  body('refreshToken').notEmpty().withMessage('Refresh token is required'),
+  validateBody(RefreshTokenRequestSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const { refreshToken } = req.body;
 
     try {
@@ -268,10 +208,8 @@ router.get(
 router.put(
   '/profile',
   authenticate,
-  updateProfileValidation,
+  validateBody(UpdateProfileRequestSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const userId = (req as AuthenticatedRequest).user.userId;
     const { name, email } = req.body;
 
@@ -314,10 +252,8 @@ router.put(
 router.post(
   '/change-password',
   authenticate,
-  changePasswordValidation,
+  validateBody(ChangePasswordRequestSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    if (handleValidationErrors(req, res)) return;
-
     const userId = (req as AuthenticatedRequest).user.userId;
     const { currentPassword, newPassword } = req.body;
 
@@ -385,7 +321,7 @@ router.get(
 router.post(
   '/logout',
   authenticate,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (_req: Request, res: Response) => {
     // In a JWT-based system, logout is typically handled client-side
     // by removing the token from storage. This endpoint is for completeness.
     

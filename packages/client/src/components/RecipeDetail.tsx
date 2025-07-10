@@ -46,8 +46,8 @@ export const RecipeDetail = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="min-h-screen flex items-center justify-center" role="status">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" data-testid="loading-spinner"></div>
             </div>
         );
     }
@@ -86,6 +86,7 @@ export const RecipeDetail = () => {
                             onClick={() => setIsLiked(!isLiked)}
                             className={`flex items-center space-x-2 px-4 py-2 rounded-md ${isLiked ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
                                 }`}
+                            aria-label={isLiked ? 'Unlike recipe' : 'Like recipe'}
                         >
                             <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
                             <span>Like</span>
@@ -103,14 +104,14 @@ export const RecipeDetail = () => {
                                     className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                                 >
                                     <Edit className="h-4 w-4" />
-                                    <span>Edit</span>
+                                    <span>Edit Recipe</span>
                                 </Link>
                                 <button
                                     onClick={handleDelete}
                                     className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                                 >
                                     <Trash2 className="h-4 w-4" />
-                                    <span>Delete</span>
+                                    <span>Delete Recipe</span>
                                 </button>
                             </div>
                         )}
@@ -150,7 +151,7 @@ export const RecipeDetail = () => {
                                 <Clock className="h-4 w-4 mr-2" />
                                 <span className="text-sm">Cook Time</span>
                             </div>
-                            <span className="text-sm font-medium">{recipe.cook_time || 'N/A'} mins</span>
+                            <span className="text-sm font-medium">{recipe.cook_time || 'N/A'} {recipe.cook_time ? 'minutes' : ''}</span>
                         </div>
 
                         <div className="flex items-center justify-between">
@@ -158,7 +159,7 @@ export const RecipeDetail = () => {
                                 <Users className="h-4 w-4 mr-2" />
                                 <span className="text-sm">Servings</span>
                             </div>
-                            <span className="text-sm font-medium">{recipe.servings || 'N/A'}</span>
+                            <span className="text-sm font-medium">{recipe.servings || 'N/A'} {recipe.servings ? 'servings' : ''}</span>
                         </div>
 
                         {recipe.difficulty && (
