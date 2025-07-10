@@ -98,4 +98,10 @@ export class AuthUtils {
       errors,
     };
   }
+
+  static sanitizeUserResponse(user: User & { password_hash?: string }): Omit<User, 'password_hash'> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password_hash: _, ...sanitizedUser } = user;
+    return sanitizedUser;
+  }
 } 

@@ -7,7 +7,6 @@ import {
     Clock,
     Star,
     TrendingUp,
-    Users,
     BookOpen,
     Heart
 } from 'lucide-react';
@@ -30,19 +29,19 @@ export const Dashboard = () => {
     }, []);
 
     // Fetch user stats
-    const { data: stats } = useQuery({
+    const { data: stats, isLoading: statsLoading } = useQuery({
         queryKey: ['user-stats'],
         queryFn: apiClient.getUserStats,
     });
 
     // Fetch recent recipes
-    const { data: recentRecipes } = useQuery({
+    const { data: recentRecipes, isLoading: recentRecipesLoading } = useQuery({
         queryKey: ['recent-recipes'],
         queryFn: () => apiClient.getRecipes({ limit: 3 }),
     });
 
     // Fetch user's recipes
-    const { data: userRecipes } = useQuery({
+    const { data: userRecipes, isLoading: userRecipesLoading } = useQuery({
         queryKey: ['user-recipes'],
         queryFn: () => apiClient.getUserRecipes(user?.id, { limit: 3 }),
     });
@@ -66,7 +65,7 @@ export const Dashboard = () => {
             title: 'Search Recipes',
             description: 'Find recipes by ingredients or cuisine',
             icon: ChefHat,
-            to: '/recipes/search',
+            to: '/recipes',
             color: 'bg-purple-500 hover:bg-purple-600',
         },
     ];
@@ -146,7 +145,11 @@ export const Dashboard = () => {
                                 </div>
                                 <div className="ml-4">
                                     <p className="text-sm font-medium text-gray-500">{card.title}</p>
-                                    <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+                                    {statsLoading ? (
+                                        <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+                                    ) : (
+                                        <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -189,7 +192,19 @@ export const Dashboard = () => {
                         </Link>
                     </div>
                     <div className="space-y-4">
-                        {userRecipes?.data?.length ? (
+                        {userRecipesLoading ? (
+                            <div className="space-y-4">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="flex items-center space-x-4">
+                                        <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                                        <div className="flex-1">
+                                            <div className="w-3/4 h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
+                                            <div className="w-1/2 h-3 bg-gray-200 rounded animate-pulse"></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : userRecipes?.data?.length ? (
                             userRecipes.data.map((recipe) => (
                                 <div key={recipe.id} className="flex items-center space-x-4">
                                     <div className="flex-shrink-0">
@@ -248,7 +263,19 @@ export const Dashboard = () => {
                         </Link>
                     </div>
                     <div className="space-y-4">
-                        {recentRecipes?.data?.length ? (
+                        {recentRecipesLoading ? (
+                            <div className="space-y-4">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="flex items-center space-x-4">
+                                        <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                                        <div className="flex-1">
+                                            <div className="w-3/4 h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
+                                            <div className="w-1/2 h-3 bg-gray-200 rounded animate-pulse"></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : recentRecipes?.data?.length ? (
                             recentRecipes.data.map((recipe) => (
                                 <div key={recipe.id} className="flex items-center space-x-4">
                                     <div className="flex-shrink-0">
@@ -272,11 +299,10 @@ export const Dashboard = () => {
                                             {recipe.title}
                                         </Link>
                                         <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                                            <Users className="h-3 w-3" />
-                                            <span>By {recipe.user?.name}</span>
-                                            <span>•</span>
                                             <Clock className="h-3 w-3" />
                                             <span>{recipe.cook_time} mins</span>
+                                            <span>•</span>
+                                            <span>By {recipe.user?.name}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -284,7 +310,7 @@ export const Dashboard = () => {
                         ) : (
                             <div className="text-center py-8">
                                 <ChefHat className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                <p className="text-gray-500">No recipes available</p>
+                                <p className="text-gray-500">No recent recipes</p>
                             </div>
                         )}
                     </div>

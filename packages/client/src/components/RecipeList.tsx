@@ -1,20 +1,177 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
     Search,
     Filter,
-    Clock,
-    Users,
-    Star,
-    ChefHat,
-    Eye,
-    Heart,
-    Plus,
     Grid,
-    List as ListIcon
+    List as ListIcon,
+    Plus,
+    Heart,
+    Clock,
+    Star,
+    Eye,
+    Users,
+    ChefHat,
 } from 'lucide-react';
-import { apiClient, Recipe } from '../services/api';
+import { Recipe } from '@recipe-manager/shared';
+import { apiClient } from '../services/api';
+
+// Custom hook for debounced search
+const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+};
+
+// Extract RecipeCard component for better performance
+const RecipeCard = memo(({ recipe }: { recipe: Recipe }) => (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        <div className="relative">
+            {recipe.image_url ? (
+                <img
+                    src={recipe.image_url}
+                    alt={recipe.title}
+                    className="w-full h-48 object-cover"
+                />
+            ) : (
+                <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                    <ChefHat className="h-12 w-12 text-gray-400" />
+                </div>
+            )}
+            <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
+                <Heart className="h-4 w-4 text-gray-400" />
+            </div>
+        </div>
+
+        <div className="p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                <Link to={`/recipes/${recipe.id}`} className="hover:text-blue-600">
+                    {recipe.title}
+                </Link>
+            </h3>
+
+            <div className="flex items-center text-sm text-gray-500 mb-3">
+                <Users className="h-4 w-4 mr-1" />
+                <span>By {recipe.user?.name || 'Unknown'}</span>
+            </div>
+
+            <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-1" />
+                    <span>{recipe.cook_time || 'N/A'} mins</span>
+                </div>
+                <div className="flex items-center">
+                    <Star className="h-4 w-4 mr-1" />
+                    <span>4.5</span>
+                </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                    {recipe.difficulty && (
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                            recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                            }`}>
+                            {recipe.difficulty}
+                        </span>
+                    )}
+                    {recipe.category && (
+                        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                            {recipe.category}
+                        </span>
+                    )}
+                </div>
+                <div className="flex items-center text-gray-400">
+                    <Eye className="h-4 w-4 mr-1" />
+                    <span className="text-xs">125</span>
+                </div>
+            </div>
+        </div>
+    </div>
+));
+
+// Extract RecipeListItem component for better performance
+const RecipeListItem = memo(({ recipe }: { recipe: Recipe }) => (
+    <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+        <div className="flex items-start space-x-4">
+            <div className="flex-shrink-0">
+                {recipe.image_url ? (
+                    <img
+                        src={recipe.image_url}
+                        alt={recipe.title}
+                        className="w-20 h-20 object-cover rounded-lg"
+                    />
+                ) : (
+                    <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <ChefHat className="h-8 w-8 text-gray-400" />
+                    </div>
+                )}
+            </div>
+
+            <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <Link to={`/recipes/${recipe.id}`} className="hover:text-blue-600">
+                        {recipe.title}
+                    </Link>
+                </h3>
+
+                <div className="flex items-center text-sm text-gray-500 mb-2">
+                    <Users className="h-4 w-4 mr-1" />
+                    <span>By {recipe.user?.name || 'Unknown'}</span>
+                </div>
+
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {recipe.instructions.substring(0, 150)}...
+                </p>
+
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            <span>{recipe.cook_time || 'N/A'} mins</span>
+                        </div>
+                        <div className="flex items-center">
+                            <Star className="h-4 w-4 mr-1" />
+                            <span>4.5</span>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                        {recipe.difficulty && (
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                                recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-red-100 text-red-800'
+                                }`}>
+                                {recipe.difficulty}
+                            </span>
+                        )}
+                        {recipe.category && (
+                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                {recipe.category}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+));
+
+// Add display names for better debugging
+RecipeCard.displayName = 'RecipeCard';
+RecipeListItem.displayName = 'RecipeListItem';
 
 export const RecipeList = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -24,12 +181,15 @@ export const RecipeList = () => {
     const [selectedDifficulty, setSelectedDifficulty] = useState(searchParams.get('difficulty') || '');
     const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'created_at');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>((searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc');
-    const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
+    const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
+
+    // Debounced search term
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     // Fetch recipes with filters
     const { data: recipesData, isLoading, error } = useQuery({
         queryKey: ['recipes', {
-            search: searchTerm,
+            search: debouncedSearchTerm,
             category: selectedCategory,
             difficulty: selectedDifficulty,
             sortBy,
@@ -44,7 +204,7 @@ export const RecipeList = () => {
                 sortOrder
             };
 
-            if (searchTerm) params.search = searchTerm;
+            if (debouncedSearchTerm) params.search = debouncedSearchTerm;
             if (selectedCategory) params.category = selectedCategory;
             if (selectedDifficulty) params.difficulty = selectedDifficulty as 'Easy' | 'Medium' | 'Hard';
 
@@ -85,139 +245,6 @@ export const RecipeList = () => {
         setCurrentPage(1);
     };
 
-    const RecipeCard = ({ recipe }: { recipe: Recipe }) => (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-            <div className="relative">
-                {recipe.image_url ? (
-                    <img
-                        src={recipe.image_url}
-                        alt={recipe.title}
-                        className="w-full h-48 object-cover"
-                    />
-                ) : (
-                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                        <ChefHat className="h-12 w-12 text-gray-400" />
-                    </div>
-                )}
-                <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
-                    <Heart className="h-4 w-4 text-gray-400" />
-                </div>
-            </div>
-
-            <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                    <Link to={`/recipes/${recipe.id}`} className="hover:text-blue-600">
-                        {recipe.title}
-                    </Link>
-                </h3>
-
-                <div className="flex items-center text-sm text-gray-500 mb-3">
-                    <Users className="h-4 w-4 mr-1" />
-                    <span>By {recipe.user?.name || 'Unknown'}</span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                    <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        <span>{recipe.cook_time || 'N/A'} mins</span>
-                    </div>
-                    <div className="flex items-center">
-                        <Star className="h-4 w-4 mr-1" />
-                        <span>4.5</span>
-                    </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                        {recipe.difficulty && (
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                                recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-red-100 text-red-800'
-                                }`}>
-                                {recipe.difficulty}
-                            </span>
-                        )}
-                        {recipe.category && (
-                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                                {recipe.category}
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex items-center text-gray-400">
-                        <Eye className="h-4 w-4 mr-1" />
-                        <span className="text-xs">125</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    const RecipeListItem = ({ recipe }: { recipe: Recipe }) => (
-        <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
-            <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0">
-                    {recipe.image_url ? (
-                        <img
-                            src={recipe.image_url}
-                            alt={recipe.title}
-                            className="w-20 h-20 object-cover rounded-lg"
-                        />
-                    ) : (
-                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                            <ChefHat className="h-8 w-8 text-gray-400" />
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        <Link to={`/recipes/${recipe.id}`} className="hover:text-blue-600">
-                            {recipe.title}
-                        </Link>
-                    </h3>
-
-                    <div className="flex items-center text-sm text-gray-500 mb-2">
-                        <Users className="h-4 w-4 mr-1" />
-                        <span>By {recipe.user?.name || 'Unknown'}</span>
-                    </div>
-
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                        {recipe.instructions.substring(0, 150)}...
-                    </p>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <div className="flex items-center">
-                                <Clock className="h-4 w-4 mr-1" />
-                                <span>{recipe.cook_time || 'N/A'} mins</span>
-                            </div>
-                            <div className="flex items-center">
-                                <Star className="h-4 w-4 mr-1" />
-                                <span>4.5</span>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                            {recipe.difficulty && (
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                                    recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                        'bg-red-100 text-red-800'
-                                    }`}>
-                                    {recipe.difficulty}
-                                </span>
-                            )}
-                            {recipe.category && (
-                                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                                    {recipe.category}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
     if (error) {
         return (
             <div className="text-center py-12">
@@ -247,12 +274,16 @@ export const RecipeList = () => {
                         <button
                             onClick={() => setViewMode('grid')}
                             className={`p-2 rounded-md ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}
+                            aria-label="Grid view"
+                            aria-pressed={viewMode === 'grid'}
                         >
                             <Grid className="h-5 w-5" />
                         </button>
                         <button
                             onClick={() => setViewMode('list')}
                             className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}
+                            aria-label="List view"
+                            aria-pressed={viewMode === 'list'}
                         >
                             <ListIcon className="h-5 w-5" />
                         </button>

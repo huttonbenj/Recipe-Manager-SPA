@@ -30,6 +30,7 @@ export const errorHandler = (
 
   if (err instanceof ValidationError) {
     return res.status(400).json({
+      success: false,
       error: 'Validation Error',
       details: err.errors.errors
     });
@@ -37,6 +38,7 @@ export const errorHandler = (
 
   if (err instanceof z.ZodError) {
     return res.status(400).json({
+      success: false,
       error: 'Validation Error',
       details: err.errors
     });
@@ -44,6 +46,7 @@ export const errorHandler = (
 
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
+      success: false,
       error: err.message,
       details: err.details
     });
@@ -51,6 +54,7 @@ export const errorHandler = (
 
   // Default error
   return res.status(500).json({
+    success: false,
     error: 'Internal Server Error',
     message: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
