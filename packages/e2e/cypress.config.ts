@@ -62,13 +62,51 @@ export default defineConfig({
           console.table(message as unknown);
           return null;
         },
-        'db:seed': () => {
-          // Database seeding not implemented - would require server API integration
-          return null;
+        'db:seed': async () => {
+          // Execute the actual seed script
+          const { exec } = require('child_process');
+          const { promisify } = require('util');
+          const execAsync = promisify(exec);
+          
+          try {
+            await execAsync('cd ../server && npm run db:seed');
+            console.log('Database seeded successfully');
+            return null;
+          } catch (error) {
+            console.error('Failed to seed database:', error);
+            throw error;
+          }
         },
-        'db:clean': () => {
-          // Database cleanup not implemented - would require server API integration
-          return null;
+        'db:seedLargeDataset': async () => {
+          // For performance testing, we can run the seed script multiple times
+          // or create a dedicated large dataset seeder
+          const { exec } = require('child_process');
+          const { promisify } = require('util');
+          const execAsync = promisify(exec);
+          
+          try {
+            await execAsync('cd ../server && npm run db:seed');
+            console.log('Large dataset seeded successfully');
+            return null;
+          } catch (error) {
+            console.error('Failed to seed large dataset:', error);
+            throw error;
+          }
+        },
+        'db:clean': async () => {
+          // Clean database by running Prisma reset
+          const { exec } = require('child_process');
+          const { promisify } = require('util');
+          const execAsync = promisify(exec);
+          
+          try {
+            await execAsync('cd ../server && npx prisma migrate reset --force');
+            console.log('Database cleaned successfully');
+            return null;
+          } catch (error) {
+            console.error('Failed to clean database:', error);
+            throw error;
+          }
         }
       });
 
