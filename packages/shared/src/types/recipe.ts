@@ -11,8 +11,8 @@ export const RecipeSchema = z.object({
   difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
   category: z.string().max(50).optional(),
   tags: z.string().optional(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.string(),
+  updated_at: z.string(),
   user_id: z.string(),
   user: z.object({
     id: z.string(),
