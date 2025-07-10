@@ -153,7 +153,7 @@ router.get(
 router.get(
   '/search',
   [
-    query('q')
+    query('search')
       .trim()
       .isLength({ min: 1 })
       .withMessage('Search query is required'),
@@ -162,14 +162,14 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     if (handleValidationErrors(req, res)) return;
 
-    const { q, page = 1, limit = 10 } = req.query;
+    const { search, page = 1, limit = 10 } = req.query;
     
     const pagination = {
       page: parseInt(page as string, 10),
       limit: parseInt(limit as string, 10),
     };
 
-    const result = await RecipeService.searchRecipes(q as string, pagination);
+    const result = await RecipeService.searchRecipes(search as string, pagination);
     
     res.json({
       success: true,
