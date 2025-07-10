@@ -7,8 +7,7 @@ import {
     PlusCircle,
     User,
     LogOut,
-    ChefHat,
-    Search
+    ChefHat
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
@@ -31,7 +30,6 @@ export const Navigation = () => {
     const navItems = [
         { to: '/dashboard', label: 'Dashboard', icon: Home },
         { to: '/recipes', label: 'Recipes', icon: ChefHat },
-        { to: '/recipes/search', label: 'Search', icon: Search },
         { to: '/recipes/new', label: 'Add Recipe', icon: PlusCircle },
     ];
 
@@ -61,8 +59,8 @@ export const Navigation = () => {
                                         key={item.to}
                                         to={item.to}
                                         className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive(item.to)
-                                                ? 'border-blue-500 text-gray-900'
-                                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                                            ? 'border-blue-500 text-gray-900'
+                                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                                             }`}
                                     >
                                         <Icon className="h-4 w-4 mr-2" />
@@ -143,8 +141,8 @@ export const Navigation = () => {
                                     key={item.to}
                                     to={item.to}
                                     className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive(item.to)
-                                            ? 'bg-blue-50 border-blue-500 text-blue-700'
-                                            : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
+                                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                                        : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
                                         }`}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
