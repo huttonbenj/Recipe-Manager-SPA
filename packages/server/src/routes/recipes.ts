@@ -80,7 +80,7 @@ router.get('/', asyncHandler(async (req: Request, res: Response) => {
   if (recipeFilters.maxCookTime !== undefined) cleanFilters.maxCookTime = recipeFilters.maxCookTime;
   if (recipeFilters.search !== undefined) cleanFilters.search = recipeFilters.search;
   
-  const result = await RecipeService.getRecipes(cleanFilters, { page, limit });
+  const result = await RecipeService.getRecipes(cleanFilters, { page, limit }, false);
   
   res.json({
     message: 'Recipes retrieved successfully',
@@ -111,7 +111,7 @@ router.get('/my', authenticate, asyncHandler(async (req: Request, res: Response)
   if (recipeFilters.maxCookTime !== undefined) cleanFilters.maxCookTime = recipeFilters.maxCookTime;
   if (recipeFilters.search !== undefined) cleanFilters.search = recipeFilters.search;
   
-  const result = await RecipeService.getRecipes(cleanFilters, { page, limit });
+  const result = await RecipeService.getRecipes(cleanFilters, { page, limit }, false);
   
   res.json({
     message: 'Your recipes retrieved successfully',
