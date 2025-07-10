@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { ErrorResponseSchema } from '../types/api';
 import { UserSchema, UserCredentialsSchema, UserRegistrationSchema } from '../types/user';
 import { RecipeSchema, RecipeCreateSchema, RecipeUpdateSchema } from '../types/recipe';
+import { RECIPE_CONFIG } from '../constants/index';
 
 // Validation Error Class
 export class ValidationError extends Error {
@@ -273,7 +274,7 @@ export function validateRecipe(recipe: unknown): ValidationResult {
   }
 
   if (recipeData.difficulty !== undefined) {
-    if (typeof recipeData.difficulty !== 'string' || !['Easy', 'Medium', 'Hard'].includes(recipeData.difficulty)) {
+    if (typeof recipeData.difficulty !== 'string' || !RECIPE_CONFIG.DIFFICULTY_LEVELS.includes(recipeData.difficulty as any)) {
       errors.push('difficulty');
       isValid = false;
     }

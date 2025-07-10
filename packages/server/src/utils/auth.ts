@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { User, SERVER_CONFIG } from '@recipe-manager/shared';
+import { User, SERVER_CONFIG, validatePassword } from '@recipe-manager/shared';
 
 const JWT_SECRET = process.env.JWT_SECRET || SERVER_CONFIG.JWT_SECRET_FALLBACK;
 const SALT_ROUNDS = SERVER_CONFIG.SALT_ROUNDS;
@@ -71,32 +71,8 @@ export class AuthUtils {
   }
 
   static validatePassword(password: string): { isValid: boolean; errors: string[] } {
-    const errors: string[] = [];
-
-    if (password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
-    }
-
-    if (!/(?=.*[a-z])/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
-    }
-
-    if (!/(?=.*[A-Z])/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
-    }
-
-    if (!/(?=.*\d)/.test(password)) {
-      errors.push('Password must contain at least one number');
-    }
-
-    if (!/(?=.*[@$!%*?&])/.test(password)) {
-      errors.push('Password must contain at least one special character (@$!%*?&)');
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+    // Use shared validation function for consistency
+    return validatePassword(password);
   }
 
   static sanitizeUserResponse(user: User & { password_hash?: string }): Omit<User, 'password_hash'> {

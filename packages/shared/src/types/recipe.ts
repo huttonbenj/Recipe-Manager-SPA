@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { RECIPE_CONFIG } from '../constants/index.js';
 
 // Core Recipe Schema - this is the authoritative recipe type definition
 export const RecipeSchema = z.object({
@@ -9,7 +10,7 @@ export const RecipeSchema = z.object({
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
+  difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
   category: z.string().max(50).optional(),
   tags: z.string().optional(), // JSON string in database
   created_at: z.coerce.date(),
@@ -30,7 +31,7 @@ export const RecipeCreateSchema = z.object({
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
+  difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
   category: z.string().max(50).optional(),
   tags: z.string().optional()
 });
@@ -43,7 +44,7 @@ export const RecipeUpdateSchema = z.object({
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
+  difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
   category: z.string().max(50).optional(),
   tags: z.string().optional()
 });
@@ -52,7 +53,7 @@ export const RecipeUpdateSchema = z.object({
 export const RecipeSearchSchema = z.object({
   search: z.string().optional(),
   category: z.string().optional(),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
+  difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
   tags: z.string().optional(),
   user_id: z.string().optional(),
   sortBy: z.enum(['created_at', 'updated_at', 'title', 'cook_time']).optional(),
@@ -136,14 +137,14 @@ export type InstructionStep = z.infer<typeof InstructionStepSchema>;
 export type RecipeStats = z.infer<typeof RecipeStatsSchema>;
 export type RecipeStatsResponse = z.infer<typeof RecipeStatsResponseSchema>;
 
-// Form data type for client-side recipe forms
+// Form data type for client-side recipe forms  
 export interface RecipeFormData {
   title: string;
   ingredients: string;
   instructions: string;
   cook_time: number;
   servings: number;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  difficulty: typeof RECIPE_CONFIG.DIFFICULTY_LEVELS[number];
   category: string;
   tags: string;
   image_url?: string;

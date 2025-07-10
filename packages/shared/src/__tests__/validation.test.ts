@@ -8,6 +8,7 @@ import {
   validateRecipe, 
   validateUser 
 } from '../validation/index';
+import { RECIPE_CONFIG } from '../constants/index';
 
 describe('Validation Functions', () => {
   describe('validateEmail', () => {
@@ -191,7 +192,7 @@ describe('Validation Functions', () => {
       expect(validateRecipe(invalidDifficulty).errors).toContain('difficulty');
 
       // Valid difficulties
-      const validDifficulties = ['Easy', 'Medium', 'Hard'];
+      const validDifficulties = RECIPE_CONFIG.DIFFICULTY_LEVELS;
       validDifficulties.forEach(difficulty => {
         const validData = { ...validRecipeData, difficulty };
         expect(validateRecipe(validData).isValid).toBe(true);

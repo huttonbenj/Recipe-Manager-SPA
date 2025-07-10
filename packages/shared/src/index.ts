@@ -6,8 +6,26 @@ export * from './types/api';
 // Export the new Zod-based validation system
 export * from './validation/index';
 
-// Export shared constants
-export * from './constants/index';
+// Export shared constants - explicit exports for better bundler compatibility
+export {
+  API_CONFIG,
+  API_ENDPOINTS,
+  STORAGE_KEYS,
+  SERVER_CONFIG,
+  CLIENT_CONFIG,
+  DATABASE_CONFIG,
+  PAGINATION_DEFAULTS,
+  TIMEOUTS,
+  HTTP_STATUS,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+  RECIPE_CONFIG,
+  USER_CONFIG,
+  UPLOAD_CONFIG,
+  ENV_VARS,
+  TEST_CONFIG,
+  CONSTANTS
+} from './constants/index';
 
 // Export shared utilities
 export * from './utils/index';

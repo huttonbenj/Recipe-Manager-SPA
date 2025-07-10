@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import { API_CONFIG } from '@recipe-manager/shared';
 
 export default defineConfig({
   plugins: [react()],
@@ -8,13 +7,19 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: API_CONFIG.BASE_URL,
+        target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
       },
     },
   },
+  optimizeDeps: {
+    include: ['@recipe-manager/shared'],
+  },
   build: {
     sourcemap: true,
+    commonjsOptions: {
+      include: [/node_modules/, /packages\/shared/],
+    },
   },
 }); 

@@ -13,7 +13,8 @@ import type {
 } from '@recipe-manager/shared';
 import { 
   API_CONFIG,
-  STORAGE_KEYS
+  STORAGE_KEYS,
+  API_ENDPOINTS
 } from '@recipe-manager/shared';
 
 // Import shared types
@@ -62,7 +63,7 @@ axiosInstance.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
         if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
+          const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH}`, {
             refreshToken,
           });
           
@@ -94,7 +95,7 @@ class ApiClient {
 
   // Auth methods
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response: AxiosResponse<ApiResponse<AuthResponse>> = await axiosInstance.post('/api/auth/login', credentials);
+    const response: AxiosResponse<ApiResponse<AuthResponse>> = await axiosInstance.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
     const { user, tokens } = response.data.data;
     
     // Store tokens using shared constants
@@ -106,7 +107,7 @@ class ApiClient {
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    const response: AxiosResponse<ApiResponse<AuthResponse>> = await axiosInstance.post('/api/auth/register', userData);
+    const response: AxiosResponse<ApiResponse<AuthResponse>> = await axiosInstance.post(API_ENDPOINTS.AUTH.REGISTER, userData);
     const { user, tokens } = response.data.data;
     
     // Store tokens using shared constants
@@ -119,7 +120,7 @@ class ApiClient {
 
   async logout(): Promise<void> {
     try {
-      await axiosInstance.post('/api/auth/logout');
+      await axiosInstance.post(API_ENDPOINTS.AUTH.LOGOUT);
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -131,7 +132,7 @@ class ApiClient {
   }
 
   async getCurrentUser(): Promise<User> {
-    const response: AxiosResponse<ApiResponse<User>> = await axiosInstance.get('/api/auth/profile');
+    const response: AxiosResponse<ApiResponse<User>> = await axiosInstance.get(API_ENDPOINTS.AUTH.PROFILE);
     
     // Update stored user data using shared constants
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.data.data));
@@ -141,7 +142,7 @@ class ApiClient {
 
   async updateProfile(userData: { name?: string; email?: string }): Promise<User> {
     const response: AxiosResponse<ApiResponse<User>> = await axiosInstance.put(
-      '/api/auth/profile',
+      API_ENDPOINTS.AUTH.PROFILE,
       userData
     );
     
@@ -155,7 +156,7 @@ class ApiClient {
 
   async changePassword(passwordData: { currentPassword: string; newPassword: string }): Promise<void> {
     const response: AxiosResponse<ApiResponse<void>> = await axiosInstance.post(
-      '/api/auth/change-password',
+      API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
       passwordData
     );
     
@@ -165,7 +166,7 @@ class ApiClient {
   }
 
   async getUserStats(): Promise<UserStats> {
-    const response: AxiosResponse<ApiResponse<UserStats>> = await axiosInstance.get('/api/auth/stats');
+    const response: AxiosResponse<ApiResponse<UserStats>> = await axiosInstance.get(API_ENDPOINTS.AUTH.STATS);
     
     if (response.data.success) {
       return response.data.data;
@@ -176,7 +177,7 @@ class ApiClient {
 
   // Recipe endpoints
   async getRecipes(params?: RecipeSearchParams): Promise<PaginatedResponse<Recipe>> {
-    const response: AxiosResponse<PaginatedResponse<Recipe>> = await axiosInstance.get('/api/recipes', {
+    const response: AxiosResponse<PaginatedResponse<Recipe>> = await axiosInstance.get(API_ENDPOINTS.RECIPES.LIST, {
       params,
     });
     
@@ -188,7 +189,7 @@ class ApiClient {
   }
 
   async getRecipe(id: string): Promise<Recipe> {
-    const response: AxiosResponse<ApiResponse<Recipe>> = await axiosInstance.get(`/api/recipes/${id}`);
+    const response: AxiosResponse<ApiResponse<Recipe>> = await axiosInstance.get(API_ENDPOINTS.RECIPES.DETAIL.replace(':id', id));
     
     if (response.data.success) {
       return response.data.data;
@@ -199,7 +200,7 @@ class ApiClient {
 
   async createRecipe(recipeData: RecipeCreateRequest): Promise<Recipe> {
     const response: AxiosResponse<ApiResponse<Recipe>> = await axiosInstance.post(
-      '/api/recipes',
+      API_ENDPOINTS.RECIPES.CREATE,
       recipeData
     );
     
@@ -212,7 +213,7 @@ class ApiClient {
 
   async updateRecipe(id: string, recipeData: RecipeUpdateRequest): Promise<Recipe> {
     const response: AxiosResponse<ApiResponse<Recipe>> = await axiosInstance.put(
-      `/api/recipes/${id}`,
+      API_ENDPOINTS.RECIPES.UPDATE.replace(':id', id),
       recipeData
     );
     
@@ -224,7 +225,7 @@ class ApiClient {
   }
 
   async deleteRecipe(id: string): Promise<void> {
-    const response: AxiosResponse<ApiResponse<void>> = await axiosInstance.delete(`/api/recipes/${id}`);
+    const response: AxiosResponse<ApiResponse<void>> = await axiosInstance.delete(API_ENDPOINTS.RECIPES.DELETE.replace(':id', id));
     
     if (!response.data.success) {
       throw new Error(response.data.error || 'Failed to delete recipe');
@@ -233,7 +234,7 @@ class ApiClient {
 
   async searchRecipes(params: RecipeSearchParams): Promise<PaginatedResponse<Recipe>> {
     const response: AxiosResponse<PaginatedResponse<Recipe>> = await axiosInstance.get(
-      '/api/recipes/search',
+      API_ENDPOINTS.RECIPES.SEARCH,
       { params }
     );
     
@@ -245,7 +246,7 @@ class ApiClient {
   }
 
   async getUserRecipes(userId?: string, params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Recipe>> {
-    const endpoint = userId ? `/api/users/${userId}/recipes` : '/api/users/me/recipes';
+    const endpoint = userId ? API_ENDPOINTS.USERS.USER_RECIPES.replace(':id', userId) : API_ENDPOINTS.USERS.MY_RECIPES;
     const response: AxiosResponse<PaginatedResponse<Recipe>> = await axiosInstance.get(endpoint, {
       params,
     });
@@ -258,7 +259,7 @@ class ApiClient {
   }
 
   async getRecipeCategories(): Promise<string[]> {
-    const response: AxiosResponse<ApiResponse<string[]>> = await axiosInstance.get('/api/recipes/categories');
+    const response: AxiosResponse<ApiResponse<string[]>> = await axiosInstance.get(API_ENDPOINTS.RECIPES.CATEGORIES);
     
     if (response.data.success) {
       return response.data.data;
@@ -273,7 +274,7 @@ class ApiClient {
     formData.append('image', file);
 
     const response: AxiosResponse<ApiResponse<{ url: string; filename: string; originalName: string; size: number; mimetype: string }>> = await axiosInstance.post(
-      '/api/upload/image',
+      API_ENDPOINTS.UPLOAD.IMAGE,
       formData,
       {
         headers: {
