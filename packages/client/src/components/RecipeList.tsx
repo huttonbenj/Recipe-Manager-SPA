@@ -181,18 +181,14 @@ export const RecipeList: React.FC = () => {
         return formatTime(prepTime + cookTime);
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gray-50 py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                        <p className="mt-4 text-gray-600">Loading recipes...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    // Replace full-page spinner with inline spinner so inputs retain focus during loading
+
+    // Show a subtle spinner below filters while data is fetching (after initial mount)
+    const renderInlineLoader = () => (
+        <div className="flex justify-center py-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+    );
 
     if (error) {
         return (
@@ -303,6 +299,9 @@ export const RecipeList: React.FC = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Inline loader */}
+                {loading && renderInlineLoader()}
 
                 {/* Recipe Grid */}
                 {recipes.length === 0 ? (
