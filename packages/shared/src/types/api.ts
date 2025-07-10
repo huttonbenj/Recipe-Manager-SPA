@@ -108,12 +108,12 @@ export const ErrorResponseSchema = z.object({
   timestamp: z.string().optional()
 });
 
-// Validation Error Schema
-export const ValidationErrorSchema = z.object({
-  field: z.string(),
-  message: z.string(),
-  value: z.unknown().optional()
-});
+// Validation Error Schema (moved to validation module)
+// export const ValidationErrorSchema = z.object({
+//   field: z.string(),
+//   message: z.string(),
+//   value: z.unknown().optional()
+// });
 
 // API Endpoint Types
 export interface ApiEndpoints {
@@ -197,4 +197,4 @@ export type CreateRecipeRequest = z.infer<typeof CreateRecipeRequestSchema>;
 export type UpdateRecipeRequest = z.infer<typeof UpdateRecipeRequestSchema>;
 export type FileUploadResponse = z.infer<typeof FileUploadResponseSchema>;
 export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;
-export type ValidationError = z.infer<typeof ValidationErrorSchema>; 
+// export type ValidationError = z.infer<typeof ValidationErrorSchema>; 

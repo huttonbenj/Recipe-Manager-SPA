@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ApiErrorSchema } from '../types/api';
+import { ErrorResponseSchema } from '../types/api';
 
 export class ValidationError extends Error {
   constructor(
@@ -10,16 +10,14 @@ export class ValidationError extends Error {
     this.name = 'ValidationError';
   }
 
-  toApiError(): z.infer<typeof ApiErrorSchema> {
+  toApiError(): z.infer<typeof ErrorResponseSchema> {
     return {
-      message: this.message,
-      code: 'VALIDATION_ERROR',
-      details: {
-        errors: this.errors.errors.map(err => ({
-          path: err.path.join('.'),
-          message: err.message
-        }))
-      }
+      success: false,
+      error: this.message,
+      details: this.errors.errors.map(err => ({
+        path: err.path.join('.'),
+        message: err.message
+      }))
     };
   }
 }
