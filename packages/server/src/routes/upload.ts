@@ -5,6 +5,7 @@ import fs from 'fs';
 import sharp from 'sharp';
 import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../utils/asyncHandler';
+import { HTTP_STATUS } from '@recipe-manager/shared';
 import logger from '../utils/logger';
 
 const router = Router();
@@ -47,7 +48,7 @@ const upload = multer({
 // Upload single image
 router.post('/image', authenticate, upload.single('image'), asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) {
-    res.status(400).json({ 
+    res.status(HTTP_STATUS.BAD_REQUEST).json({ 
       success: false,
       error: 'No file uploaded' 
     });
@@ -93,7 +94,7 @@ router.post('/image', authenticate, upload.single('image'), asyncHandler(async (
       fs.unlinkSync(req.file.path);
     }
     
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: 'Error processing image',
       message: 'Failed to process uploaded image',
@@ -106,7 +107,7 @@ router.post('/images', authenticate, upload.array('images', 5), asyncHandler(asy
   const files = req.files as Express.Multer.File[];
   
   if (!files || files.length === 0) {
-    res.status(400).json({ 
+    res.status(HTTP_STATUS.BAD_REQUEST).json({ 
       success: false,
       error: 'No files uploaded' 
     });
@@ -167,7 +168,7 @@ router.post('/images', authenticate, upload.array('images', 5), asyncHandler(asy
       });
     }
     
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: 'Error processing images',
       message: 'Failed to process uploaded images',

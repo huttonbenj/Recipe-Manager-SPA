@@ -1,36 +1,19 @@
 import { Recipe, Prisma } from '../generated/prisma';
 import { prisma } from '../config/database';
 import logger from '../utils/logger';
+import { 
+  CreateRecipeRequest, 
+  UpdateRecipeRequest, 
+  RecipeSearchParams
+} from '@recipe-manager/shared';
 
-export interface RecipeCreateData {
-  title: string;
-  ingredients: string; // JSON string
-  instructions: string;
-  image_url?: string;
-  cook_time?: number;
-  servings?: number;
-  difficulty?: string;
-  category?: string;
-  tags?: string; // JSON string
+export interface RecipeCreateData extends CreateRecipeRequest {
   user_id: string;
 }
 
-export interface RecipeUpdateData {
-  title?: string;
-  ingredients?: string;
-  instructions?: string;
-  image_url?: string;
-  cook_time?: number;
-  servings?: number;
-  difficulty?: string;
-  category?: string;
-  tags?: string;
-}
+export interface RecipeUpdateData extends UpdateRecipeRequest {}
 
-export interface RecipeFilters {
-  search?: string;
-  category?: string;
-  difficulty?: string;
+export interface RecipeFilters extends Pick<RecipeSearchParams, 'search' | 'category' | 'difficulty'> {
   user_id?: string;
 }
 
@@ -137,8 +120,19 @@ export class RecipeService {
 
   static async createRecipe(data: RecipeCreateData): Promise<Recipe> {
     try {
+      // Transform undefined to null for Prisma compatibility
+      const prismaData = {
+        ...data,
+        image_url: data.image_url ?? null,
+        cook_time: data.cook_time ?? null,
+        servings: data.servings ?? null,
+        difficulty: data.difficulty ?? null,
+        category: data.category ?? null,
+        tags: data.tags ?? null,
+      };
+
       const recipe = await prisma.recipe.create({
-        data,
+        data: prismaData,
         include: {
           user: {
             select: {
@@ -161,12 +155,25 @@ export class RecipeService {
 
   static async updateRecipe(id: string, data: RecipeUpdateData): Promise<Recipe> {
     try {
+      // Filter out undefined values and transform to null for Prisma compatibility
+      const updateData: Record<string, any> = {
+        updated_at: new Date(),
+      };
+
+      // Only include defined fields
+      if (data.title !== undefined) updateData.title = data.title;
+      if (data.ingredients !== undefined) updateData.ingredients = data.ingredients;
+      if (data.instructions !== undefined) updateData.instructions = data.instructions;
+      if (data.image_url !== undefined) updateData.image_url = data.image_url ?? null;
+      if (data.cook_time !== undefined) updateData.cook_time = data.cook_time ?? null;
+      if (data.servings !== undefined) updateData.servings = data.servings ?? null;
+      if (data.difficulty !== undefined) updateData.difficulty = data.difficulty ?? null;
+      if (data.category !== undefined) updateData.category = data.category ?? null;
+      if (data.tags !== undefined) updateData.tags = data.tags ?? null;
+
       const recipe = await prisma.recipe.update({
         where: { id },
-        data: {
-          ...data,
-          updated_at: new Date(),
-        },
+        data: updateData,
         include: {
           user: {
             select: {

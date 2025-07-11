@@ -8,7 +8,7 @@ import {
   validateQuery,
   IdParamsSchema
 } from '../middleware/validation';
-import { PaginationParamsSchema } from '@recipe-manager/shared';
+import { PaginationParamsSchema, HTTP_STATUS } from '@recipe-manager/shared';
 import logger from '../utils/logger';
 
 const router = Router();
@@ -24,7 +24,7 @@ router.get(
       const user = await UserService.getUserProfile(userId);
 
       if (!user) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: 'User not found'
         });
@@ -37,7 +37,7 @@ router.get(
       });
     } catch (error) {
       logger.error('Profile fetch error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to fetch profile'
       });
@@ -74,7 +74,7 @@ router.get(
       });
     } catch (error) {
       logger.error('User recipes fetch error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to fetch user recipes'
       });
@@ -98,7 +98,7 @@ router.get(
       });
     } catch (error) {
       logger.error('User stats fetch error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to fetch user statistics'
       });
@@ -117,7 +117,7 @@ router.get(
       const user = await UserService.getUserProfile(id!);
 
       if (!user) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: 'User not found'
         });
@@ -137,7 +137,7 @@ router.get(
       });
     } catch (error) {
       logger.error('User fetch error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to fetch user'
       });
@@ -163,7 +163,7 @@ router.get(
       // First, verify the user exists
       const user = await UserService.getUserProfile(id!);
       if (!user) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: 'User not found'
         });
@@ -188,7 +188,7 @@ router.get(
       });
     } catch (error) {
       logger.error('User recipes fetch error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to fetch user recipes'
       });
@@ -207,7 +207,7 @@ router.get(
       // First, verify the user exists
       const user = await UserService.getUserProfile(id!);
       if (!user) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: 'User not found'
         });
@@ -226,7 +226,7 @@ router.get(
       });
     } catch (error) {
       logger.error('User stats fetch error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to fetch user statistics'
       });
@@ -252,7 +252,7 @@ router.delete(
       });
     } catch (error) {
       logger.error('User deletion error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to delete user account'
       });

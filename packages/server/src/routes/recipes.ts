@@ -7,7 +7,8 @@ import {
   CreateRecipeRequestSchema, 
   UpdateRecipeRequestSchema,
   PaginationParamsSchema,
-  RecipeSearchParamsSchema
+  RecipeSearchParamsSchema,
+  HTTP_STATUS
 } from '@recipe-manager/shared';
 import { z } from 'zod';
 import logger from '../utils/logger';
@@ -36,7 +37,7 @@ router.get(
     const filters = {
       search: search as string,
       category: category as string,
-      difficulty: difficulty as string,
+      difficulty: difficulty as 'Easy' | 'Medium' | 'Hard' | undefined,
     };
     
     const pagination = {
@@ -109,7 +110,7 @@ router.get(
     const recipe = await RecipeService.getRecipeById(id!);
     
     if (!recipe) {
-      res.status(404).json({
+      res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: 'Recipe not found'
       });
@@ -139,7 +140,7 @@ router.post(
     
     logger.info(`User ${userId} created recipe: ${recipe.title}`);
     
-    res.status(201).json({
+    res.status(HTTP_STATUS.CREATED).json({
       success: true,
       data: recipe,
       message: 'Recipe created successfully'
@@ -160,7 +161,7 @@ router.put(
     // Check if recipe exists and user owns it
     const existingRecipe = await RecipeService.getRecipeById(id!);
     if (!existingRecipe) {
-      res.status(404).json({
+      res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: 'Recipe not found'
       });
@@ -168,7 +169,7 @@ router.put(
     }
 
     if (existingRecipe.user_id !== userId) {
-      res.status(403).json({
+      res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
         error: 'You can only update your own recipes'
       });
@@ -199,7 +200,7 @@ router.delete(
     // Check if recipe exists and user owns it
     const existingRecipe = await RecipeService.getRecipeById(id!);
     if (!existingRecipe) {
-      res.status(404).json({
+      res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: 'Recipe not found'
       });
@@ -207,7 +208,7 @@ router.delete(
     }
 
     if (existingRecipe.user_id !== userId) {
-      res.status(403).json({
+      res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
         error: 'You can only delete your own recipes'
       });

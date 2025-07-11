@@ -9,7 +9,8 @@ import {
   LoginRequestSchema, 
   RefreshTokenRequestSchema,
   ChangePasswordRequestSchema,
-  UpdateProfileRequestSchema
+  UpdateProfileRequestSchema,
+  HTTP_STATUS
 } from '@recipe-manager/shared';
 import logger from '../utils/logger';
 
@@ -25,7 +26,7 @@ router.post(
     // Validate password strength
     const passwordValidation = AuthUtils.validatePassword(password);
     if (!passwordValidation.isValid) {
-      res.status(400).json({
+      res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: 'Password validation failed',
         details: passwordValidation.errors
@@ -55,7 +56,7 @@ router.post(
 
       logger.info(`New user registered: ${user.email}`);
 
-      res.status(201).json({
+      res.status(HTTP_STATUS.CREATED).json({
         success: true,
         data: {
           user: userResponse,
@@ -65,7 +66,7 @@ router.post(
       });
     } catch (error) {
       if (error instanceof Error && error.message.includes('already exists')) {
-        res.status(409).json({
+        res.status(HTTP_STATUS.CONFLICT).json({
           success: false,
           error: 'User with this email already exists'
         });
@@ -73,7 +74,7 @@ router.post(
       }
       
       logger.error('Registration error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to register user'
       });
@@ -93,7 +94,7 @@ router.post(
       const user = await UserService.authenticateUser({ email, password });
 
       if (!user) {
-        res.status(401).json({
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
           error: 'Invalid email or password'
         });
@@ -124,7 +125,7 @@ router.post(
       });
     } catch (error) {
       logger.error('Login error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to login'
       });
@@ -147,7 +148,7 @@ router.post(
       const user = await UserService.getUserById(payload.userId);
       
       if (!user) {
-        res.status(401).json({
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
           error: 'Invalid refresh token'
         });
@@ -164,7 +165,7 @@ router.post(
       });
     } catch (error) {
       logger.error('Token refresh error:', error);
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: 'Invalid refresh token'
       });
@@ -183,7 +184,7 @@ router.get(
       const user = await UserService.getUserProfile(userId);
 
       if (!user) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: 'User not found'
         });
@@ -196,7 +197,7 @@ router.get(
       });
     } catch (error) {
       logger.error('Profile fetch error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to fetch profile'
       });
@@ -232,7 +233,7 @@ router.put(
       });
     } catch (error) {
       if (error instanceof Error && error.message.includes('Email already in use')) {
-        res.status(409).json({
+        res.status(HTTP_STATUS.CONFLICT).json({
           success: false,
           error: 'Email already in use'
         });
@@ -240,7 +241,7 @@ router.put(
       }
 
       logger.error('Profile update error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to update profile'
       });
@@ -260,7 +261,7 @@ router.post(
     // Validate new password strength
     const passwordValidation = AuthUtils.validatePassword(newPassword);
     if (!passwordValidation.isValid) {
-      res.status(400).json({
+      res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: 'New password validation failed',
         details: passwordValidation.errors
@@ -277,7 +278,7 @@ router.post(
       });
     } catch (error) {
       if (error instanceof Error && error.message.includes('Current password is incorrect')) {
-        res.status(400).json({
+        res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           error: 'Current password is incorrect'
         });
@@ -285,7 +286,7 @@ router.post(
       }
 
       logger.error('Password change error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to change password'
       });
@@ -309,7 +310,7 @@ router.get(
       });
     } catch (error) {
       logger.error('Stats fetch error:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: 'Failed to fetch user statistics'
       });
