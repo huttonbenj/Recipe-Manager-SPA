@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Mock } from 'vitest';
+
+// Extend globalThis to include our mock
+declare global {
+    var mockUseDashboard: Mock;
+}
+
 vi.mock('../../../../hooks', () => {
     const mockUseDashboard = vi.fn();
     globalThis.mockUseDashboard = mockUseDashboard;
@@ -8,11 +14,26 @@ vi.mock('../../../../hooks', () => {
 import { renderWithProviders, screen } from '../../../utils/test-utils';
 import { Dashboard } from '../../../../components/features/dashboard/Dashboard';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare global {
-    // eslint-disable-next-line no-var
-    var mockUseDashboard: Mock;
-}
+// Mock the dashboard components
+vi.mock('../../../../components/features/dashboard/DashboardHeader', () => ({
+    DashboardHeader: () => <div data-testid="dashboard-header">Dashboard Header</div>,
+}));
+
+vi.mock('../../../../components/features/dashboard/DashboardStats', () => ({
+    DashboardStats: () => <div data-testid="dashboard-stats">Dashboard Stats</div>,
+}));
+
+vi.mock('../../../../components/features/dashboard/DashboardQuickActions', () => ({
+    DashboardQuickActions: () => <div data-testid="dashboard-quick-actions">Quick Actions</div>,
+}));
+
+vi.mock('../../../../components/features/dashboard/DashboardUserRecipes', () => ({
+    DashboardUserRecipes: () => <div data-testid="dashboard-user-recipes">User Recipes</div>,
+}));
+
+vi.mock('../../../../components/features/dashboard/DashboardCommunityRecipes', () => ({
+    DashboardCommunityRecipes: () => <div data-testid="dashboard-community-recipes">Community Recipes</div>,
+}));
 
 
 describe('Dashboard', () => {
