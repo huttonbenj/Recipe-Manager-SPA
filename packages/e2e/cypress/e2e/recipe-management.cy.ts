@@ -1,3 +1,5 @@
+import { CLIENT_CONFIG } from '@recipe-manager/shared';
+
 describe('Recipe Management E2E Tests', () => {
   beforeEach(() => {
     // Reset database state
@@ -323,7 +325,7 @@ describe('Recipe Management E2E Tests', () => {
       
       cy.then(() => {
         const loadTime = Date.now() - startTime;
-        expect(loadTime).to.be.lessThan(3000); // 3 seconds max
+        expect(loadTime).to.be.lessThan(CLIENT_CONFIG.TOAST_DURATION.SUCCESS); // 3 seconds max
       });
     });
 

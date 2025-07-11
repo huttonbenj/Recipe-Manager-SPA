@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { HelmetProvider } from 'react-helmet-async';
+import { CLIENT_CONFIG } from '@recipe-manager/shared';
 import { AuthProvider } from './contexts/AuthProvider';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/Layout';
@@ -134,20 +135,20 @@ function App() {
                                 <Toaster
                                     position="top-right"
                                     toastOptions={{
-                                        duration: 4000,
+                                        duration: CLIENT_CONFIG.TOAST_DURATION.DEFAULT,
                                         style: {
                                             background: '#363636',
                                             color: '#fff',
                                         },
                                         success: {
-                                            duration: 3000,
+                                            duration: CLIENT_CONFIG.TOAST_DURATION.SUCCESS,
                                             iconTheme: {
                                                 primary: '#10b981',
                                                 secondary: '#ffffff',
                                             },
                                         },
                                         error: {
-                                            duration: 5000,
+                                            duration: CLIENT_CONFIG.TOAST_DURATION.ERROR,
                                             iconTheme: {
                                                 primary: '#ef4444',
                                                 secondary: '#ffffff',

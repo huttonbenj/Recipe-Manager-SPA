@@ -3,6 +3,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
+import { CLIENT_CONFIG } from '@recipe-manager/shared';
 import { useAuth } from '../../hooks/useAuth';
 import { AuthProvider } from '../../contexts/AuthProvider';
 import { createMockUser } from '../utils/test-utils';
@@ -250,7 +251,7 @@ describe('useAuth Hook', () => {
 
             await waitFor(() => {
                 expect(result.current.isLoading).toBe(false);
-            }, { timeout: 3000 });
+            }, { timeout: CLIENT_CONFIG.TOAST_DURATION.SUCCESS });
 
             await act(async () => {
                 await result.current.register({
@@ -281,7 +282,7 @@ describe('useAuth Hook', () => {
 
             await waitFor(() => {
                 expect(result.current.isLoading).toBe(false);
-            }, { timeout: 3000 });
+            }, { timeout: CLIENT_CONFIG.TOAST_DURATION.SUCCESS });
 
             await expect(async () => {
                 await act(async () => {
@@ -311,7 +312,7 @@ describe('useAuth Hook', () => {
             // Wait for initial loading to complete
             await waitFor(() => {
                 expect(result.current.isLoading).toBe(false);
-            }, { timeout: 3000 });
+            }, { timeout: CLIENT_CONFIG.TOAST_DURATION.SUCCESS });
 
             await act(async () => {
                 await result.current.logout();
@@ -335,7 +336,7 @@ describe('useAuth Hook', () => {
             // Wait for initial loading to complete
             await waitFor(() => {
                 expect(result.current.isLoading).toBe(false);
-            }, { timeout: 3000 });
+            }, { timeout: CLIENT_CONFIG.TOAST_DURATION.SUCCESS });
 
             await act(async () => {
                 await result.current.logout();
@@ -496,7 +497,7 @@ describe('useAuth Hook', () => {
 
             await waitFor(() => {
                 expect(result.current.user).toEqual(mockUser);
-            }, { timeout: 3000 });
+            }, { timeout: CLIENT_CONFIG.TOAST_DURATION.SUCCESS });
 
             // Mock error for refresh
             mockApiClient.getCurrentUser.mockRejectedValue(mockError);

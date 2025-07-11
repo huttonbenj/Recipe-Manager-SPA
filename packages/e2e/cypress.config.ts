@@ -1,5 +1,6 @@
 import { defineConfig } from 'cypress';
 import codeCoverageTask from '@cypress/code-coverage/task';
+import { TIMEOUTS, API_CONFIG } from '@recipe-manager/shared';
 
 export default defineConfig({
   e2e: {
@@ -22,10 +23,10 @@ export default defineConfig({
     viewportHeight: 720,
     
     // Test execution settings
-    defaultCommandTimeout: 10000,
-    requestTimeout: 10000,
-    responseTimeout: 10000,
-    pageLoadTimeout: 30000,
+    defaultCommandTimeout: TIMEOUTS.API_REQUEST,
+    requestTimeout: TIMEOUTS.API_REQUEST,
+    responseTimeout: TIMEOUTS.API_REQUEST,
+    pageLoadTimeout: TIMEOUTS.PAGE_LOAD,
     
     // Test isolation
     testIsolation: true,
@@ -38,10 +39,10 @@ export default defineConfig({
     
     // Environment variables
     env: {
-      apiUrl: 'http://localhost:3001',
+      apiUrl: API_CONFIG.BASE_URL,
       coverage: true,
       codeCoverage: {
-        url: 'http://localhost:3001/__coverage__'
+        url: `${API_CONFIG.BASE_URL}/__coverage__`
       }
     },
     

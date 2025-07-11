@@ -1,6 +1,7 @@
 import { PrismaClient } from '../generated/prisma';
 import bcrypt from 'bcryptjs';
 import logger from '../utils/logger';
+import { SERVER_CONFIG } from '@recipe-manager/shared';
 
 const prisma = new PrismaClient();
 
@@ -261,7 +262,7 @@ async function seedUsers() {
     });
 
     if (!existingUser) {
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      const hashedPassword = await bcrypt.hash(userData.password, SERVER_CONFIG.SALT_ROUNDS);
       await prisma.user.create({
         data: {
           email: userData.email,

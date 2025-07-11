@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';
+import { TIMEOUTS, TEST_CONFIG } from '@recipe-manager/shared';
 
 export default defineConfig({
   test: {
@@ -26,9 +27,9 @@ export default defineConfig({
       'tests/e2e/**',
     ],
     // Standardized timeouts
-    testTimeout: 30000,
-    hookTimeout: 30000,
-    teardownTimeout: 30000,
+    testTimeout: TIMEOUTS.TEST_TIMEOUT,
+    hookTimeout: TIMEOUTS.HOOK_TIMEOUT,
+    teardownTimeout: TIMEOUTS.TEARDOWN_TIMEOUT,
     // Standardized reporters
     reporters: ['verbose', 'junit', 'json'],
     outputFile: {
@@ -54,10 +55,10 @@ export default defineConfig({
       // Standardized coverage thresholds
       thresholds: {
         global: {
-          statements: 85,
-          branches: 85,
-          functions: 85,
-          lines: 85,
+          statements: TEST_CONFIG.COVERAGE_THRESHOLD.STATEMENTS,
+          branches: TEST_CONFIG.COVERAGE_THRESHOLD.BRANCHES,
+          functions: TEST_CONFIG.COVERAGE_THRESHOLD.FUNCTIONS,
+          lines: TEST_CONFIG.COVERAGE_THRESHOLD.LINES,
         },
       },
     },

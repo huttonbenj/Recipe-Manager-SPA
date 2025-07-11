@@ -5,6 +5,8 @@
  * to ensure consistency and avoid duplication.
  */
 
+import { API_CONFIG, UPLOAD_CONFIG } from '../constants';
+
 /**
  * File upload validation utilities
  */
@@ -15,14 +17,14 @@ export interface FileValidationResult {
 
 export function validateImageFile(file: File): FileValidationResult {
   const errors: string[] = [];
-  const maxSize = 5 * 1024 * 1024; // 5MB
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  const maxSize = UPLOAD_CONFIG.MAX_FILE_SIZE;
+  const allowedTypes = UPLOAD_CONFIG.ALLOWED_IMAGE_TYPES;
 
   if (file.size > maxSize) {
     errors.push('File size must be less than 5MB');
   }
 
-  if (!allowedTypes.includes(file.type)) {
+  if (!allowedTypes.includes(file.type as typeof allowedTypes[number])) {
     errors.push('File must be a valid image (JPEG, PNG, GIF, or WebP)');
   }
 
@@ -102,7 +104,7 @@ export function formatRelativeTime(date: Date | string): string {
  * URL utilities
  */
 export function buildApiUrl(endpoint: string, baseUrl?: string): string {
-  const base = baseUrl || 'http://localhost:3001';
+  const base = baseUrl || API_CONFIG.BASE_URL;
   const cleanBase = base.replace(/\/+$/, '');
   const cleanEndpoint = endpoint.replace(/^\/+/, '');
   return `${cleanBase}/${cleanEndpoint}`;

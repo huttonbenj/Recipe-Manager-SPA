@@ -1,3 +1,5 @@
+import { TIMEOUTS } from '@recipe-manager/shared';
+
 describe('Smoke Tests', () => {
   describe('Application Health', () => {
     it('should load the home page', () => {
@@ -16,7 +18,7 @@ describe('Smoke Tests', () => {
       cy.visit('/');
       
       // Check if navigation is present (adjust selectors based on actual implementation)
-      cy.get('nav', { timeout: 10000 }).should('be.visible');
+      cy.get('nav', { timeout: TIMEOUTS.API_REQUEST }).should('be.visible');
     });
 
     it('should handle 404 pages gracefully', () => {
