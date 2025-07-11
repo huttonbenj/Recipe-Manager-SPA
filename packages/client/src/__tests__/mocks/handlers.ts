@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { User, Recipe } from '@recipe-manager/shared';
+import { User, Recipe, HTTP_STATUS } from '@recipe-manager/shared';
 
 // Mock data
 export const mockUser: User = {
@@ -70,7 +70,7 @@ export const handlers = [
         success: false,
         error: 'Invalid credentials',
       },
-      { status: 401 }
+      { status: HTTP_STATUS.UNAUTHORIZED }
     );
   }),
 
@@ -107,7 +107,7 @@ export const handlers = [
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return HttpResponse.json(
         { success: false, error: 'Unauthorized' },
-        { status: 401 }
+        { status: HTTP_STATUS.UNAUTHORIZED }
       );
     }
     
@@ -150,7 +150,7 @@ export const handlers = [
     
     return HttpResponse.json(
       { success: false, error: 'Current password is incorrect' },
-      { status: 400 }
+      { status: HTTP_STATUS.BAD_REQUEST }
     );
   }),
 
@@ -201,7 +201,7 @@ export const handlers = [
     if (!recipe) {
       return HttpResponse.json(
         { success: false, error: 'Recipe not found' },
-        { status: 404 }
+        { status: HTTP_STATUS.NOT_FOUND }
       );
     }
     
@@ -238,7 +238,7 @@ export const handlers = [
     if (!recipe) {
       return HttpResponse.json(
         { success: false, error: 'Recipe not found' },
-        { status: 404 }
+        { status: HTTP_STATUS.NOT_FOUND }
       );
     }
     
@@ -261,7 +261,7 @@ export const handlers = [
     if (!recipe) {
       return HttpResponse.json(
         { success: false, error: 'Recipe not found' },
-        { status: 404 }
+        { status: HTTP_STATUS.NOT_FOUND }
       );
     }
     
@@ -302,7 +302,7 @@ export const handlers = [
     if (!file) {
       return HttpResponse.json(
         { success: false, error: 'No file provided' },
-        { status: 400 }
+        { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
     
@@ -320,7 +320,7 @@ export const handlers = [
     console.error(`Unhandled ${request.method} request to ${request.url}`);
     return HttpResponse.json(
       { success: false, error: 'Not found' },
-      { status: 404 }
+      { status: HTTP_STATUS.NOT_FOUND }
     );
   }),
 ]; 

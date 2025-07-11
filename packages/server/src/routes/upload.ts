@@ -5,7 +5,7 @@ import fs from 'fs';
 import sharp from 'sharp';
 import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../utils/asyncHandler';
-import { HTTP_STATUS } from '@recipe-manager/shared';
+import { HTTP_STATUS, UPLOAD_CONFIG } from '@recipe-manager/shared';
 import logger from '../utils/logger';
 
 const router = Router();
@@ -41,7 +41,7 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: parseInt(process.env.UPLOAD_MAX_SIZE || '5242880', 10), // 5MB default
+    fileSize: parseInt(process.env.UPLOAD_MAX_SIZE || String(UPLOAD_CONFIG.MAX_FILE_SIZE), 10),
   },
 });
 

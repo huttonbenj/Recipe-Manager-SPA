@@ -8,7 +8,7 @@ import {
     Clock,
     Users
 } from 'lucide-react';
-import { RecipeFormData } from '@recipe-manager/shared';
+import { RecipeFormData, RECIPE_CONFIG } from '@recipe-manager/shared';
 import { apiClient } from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -241,9 +241,9 @@ export const RecipeForm = () => {
                                 onChange={(e) => updateFormData('difficulty', e.target.value as 'Easy' | 'Medium' | 'Hard')}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="Easy">Easy</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Hard">Hard</option>
+                                {RECIPE_CONFIG.DIFFICULTY_LEVELS.map((level) => (
+                                    <option key={level} value={level}>{level}</option>
+                                ))}
                             </select>
                         </div>
 

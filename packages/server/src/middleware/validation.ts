@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { 
   UserRegistrationSchema, 
-  UserCredentialsSchema 
+  UserCredentialsSchema,
+  HTTP_STATUS,
+  PAGINATION_DEFAULTS
 } from '@recipe-manager/shared';
 
 /**
@@ -13,7 +15,7 @@ import {
 
 // Shared function to handle validation errors consistently
 const handleValidationError = (error: z.ZodError, res: Response) => {
-  return res.status(400).json({
+  return res.status(HTTP_STATUS.BAD_REQUEST).json({
     success: false,
     error: 'Validation failed',
     details: error.issues.map((err: z.ZodIssue) => ({
@@ -81,8 +83,8 @@ export const IdParamsSchema = z.object({
 
 // Query parameter schemas with proper coercion for URL params
 export const PaginationQuerySchema = z.object({
-  page: z.coerce.number().int().min(1).optional().default(1),
-  limit: z.coerce.number().int().min(1).max(100).optional().default(10)
+  page: z.coerce.number().int().min(1).optional().default(PAGINATION_DEFAULTS.PAGE),
+  limit: z.coerce.number().int().min(1).max(PAGINATION_DEFAULTS.MAX_LIMIT).optional().default(PAGINATION_DEFAULTS.LIMIT)
 });
 
 // Pre-built validation middleware using shared schemas

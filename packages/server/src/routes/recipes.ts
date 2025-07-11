@@ -8,7 +8,8 @@ import {
   UpdateRecipeRequestSchema,
   PaginationParamsSchema,
   RecipeSearchParamsSchema,
-  HTTP_STATUS
+  HTTP_STATUS,
+  PAGINATION_DEFAULTS
 } from '@recipe-manager/shared';
 import { z } from 'zod';
 import logger from '../utils/logger';
@@ -18,8 +19,8 @@ const router = Router();
 // Schema for search query validation
 const SearchQuerySchema = z.object({
   search: z.string().min(1),
-  page: z.coerce.number().int().min(1).optional().default(1),
-  limit: z.coerce.number().int().min(1).max(100).optional().default(10)
+  page: z.coerce.number().int().min(1).optional().default(PAGINATION_DEFAULTS.PAGE),
+  limit: z.coerce.number().int().min(1).max(PAGINATION_DEFAULTS.MAX_LIMIT).optional().default(PAGINATION_DEFAULTS.LIMIT)
 });
 
 // Schema for category parameter validation
@@ -32,7 +33,7 @@ router.get(
   '/',
   validateQuery(RecipeSearchParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const { page = 1, limit = 10, search, category, difficulty } = req.query;
+    const { page = PAGINATION_DEFAULTS.PAGE, limit = PAGINATION_DEFAULTS.LIMIT, search, category, difficulty } = req.query;
     
     const filters = {
       search: search as string,

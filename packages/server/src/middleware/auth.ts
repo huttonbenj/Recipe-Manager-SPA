@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthUtils, JwtPayload } from '../utils/auth';
 import { ApiError } from './error';
+import { HTTP_STATUS } from '@recipe-manager/shared';
 
 export interface AuthenticatedRequest extends Request {
   user: JwtPayload;
@@ -12,7 +13,7 @@ export const authenticate = (req: Request, _res: Response, next: NextFunction): 
     const token = AuthUtils.extractTokenFromHeader(authHeader);
 
     if (!token) {
-      throw new ApiError(401, 'Access token required');
+      throw new ApiError(HTTP_STATUS.UNAUTHORIZED, 'Access token required');
     }
 
     const decoded = AuthUtils.verifyToken(token);
@@ -23,7 +24,7 @@ export const authenticate = (req: Request, _res: Response, next: NextFunction): 
     if (error instanceof ApiError) {
       next(error);
     } else {
-      next(new ApiError(401, 'Invalid or expired token'));
+      next(new ApiError(HTTP_STATUS.UNAUTHORIZED, 'Invalid or expired token'));
     }
   }
 };

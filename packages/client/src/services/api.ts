@@ -14,7 +14,8 @@ import type {
 import { 
   API_CONFIG,
   STORAGE_KEYS,
-  API_ENDPOINTS
+  API_ENDPOINTS,
+  HTTP_STATUS
 } from '@recipe-manager/shared';
 
 // Import shared types
@@ -57,7 +58,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === HTTP_STATUS.UNAUTHORIZED && !originalRequest._retry) {
       originalRequest._retry = true;
       
       try {
