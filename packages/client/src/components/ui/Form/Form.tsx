@@ -3,7 +3,7 @@ import { cn } from '../../../utils/cn';
 
 // Form Field Wrapper
 export interface FormFieldProps {
-    label?: string;
+    label?: React.ReactNode;
     error?: string;
     required?: boolean;
     children: React.ReactNode;

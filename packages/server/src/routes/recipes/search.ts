@@ -22,12 +22,22 @@ router.get(
   '/',
   validateQuery(RecipeSearchParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const { page = PAGINATION_DEFAULTS.PAGE, limit = PAGINATION_DEFAULTS.LIMIT, search, category, difficulty } = req.query;
+    const { 
+      page = PAGINATION_DEFAULTS.PAGE, 
+      limit = PAGINATION_DEFAULTS.LIMIT, 
+      search, 
+      category, 
+      difficulty,
+      sortBy = 'created_at',
+      sortOrder = 'desc'
+    } = req.query;
     
     const filters = {
       search: search as string,
       category: category as string,
       difficulty: difficulty as 'Easy' | 'Medium' | 'Hard' | undefined,
+      sortBy: sortBy as 'created_at' | 'updated_at' | 'title' | 'cook_time',
+      sortOrder: sortOrder as 'asc' | 'desc'
     };
     
     const pagination = {

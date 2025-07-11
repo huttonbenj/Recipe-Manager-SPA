@@ -1,5 +1,5 @@
 import { ValidationResult } from './errors';
-import { RECIPE_CONFIG } from '../constants/index';
+import { RECIPE_CONFIG } from '../constants/recipe';
 
 // Recipe validation
 export function validateRecipe(recipe: unknown): ValidationResult {

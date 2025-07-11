@@ -10,7 +10,7 @@ export class RecipeSearchService {
     pagination: PaginationOptions = {}
   ): Promise<RecipeListResult> {
     try {
-      const { search, category, difficulty, user_id } = filters;
+      const { search, category, difficulty, user_id, sortBy = 'created_at', sortOrder = 'desc' } = filters;
       const { page = PAGINATION_DEFAULTS.PAGE, limit = PAGINATION_DEFAULTS.LIMIT } = pagination;
       
       const skip = (page - 1) * limit;
@@ -38,6 +38,14 @@ export class RecipeSearchService {
         ];
       }
       
+      // Build orderBy clause
+      const orderBy: Prisma.RecipeOrderByWithRelationInput = {};
+      if (sortBy && ['created_at', 'updated_at', 'title', 'cook_time'].includes(sortBy)) {
+        orderBy[sortBy as keyof Prisma.RecipeOrderByWithRelationInput] = sortOrder === 'asc' ? 'asc' : 'desc';
+      } else {
+        orderBy.created_at = 'desc';
+      }
+      
       const [recipes, totalCount] = await Promise.all([
         prisma.recipe.findMany({
           where,
@@ -50,9 +58,7 @@ export class RecipeSearchService {
               },
             },
           },
-          orderBy: {
-            created_at: 'desc',
-          },
+          orderBy,
           skip,
           take: limit,
         }),

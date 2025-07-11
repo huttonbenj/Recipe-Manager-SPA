@@ -5,7 +5,7 @@ import { seedRecipes } from './seeders/recipeSeeder';
 
 const prisma = new PrismaClient();
 
-async function main() {
+export async function main() {
   try {
     logger.info('Starting database seeding...');
     
@@ -32,5 +32,7 @@ async function main() {
   }
 }
 
-// Execute the main function
-main(); 
+// Execute the main function only when this script is run directly
+if (require.main === module) {
+  main();
+} 

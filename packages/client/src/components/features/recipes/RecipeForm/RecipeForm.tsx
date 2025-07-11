@@ -63,7 +63,6 @@ export const RecipeForm: React.FC = () => {
                     isEditing={isEditing}
                     isSubmitting={isSubmitting}
                     onCancel={handleCancel}
-                    onSubmit={() => { }}
                 />
             </form>
         </div>

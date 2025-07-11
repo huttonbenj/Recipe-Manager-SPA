@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { beforeEach, afterEach, vi } from 'vitest';
 import { PrismaClient, Prisma } from '@prisma/client';
 import logger from '../../utils/logger';
@@ -15,7 +16,8 @@ vi.mock('../../utils/logger', () => ({
 // Mock environment variables
 vi.stubEnv('NODE_ENV', 'test');
 vi.stubEnv('JWT_SECRET', 'test-jwt-secret');
-vi.stubEnv('DATABASE_URL', 'sqlite://./test.db');
+vi.stubEnv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/recipe_manager_test');
+vi.stubEnv('SKIP_MSW', 'true');
 
 // Create a test database client
 let prisma: PrismaClient;

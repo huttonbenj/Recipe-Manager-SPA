@@ -4,13 +4,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { CLIENT_CONFIG } from '@recipe-manager/shared';
-import { useAuth } from '../../hooks/useAuth';
-import { AuthProvider } from '../../contexts/AuthProvider';
-import { createMockUser } from '../utils/test-utils';
-import * as apiModule from '../../services/api';
+import { useAuth } from '../../../hooks/useAuth';
+import { AuthProvider } from '../../../contexts/AuthProvider';
+import { createMockUser } from '../../utils/test-utils';
+import * as apiModule from '../../../services/api';
 
 // Mock the API client
-vi.mock('../../services/api', () => ({
+vi.mock('../../../services/api', () => ({
     apiClient: {
         login: vi.fn(),
         register: vi.fn(),

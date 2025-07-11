@@ -17,7 +17,12 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
         <ErrorBoundary>
             <HelmetProvider>
                 <QueryClientProvider client={queryClient}>
-                    <Router>
+                    <Router
+                        future={{
+                            v7_startTransition: true,
+                            v7_relativeSplatPath: true,
+                        }}
+                    >
                         <AuthProvider>
                             {children}
 

@@ -1,5 +1,9 @@
+/* eslint-disable */
 import { z } from 'zod';
-import { RECIPE_CONFIG, PAGINATION_DEFAULTS } from '../constants/index';
+// Import directly to avoid potential circular re-export issues that led to
+// "Unexpected module status 3" during Node module resolution in some tooling.
+import { RECIPE_CONFIG } from '../constants/recipe';
+import { PAGINATION_DEFAULTS } from '../constants/api';
 
 // Core Recipe Schema - this is the authoritative recipe type definition
 export const RecipeSchema = z.object({
@@ -10,7 +14,7 @@ export const RecipeSchema = z.object({
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
-  difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
   category: z.string().max(RECIPE_CONFIG.CATEGORY.MAX_LENGTH).optional(),
   tags: z.string().optional(), // JSON string in database
   created_at: z.coerce.date(),
@@ -31,7 +35,7 @@ export const RecipeCreateSchema = z.object({
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
-  difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
   category: z.string().max(RECIPE_CONFIG.CATEGORY.MAX_LENGTH).optional(),
   tags: z.string().optional()
 });
@@ -44,7 +48,7 @@ export const RecipeUpdateSchema = z.object({
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
-  difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
   category: z.string().max(RECIPE_CONFIG.CATEGORY.MAX_LENGTH).optional(),
   tags: z.string().optional()
 });
@@ -53,13 +57,13 @@ export const RecipeUpdateSchema = z.object({
 export const RecipeSearchSchema = z.object({
   search: z.string().optional(),
   category: z.string().optional(),
-  difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
   tags: z.string().optional(),
   user_id: z.string().optional(),
   sortBy: z.enum(['created_at', 'updated_at', 'title', 'cook_time']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
-  page: z.number().int().positive().default(PAGINATION_DEFAULTS.PAGE),
-  limit: z.number().int().positive().max(PAGINATION_DEFAULTS.MAX_LIMIT).default(PAGINATION_DEFAULTS.LIMIT)
+  page: z.coerce.number().int().positive().default(PAGINATION_DEFAULTS.PAGE),
+  limit: z.coerce.number().int().positive().max(PAGINATION_DEFAULTS.MAX_LIMIT).default(PAGINATION_DEFAULTS.LIMIT)
 });
 
 // Pagination Schema

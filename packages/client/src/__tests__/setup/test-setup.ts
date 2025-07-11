@@ -9,21 +9,30 @@ import { API_CONFIG } from '@recipe-manager/shared';
 // Extend expect with Jest DOM matchers
 expect.extend(matchers);
 
-// Setup MSW
-beforeAll(() => {
-  server.listen({
-    onUnhandledRequest: 'error',
+// Setup MSW only if not explicitly skipped (e.g., in server-side tests)
+const skipMsw = typeof window === 'undefined';
+
+if (!skipMsw) {
+  beforeAll(() => {
+    server.listen({
+      onUnhandledRequest: 'error',
+    });
   });
-});
 
-afterEach(() => {
-  server.resetHandlers();
-  cleanup();
-});
+  afterEach(() => {
+    server.resetHandlers();
+    cleanup();
+  });
 
-afterAll(() => {
-  server.close();
-});
+  afterAll(() => {
+    server.close();
+  });
+} else {
+  // Even if MSW is skipped, still perform RTL cleanup after each test
+  afterEach(() => {
+    cleanup();
+  });
+}
 
 // Global test utilities
 globalThis.ResizeObserver = vi.fn().mockImplementation(() => ({

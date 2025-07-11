@@ -4,6 +4,10 @@ import { CLIENT_CONFIG, API_CONFIG } from '@recipe-manager/shared';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'process.env': {},
+    'global': 'globalThis',
+  },
   server: {
     port: CLIENT_CONFIG.DEFAULT_PORT,
     proxy: {

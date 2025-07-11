@@ -82,8 +82,9 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
 
             <form onSubmit={onSearch} className="space-y-4">
                 {/* Search */}
-                <FormField label="Search recipes">
+                <FormField label={<label htmlFor="search-recipes-input">Search recipes</label>}>
                     <Input
+                        id="search-recipes-input"
                         type="text"
                         placeholder="Search by title, ingredients, or instructions..."
                         value={searchTerm}
@@ -94,32 +95,36 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
 
                 {/* Filter Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <FormField label="Category">
+                    <FormField label={<label htmlFor="category-select">Category</label>}>
                         <Select
+                            id="category-select"
                             value={selectedCategory}
                             onChange={(e) => onCategoryChange(e.target.value)}
                             options={categoryOptions}
                         />
                     </FormField>
 
-                    <FormField label="Difficulty">
+                    <FormField label={<label htmlFor="difficulty-select">Difficulty</label>}>
                         <Select
+                            id="difficulty-select"
                             value={selectedDifficulty}
                             onChange={(e) => onDifficultyChange(e.target.value)}
                             options={difficultyOptions}
                         />
                     </FormField>
 
-                    <FormField label="Sort by">
+                    <FormField label={<label htmlFor="sortby-select">Sort by</label>}>
                         <Select
+                            id="sortby-select"
                             value={sortBy}
                             onChange={(e) => onSortByChange(e.target.value)}
                             options={sortOptions}
                         />
                     </FormField>
 
-                    <FormField label="Order">
+                    <FormField label={<label htmlFor="order-select">Order</label>}>
                         <Select
+                            id="order-select"
                             value={sortOrder}
                             onChange={(e) => onSortOrderChange(e.target.value as 'asc' | 'desc')}
                             options={sortOrderOptions}

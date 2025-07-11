@@ -64,7 +64,7 @@ export const RecipeDetail: React.FC = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto" data-testid="recipe-detail-root">
             <RecipeDetailHeader
                 recipe={recipe}
                 user={user}

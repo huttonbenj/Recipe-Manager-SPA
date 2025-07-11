@@ -14,7 +14,17 @@ import { API_CONFIG, CLIENT_CONFIG, UPLOAD_CONFIG } from '@recipe-manager/shared
 
 const app = express();
 
-// Rate limiting
+// Middleware
+app.use(helmet());
+app.use(morgan('combined'));
+
+// CORS must come before rate limiting to handle preflight requests properly
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || `http://localhost:${CLIENT_CONFIG.DEFAULT_PORT}`,
+  credentials: true,
+}));
+
+// Rate limiting (applied after CORS)
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || String(API_CONFIG.RATE_LIMIT.WINDOW_MS), 10),
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || String(API_CONFIG.RATE_LIMIT.MAX_REQUESTS), 10),
@@ -23,16 +33,11 @@ const limiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  // Skip rate limiting for OPTIONS requests (CORS preflight)
+  skip: (req) => req.method === 'OPTIONS',
 });
 
-// Middleware
-app.use(helmet());
-app.use(morgan('combined'));
 app.use(limiter);
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || `http://localhost:${CLIENT_CONFIG.DEFAULT_PORT}`,
-  credentials: true,
-}));
 app.use(express.json({ limit: `${UPLOAD_CONFIG.MAX_REQUEST_SIZE / (1024 * 1024)}mb` }));
 app.use(express.urlencoded({ extended: true, limit: `${UPLOAD_CONFIG.MAX_REQUEST_SIZE / (1024 * 1024)}mb` }));
 

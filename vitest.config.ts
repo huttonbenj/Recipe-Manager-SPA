@@ -5,11 +5,15 @@ import { TIMEOUTS, TEST_CONFIG } from '@recipe-manager/shared';
 export default defineConfig({
   test: {
     globals: true,
+    environment: 'happy-dom',
     // Pick environment automatically per package
     environmentMatchGlobs: [
+      // Server tests need Node
+      ['packages/server/**', 'node'],
+      ['packages/server/src/**', 'node'],
+      // Client tests (and all others) use happy-dom as well for DOM APIs
       ['packages/client/**', 'happy-dom'],
-      ['tests/client/**', 'happy-dom'],
-      ['**', 'node'],
+      ['**/*.{test,spec}.{js,ts,jsx,tsx}', 'happy-dom'],
     ],
     setupFiles: [
       './packages/server/src/__tests__/setup/global-setup.ts',
@@ -43,14 +47,38 @@ export default defineConfig({
       // Measure all source files for true coverage
       all: true,
       exclude: [
-        'node_modules/',
-        '**/__tests__/**',
-        '**/*.d.ts',
+        'node_modules',
+        'dist',
+        '.git',
+        '**/fixtures/**',
+        'tests/e2e/**',
+        // Exclude non-runtime or barrel files that should not be tested for coverage
+        '**/index.ts',
+        '**/index.js',
+        '**/vite.config.ts',
+        '**/vitest.config.ts',
         '**/*.config.{js,ts}',
-        '**/dist/**',
+        '**/test-setup.{js,ts}',
+        '**/setupTests.{js,ts}',
+        '**/global-setup.{js,ts}',
+        '**/postcss.config.{js,ts}',
+        '**/tailwind.config.{js,ts}',
+        '**/.eslintrc.{js,cjs,ts,json}',
+        '**/test-results/**',
+        '**/assets/**',
+        '**/cypress/**',
+        '**/e2e/**',
+        '**/config/**',
+        '**/main.{js,ts,jsx,tsx}',
+        '**/App.{js,ts,jsx,tsx}',
+        '**/__tests__/mocks/**',
+        'scripts/**',
+        '**/*.d.ts',
         '**/migrations/**',
         '**/generated/**',
-        '**/coverage/**'
+        '**/coverage/**',
+        // Keep default distribution / build artifacts excluded
+        '**/dist/**'
       ],
       // Standardized coverage thresholds
       thresholds: {

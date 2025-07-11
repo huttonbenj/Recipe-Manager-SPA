@@ -117,7 +117,9 @@ export const useRecipeForm = () => {
     setImagePreview(null);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    
     if (!validateForm(formData)) {
       return;
     }

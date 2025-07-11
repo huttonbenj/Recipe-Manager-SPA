@@ -11,7 +11,7 @@ export interface RecipeCreateData extends CreateRecipeRequest {
 
 export interface RecipeUpdateData extends UpdateRecipeRequest {}
 
-export interface RecipeFilters extends Pick<RecipeSearchParams, 'search' | 'category' | 'difficulty'> {
+export interface RecipeFilters extends Pick<RecipeSearchParams, 'search' | 'category' | 'difficulty' | 'sortBy' | 'sortOrder'> {
   user_id?: string;
 }
 

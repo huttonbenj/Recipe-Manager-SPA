@@ -34,7 +34,7 @@ export const RecipeListItem = memo<RecipeListItemProps>(({ recipe }) => {
                         />
                     ) : (
                         <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                            <ChefHat className="h-8 w-8 text-gray-400" />
+                            <ChefHat className="h-8 w-8 text-gray-400" data-testid="recipe-fallback-icon" />
                         </div>
                     )}
                 </div>

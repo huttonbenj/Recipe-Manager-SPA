@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { apiClient } from '../../services/api';
+import { apiClient } from '../../../services/api';
 
 // Mock axios instead of fetch since the API client uses axios
 vi.mock('axios', () => ({
