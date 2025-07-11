@@ -2,59 +2,83 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import path from 'path';
 import { errorHandler } from './middleware/error';
-import { db } from './config/database';
-import authRoutes from './routes/auth';
-import recipeRoutes from './routes/recipes';
-import userRoutes from './routes/user';
-import logger from './utils/logger';
+import { dbManager } from './config/database';
+import authRoutes from './routes/auth/index';
+import recipeRoutes from './routes/recipes/index';
+import userRoutes from './routes/users/index';
+import uploadRoutes from './routes/uploads/index';
+import { API_CONFIG, CLIENT_CONFIG, UPLOAD_CONFIG } from '@recipe-manager/shared';
 
 const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors());
-app.use(express.json());
-app.use(morgan('combined', {
-  stream: {
-    write: (message: string) => logger.info(message.trim())
-  }
+app.use(morgan('combined'));
+
+// CORS must come before rate limiting to handle preflight requests properly
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || `http://localhost:${CLIENT_CONFIG.DEFAULT_PORT}`,
+  credentials: true,
 }));
+
+// Rate limiting (applied after CORS)
+const limiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || String(API_CONFIG.RATE_LIMIT.WINDOW_MS), 10),
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || String(API_CONFIG.RATE_LIMIT.MAX_REQUESTS), 10),
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  // Skip rate limiting for OPTIONS requests (CORS preflight)
+  skip: (req) => req.method === 'OPTIONS',
+});
+
+app.use(limiter);
+app.use(express.json({ limit: `${UPLOAD_CONFIG.MAX_REQUEST_SIZE / (1024 * 1024)}mb` }));
+app.use(express.urlencoded({ extended: true, limit: `${UPLOAD_CONFIG.MAX_REQUEST_SIZE / (1024 * 1024)}mb` }));
+
+// Static files for uploaded images
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check endpoint
 app.get('/health', (_req: Request, res: Response) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // Database health check endpoint
 app.get('/health/db', async (_req: Request, res: Response) => {
   try {
-    const isHealthy = await db.healthCheck();
-    const stats = db.getPoolStats();
+    const isHealthy = await dbManager.healthCheck();
     
     if (isHealthy) {
       res.json({ 
         status: 'healthy',
         database: 'connected',
-        pool: stats
+        timestamp: new Date().toISOString()
       });
     } else {
       res.status(503).json({ 
         status: 'unhealthy',
         database: 'disconnected',
-        pool: stats
+        timestamp: new Date().toISOString()
       });
     }
   } catch (error) {
     res.status(503).json({ 
       status: 'error',
       database: 'error',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
     });
   }
 });

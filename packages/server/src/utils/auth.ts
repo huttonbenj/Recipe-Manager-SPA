@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { User } from '@recipe-manager/shared';
+import { User, SERVER_CONFIG, validatePassword } from '@recipe-manager/shared';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
-const SALT_ROUNDS = 12;
+const JWT_SECRET = process.env.JWT_SECRET || SERVER_CONFIG.JWT_SECRET_FALLBACK;
+const SALT_ROUNDS = SERVER_CONFIG.SALT_ROUNDS;
 
 export interface JwtPayload {
   userId: string;
@@ -27,11 +27,11 @@ export class AuthUtils {
   }
 
   static generateAccessToken(payload: Pick<JwtPayload, 'userId' | 'email'>): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: SERVER_CONFIG.JWT_EXPIRATION.ACCESS_TOKEN });
   }
 
   static generateRefreshToken(payload: Pick<JwtPayload, 'userId' | 'email'>): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: SERVER_CONFIG.JWT_EXPIRATION.REFRESH_TOKEN });
   }
 
   static generateTokens(user: Pick<User, 'id' | 'email'>): AuthTokens {
@@ -71,31 +71,13 @@ export class AuthUtils {
   }
 
   static validatePassword(password: string): { isValid: boolean; errors: string[] } {
-    const errors: string[] = [];
+    // Use shared validation function for consistency
+    return validatePassword(password);
+  }
 
-    if (password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
-    }
-
-    if (!/(?=.*[a-z])/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
-    }
-
-    if (!/(?=.*[A-Z])/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
-    }
-
-    if (!/(?=.*\d)/.test(password)) {
-      errors.push('Password must contain at least one number');
-    }
-
-    if (!/(?=.*[@$!%*?&])/.test(password)) {
-      errors.push('Password must contain at least one special character (@$!%*?&)');
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+  static sanitizeUserResponse(user: User & { password_hash?: string }): Omit<User, 'password_hash'> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password_hash: _, ...sanitizedUser } = user;
+    return sanitizedUser;
   }
 } 

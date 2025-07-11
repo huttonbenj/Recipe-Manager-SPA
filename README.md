@@ -222,7 +222,7 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ```env
 NODE_ENV=production
-DATABASE_URL=postgresql://user:password@localhost:5432/recipe_manager
+DATABASE_URL=postgresql://postgres:password@localhost:5432/recipe_manager
 JWT_SECRET=your-super-secret-jwt-key
 PORT=3001
 ```

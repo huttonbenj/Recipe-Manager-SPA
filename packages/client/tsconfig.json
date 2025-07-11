@@ -29,8 +29,11 @@
     "paths": {
       "@/*": ["./src/*"],
       "@recipe-manager/shared": ["../shared/src"]
-    }
+    },
+
+    /* Testing */
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src"],
+  "include": ["src", "src/__tests__/setup/vitest.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 

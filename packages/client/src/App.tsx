@@ -1,104 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthProvider';
-import { LoginForm } from './components/auth/LoginForm';
-import { RegisterForm } from './components/auth/RegisterForm';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { Dashboard } from './components/Dashboard';
-import { RecipeList } from './components/RecipeList';
-import { RecipeDetail } from './components/RecipeDetail';
-import { RecipeForm } from './components/RecipeForm';
-import { UserProfile } from './components/UserProfile';
-import { Layout } from './components/Layout';
-import { useAuth } from './hooks/useAuth';
-
-function AppContent() {
-    const { isAuthenticated } = useAuth();
-
-    return (
-        <Routes>
-            <Route
-                path="/login"
-                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginForm />}
-            />
-            <Route
-                path="/register"
-                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterForm />}
-            />
-            <Route
-                path="/dashboard"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <Dashboard />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/recipes"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <RecipeList />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/recipes/new"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <RecipeForm />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/recipes/:id"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <RecipeDetail />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/recipes/:id/edit"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <RecipeForm />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/profile"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <UserProfile />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/"
-                element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />}
-            />
-        </Routes>
-    );
-}
+import { AppProviders, AppRoutes } from './components/app';
 
 function App() {
     return (
-        <BrowserRouter>
-            <AuthProvider>
-                <AppContent />
-            </AuthProvider>
-        </BrowserRouter>
+        <AppProviders>
+            <div className="min-h-screen bg-gray-50">
+                <AppRoutes />
+            </div>
+        </AppProviders>
     );
 }
 

@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import { AuthContextType } from '../types/auth';
+import type { AuthContextType } from '@recipe-manager/shared';
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined); 
