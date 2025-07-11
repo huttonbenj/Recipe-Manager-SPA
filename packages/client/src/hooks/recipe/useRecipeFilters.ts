@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useDebounce } from './ui';
+import { useDebounce } from '../ui/useDebounce';
 
 export interface RecipeFilters {
   searchTerm: string;

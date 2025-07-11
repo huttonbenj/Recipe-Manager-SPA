@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from './useAuth';
-import { apiClient } from '../services/api';
+import { useAuth } from '../useAuth';
+import { apiClient } from '../../services/api';
 
 export const useDashboard = () => {
     const { user } = useAuth();

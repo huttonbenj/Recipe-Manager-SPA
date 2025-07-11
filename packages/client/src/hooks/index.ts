@@ -1,35 +1,21 @@
-// Re-export all hooks for easier importing
+// Re-export all hooks from their organized domain directories
 export { useAuth } from './useAuth';
-export { useDebounce } from './useDebounce';
-export { useFormValidation } from './useFormValidation';
-export { useImageUpload } from './useImageUpload';
-export { useLocalStorage } from './useLocalStorage';
-export { usePagination } from './usePagination';
-export { useRecipeFilters } from './useRecipeFilters';
-export { useRecipeForm } from './useRecipeForm';
-export { useDashboard } from './useDashboard';
-export { useUserProfile } from './useUserProfile';
-export { useNavigation } from './useNavigation';
 
-export type {
-  PaginationState,
-  PaginationActions,
-  UsePaginationReturn,
-} from './usePagination';
+// Form hooks
+export * from './form';
 
-export type {
-  ValidationRule,
-  ValidationRules,
-  ValidationErrors,
-  UseFormValidationReturn,
-} from './useFormValidation';
+// Image hooks
+export * from './image';
 
-export type {
-  RecipeFilters,
-  RecipeFilterOptions,
-} from './useRecipeFilters';
+// Recipe hooks
+export * from './recipe';
 
-export type {
-  ImageUploadState,
-  ImageUploadOptions,
-} from './useImageUpload'; 
+// UI hooks  
+export * from './ui';
+
+// User hooks
+export * from './user';
+
+// Maintained for backward compatibility
+export { useImageUpload, useImageValidation, useImageProcessing } from './useImageUpload';
+export type { ImageUploadState, ImageUploadOptions, ImageValidationOptions, ImageProcessingOptions } from './useImageUpload'; 

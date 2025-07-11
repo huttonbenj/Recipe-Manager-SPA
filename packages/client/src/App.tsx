@@ -5,19 +5,19 @@ import { Toaster } from 'react-hot-toast';
 import { HelmetProvider } from 'react-helmet-async';
 import { CLIENT_CONFIG, QUERY_CONFIG } from '@recipe-manager/shared';
 import { AuthProvider } from './contexts/AuthProvider';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { ProtectedRoute } from './components/features/auth/ProtectedRoute';
 import { Layout } from './components/Layout';
 
 // Pages
-import { LoginForm } from './components/auth/LoginForm';
-import { RegisterForm } from './components/auth/RegisterForm';
+import { LoginForm } from './components/features/auth/LoginForm';
+import { RegisterForm } from './components/features/auth/RegisterForm';
 import { Dashboard } from './components/Dashboard';
 import { RecipeList } from './components/RecipeList';
 import { RecipeDetail } from './components/RecipeDetail';
 import { RecipeForm } from './components/RecipeForm';
 import { UserProfile } from './components/UserProfile';
 // Error Boundary
-import { ErrorBoundary } from './components/ErrorBoundary';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
 
 // Styles
 import './App.css';

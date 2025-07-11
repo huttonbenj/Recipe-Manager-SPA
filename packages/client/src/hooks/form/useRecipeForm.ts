@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { RecipeFormData } from '@recipe-manager/shared';
-import { apiClient } from '../services/api';
+import { apiClient } from '../../services/api';
 import { useFormValidation, CommonValidationRules } from './useFormValidation';
 import toast from 'react-hot-toast';
 

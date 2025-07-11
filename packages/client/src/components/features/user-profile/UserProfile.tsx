@@ -1,5 +1,5 @@
 import React from 'react';
-import { useUserProfile } from '../../../hooks/useUserProfile';
+import { useUserProfile } from '../../../hooks';
 import { UserProfileHeader } from './UserProfileHeader';
 import { UserProfileEditModal } from './UserProfileEditModal';
 import { UserProfileStats } from './UserProfileStats';

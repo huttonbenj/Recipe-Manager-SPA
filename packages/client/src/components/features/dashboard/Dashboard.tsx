@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDashboard } from '../../../hooks/useDashboard';
+import { useDashboard } from '../../../hooks';
 import { DashboardHeader } from './DashboardHeader';
 import { DashboardStats } from './DashboardStats';
 import { DashboardQuickActions } from './DashboardQuickActions';

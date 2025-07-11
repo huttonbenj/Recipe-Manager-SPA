@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigation } from '../../../hooks/useNavigation';
+import { useNavigation } from '../../../hooks/ui/useNavigation';
 import { NavigationLogo } from './NavigationLogo';
 import { NavigationDesktop } from './NavigationDesktop';
 import { NavigationUserMenu } from './NavigationUserMenu';
