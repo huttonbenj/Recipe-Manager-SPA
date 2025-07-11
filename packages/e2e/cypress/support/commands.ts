@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { STORAGE_KEYS, TIMEOUTS } from '@recipe-manager/shared';
+import { STORAGE_KEYS, TIMEOUTS, API_ENDPOINTS } from '@recipe-manager/shared';
 
 // Custom commands for authentication
 Cypress.Commands.add('login', (email: string, password: string) => {
@@ -55,7 +55,7 @@ Cypress.Commands.add('apiRequest', (options) => {
 Cypress.Commands.add('createTestRecipe', (recipeData) => {
   return cy.apiRequest({
     method: 'POST',
-    url: '/api/recipes',
+    url: API_ENDPOINTS.RECIPES.CREATE,
     body: recipeData
   });
 });

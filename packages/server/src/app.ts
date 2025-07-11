@@ -10,7 +10,7 @@ import authRoutes from './routes/auth';
 import recipeRoutes from './routes/recipes';
 import userRoutes from './routes/user';
 import uploadRoutes from './routes/upload';
-import { API_CONFIG, CLIENT_CONFIG } from '@recipe-manager/shared';
+import { API_CONFIG, CLIENT_CONFIG, UPLOAD_CONFIG } from '@recipe-manager/shared';
 
 const app = express();
 
@@ -33,8 +33,8 @@ app.use(cors({
   origin: process.env.CORS_ORIGIN || `http://localhost:${CLIENT_CONFIG.DEFAULT_PORT}`,
   credentials: true,
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: `${UPLOAD_CONFIG.MAX_REQUEST_SIZE / (1024 * 1024)}mb` }));
+app.use(express.urlencoded({ extended: true, limit: `${UPLOAD_CONFIG.MAX_REQUEST_SIZE / (1024 * 1024)}mb` }));
 
 // Static files for uploaded images
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));

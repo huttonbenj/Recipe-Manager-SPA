@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { HelmetProvider } from 'react-helmet-async';
-import { CLIENT_CONFIG } from '@recipe-manager/shared';
+import { CLIENT_CONFIG, QUERY_CONFIG } from '@recipe-manager/shared';
 import { AuthProvider } from './contexts/AuthProvider';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/Layout';
@@ -26,12 +26,12 @@ import './App.css';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            retry: 3,
+            retry: QUERY_CONFIG.RETRY.DEFAULT,
             refetchOnWindowFocus: false,
-            staleTime: 5 * 60 * 1000, // 5 minutes
+            staleTime: QUERY_CONFIG.STALE_TIME.DEFAULT,
         },
         mutations: {
-            retry: false,
+            retry: QUERY_CONFIG.RETRY.MUTATIONS,
         },
     },
 });

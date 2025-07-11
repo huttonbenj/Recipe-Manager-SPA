@@ -1,5 +1,7 @@
 // Import commands.js using ES2015 syntax:
 import './commands';
+import 'cypress-real-events';
+import { CLIENT_CONFIG, API_ENDPOINTS } from '@recipe-manager/shared';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
@@ -11,12 +13,12 @@ beforeEach(() => {
   cy.clearCookies();
   
   // Set viewport size
-  cy.viewport(1280, 720);
+  cy.viewport(CLIENT_CONFIG.VIEWPORT.WIDTH, CLIENT_CONFIG.VIEWPORT.HEIGHT);
   
   // Intercept API calls for better test control
-  cy.intercept('GET', '/api/auth/me', { fixture: 'user.json' }).as('getCurrentUser');
-  cy.intercept('GET', '/api/recipes', { fixture: 'recipes.json' }).as('getRecipes');
-  cy.intercept('GET', '/api/recipes/categories', { fixture: 'categories.json' }).as('getCategories');
+  cy.intercept('GET', API_ENDPOINTS.AUTH.PROFILE, { fixture: 'user.json' }).as('getCurrentUser');
+  cy.intercept('GET', API_ENDPOINTS.RECIPES.LIST, { fixture: 'recipes.json' }).as('getRecipes');
+  cy.intercept('GET', API_ENDPOINTS.RECIPES.CATEGORIES, { fixture: 'categories.json' }).as('getCategories');
 });
 
 // Global error handling

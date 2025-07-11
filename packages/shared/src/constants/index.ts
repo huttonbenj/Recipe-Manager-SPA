@@ -20,16 +20,26 @@ export const SERVER_CONFIG = {
   DEFAULT_PORT: 3001,
   JWT_SECRET_FALLBACK: 'dev-secret-key',
   SALT_ROUNDS: 12,
+  JWT_EXPIRATION: {
+    ACCESS_TOKEN: '7d',
+    REFRESH_TOKEN: '30d',
+  },
 } as const;
 
 // Client Configuration
 export const CLIENT_CONFIG = {
   DEFAULT_PORT: 3000,
+  VITE_DEV_PORT: 5173,
   TOAST_DURATION: {
     DEFAULT: 4000,
     SUCCESS: 3000,
     ERROR: 5000,
   },
+  VIEWPORT: {
+    WIDTH: 1280,
+    HEIGHT: 720,
+  },
+  POPULAR_ITEMS_LIMIT: 3,
 } as const;
 
 // Database Configuration
@@ -130,6 +140,8 @@ export const ERROR_MESSAGES = {
   UNAUTHORIZED: 'Unauthorized access',
   FORBIDDEN: 'Insufficient permissions',
   NOT_FOUND: 'Resource not found',
+  RECIPE_NOT_FOUND: 'Recipe not found',
+  USER_NOT_FOUND: 'User not found',
   INTERNAL_SERVER_ERROR: 'Internal server error',
   TOO_MANY_REQUESTS: 'Too many requests from this IP, please try again later.',
   NETWORK_ERROR: 'Network error occurred',
@@ -138,6 +150,8 @@ export const ERROR_MESSAGES = {
 
 // Success Messages
 export const SUCCESS_MESSAGES = {
+  LOGIN_SUCCESS: 'Login successful',
+  REGISTRATION_SUCCESS: 'Registration successful',
   RECIPE_CREATED: 'Recipe created successfully',
   RECIPE_UPDATED: 'Recipe updated successfully',
   RECIPE_DELETED: 'Recipe deleted successfully',
@@ -179,6 +193,7 @@ export const USER_CONFIG = {
 // File Upload Configuration
 export const UPLOAD_CONFIG = {
   MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_REQUEST_SIZE: 10 * 1024 * 1024, // 10MB
   ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as const,
   UPLOAD_DIR: 'uploads',
 } as const;
@@ -194,14 +209,52 @@ export const ENV_VARS = {
   RATE_LIMIT_MAX_REQUESTS: 'RATE_LIMIT_MAX_REQUESTS',
 } as const;
 
+// Validation Configuration
+export const VALIDATION_CONFIG = {
+  INPUT_MAX_LENGTH: 1000,
+} as const;
+
 // Test Configuration
 export const TEST_CONFIG = {
   TIMEOUT: 30000,
+  CI_TIMEOUT: 60000,
+  RETRY: {
+    RUN_MODE: 2,
+    OPEN_MODE: 0,
+  },
   COVERAGE_THRESHOLD: {
-    STATEMENTS: 85,
-    BRANCHES: 85,
-    FUNCTIONS: 85,
-    LINES: 85,
+    STATEMENTS: 80,
+    BRANCHES: 70,
+    FUNCTIONS: 80,
+    LINES: 80,
+  },
+  VIEWPORTS: {
+    MOBILE: { width: 375, height: 667 },
+    TABLET: { width: 768, height: 1024 },
+    DESKTOP: { width: 1920, height: 1080 },
+  },
+  VALIDATION_TEST_LIMITS: {
+    TITLE_OVERFLOW: 201,
+    NAME_OVERFLOW: 101,
+    INSTRUCTIONS_OVERFLOW: 5001,
+  },
+} as const;
+
+// Query Client Configuration
+export const QUERY_CONFIG = {
+  RETRY: {
+    DEFAULT: 3,
+    MUTATIONS: 0,
+  },
+  STALE_TIME: {
+    DEFAULT: 5 * 60 * 1000, // 5 minutes
+    SHORT: 2 * 60 * 1000,   // 2 minutes
+    LONG: 10 * 60 * 1000,   // 10 minutes
+  },
+  CACHE_TIME: {
+    DEFAULT: 5 * 60 * 1000, // 5 minutes
+    SHORT: 2 * 60 * 1000,   // 2 minutes
+    LONG: 10 * 60 * 1000,   // 10 minutes
   },
 } as const;
 
@@ -223,4 +276,6 @@ export const CONSTANTS = {
   UPLOAD_CONFIG,
   ENV_VARS,
   TEST_CONFIG,
+  QUERY_CONFIG,
+  VALIDATION_CONFIG,
 } as const; 

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
 import { UserSchema, UserCredentialsSchema, UserRegistrationSchema } from '../types/user';
 import { RecipeSchema, RecipeCreateSchema, RecipeUpdateSchema } from '../types/recipe';
+import { TEST_CONFIG } from '../constants/index';
 import { ApiResponseSchema, ErrorResponseSchema } from '../types/api';
 
 describe('User Types', () => {
@@ -102,18 +103,20 @@ describe('User Types', () => {
       }
     });
 
-    it('should reject invalid registration requests', () => {
-      const invalidRegistrations = [
-        { email: 'invalid-email', name: 'John', password: 'password' }, // invalid email
-        { email: 'user@example.com', name: '', password: 'password' }, // empty name
-        { email: 'user@example.com', name: 'John', password: '' }, // empty password
-        { email: 'user@example.com', name: 'John' }, // missing password
-        { email: 'user@example.com', password: 'password' }, // missing name
-        { name: 'John', password: 'password' }, // missing email
+    it('should reject invalid user registration', () => {
+      const invalidData = [
+        { email: 'user@example.com', name: 'John', password: '123' }, // password too short
+        { 
+          email: 'user@example.com', 
+          name: 'J'.repeat(TEST_CONFIG.VALIDATION_TEST_LIMITS.NAME_OVERFLOW), // name too long
+          password: 'SecureP@ssword123!' 
+        },
+        { name: 'John', password: 'SecureP@ssword123!' }, // missing email
+        { email: 'user@example.com', password: 'SecureP@ssword123!' }, // missing name
       ];
 
-      invalidRegistrations.forEach((registration) => {
-        const result = UserRegistrationSchema.safeParse(registration);
+      invalidData.forEach(data => {
+        const result = UserRegistrationSchema.safeParse(data);
         expect(result.success).toBe(false);
       });
     });
@@ -177,9 +180,9 @@ describe('Recipe Types', () => {
       const invalidRecipes = [
         { id: '', title: 'Recipe' }, // empty id
         { id: 'recipe-123', title: '' }, // empty title
-        { id: 'recipe-123', title: 'A'.repeat(201) }, // title too long
+        { id: 'recipe-123', title: 'A'.repeat(TEST_CONFIG.VALIDATION_TEST_LIMITS.TITLE_OVERFLOW) }, // title too long
         { id: 'recipe-123', title: 'Recipe', ingredients: '', instructions: '' }, // empty required fields
-        { id: 'recipe-123', title: 'Recipe', ingredients: 'ingredients', instructions: 'A'.repeat(5001) }, // instructions too long
+        { id: 'recipe-123', title: 'Recipe', ingredients: 'ingredients', instructions: 'A'.repeat(TEST_CONFIG.VALIDATION_TEST_LIMITS.INSTRUCTIONS_OVERFLOW) }, // instructions too long
         { id: 'recipe-123', title: 'Recipe', ingredients: 'ingredients', instructions: 'instructions', difficulty: 'Invalid' }, // invalid difficulty
         { id: 'recipe-123', title: 'Recipe', ingredients: 'ingredients', instructions: 'instructions', image_url: 'not-a-url' }, // invalid URL
         { id: 'recipe-123', title: 'Recipe', ingredients: 'ingredients', instructions: 'instructions', cook_time: -1 }, // negative cook time

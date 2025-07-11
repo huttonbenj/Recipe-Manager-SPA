@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { USER_CONFIG } from '../constants/index';
 
 // Core User Schema - this is the authoritative user type definition
 export const UserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
-  name: z.string().min(1).max(100),
+  name: z.string().min(USER_CONFIG.NAME.MIN_LENGTH).max(USER_CONFIG.NAME.MAX_LENGTH),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date()
 });
@@ -15,7 +16,7 @@ export type User = z.infer<typeof UserSchema>;
 // User Credentials Schema for login
 export const UserCredentialsSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1)
+  password: z.string().min(1) // Keep min(1) for login - just checking password is provided
 });
 
 export type UserCredentials = z.infer<typeof UserCredentialsSchema>;
@@ -23,8 +24,8 @@ export type UserCredentials = z.infer<typeof UserCredentialsSchema>;
 // User Registration Schema
 export const UserRegistrationSchema = z.object({
   email: z.string().email(),
-  name: z.string().min(2).max(100),
-  password: z.string().min(8)
+  name: z.string().min(USER_CONFIG.NAME.MIN_LENGTH).max(USER_CONFIG.NAME.MAX_LENGTH),
+  password: z.string().min(USER_CONFIG.PASSWORD.MIN_LENGTH)
 });
 
 export type UserRegistration = z.infer<typeof UserRegistrationSchema>;

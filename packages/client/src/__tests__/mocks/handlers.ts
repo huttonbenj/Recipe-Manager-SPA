@@ -1,5 +1,14 @@
 import { http, HttpResponse } from 'msw';
-import { User, Recipe, HTTP_STATUS } from '@recipe-manager/shared';
+import { 
+  User, 
+  Recipe, 
+  HTTP_STATUS, 
+  API_ENDPOINTS, 
+  PAGINATION_DEFAULTS, 
+  ERROR_MESSAGES, 
+  SUCCESS_MESSAGES, 
+  CLIENT_CONFIG
+} from '@recipe-manager/shared';
 
 // Mock data
 export const mockUser: User = {
@@ -42,13 +51,13 @@ export const mockUserStats = {
   totalViews: 150,
   averageRating: 4.5,
   recipesCreatedThisMonth: 3,
-  popularRecipes: mockRecipes.slice(0, 3),
+  popularRecipes: mockRecipes.slice(0, CLIENT_CONFIG.POPULAR_ITEMS_LIMIT),
 };
 
 // API handlers
 export const handlers = [
   // Auth endpoints
-  http.post('/api/auth/login', async ({ request }) => {
+  http.post(API_ENDPOINTS.AUTH.LOGIN, async ({ request }) => {
     const body = await request.json() as { email: string; password: string };
     
     if (body.email === 'test@example.com' && body.password === 'password') {
@@ -61,7 +70,7 @@ export const handlers = [
             refreshToken: 'mock-refresh-token'
           }
         },
-        message: 'Login successful'
+        message: SUCCESS_MESSAGES.LOGIN_SUCCESS
       });
     }
     
@@ -74,7 +83,7 @@ export const handlers = [
     );
   }),
 
-  http.post('/api/auth/register', async ({ request }) => {
+  http.post(API_ENDPOINTS.AUTH.REGISTER, async ({ request }) => {
     const body = await request.json() as { email: string; name: string; password: string };
     
     return HttpResponse.json({
@@ -90,23 +99,23 @@ export const handlers = [
             refreshToken: 'mock-refresh-token'
           }
         },
-      message: 'Registration successful'
+      message: SUCCESS_MESSAGES.REGISTRATION_SUCCESS
     });
   }),
 
-  http.post('/api/auth/logout', () => {
+  http.post(API_ENDPOINTS.AUTH.LOGOUT, () => {
     return HttpResponse.json({
       success: true,
       data: { message: 'Logged out successfully' },
     });
   }),
 
-  http.get('/api/auth/me', ({ request }) => {
+  http.get(API_ENDPOINTS.AUTH.PROFILE, ({ request }) => {
     const authHeader = request.headers.get('Authorization');
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return HttpResponse.json(
-        { success: false, error: 'Unauthorized' },
+        { success: false, error: ERROR_MESSAGES.UNAUTHORIZED },
         { status: HTTP_STATUS.UNAUTHORIZED }
       );
     }
@@ -118,14 +127,14 @@ export const handlers = [
   }),
 
   // User endpoints
-  http.get('/api/users/stats', () => {
+  http.get(API_ENDPOINTS.USERS.MY_STATS, () => {
     return HttpResponse.json({
       success: true,
       data: mockUserStats,
     });
   }),
 
-  http.put('/api/users/profile', async ({ request }) => {
+  http.put(API_ENDPOINTS.USERS.PROFILE, async ({ request }) => {
     const body = await request.json() as Partial<User>;
     
     return HttpResponse.json({
@@ -138,7 +147,7 @@ export const handlers = [
     });
   }),
 
-  http.put('/api/users/password', async ({ request }) => {
+  http.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, async ({ request }) => {
     const body = await request.json() as { currentPassword: string; newPassword: string };
     
     if (body.currentPassword === 'password') {
@@ -155,10 +164,10 @@ export const handlers = [
   }),
 
   // Recipe endpoints
-  http.get('/api/recipes', ({ request }) => {
+  http.get(API_ENDPOINTS.RECIPES.LIST, ({ request }) => {
     const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const page = parseInt(url.searchParams.get('page') || String(PAGINATION_DEFAULTS.PAGE));
+    const limit = parseInt(url.searchParams.get('limit') || String(PAGINATION_DEFAULTS.LIMIT));
     const search = url.searchParams.get('search');
     const category = url.searchParams.get('category');
     
@@ -194,13 +203,13 @@ export const handlers = [
     });
   }),
 
-  http.get('/api/recipes/:id', ({ params }) => {
+  http.get(API_ENDPOINTS.RECIPES.DETAIL, ({ params }) => {
     const id = params.id as string;
     const recipe = mockRecipes.find(r => r.id === id);
     
     if (!recipe) {
       return HttpResponse.json(
-        { success: false, error: 'Recipe not found' },
+        { success: false, error: ERROR_MESSAGES.RECIPE_NOT_FOUND },
         { status: HTTP_STATUS.NOT_FOUND }
       );
     }
@@ -211,7 +220,7 @@ export const handlers = [
     });
   }),
 
-  http.post('/api/recipes', async ({ request }) => {
+  http.post(API_ENDPOINTS.RECIPES.CREATE, async ({ request }) => {
     const body = await request.json() as Partial<Recipe>;
     
     const newRecipe: Recipe = {
@@ -229,7 +238,7 @@ export const handlers = [
     });
   }),
 
-  http.put('/api/recipes/:id', async ({ params, request }) => {
+  http.put(API_ENDPOINTS.RECIPES.UPDATE, async ({ params, request }) => {
     const id = params.id as string;
     const body = await request.json() as Partial<Recipe>;
     
@@ -237,7 +246,7 @@ export const handlers = [
     
     if (!recipe) {
       return HttpResponse.json(
-        { success: false, error: 'Recipe not found' },
+        { success: false, error: ERROR_MESSAGES.RECIPE_NOT_FOUND },
         { status: HTTP_STATUS.NOT_FOUND }
       );
     }
@@ -254,28 +263,28 @@ export const handlers = [
     });
   }),
 
-  http.delete('/api/recipes/:id', ({ params }) => {
+  http.delete(API_ENDPOINTS.RECIPES.DELETE, ({ params }) => {
     const id = params.id as string;
     const recipe = mockRecipes.find(r => r.id === id);
     
     if (!recipe) {
       return HttpResponse.json(
-        { success: false, error: 'Recipe not found' },
+        { success: false, error: ERROR_MESSAGES.RECIPE_NOT_FOUND },
         { status: HTTP_STATUS.NOT_FOUND }
       );
     }
     
     return HttpResponse.json({
       success: true,
-      data: { message: 'Recipe deleted successfully' },
+      data: { message: SUCCESS_MESSAGES.RECIPE_DELETED },
     });
   }),
 
   // User recipes
-  http.get('/api/users/:userId/recipes', ({ params, request }) => {
+  http.get(API_ENDPOINTS.USERS.USER_RECIPES, ({ params, request }) => {
     const userId = params.userId as string;
     const url = new URL(request.url);
-    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const limit = parseInt(url.searchParams.get('limit') || String(PAGINATION_DEFAULTS.LIMIT));
     
     const userRecipes = mockRecipes.filter(recipe => recipe.user_id === userId);
     const limitedRecipes = userRecipes.slice(0, limit);
@@ -285,7 +294,7 @@ export const handlers = [
       data: {
         recipes: limitedRecipes,
         pagination: {
-          page: 1,
+          page: PAGINATION_DEFAULTS.PAGE,
           limit,
           total: userRecipes.length,
           pages: Math.ceil(userRecipes.length / limit),
@@ -295,7 +304,7 @@ export const handlers = [
   }),
 
   // Upload endpoint (mock)
-  http.post('/api/upload', async ({ request }) => {
+  http.post(API_ENDPOINTS.UPLOAD.IMAGE, async ({ request }) => {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     
@@ -319,7 +328,7 @@ export const handlers = [
   http.all('*', ({ request }) => {
     console.error(`Unhandled ${request.method} request to ${request.url}`);
     return HttpResponse.json(
-      { success: false, error: 'Not found' },
+      { success: false, error: ERROR_MESSAGES.NOT_FOUND },
       { status: HTTP_STATUS.NOT_FOUND }
     );
   }),

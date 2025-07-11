@@ -1,4 +1,4 @@
-import { TIMEOUTS } from '@recipe-manager/shared';
+import { TIMEOUTS, HTTP_STATUS, TEST_CONFIG } from '@recipe-manager/shared';
 
 describe('Smoke Tests', () => {
   describe('Application Health', () => {
@@ -35,7 +35,7 @@ describe('Smoke Tests', () => {
         failOnStatusCode: false
       }).then((response) => {
         // API might not have a health endpoint, so we accept various responses
-        expect(response.status).to.be.oneOf([200, 404]);
+        expect(response.status).to.be.oneOf([HTTP_STATUS.OK, HTTP_STATUS.NOT_FOUND]);
       });
     });
   });
@@ -56,19 +56,19 @@ describe('Smoke Tests', () => {
 
   describe('Responsive Design', () => {
     it('should work on mobile viewport', () => {
-      cy.viewport(375, 667); // iPhone SE
+      cy.viewport(TEST_CONFIG.VIEWPORTS.MOBILE.width, TEST_CONFIG.VIEWPORTS.MOBILE.height); // iPhone SE
       cy.visit('/');
       cy.get('body').should('be.visible');
     });
 
     it('should work on tablet viewport', () => {
-      cy.viewport(768, 1024); // iPad
+      cy.viewport(TEST_CONFIG.VIEWPORTS.TABLET.width, TEST_CONFIG.VIEWPORTS.TABLET.height); // iPad
       cy.visit('/');
       cy.get('body').should('be.visible');
     });
 
     it('should work on desktop viewport', () => {
-      cy.viewport(1920, 1080); // Desktop
+      cy.viewport(TEST_CONFIG.VIEWPORTS.DESKTOP.width, TEST_CONFIG.VIEWPORTS.DESKTOP.height); // Desktop
       cy.visit('/');
       cy.get('body').should('be.visible');
     });

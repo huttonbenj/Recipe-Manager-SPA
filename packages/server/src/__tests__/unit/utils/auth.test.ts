@@ -231,7 +231,7 @@ describe('AuthUtils', () => {
       const result = AuthUtils.validatePassword(password);
       
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Password must be at least 8 characters long');
+      expect(result.errors).toContain('minLength');
     });
 
     it('should reject password without lowercase', () => {
@@ -239,7 +239,7 @@ describe('AuthUtils', () => {
       const result = AuthUtils.validatePassword(password);
       
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Password must contain at least one lowercase letter');
+      expect(result.errors).toContain('lowercase');
     });
 
     it('should reject password without uppercase', () => {
@@ -247,7 +247,7 @@ describe('AuthUtils', () => {
       const result = AuthUtils.validatePassword(password);
       
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Password must contain at least one uppercase letter');
+      expect(result.errors).toContain('uppercase');
     });
 
     it('should reject password without number', () => {
@@ -255,7 +255,7 @@ describe('AuthUtils', () => {
       const result = AuthUtils.validatePassword(password);
       
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Password must contain at least one number');
+      expect(result.errors).toContain('number');
     });
 
     it('should reject password without special character', () => {
@@ -263,7 +263,7 @@ describe('AuthUtils', () => {
       const result = AuthUtils.validatePassword(password);
       
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Password must contain at least one special character (@$!%*?&)');
+      expect(result.errors).toContain('specialChar');
     });
 
     it('should return multiple errors for weak password', () => {

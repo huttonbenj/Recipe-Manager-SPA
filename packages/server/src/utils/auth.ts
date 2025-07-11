@@ -27,11 +27,11 @@ export class AuthUtils {
   }
 
   static generateAccessToken(payload: Pick<JwtPayload, 'userId' | 'email'>): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: SERVER_CONFIG.JWT_EXPIRATION.ACCESS_TOKEN });
   }
 
   static generateRefreshToken(payload: Pick<JwtPayload, 'userId' | 'email'>): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: SERVER_CONFIG.JWT_EXPIRATION.REFRESH_TOKEN });
   }
 
   static generateTokens(user: Pick<User, 'id' | 'email'>): AuthTokens {

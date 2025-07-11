@@ -9,6 +9,7 @@ import {
   validateUser 
 } from '../validation/index';
 import { RECIPE_CONFIG } from '../constants/index';
+import { TEST_CONFIG } from '../constants/index';
 
 describe('Validation Functions', () => {
   describe('validateEmail', () => {
@@ -148,7 +149,7 @@ describe('Validation Functions', () => {
       expect(validateRecipe(shortTitle).errors).toContain('titleLength');
 
       // Too long title
-      const longTitle = { ...validRecipeData, title: 'A'.repeat(201) };
+      const longTitle = { ...validRecipeData, title: 'A'.repeat(TEST_CONFIG.VALIDATION_TEST_LIMITS.TITLE_OVERFLOW) };
       expect(validateRecipe(longTitle).errors).toContain('titleLength');
     });
 

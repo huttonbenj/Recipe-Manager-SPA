@@ -1,13 +1,13 @@
 import { defineConfig } from 'cypress';
 import codeCoverageTask from '@cypress/code-coverage/task';
-import { TIMEOUTS, API_CONFIG } from '@recipe-manager/shared';
+import { TIMEOUTS, API_CONFIG, CLIENT_CONFIG, TEST_CONFIG } from '@recipe-manager/shared';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
 export default defineConfig({
   e2e: {
     // Use Vite dev server port; allow override via CYPRESS_BASE_URL env var
-    baseUrl: process.env.CYPRESS_BASE_URL || 'http://localhost:5173',
+    baseUrl: process.env.CYPRESS_BASE_URL || `http://localhost:${CLIENT_CONFIG.VITE_DEV_PORT}`,
     
     // Test files
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
@@ -21,8 +21,8 @@ export default defineConfig({
     screenshotOnRunFailure: true,
     
     // Viewport settings
-    viewportWidth: 1280,
-    viewportHeight: 720,
+    viewportWidth: CLIENT_CONFIG.VIEWPORT.WIDTH,
+    viewportHeight: CLIENT_CONFIG.VIEWPORT.HEIGHT,
     
     // Test execution settings
     defaultCommandTimeout: TIMEOUTS.API_REQUEST,
@@ -35,8 +35,8 @@ export default defineConfig({
     
     // Retry configuration
     retries: {
-      runMode: 2,
-      openMode: 0
+      runMode: TEST_CONFIG.RETRY.RUN_MODE,
+      openMode: TEST_CONFIG.RETRY.OPEN_MODE
     },
     
     // Environment variables

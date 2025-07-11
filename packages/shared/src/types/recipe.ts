@@ -1,17 +1,17 @@
 import { z } from 'zod';
-import { RECIPE_CONFIG } from '../constants/index.js';
+import { RECIPE_CONFIG, PAGINATION_DEFAULTS } from '../constants/index';
 
 // Core Recipe Schema - this is the authoritative recipe type definition
 export const RecipeSchema = z.object({
   id: z.string(),
-  title: z.string().min(1).max(200),
-  ingredients: z.string().min(1), // JSON string in database
-  instructions: z.string().min(1).max(5000), // JSON string in database
+  title: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH).max(RECIPE_CONFIG.TITLE.MAX_LENGTH),
+  ingredients: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH), // JSON string in database
+  instructions: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH).max(RECIPE_CONFIG.INSTRUCTIONS.MAX_LENGTH), // JSON string in database
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
   difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
-  category: z.string().max(50).optional(),
+  category: z.string().max(RECIPE_CONFIG.CATEGORY.MAX_LENGTH).optional(),
   tags: z.string().optional(), // JSON string in database
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
@@ -25,27 +25,27 @@ export const RecipeSchema = z.object({
 
 // Recipe Creation Schema (for API requests)
 export const RecipeCreateSchema = z.object({
-  title: z.string().min(1).max(200),
-  ingredients: z.string().min(1),
-  instructions: z.string().min(1).max(5000),
+  title: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH).max(RECIPE_CONFIG.TITLE.MAX_LENGTH),
+  ingredients: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH),
+  instructions: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH).max(RECIPE_CONFIG.INSTRUCTIONS.MAX_LENGTH),
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
   difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
-  category: z.string().max(50).optional(),
+  category: z.string().max(RECIPE_CONFIG.CATEGORY.MAX_LENGTH).optional(),
   tags: z.string().optional()
 });
 
 // Recipe Update Schema (for API requests)
 export const RecipeUpdateSchema = z.object({
-  title: z.string().min(1).max(200).optional(),
-  ingredients: z.string().min(1).optional(),
-  instructions: z.string().min(1).max(5000).optional(),
+  title: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH).max(RECIPE_CONFIG.TITLE.MAX_LENGTH).optional(),
+  ingredients: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH).optional(),
+  instructions: z.string().min(RECIPE_CONFIG.TITLE.MIN_LENGTH).max(RECIPE_CONFIG.INSTRUCTIONS.MAX_LENGTH).optional(),
   image_url: z.string().url().optional(),
   cook_time: z.number().positive().optional(),
   servings: z.number().positive().optional(),
   difficulty: z.enum(RECIPE_CONFIG.DIFFICULTY_LEVELS).optional(),
-  category: z.string().max(50).optional(),
+  category: z.string().max(RECIPE_CONFIG.CATEGORY.MAX_LENGTH).optional(),
   tags: z.string().optional()
 });
 
@@ -58,14 +58,14 @@ export const RecipeSearchSchema = z.object({
   user_id: z.string().optional(),
   sortBy: z.enum(['created_at', 'updated_at', 'title', 'cook_time']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
-  page: z.number().int().positive().default(1),
-  limit: z.number().int().positive().max(100).default(10)
+  page: z.number().int().positive().default(PAGINATION_DEFAULTS.PAGE),
+  limit: z.number().int().positive().max(PAGINATION_DEFAULTS.MAX_LIMIT).default(PAGINATION_DEFAULTS.LIMIT)
 });
 
 // Pagination Schema
 export const PaginationSchema = z.object({
-  page: z.number().positive().default(1),
-  limit: z.number().positive().max(100).default(10),
+  page: z.number().positive().default(PAGINATION_DEFAULTS.PAGE),
+  limit: z.number().positive().max(PAGINATION_DEFAULTS.MAX_LIMIT).default(PAGINATION_DEFAULTS.LIMIT),
   totalCount: z.number(),
   totalPages: z.number()
 });

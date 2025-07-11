@@ -117,6 +117,7 @@ jobs:
 
       - name: Wait for services
         run: |
+          # Timeout should match TEST_CONFIG.CI_TIMEOUT from shared constants (60000ms)
           npx wait-on http://localhost:3000 http://localhost:3001 --timeout 60000
 
       - name: Run Cypress tests
@@ -180,6 +181,7 @@ jobs:
 
       - name: Wait for services
         run: |
+          # Timeout should match TEST_CONFIG.CI_TIMEOUT from shared constants (60000ms)
           npx wait-on http://localhost:3000 http://localhost:3001 --timeout 60000
 
       - name: Run Playwright tests

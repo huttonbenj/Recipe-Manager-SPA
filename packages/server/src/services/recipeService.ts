@@ -4,7 +4,8 @@ import logger from '../utils/logger';
 import { 
   CreateRecipeRequest, 
   UpdateRecipeRequest, 
-  RecipeSearchParams
+  RecipeSearchParams,
+  PAGINATION_DEFAULTS
 } from '@recipe-manager/shared';
 
 export interface RecipeCreateData extends CreateRecipeRequest {
@@ -29,7 +30,7 @@ export class RecipeService {
   ): Promise<{ recipes: Recipe[]; totalCount: number; totalPages: number }> {
     try {
       const { search, category, difficulty, user_id } = filters;
-      const { page = 1, limit = 10 } = pagination;
+      const { page = PAGINATION_DEFAULTS.PAGE, limit = PAGINATION_DEFAULTS.LIMIT } = pagination;
       
       const skip = (page - 1) * limit;
       
@@ -221,7 +222,7 @@ export class RecipeService {
     pagination: PaginationOptions = {}
   ): Promise<{ recipes: Recipe[]; totalCount: number; totalPages: number }> {
     try {
-      const { page = 1, limit = 10 } = pagination;
+      const { page = PAGINATION_DEFAULTS.PAGE, limit = PAGINATION_DEFAULTS.LIMIT } = pagination;
       const skip = (page - 1) * limit;
       
       const [recipes, totalCount] = await Promise.all([
@@ -265,7 +266,7 @@ export class RecipeService {
     pagination: PaginationOptions = {}
   ): Promise<{ recipes: Recipe[]; totalCount: number; totalPages: number }> {
     try {
-      const { page = 1, limit = 10 } = pagination;
+      const { page = PAGINATION_DEFAULTS.PAGE, limit = PAGINATION_DEFAULTS.LIMIT } = pagination;
       const skip = (page - 1) * limit;
       
       const where = {
@@ -319,7 +320,7 @@ export class RecipeService {
     pagination: PaginationOptions = {}
   ): Promise<{ recipes: Recipe[]; totalCount: number; totalPages: number }> {
     try {
-      const { page = 1, limit = 10 } = pagination;
+      const { page = PAGINATION_DEFAULTS.PAGE, limit = PAGINATION_DEFAULTS.LIMIT } = pagination;
       const skip = (page - 1) * limit;
       
       const [recipes, totalCount] = await Promise.all([

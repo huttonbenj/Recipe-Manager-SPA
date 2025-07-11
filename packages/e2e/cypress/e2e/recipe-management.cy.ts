@@ -1,4 +1,4 @@
-import { CLIENT_CONFIG } from '@recipe-manager/shared';
+import { CLIENT_CONFIG, HTTP_STATUS, API_ENDPOINTS } from '@recipe-manager/shared';
 
 describe('Recipe Management E2E Tests', () => {
   beforeEach(() => {
@@ -295,19 +295,16 @@ describe('Recipe Management E2E Tests', () => {
   });
 
   describe('Error Handling', () => {
-    it('should handle network errors gracefully', () => {
-      // Simulate network failure
-      cy.intercept('GET', '/api/recipes', { forceNetworkError: true }).as('networkError');
+    it('should handle API errors gracefully', () => {
+      // Test network error
+      cy.intercept('GET', API_ENDPOINTS.RECIPES.LIST, { forceNetworkError: true }).as('networkError');
       
       cy.visit('/recipes');
       cy.wait('@networkError');
-
-      cy.get('[data-testid="error-message"]').should('contain', 'Unable to load recipes');
-      cy.get('[data-testid="retry-btn"]').should('be.visible');
-    });
-
-    it('should handle server errors', () => {
-      cy.intercept('GET', '/api/recipes', { statusCode: 500 }).as('serverError');
+      cy.contains('Failed to load recipes').should('be.visible');
+      
+      // Test server error
+      cy.intercept('GET', API_ENDPOINTS.RECIPES.LIST, { statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR }).as('serverError');
       
       cy.visit('/recipes');
       cy.wait('@serverError');

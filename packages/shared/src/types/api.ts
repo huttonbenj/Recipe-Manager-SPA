@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { RecipeCreateSchema, RecipeUpdateSchema, RecipeSearchSchema } from './recipe';
+import { USER_CONFIG, PAGINATION_DEFAULTS } from '../constants/index';
 
 // Generic API Response Schema
 export const ApiResponseSchema = z.object({
@@ -12,8 +13,8 @@ export const ApiResponseSchema = z.object({
 
 // Pagination Schema
 export const PaginationParamsSchema = z.object({
-  page: z.number().int().positive().default(1),
-  limit: z.number().int().positive().max(100).default(10)
+  page: z.number().int().positive().default(PAGINATION_DEFAULTS.PAGE),
+  limit: z.number().int().positive().max(PAGINATION_DEFAULTS.MAX_LIMIT).default(PAGINATION_DEFAULTS.LIMIT)
 });
 
 export const PaginationInfoSchema = z.object({
@@ -34,8 +35,8 @@ export const LoginRequestSchema = z.object({
 
 export const RegisterRequestSchema = z.object({
   email: z.string().email(),
-  name: z.string().min(2).max(50),
-  password: z.string().min(8).max(100)
+  name: z.string().min(USER_CONFIG.NAME.MIN_LENGTH).max(USER_CONFIG.NAME.MAX_LENGTH),
+  password: z.string().min(USER_CONFIG.PASSWORD.MIN_LENGTH).max(USER_CONFIG.PASSWORD.MAX_LENGTH)
 });
 
 export const RefreshTokenRequestSchema = z.object({
@@ -44,11 +45,11 @@ export const RefreshTokenRequestSchema = z.object({
 
 export const ChangePasswordRequestSchema = z.object({
   currentPassword: z.string(),
-  newPassword: z.string().min(8).max(100)
+  newPassword: z.string().min(USER_CONFIG.PASSWORD.MIN_LENGTH).max(USER_CONFIG.PASSWORD.MAX_LENGTH)
 });
 
 export const UpdateProfileRequestSchema = z.object({
-  name: z.string().min(2).max(50).optional(),
+  name: z.string().min(USER_CONFIG.NAME.MIN_LENGTH).max(USER_CONFIG.NAME.MAX_LENGTH).optional(),
   email: z.string().email().optional()
 });
 

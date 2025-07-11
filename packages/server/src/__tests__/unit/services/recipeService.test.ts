@@ -278,7 +278,10 @@ describe('RecipeService', () => {
       const result = await RecipeService.createRecipe(recipeData);
 
       expect(prisma.recipe.create).toHaveBeenCalledWith({
-        data: recipeData,
+        data: {
+          ...recipeData,
+          image_url: null,
+        },
         include: {
           user: {
             select: {

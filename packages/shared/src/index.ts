@@ -24,6 +24,8 @@ export {
   UPLOAD_CONFIG,
   ENV_VARS,
   TEST_CONFIG,
+  QUERY_CONFIG,
+  VALIDATION_CONFIG,
   CONSTANTS
 } from './constants/index';
 

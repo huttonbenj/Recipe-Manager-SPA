@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ErrorResponseSchema } from '../types/api';
 import { UserSchema, UserCredentialsSchema, UserRegistrationSchema } from '../types/user';
 import { RecipeSchema, RecipeCreateSchema, RecipeUpdateSchema } from '../types/recipe';
-import { RECIPE_CONFIG } from '../constants/index';
+import { RECIPE_CONFIG, VALIDATION_CONFIG } from '../constants/index';
 
 // Validation Error Class
 export class ValidationError extends Error {
@@ -324,7 +324,7 @@ export function sanitizeInput(input: string): string {
     .replace(/[<>]/g, '') // Remove potential HTML tags
     .replace(/javascript:/gi, '') // Remove javascript: protocol
     .replace(/on\w+=/gi, '') // Remove event handlers
-    .substring(0, 1000); // Limit length
+    .substring(0, VALIDATION_CONFIG.INPUT_MAX_LENGTH); // Limit length
 }
 
 // Re-export schemas for direct use
