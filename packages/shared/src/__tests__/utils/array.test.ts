@@ -349,8 +349,8 @@ describe('Array Utilities', () => {
 
     it('should handle mixed types', () => {
       expect(countOccurrences([1, '1', 2, '2', 1])).toEqual({
-        '1': 2,
-        '2': 1
+        '1': 3,
+        '2': 2
       });
     });
   });

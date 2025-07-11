@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const RegisterFormFooter = () => {
     return (
         <div className="text-center">

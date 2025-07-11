@@ -6,10 +6,10 @@ import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { errorHandler } from './middleware/error';
 import { dbManager } from './config/database';
-import authRoutes from './routes/auth';
-import recipeRoutes from './routes/recipes';
-import userRoutes from './routes/user';
-import uploadRoutes from './routes/upload';
+import authRoutes from './routes/auth/index';
+import recipeRoutes from './routes/recipes/index';
+import userRoutes from './routes/users/index';
+import uploadRoutes from './routes/uploads/index';
 import { API_CONFIG, CLIENT_CONFIG, UPLOAD_CONFIG } from '@recipe-manager/shared';
 
 const app = express();

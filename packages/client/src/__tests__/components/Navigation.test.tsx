@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { Navigation } from '../../components/Navigation';
+import { Navigation } from '../../components/features/navigation';
 import { renderWithProviders, createMockUser } from '../utils/test-utils';
 import { User } from '@recipe-manager/shared';
 

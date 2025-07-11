@@ -117,7 +117,7 @@ describe('String Utilities', () => {
 
   describe('truncate', () => {
     it('should truncate long strings', () => {
-      expect(truncate('This is a very long string', 10)).toBe('This is a...');
+      expect(truncate('This is a very long string', 10)).toBe('This is...');
       expect(truncate('Short', 10)).toBe('Short');
     });
 

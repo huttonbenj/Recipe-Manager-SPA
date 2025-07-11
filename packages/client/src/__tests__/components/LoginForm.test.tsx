@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';
-import { LoginForm } from '../../components/auth/LoginForm';
+import { LoginForm } from '../../components/features/auth/login';
 import { renderWithProviders, createMockUser } from '../utils/test-utils';
 import { User } from '@recipe-manager/shared';
 
