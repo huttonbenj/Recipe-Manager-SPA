@@ -3,8 +3,7 @@ module.exports = {
     env: { node: true, es2020: true },
     extends: [
         'eslint:recommended',
-        '@typescript-eslint/recommended',
-        'plugin:cypress/recommended',
+        'plugin:@typescript-eslint/recommended',
     ],
     ignorePatterns: [
         'dist',
@@ -16,14 +15,11 @@ module.exports = {
         ecmaVersion: 'latest',
         sourceType: 'module',
     },
-    plugins: ['@typescript-eslint', 'cypress'],
+    plugins: ['@typescript-eslint'],
     rules: {
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
         '@typescript-eslint/no-explicit-any': 'warn',
-        '@typescript-eslint/prefer-const': 'error',
-        'prefer-const': 'off', // Let TypeScript handle this
-        'cypress/no-unnecessary-waiting': 'warn',
-        'cypress/assertion-before-screenshot': 'warn',
+        'prefer-const': 'error',
     },
 }; 

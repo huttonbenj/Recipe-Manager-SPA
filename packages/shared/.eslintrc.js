@@ -3,7 +3,7 @@ module.exports = {
     env: { node: true, es2020: true },
     extends: [
         'eslint:recommended',
-        '@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended',
     ],
     ignorePatterns: [
         'dist',
@@ -20,7 +20,6 @@ module.exports = {
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
         '@typescript-eslint/no-explicit-any': 'warn',
-        '@typescript-eslint/prefer-const': 'error',
-        'prefer-const': 'off', // Let TypeScript handle this
+        'prefer-const': 'error',
     },
 }; 

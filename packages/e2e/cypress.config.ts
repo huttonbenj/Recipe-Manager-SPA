@@ -1,6 +1,8 @@
 import { defineConfig } from 'cypress';
 import codeCoverageTask from '@cypress/code-coverage/task';
 import { TIMEOUTS, API_CONFIG } from '@recipe-manager/shared';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 export default defineConfig({
   e2e: {
@@ -54,19 +56,15 @@ export default defineConfig({
       // Custom & database tasks combined to avoid overwriting
       on('task', {
         log(message: unknown) {
-          // eslint-disable-next-line no-console
           console.log(message);
           return null;
         },
         table(message: unknown) {
-          // eslint-disable-next-line no-console
           console.table(message as unknown);
           return null;
         },
         'db:seed': async () => {
           // Execute the actual seed script
-          const { exec } = require('child_process');
-          const { promisify } = require('util');
           const execAsync = promisify(exec);
           
           try {
@@ -81,8 +79,6 @@ export default defineConfig({
         'db:seedLargeDataset': async () => {
           // For performance testing, we can run the seed script multiple times
           // or create a dedicated large dataset seeder
-          const { exec } = require('child_process');
-          const { promisify } = require('util');
           const execAsync = promisify(exec);
           
           try {
@@ -96,8 +92,6 @@ export default defineConfig({
         },
         'db:clean': async () => {
           // Clean database by running Prisma reset
-          const { exec } = require('child_process');
-          const { promisify } = require('util');
           const execAsync = promisify(exec);
           
           try {

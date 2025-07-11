@@ -274,7 +274,7 @@ export function validateRecipe(recipe: unknown): ValidationResult {
   }
 
   if (recipeData.difficulty !== undefined) {
-    if (typeof recipeData.difficulty !== 'string' || !RECIPE_CONFIG.DIFFICULTY_LEVELS.includes(recipeData.difficulty as any)) {
+    if (typeof recipeData.difficulty !== 'string' || !RECIPE_CONFIG.DIFFICULTY_LEVELS.includes(recipeData.difficulty as typeof RECIPE_CONFIG.DIFFICULTY_LEVELS[number])) {
       errors.push('difficulty');
       isValid = false;
     }
