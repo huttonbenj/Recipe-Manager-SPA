@@ -3,12 +3,11 @@ import app from './app';
 import { dbManager } from './config/database';
 import logger from './utils/logger';
 import { Server } from 'http';
-import { SERVER_CONFIG } from '@recipe-manager/shared';
 
 // Load environment variables
 dotenv.config();
 
-const port = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
+const PORT = process.env.PORT || 3001; // Reverted back to original port
 
 let server: Server;
 
@@ -18,8 +17,8 @@ async function startServer() {
     await dbManager.connect();
     
     // Start server
-    server = app.listen(port, () => {
-      logger.info(`Server running on port ${port}`);
+    server = app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);
@@ -33,25 +32,22 @@ const gracefulShutdown = async (signal: string) => {
   
   if (server) {
     server.close(async () => {
-      logger.info('Server closed');
+      logger.info('Server closed.');
       
-      try {
-        await dbManager.disconnect();
-        logger.info('Database connections closed');
-      } catch (error) {
-        logger.error('Error closing database connections', { error });
-      }
+      // Close database connection
+      await dbManager.disconnect();
+      logger.info('Database connection closed.');
       
       process.exit(0);
     });
   } else {
-    logger.info('Server not running');
     process.exit(0);
   }
 };
 
-// Listen for shutdown signals
+// Listen for termination signals
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
+// Start server
 startServer(); 

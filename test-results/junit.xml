@@ -1,39 +1,162 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="17" failures="0" errors="0" time="0.096099167">
-    <testsuite name="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" timestamp="2025-07-11T11:22:53.381Z" hostname="MacBookPro.attlocal.net" tests="17" failures="0" errors="0" skipped="0" time="0.096099167">
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; initialization &gt; returns initial form state" time="0.008486041">
+<testsuites name="vitest tests" tests="19" failures="5" errors="0" time="0.256803624">
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx" timestamp="2025-07-11T21:55:12.081Z" hostname="MacBookPro.attlocal.net" tests="2" failures="2" errors="0" skipped="0" time="0.004739291">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx" name="Dashboard &gt; renders all dashboard sections and passes props" time="0.002206291">
+            <failure message="Cannot read properties of undefined (reading &apos;mockReset&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;mockReset&apos;)
+ ❯ packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx:41:37
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; initialization &gt; isEditing is true if id param exists" time="0.002396375">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx" name="Dashboard &gt; shows loading skeletons when loading" time="0.000374291">
+            <failure message="Cannot read properties of undefined (reading &apos;mockReset&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;mockReset&apos;)
+ ❯ packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx:41:37
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; initialization &gt; loads existing recipe data when editing" time="0.054683667">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardCommunityRecipes.test.tsx" timestamp="2025-07-11T21:55:12.091Z" hostname="MacBookPro.attlocal.net" tests="3" failures="3" errors="0" skipped="0" time="0.028819291">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardCommunityRecipes.test.tsx" name="DashboardCommunityRecipes &gt; shows loading skeletons when loading" time="0.021055416">
+            <system-err>
+The above error occurred in the &lt;DashboardCommunityRecipes&gt; component:
+
+    at DashboardCommunityRecipes (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:11:3)
+    at QueryClientProvider (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at AuthProvider (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/contexts/AuthProvider.tsx:14:25)
+    at Router (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at TestProviders (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/__tests__/utils/test-utils.tsx:26:26)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="Cannot read properties of undefined (reading &apos;length&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;length&apos;)
+ ❯ DashboardCommunityRecipes packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:60:25
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:14
+ ❯ HTMLUnknownElement.#callDispatchEventListeners node_modules/happy-dom/src/event/EventTarget.ts:289:42
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:136:35
+ ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:198:33
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:129:38
+ ❯ Object.invokeGuardedCallbackDev node_modules/react-dom/cjs/react-dom.development.js:4213:16
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; initialization &gt; handles missing recipe data gracefully" time="0.003532709">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardCommunityRecipes.test.tsx" name="DashboardCommunityRecipes &gt; renders community recipes when present" time="0.003384292">
+            <system-err>
+The above error occurred in the &lt;DashboardCommunityRecipes&gt; component:
+
+    at DashboardCommunityRecipes (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:11:3)
+    at QueryClientProvider (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at AuthProvider (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/contexts/AuthProvider.tsx:14:25)
+    at Router (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at TestProviders (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/__tests__/utils/test-utils.tsx:26:26)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="Cannot read properties of undefined (reading &apos;length&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;length&apos;)
+ ❯ DashboardCommunityRecipes packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:60:25
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:14
+ ❯ HTMLUnknownElement.#callDispatchEventListeners node_modules/happy-dom/src/event/EventTarget.ts:289:42
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:136:35
+ ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:198:33
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:129:38
+ ❯ Object.invokeGuardedCallbackDev node_modules/react-dom/cjs/react-dom.development.js:4213:16
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; form data updates &gt; updates form data" time="0.001422042">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardCommunityRecipes.test.tsx" name="DashboardCommunityRecipes &gt; shows empty state when no recipes" time="0.002107833">
+            <system-err>
+The above error occurred in the &lt;DashboardCommunityRecipes&gt; component:
+
+    at DashboardCommunityRecipes (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:11:3)
+    at QueryClientProvider (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at AuthProvider (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/contexts/AuthProvider.tsx:14:25)
+    at Router (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at TestProviders (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/__tests__/utils/test-utils.tsx:26:26)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="Cannot read properties of undefined (reading &apos;length&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;length&apos;)
+ ❯ DashboardCommunityRecipes packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:60:25
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:14
+ ❯ HTMLUnknownElement.#callDispatchEventListeners node_modules/happy-dom/src/event/EventTarget.ts:289:42
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:136:35
+ ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:198:33
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:129:38
+ ❯ Object.invokeGuardedCallbackDev node_modules/react-dom/cjs/react-dom.development.js:4213:16
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; form data updates &gt; updates multiple form fields" time="0.000851667">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" timestamp="2025-07-11T21:55:12.100Z" hostname="MacBookPro.attlocal.net" tests="6" failures="0" errors="0" skipped="0" time="0.07352775">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders greeting and user name" time="0.039562833">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; image handling &gt; sets image preview on handleImageChange" time="0.000698541">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders default user name when no user provided" time="0.0071575">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; image handling &gt; handles image change with no files" time="0.000441458">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders action buttons" time="0.005568625">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; image handling &gt; removes image preview" time="0.001478583">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders correct links for action buttons" time="0.0026785">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; form submission &gt; handles successful recipe creation" time="0.004666708">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders formatted date" time="0.011563167">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; form submission &gt; handles successful recipe update" time="0.004474292">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders chef icon" time="0.003610375">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; form submission &gt; handles validation failure" time="0.000700209">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardQuickActions.test.tsx" timestamp="2025-07-11T21:55:12.112Z" hostname="MacBookPro.attlocal.net" tests="3" failures="0" errors="0" skipped="0" time="0.045037708">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardQuickActions.test.tsx" name="DashboardQuickActions &gt; renders all quick actions" time="0.027022917">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; form submission &gt; handles creation error" time="0.002197375">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardQuickActions.test.tsx" name="DashboardQuickActions &gt; renders correct links for actions" time="0.009282291">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; form submission &gt; handles update error" time="0.004364417">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardQuickActions.test.tsx" name="DashboardQuickActions &gt; renders action descriptions" time="0.0065535">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; form submission &gt; handles generic error without response" time="0.002481167">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardStats.test.tsx" timestamp="2025-07-11T21:55:12.115Z" hostname="MacBookPro.attlocal.net" tests="2" failures="0" errors="0" skipped="0" time="0.039762917">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardStats.test.tsx" name="DashboardStats &gt; renders all stat cards" time="0.032951875">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; navigation &gt; handles cancel navigation" time="0.000542833">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardStats.test.tsx" name="DashboardStats &gt; shows loading skeletons when statsLoading" time="0.003583459">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/unit/hooks/form/useRecipeForm.test.tsx" name="useRecipeForm &gt; error handling &gt; returns validation errors" time="0.000422375">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx" timestamp="2025-07-11T21:55:12.116Z" hostname="MacBookPro.attlocal.net" tests="3" failures="0" errors="0" skipped="0" time="0.064916667">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx" name="DashboardUserRecipes &gt; shows loading skeletons when loading" time="0.019052958">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx" name="DashboardUserRecipes &gt; renders user recipes when present" time="0.026106125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx" name="DashboardUserRecipes &gt; shows empty state when no recipes" time="0.01766125">
         </testcase>
     </testsuite>
 </testsuites>

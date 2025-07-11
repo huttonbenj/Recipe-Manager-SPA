@@ -24,13 +24,13 @@ export const UserProfileEditModal: React.FC<UserProfileEditModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="glass-card rounded-lg p-6 w-full max-w-md m-4">
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold">Edit Profile</h2>
+                    <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50">Edit Profile</h2>
                     <button
                         onClick={onCancel}
-                        className="text-gray-500 hover:text-gray-700"
+                        className="text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-300 transition-colors"
                     >
                         <X className="h-5 w-5" />
                     </button>
@@ -38,43 +38,43 @@ export const UserProfileEditModal: React.FC<UserProfileEditModalProps> = ({
 
                 <form onSubmit={onSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                             Name
                         </label>
                         <input
                             type="text"
                             value={formData.name}
                             onChange={(e) => onFormDataChange('name', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-md bg-surface-50 dark:bg-surface-800 text-surface-900 dark:text-surface-50 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-400 transition-colors"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                             Email
                         </label>
                         <input
                             type="email"
                             value={formData.email}
                             onChange={(e) => onFormDataChange('email', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-md bg-surface-50 dark:bg-surface-800 text-surface-900 dark:text-surface-50 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-400 transition-colors"
                             required
                         />
                     </div>
 
-                    <div className="flex space-x-4">
+                    <div className="flex space-x-4 pt-4">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                            className="btn-secondary flex-1"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
+                            className="btn-primary flex-1"
                         >
                             {isLoading ? (
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

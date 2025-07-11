@@ -1,30 +1,50 @@
+import React from 'react';
 import { describe, it, expect } from 'vitest';
-import { renderWithProviders, screen } from '../../../utils/test-utils';
+import { screen } from '@testing-library/react';
+import { renderWithProviders } from '../../../utils/test-utils';
 import { DashboardHeader } from '../../../../components/features/dashboard/DashboardHeader';
 
 describe('DashboardHeader', () => {
-    const baseProps = {
-        greeting: 'Hello',
-        userName: 'Test User',
-        stats: { totalRecipes: 5, totalLikes: 10 },
-        statsLoading: false,
+    const mockUser = {
+        id: '1',
+        name: 'Test User',
+        email: 'test@example.com',
+        created_at: new Date(),
+        updated_at: new Date()
     };
 
     it('renders greeting and user name', () => {
-        renderWithProviders(<DashboardHeader {...baseProps} />);
-        expect(screen.getByText(/hello, test user/i)).toBeInTheDocument();
+        renderWithProviders(<DashboardHeader user={mockUser} />);
+        expect(screen.getByText(/good (morning|afternoon|evening)/i)).toBeInTheDocument();
+        expect(screen.getByText('Test User')).toBeInTheDocument();
     });
 
-    it('renders stats when not loading', () => {
-        renderWithProviders(<DashboardHeader {...baseProps} />);
-        expect(screen.getByText('5')).toBeInTheDocument();
-        expect(screen.getByText('10')).toBeInTheDocument();
-        expect(screen.getByText('Recipes')).toBeInTheDocument();
-        expect(screen.getByText('Likes')).toBeInTheDocument();
+    it('renders default user name when no user provided', () => {
+        renderWithProviders(<DashboardHeader user={null} />);
+        expect(screen.getByText('Chef')).toBeInTheDocument();
     });
 
-    it('shows loading skeletons when statsLoading', () => {
-        renderWithProviders(<DashboardHeader {...baseProps} statsLoading={true} />);
-        expect(screen.getAllByText('', { selector: '.animate-pulse' }).length).toBeGreaterThan(0);
+    it('renders action buttons', () => {
+        renderWithProviders(<DashboardHeader user={mockUser} />);
+        expect(screen.getByText('New Recipe')).toBeInTheDocument();
+        expect(screen.getByText('Explore')).toBeInTheDocument();
+    });
+
+    it('renders correct links for action buttons', () => {
+        renderWithProviders(<DashboardHeader user={mockUser} />);
+        expect(screen.getByText('New Recipe').closest('a')).toHaveAttribute('href', '/recipes/new');
+        expect(screen.getByText('Explore').closest('a')).toHaveAttribute('href', '/recipes');
+    });
+
+    it('renders formatted date', () => {
+        renderWithProviders(<DashboardHeader user={mockUser} />);
+        // Check for date format like "Monday, January 1"
+        expect(screen.getByText(/\w+, \w+ \d+/)).toBeInTheDocument();
+    });
+
+    it('renders chef icon', () => {
+        renderWithProviders(<DashboardHeader user={mockUser} />);
+        // Check for the chef hat icon (lucide-react renders as svg)
+        expect(document.querySelector('svg')).toBeInTheDocument();
     });
 }); 

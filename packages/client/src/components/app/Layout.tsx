@@ -1,17 +1,23 @@
-import { ReactNode } from 'react';
+import React from 'react';
 import { Navigation } from '../features/navigation';
+import { Footer } from './Footer';
 
 interface LayoutProps {
-    children: ReactNode;
+    children: React.ReactNode;
 }
 
 export const Layout = ({ children }: LayoutProps) => {
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="flex min-h-screen flex-col bg-surface-50 text-surface-900 dark:bg-surface-950 dark:text-surface-50 transition-colors duration-200">
             <Navigation />
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {children}
+
+            <main className="flex-grow">
+                <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8 animate-fade-in">
+                    {children}
+                </div>
             </main>
+
+            <Footer />
         </div>
     );
 }; 

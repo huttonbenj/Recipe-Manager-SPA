@@ -1,5 +1,6 @@
 import React from 'react';
 import { Menu, X } from 'lucide-react';
+import { cn } from '../../../utils/cn';
 
 interface NavigationMobileButtonProps {
     isMenuOpen: boolean;
@@ -8,21 +9,25 @@ interface NavigationMobileButtonProps {
 
 export const NavigationMobileButton: React.FC<NavigationMobileButtonProps> = ({
     isMenuOpen,
-    onToggleMenu
+    onToggleMenu,
 }) => {
     return (
-        <div className="md:hidden flex items-center">
-            <button
-                onClick={onToggleMenu}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-            >
-                <span className="sr-only">Open main menu</span>
-                {isMenuOpen ? (
-                    <X className="block h-6 w-6" />
-                ) : (
-                    <Menu className="block h-6 w-6" />
-                )}
-            </button>
-        </div>
+        <button
+            onClick={onToggleMenu}
+            className={cn(
+                "md:hidden flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                "text-surface-600 hover:bg-surface-100 hover:text-surface-900",
+                "dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:text-surface-50"
+            )}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+        >
+            {isMenuOpen ? (
+                <X className="h-5 w-5" />
+            ) : (
+                <Menu className="h-5 w-5" />
+            )}
+        </button>
     );
 }; 

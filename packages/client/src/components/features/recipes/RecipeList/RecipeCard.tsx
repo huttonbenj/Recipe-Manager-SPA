@@ -16,14 +16,14 @@ export const RecipeCard = memo<RecipeCardProps>(({ recipe }) => {
             case 'Medium':
                 return 'warning';
             case 'Hard':
-                return 'danger';
+                return 'error';
             default:
-                return 'default';
+                return 'secondary';
         }
     };
 
     return (
-        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+        <Card className="overflow-hidden hover:shadow-lg transition-shadow glass-card">
             <div className="relative">
                 {recipe.image_url ? (
                     <img
@@ -32,28 +32,28 @@ export const RecipeCard = memo<RecipeCardProps>(({ recipe }) => {
                         className="w-full h-48 object-cover"
                     />
                 ) : (
-                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                        <ChefHat className="h-12 w-12 text-gray-400" />
+                    <div className="w-full h-48 bg-surface-200 dark:bg-surface-800 flex items-center justify-center">
+                        <ChefHat className="h-12 w-12 text-surface-400 dark:text-surface-600" />
                     </div>
                 )}
-                <div className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md">
-                    <Heart className="h-4 w-4 text-gray-400" />
+                <div className="absolute top-2 right-2 glass-card rounded-full p-2">
+                    <Heart className="h-4 w-4 text-surface-400 dark:text-surface-500" />
                 </div>
             </div>
 
             <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                    <Link to={`/recipes/${recipe.id}`} className="hover:text-blue-600">
+                <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-2 line-clamp-2">
+                    <Link to={`/recipes/${recipe.id}`} className="hover:text-brand-600 dark:hover:text-brand-400">
                         {recipe.title}
                     </Link>
                 </h3>
 
-                <div className="flex items-center text-sm text-gray-500 mb-3">
+                <div className="flex items-center text-sm text-surface-500 dark:text-surface-400 mb-3">
                     <Users className="h-4 w-4 mr-1" />
                     <span>By {recipe.user?.name || 'Unknown'}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                <div className="flex items-center justify-between text-sm text-surface-500 dark:text-surface-400 mb-3">
                     <div className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
                         <span>{recipe.cook_time || 'N/A'} mins</span>
@@ -77,7 +77,7 @@ export const RecipeCard = memo<RecipeCardProps>(({ recipe }) => {
                             </Badge>
                         )}
                     </div>
-                    <div className="flex items-center text-gray-400">
+                    <div className="flex items-center text-surface-400 dark:text-surface-500">
                         <Eye className="h-4 w-4 mr-1" />
                         <span className="text-xs">125</span>
                     </div>

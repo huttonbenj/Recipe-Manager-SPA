@@ -93,8 +93,8 @@ export const RecipeList = () => {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="text-red-500 text-6xl mb-4">⚠️</div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-2">Error loading recipes</h2>
-                    <p className="text-gray-600">Please try again later.</p>
+                    <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50 mb-2">Error loading recipes</h2>
+                    <p className="text-surface-600 dark:text-surface-400">Please try again later.</p>
                 </div>
             </div>
         );
@@ -105,8 +105,8 @@ export const RecipeList = () => {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Recipe Collection</h1>
-                    <p className="text-gray-600 mt-2">Discover and share amazing recipes</p>
+                    <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-50">Recipe Collection</h1>
+                    <p className="text-surface-600 dark:text-surface-400 mt-2">Discover and share amazing recipes</p>
                 </div>
                 <Link to="/recipes/new">
                     <Button leftIcon={<Plus className="h-5 w-5" />}>

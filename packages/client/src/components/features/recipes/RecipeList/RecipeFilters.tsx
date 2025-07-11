@@ -62,9 +62,9 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty;
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div className="glass-card p-6 rounded-2xl mb-6">
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-50 flex items-center">
                     <Filter className="h-5 w-5 mr-2" />
                     Filters
                 </h2>
