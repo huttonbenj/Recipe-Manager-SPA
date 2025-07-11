@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * Custom hook for managing localStorage with React state
@@ -18,13 +18,13 @@ export const useLocalStorage = <T>(
   // Track if this is the initial mount
   const isInitialMount = useRef(true);
   
-  const getInitialValue = () => {
+  const getInitialValue = useCallback(() => {
     if (computedInitialValue.current === null) {
       const initial = initialValueRef.current;
       computedInitialValue.current = typeof initial === 'function' ? (initial as () => T)() : initial;
     }
     return computedInitialValue.current;
-  };
+  }, []);
 
   // Get from local storage then parse stored json or return initialValue
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -67,7 +67,7 @@ export const useLocalStorage = <T>(
       computedInitialValue.current = null;
       setStoredValue(getInitialValue());
     }
-  }, [key]);
+  }, [key, getInitialValue]);
 
   // Return a wrapped version of useState's setter function that persists to localStorage
   const setValue = (value: T | ((val: T) => T)) => {
