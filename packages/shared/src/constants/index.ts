@@ -34,8 +34,8 @@ export const CLIENT_CONFIG = {
 
 // Database Configuration
 export const DATABASE_CONFIG = {
-  DEFAULT_URL: 'postgresql://postgres:password@localhost:5432/recipe_manager',
-  TEST_URL: 'postgresql://postgres:password@localhost:5432/recipe_manager_test',
+  DEFAULT_URL: process.env.DATABASE_URL || 'postgresql://postgres:your_password@localhost:5432/recipe_manager',
+  TEST_URL: process.env.DATABASE_TEST_URL || 'postgresql://postgres:your_password@localhost:5432/recipe_manager_test',
   SQLITE_FALLBACK: 'sqlite://./test.db',
 } as const;
 

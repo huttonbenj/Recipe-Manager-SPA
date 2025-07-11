@@ -156,7 +156,7 @@ export class RecipeService {
   static async updateRecipe(id: string, data: RecipeUpdateData): Promise<Recipe> {
     try {
       // Filter out undefined values and transform to null for Prisma compatibility
-      const updateData: Record<string, any> = {
+      const updateData: Record<string, string | number | Date | null> = {
         updated_at: new Date(),
       };
 

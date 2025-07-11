@@ -3,13 +3,15 @@ module.exports = {
     env: { node: true, es2020: true },
     extends: [
         'eslint:recommended',
-        '@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended',
     ],
     ignorePatterns: [
         'dist',
         'node_modules',
         'src/generated/**/*',  // Exclude all generated Prisma files
-        '*.d.ts'
+        '*.d.ts',
+        '**/*.test.ts',  // Exclude test files
+        '**/__tests__/**/*'  // Exclude test directories
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -21,8 +23,7 @@ module.exports = {
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
         '@typescript-eslint/no-explicit-any': 'warn',
-        '@typescript-eslint/prefer-const': 'error',
-        'prefer-const': 'off', // Let TypeScript handle this
+        'prefer-const': 'error',
         'no-console': 'warn',
     },
 }; 

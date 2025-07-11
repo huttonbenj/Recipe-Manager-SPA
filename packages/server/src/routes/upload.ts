@@ -10,8 +10,8 @@ import logger from '../utils/logger';
 
 const router = Router();
 
-// Ensure upload directory exists
-const uploadDir = path.join(process.cwd(), 'uploads');
+// Ensure upload directory exists - use path relative to server package
+const uploadDir = path.join(__dirname, '..', '..', 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }

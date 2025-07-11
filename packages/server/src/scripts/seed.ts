@@ -4,22 +4,22 @@ import logger from '../utils/logger';
 
 const prisma = new PrismaClient();
 
-// Sample users
+// Sample users - passwords from environment variables or secure defaults
 const sampleUsers = [
   {
     email: 'admin@example.com',
     name: 'Admin User',
-    password: 'admin123',
+    password: process.env.SEED_ADMIN_PASSWORD || 'TempAdmin2024!',
   },
   {
     email: 'chef@example.com',
     name: 'Chef Maria',
-    password: 'chef123',
+    password: process.env.SEED_CHEF_PASSWORD || 'TempChef2024!',
   },
   {
     email: 'home@example.com',
     name: 'Home Cook',
-    password: 'home123',
+    password: process.env.SEED_HOME_PASSWORD || 'TempHome2024!',
   },
 ];
 
