@@ -34,7 +34,7 @@ export const RecipeForm: React.FC = () => {
         <div className="max-w-4xl mx-auto">
             <RecipeFormHeader isEditing={isEditing} />
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8" role="form">
                 <RecipeBasicInfo
                     formData={formData}
                     errors={errors as any}

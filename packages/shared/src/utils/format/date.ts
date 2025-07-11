@@ -41,6 +41,19 @@ export const formatDateShort = (date: Date | string): string => {
     return 'Invalid Date';
   }
 
+  // For string dates without time, treat as local date to avoid timezone issues
+  if (typeof date === 'string' && !date.includes('T') && !date.includes(' ')) {
+    const parts = date.split('-');
+    if (parts.length === 3) {
+      const localDate = new Date(parseInt(parts[0]!), parseInt(parts[1]!) - 1, parseInt(parts[2]!));
+      return new Intl.DateTimeFormat('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric',
+      }).format(localDate);
+    }
+  }
+
   return new Intl.DateTimeFormat('en-US', {
     month: '2-digit',
     day: '2-digit',
@@ -112,7 +125,20 @@ export const formatDuration = (minutes: number): string => {
  * @returns True if date is today
  */
 export const isToday = (date: Date | string): boolean => {
-  const d = new Date(date);
+  let d: Date;
+  
+  // Handle string dates without time to avoid timezone issues
+  if (typeof date === 'string' && !date.includes('T') && !date.includes(' ')) {
+    const parts = date.split('-');
+    if (parts.length === 3) {
+      d = new Date(parseInt(parts[0]!), parseInt(parts[1]!) - 1, parseInt(parts[2]!));
+    } else {
+      d = new Date(date);
+    }
+  } else {
+    d = new Date(date);
+  }
+  
   const today = new Date();
   
   return d.toDateString() === today.toDateString();

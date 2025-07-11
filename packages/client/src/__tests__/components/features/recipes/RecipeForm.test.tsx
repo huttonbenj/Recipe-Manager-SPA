@@ -7,6 +7,7 @@ import React from 'react';
 import { RecipeForm } from '../../../../components/features/recipes/RecipeForm';
 import { AuthProvider } from '../../../../contexts/AuthProvider';
 import { apiClient } from '../../../../services/api';
+import toast from 'react-hot-toast';
 
 // Mock the API client
 vi.mock('../../../../services/api', () => ({
@@ -25,6 +26,14 @@ vi.mock('../../../../services/api', () => ({
         getStoredUser: vi.fn(),
         updateProfile: vi.fn(),
         changePassword: vi.fn(),
+    },
+}));
+
+// Mock react-hot-toast
+vi.mock('react-hot-toast', () => ({
+    default: {
+        success: vi.fn(),
+        error: vi.fn(),
     },
 }));
 
@@ -201,7 +210,7 @@ describe('RecipeForm Component', () => {
             await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
             await waitFor(() => {
-                expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
+                expect(toast.error).toHaveBeenCalledWith('Failed to create recipe');
             });
         });
     });

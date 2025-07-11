@@ -15,6 +15,13 @@ export const RecipeFormActions: React.FC<RecipeFormActionsProps> = ({
     onCancel,
     onSubmit,
 }) => {
+    const getButtonText = () => {
+        if (isSubmitting) {
+            return isEditing ? 'Updating Recipe...' : 'Creating Recipe...';
+        }
+        return isEditing ? 'Update Recipe' : 'Create Recipe';
+    };
+
     return (
         <div className="flex items-center justify-end space-x-4">
             <Button
@@ -32,8 +39,8 @@ export const RecipeFormActions: React.FC<RecipeFormActionsProps> = ({
                 isLoading={isSubmitting}
                 onClick={onSubmit}
             >
-                <ImageIcon className="h-4 w-4 mr-2" />
-                {isEditing ? 'Update Recipe' : 'Create Recipe'}
+                {!isSubmitting && <ImageIcon className="h-4 w-4 mr-2" />}
+                {getButtonText()}
             </Button>
         </div>
     );

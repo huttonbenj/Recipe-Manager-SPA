@@ -72,7 +72,7 @@ export function validateRecipe(recipe: unknown): ValidationResult {
 
   if (recipeData.difficulty !== undefined) {
     if (typeof recipeData.difficulty !== 'string' || 
-        !RECIPE_CONFIG.DIFFICULTY_LEVELS.includes(recipeData.difficulty as any)) {
+        !(RECIPE_CONFIG.DIFFICULTY_LEVELS as readonly string[]).includes(recipeData.difficulty)) {
       errors.push('difficulty');
       isValid = false;
     }

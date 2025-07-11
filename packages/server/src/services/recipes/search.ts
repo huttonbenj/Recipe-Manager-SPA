@@ -132,6 +132,7 @@ export class RecipeSearchService {
           { ingredients: { contains: query, mode: Prisma.QueryMode.insensitive } },
           { instructions: { contains: query, mode: Prisma.QueryMode.insensitive } },
           { category: { contains: query, mode: Prisma.QueryMode.insensitive } },
+          { tags: { contains: query, mode: Prisma.QueryMode.insensitive } },
         ],
       };
       

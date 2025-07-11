@@ -129,12 +129,19 @@ export class UserCrudService {
   static async getAllUsers(): Promise<SanitizedUser[]> {
     try {
       const users = await prisma.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          created_at: true,
+          updated_at: true,
+        },
         orderBy: {
           created_at: 'desc',
         },
       });
 
-      return users.map(sanitizeUser);
+      return users;
     } catch (error) {
       logger.error('Error fetching all users:', error);
       throw new Error('Failed to fetch users');

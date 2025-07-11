@@ -1,139 +1,1131 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="67" failures="0" errors="0" time="0.019615708">
-    <testsuite name="packages/shared/src/__tests__/utils/string.test.ts" timestamp="2025-07-11T04:44:41.680Z" hostname="MacBookPro.attlocal.net" tests="67" failures="0" errors="0" skipped="0" time="0.019615708">
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should capitalize first letter" time="0.000683792">
+<testsuites name="vitest tests" tests="430" failures="0" errors="0" time="13.891020875">
+    <testsuite name="packages/shared/src/__tests__/types.test.ts" timestamp="2025-07-11T05:09:01.679Z" hostname="MacBookPro.attlocal.net" tests="24" failures="0" errors="0" skipped="0" time="0.026548917">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserSchema &gt; should validate a valid user object" time="0.001975666">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should handle empty string" time="0.000081458">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserSchema &gt; should reject invalid user objects" time="0.001067542">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should handle single character" time="0.000133167">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserSchema &gt; should handle date parsing" time="0.000422042">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should only capitalize first letter" time="0.000131875">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserCredentialsSchema &gt; should validate valid login requests" time="0.002108791">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should handle special characters" time="0.000125917">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserCredentialsSchema &gt; should reject invalid login requests" time="0.000641084">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should convert to title case" time="0.000190125">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserRegistrationSchema &gt; should validate valid registration requests" time="0.000675959">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should handle single word" time="0.000051792">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserRegistrationSchema &gt; should reject invalid user registration" time="0.000240833">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should handle empty string" time="0.000077">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="User Types &gt; UserRegistrationSchema &gt; should validate name length constraints" time="0.000402875">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should handle mixed case" time="0.000173708">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeSchema &gt; should validate a valid recipe object" time="0.00096275">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should handle special characters" time="0.000073667">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeSchema &gt; should reject invalid recipe objects" time="0.000806042">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should convert to kebab case" time="0.000140917">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeSchema &gt; should handle optional fields" time="0.000179375">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should handle camelCase" time="0.000047375">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeCreateSchema &gt; should validate valid create recipe requests" time="0.000382917">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should handle underscores" time="0.000036084">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeCreateSchema &gt; should reject invalid create recipe requests" time="0.000254125">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should handle multiple spaces" time="0.000034">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeUpdateSchema &gt; should validate valid update recipe requests" time="0.00031225">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should handle empty string" time="0.00003225">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeUpdateSchema &gt; should allow partial updates" time="0.000170209">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should convert to camel case" time="0.000107208">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Recipe Types &gt; RecipeUpdateSchema &gt; should reject invalid update recipe requests" time="0.00038525">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should handle kebab case" time="0.000043083">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="API Types &gt; ApiResponseSchema &gt; should validate valid API responses" time="0.00039425">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should handle underscores" time="0.000030583">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="API Types &gt; ApiResponseSchema &gt; should reject invalid API responses" time="0.000151">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should handle mixed separators" time="0.000033541">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="API Types &gt; ErrorResponseSchema &gt; should validate valid error responses" time="0.000324">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should handle empty string" time="0.000028583">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="API Types &gt; ErrorResponseSchema &gt; should reject invalid error responses" time="0.000253333">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should truncate long strings" time="0.00005625">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Type Inference &gt; should infer correct types from schemas" time="0.000160125">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should handle custom suffix" time="0.000031792">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Type Inference &gt; should handle complex nested types" time="0.000149667">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should handle empty string" time="0.000028625">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Schema Composition &gt; should compose schemas correctly" time="0.000390125">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should handle zero length" time="0.000029">
+        <testcase classname="packages/shared/src/__tests__/types.test.ts" name="Schema Composition &gt; should handle schema picking and omitting" time="0.000304708">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should handle negative length" time="0.000033">
+    </testsuite>
+    <testsuite name="packages/shared/src/__tests__/validation.test.ts" timestamp="2025-07-11T05:09:01.683Z" hostname="MacBookPro.attlocal.net" tests="25" failures="0" errors="0" skipped="0" time="0.063917292">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateEmail &gt; should return true for valid email addresses" time="0.0093775">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should remove HTML tags" time="0.00007175">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateEmail &gt; should return false for invalid email addresses" time="0.011435125">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should handle self-closing tags" time="0.000041042">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateEmail &gt; should handle edge cases" time="0.000221584">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should handle nested tags" time="0.000029709">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validatePassword &gt; should return valid result for strong passwords" time="0.000961459">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should handle empty string" time="0.000033">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validatePassword &gt; should return invalid result for weak passwords" time="0.00964025">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should handle text without HTML" time="0.000032333">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validatePassword &gt; should handle edge cases" time="0.000133625">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should create valid slugs" time="0.000158375">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should return valid result for complete recipe data" time="0.000880416">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle special characters" time="0.000049375">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should return invalid result for missing required fields" time="0.000348">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle accented characters" time="0.000052917">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate title constraints" time="0.00033525">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle numbers" time="0.000036833">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate ingredients format" time="0.01269625">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle empty string" time="0.000033625">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate cook_time constraints" time="0.005127333">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle multiple spaces and dashes" time="0.00003625">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate servings constraints" time="0.000418875">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should get initials from name" time="0.000067417">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate difficulty values" time="0.00023">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should handle single name" time="0.000031958">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should validate tags format" time="0.000126125">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should handle empty string" time="0.0000295">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateRecipe &gt; should handle optional fields" time="0.00007075">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should handle extra spaces" time="0.000032084">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should return valid result for complete user data" time="0.000263292">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should handle lowercase names" time="0.000033083">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should return invalid result for missing required fields" time="0.000162625">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should limit to 3 initials maximum" time="0.000049666">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should validate email format" time="0.000156666">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isValidEmail &gt; should validate correct emails" time="0.000104959">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should validate name constraints" time="0.000102833">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isValidEmail &gt; should reject invalid emails" time="0.00006375">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="Validation Functions &gt; validateUser &gt; should validate password strength" time="0.000097">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isValidEmail &gt; should handle empty string" time="0.000032583">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="ValidationError Class &gt; should create ValidationError with proper properties" time="0.001030041">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isValidEmail &gt; should handle whitespace" time="0.000049417">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="ValidationError Class &gt; should convert to API error format" time="0.000299333">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should format numbers with commas" time="0.011804334">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="validate function &gt; should return parsed data when validation succeeds" time="0.000268">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should handle decimal numbers" time="0.000120042">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="validate function &gt; should throw ValidationError when validation fails" time="0.000309083">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should handle negative numbers" time="0.000070042">
+        <testcase classname="packages/shared/src/__tests__/validation.test.ts" name="validate function &gt; should handle complex nested validation" time="0.000712042">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should handle zero" time="0.00006075">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/LoginForm.test.tsx" timestamp="2025-07-11T05:09:01.689Z" hostname="MacBookPro.attlocal.net" tests="4" failures="0" errors="0" skipped="0" time="0.02885875">
+        <testcase classname="packages/client/src/__tests__/components/LoginForm.test.tsx" name="LoginForm Component &gt; Authentication State &gt; should redirect to dashboard if already authenticated" time="0.012678125">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should handle small numbers" time="0.000060541">
+        <testcase classname="packages/client/src/__tests__/components/LoginForm.test.tsx" name="LoginForm Component &gt; Authentication State &gt; should render form if not authenticated" time="0.008422417">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; generateRandomString &gt; should generate string of specified length" time="0.000581042">
+        <testcase classname="packages/client/src/__tests__/components/LoginForm.test.tsx" name="LoginForm Component &gt; Mock Verification &gt; should have properly mocked auth functions" time="0.00019975">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; generateRandomString &gt; should generate different strings" time="0.000300708">
+        <testcase classname="packages/client/src/__tests__/components/LoginForm.test.tsx" name="LoginForm Component &gt; Mock Verification &gt; should call login when invoked" time="0.005571291">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; generateRandomString &gt; should handle zero length" time="0.000041">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/Navigation.test.tsx" timestamp="2025-07-11T05:09:01.689Z" hostname="MacBookPro.attlocal.net" tests="15" failures="0" errors="0" skipped="0" time="0.445963583">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Unauthenticated State &gt; should render navigation items even when user is not authenticated" time="0.04778125">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; generateRandomString &gt; should only contain valid characters" time="0.000079084">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render navigation items when authenticated" time="0.014500209">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isWhitespace &gt; should identify whitespace strings" time="0.000066917">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render user menu button" time="0.029509375">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isWhitespace &gt; should identify non-whitespace strings" time="0.000053666">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render navigation links with correct hrefs" time="0.077872792">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should count words correctly" time="0.000115583">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should highlight active navigation item" time="0.00652025">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should handle single word" time="0.000036167">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render mobile menu button" time="0.003781542">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should handle empty string" time="0.000032417">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Authenticated State &gt; should render user menu button for interaction" time="0.003476209">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should handle multiple spaces" time="0.00003475">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Loading State &gt; should handle loading state appropriately" time="0.002682375">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should handle leading/trailing spaces" time="0.000034">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Accessibility &gt; should have proper ARIA labels for navigation" time="0.053007">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should escape HTML entities" time="0.000098416">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Accessibility &gt; should have proper focus management" time="0.009458625">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should handle quotes" time="0.000084375">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Accessibility &gt; should support keyboard navigation" time="0.069118375">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should handle empty string" time="0.000033583">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Logo and Branding &gt; should display logo or brand name" time="0.067501917">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should handle text without HTML" time="0.0000335">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Logo and Branding &gt; should link logo to dashboard page" time="0.04227125">
         </testcase>
-        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should handle multiple entities" time="0.000036708">
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Active Route Highlighting &gt; should highlight recipes page when on recipes route" time="0.012457875">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/Navigation.test.tsx" name="Navigation Component &gt; Active Route Highlighting &gt; should highlight add recipe page when on add recipe route" time="0.003527375">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/services/api.test.ts" timestamp="2025-07-11T05:09:01.691Z" hostname="MacBookPro.attlocal.net" tests="21" failures="0" errors="0" skipped="0" time="0.007382667">
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should return true when authenticated" time="0.000848334">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should return false when not authenticated" time="0.000112625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should get stored user from localStorage" time="0.000403833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should return null when no user is stored" time="0.000135458">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Authentication &gt; should clear auth data" time="0.0005865">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call getRecipes with correct parameters" time="0.000173542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call getRecipe with correct ID" time="0.00014125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call createRecipe with recipe data" time="0.000091708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call updateRecipe with ID and data" time="0.000279667">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Recipe Methods &gt; should call deleteRecipe with ID" time="0.000151">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call login with credentials" time="0.000095417">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call register with user data" time="0.000115917">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call logout" time="0.000067041">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call getCurrentUser" time="0.000065541">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Auth Methods &gt; should call getUserStats" time="0.000065416">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call searchRecipes with parameters" time="0.000079917">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call getRecipeCategories" time="0.00006675">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call uploadImage with file" time="0.000190875">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call getUserRecipes" time="0.000076042">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call updateProfile" time="0.000547042">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/services/api.test.ts" name="ApiClient &gt; Utility Methods &gt; should call changePassword" time="0.000622375">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/hooks/useAuth.test.tsx" timestamp="2025-07-11T05:09:01.694Z" hostname="MacBookPro.attlocal.net" tests="17" failures="0" errors="0" skipped="0" time="0.434363042">
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Initial State &gt; should initialize with null user and loading state" time="0.0479695">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Initial State &gt; should restore user from storage if authenticated" time="0.058439708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Initial State &gt; should clear auth if token is invalid" time="0.090108125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Login &gt; should login successfully and navigate to dashboard" time="0.00570125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Login &gt; should handle login errors" time="0.006297208">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Login &gt; should set loading state during login" time="0.085364083">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Register &gt; should register successfully and navigate to dashboard" time="0.00594725">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Register &gt; should handle registration errors" time="0.010100459">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Logout &gt; should logout successfully and navigate to login" time="0.010217708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Logout &gt; should handle logout errors gracefully" time="0.025409542">
+            <system-err>
+Logout failed: Error: Logout failed
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useAuth.test.tsx:330:52
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1574:12[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Profile Update &gt; should update profile successfully" time="0.009188584">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Profile Update &gt; should handle profile update errors" time="0.010680208">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Password Change &gt; should change password successfully" time="0.02312875">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Password Change &gt; should handle password change errors" time="0.001349459">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Refresh User &gt; should refresh user data successfully" time="0.013734833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Refresh User &gt; should handle refresh user errors" time="0.008165584">
+            <system-err>
+Failed to refresh user: Error: Refresh failed
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useAuth.test.tsx:489:31
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1574:12[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useAuth.test.tsx" name="useAuth Hook &gt; Error Handling &gt; should throw error when used outside AuthProvider" time="0.010408291">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/hooks/useDebounce.test.tsx" timestamp="2025-07-11T05:09:01.697Z" hostname="MacBookPro.attlocal.net" tests="17" failures="0" errors="0" skipped="0" time="0.074681375">
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Basic Functionality &gt; should return initial value immediately" time="0.007370833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Basic Functionality &gt; should debounce value changes" time="0.029593625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Basic Functionality &gt; should reset debounce timer on rapid changes" time="0.002613583">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Different Data Types &gt; should work with strings" time="0.004383">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Different Data Types &gt; should work with numbers" time="0.001543583">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Different Data Types &gt; should work with objects" time="0.001531958">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Different Data Types &gt; should work with arrays" time="0.018503292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Different Data Types &gt; should work with boolean values" time="0.00059375">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Different Data Types &gt; should work with null and undefined" time="0.001284292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Delay Variations &gt; should work with different delay values" time="0.000818125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Delay Variations &gt; should work with zero delay" time="0.000511042">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Delay Variations &gt; should update delay dynamically" time="0.000419792">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Cleanup &gt; should cleanup timer on unmount" time="0.000373875">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Cleanup &gt; should handle multiple value changes before cleanup" time="0.000427042">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Edge Cases &gt; should handle same value changes" time="0.000353417">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Edge Cases &gt; should handle rapid same value changes" time="0.000420417">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useDebounce.test.tsx" name="useDebounce Hook &gt; Edge Cases &gt; should handle different types correctly" time="0.000591792">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" timestamp="2025-07-11T05:09:01.699Z" hostname="MacBookPro.attlocal.net" tests="20" failures="0" errors="0" skipped="0" time="0.1788125">
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Basic Functionality &gt; should return initial value when no stored value exists" time="0.097481542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Basic Functionality &gt; should return stored value when it exists" time="0.0009885">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Basic Functionality &gt; should store value in localStorage when setValue is called" time="0.001406959">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Basic Functionality &gt; should update localStorage when value changes" time="0.004953583">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Data Types &gt; should work with strings" time="0.01594875">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Data Types &gt; should work with numbers" time="0.001798167">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Data Types &gt; should work with objects" time="0.000757042">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Data Types &gt; should work with arrays" time="0.000440459">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Data Types &gt; should work with boolean values" time="0.003363333">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Data Types &gt; should work with null values" time="0.000843542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Function Updates &gt; should support function updates" time="0.003218834">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Function Updates &gt; should handle complex function updates" time="0.000603166">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Error Handling &gt; should handle localStorage.getItem errors" time="0.028176083">
+            <system-err>
+Error reading localStorage key &quot;key&quot;: Error: localStorage error
+    at Object.&lt;anonymous&gt; [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:204:23[90m)[39m
+    at Object.mockCall [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/spy/dist/index.js:96:15[90m)[39m
+    at Object.spy [as getItem] [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mtinyspy[24m/dist/index.js:47:103[90m)[39m
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/hooks/ui/useLocalStorage.ts:32:40
+    at mountState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:16167:20[90m)[39m
+    at Object.useState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:16880:16[90m)[39m
+    at useState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact[24m/cjs/react.development.js:1622:21[90m)[39m
+    at useLocalStorage [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/hooks/ui/useLocalStorage.ts:30:41[90m)[39m
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:207:49
+    at TestComponent [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/node_modules/[4m@testing-library[24m/react/dist/pure.js:331:27[90m)[39m
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Error Handling &gt; should handle localStorage.setItem errors" time="0.004708042">
+            <system-err>
+Error setting localStorage key &quot;key&quot;: Error: localStorage error
+    at Object.&lt;anonymous&gt; [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:215:23[90m)[39m
+    at Object.mockCall [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/spy/dist/index.js:96:15[90m)[39m
+    at Object.spy [as setItem] [90m(file:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mtinyspy[24m/dist/index.js:47:103[90m)[39m
+    at Array.setValue [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/hooks/ui/useLocalStorage.ts:78:27[90m)[39m
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:221:33
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/node_modules/[4m@testing-library[24m/react/dist/act-compat.js:48:24
+    at act [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact[24m/cjs/react.development.js:2512:16[90m)[39m
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/node_modules/[4m@testing-library[24m/react/dist/act-compat.js:47:25
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:220:13
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Error Handling &gt; should handle JSON parsing errors" time="0.000758083">
+            <system-err>
+Error reading localStorage key &quot;key&quot;: SyntaxError: Unexpected token &apos;i&apos;, &quot;invalid json&quot; is not valid JSON
+    at JSON.parse (&lt;anonymous&gt;)
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/hooks/ui/useLocalStorage.ts:34:21
+    at mountState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:16167:20[90m)[39m
+    at Object.useState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:16880:16[90m)[39m
+    at useState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact[24m/cjs/react.development.js:1622:21[90m)[39m
+    at useLocalStorage [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/hooks/ui/useLocalStorage.ts:30:41[90m)[39m
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:231:49
+    at TestComponent [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/node_modules/[4m@testing-library[24m/react/dist/pure.js:331:27[90m)[39m
+    at renderWithHooks [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Error Handling &gt; should handle localStorage being unavailable" time="0.000744792">
+            <system-err>
+Error reading localStorage key &quot;key&quot;: TypeError: Cannot read properties of undefined (reading &apos;getItem&apos;)
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/hooks/ui/useLocalStorage.ts:32:40
+    at mountState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:16167:20[90m)[39m
+    at Object.useState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:16880:16[90m)[39m
+    at useState [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact[24m/cjs/react.development.js:1622:21[90m)[39m
+    at useLocalStorage [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/hooks/ui/useLocalStorage.ts:30:41[90m)[39m
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:242:49
+    at TestComponent [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/node_modules/[4m@testing-library[24m/react/dist/pure.js:331:27[90m)[39m
+    at renderWithHooks [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:15486:18[90m)[39m
+    at mountIndeterminateComponent [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:20103:13[90m)[39m
+    at beginWork [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact-dom[24m/cjs/react-dom.development.js:21626:16[90m)[39m
+Error setting localStorage key &quot;key&quot;: TypeError: Cannot read properties of undefined (reading &apos;setItem&apos;)
+    at Array.setValue [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/hooks/ui/useLocalStorage.ts:78:27[90m)[39m
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:247:33
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/node_modules/[4m@testing-library[24m/react/dist/act-compat.js:48:24
+    at act [90m(/Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4mreact[24m/cjs/react.development.js:2512:16[90m)[39m
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/node_modules/[4m@testing-library[24m/react/dist/act-compat.js:47:25
+    at [90m/Users/benh/GitHub/Recipe-Manager-SPA/[39mpackages/client/src/__tests__/hooks/useLocalStorage.test.tsx:246:13
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/benh/GitHub/Recipe-Manager-SPA/[39mnode_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (&lt;anonymous&gt;)
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Key Changes &gt; should handle key changes" time="0.000494666">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Key Changes &gt; should use default value when key changes to non-existent key" time="0.000338375">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Initial Value Function &gt; should call initial value function when no stored value exists" time="0.000318833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/hooks/useLocalStorage.test.tsx" name="useLocalStorage Hook &gt; Initial Value Function &gt; should not call initial value function when stored value exists" time="0.000339667">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/shared/src/__tests__/utils/array.test.ts" timestamp="2025-07-11T05:09:01.701Z" hostname="MacBookPro.attlocal.net" tests="54" failures="0" errors="0" skipped="0" time="0.007319167">
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; removeDuplicates &gt; should remove duplicate values" time="0.000987333">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; removeDuplicates &gt; should handle empty array" time="0.000098875">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; removeDuplicates &gt; should handle array with no duplicates" time="0.000131333">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; removeDuplicates &gt; should handle array with all duplicates" time="0.000161917">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; removeDuplicates &gt; should handle mixed data types" time="0.000071">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; groupBy &gt; should group objects by key" time="0.000142959">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; groupBy &gt; should handle empty array" time="0.000051959">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; groupBy &gt; should handle single item" time="0.000118542">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; groupBy &gt; should handle numeric keys" time="0.000197958">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; sortBy &gt; should sort by key in ascending order" time="0.0001135">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; sortBy &gt; should sort by key in descending order" time="0.000109875">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; sortBy &gt; should handle empty array" time="0.000040417">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; sortBy &gt; should not mutate original array" time="0.000042625">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; shuffle &gt; should return array with same elements" time="0.000462084">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; shuffle &gt; should not mutate original array" time="0.000142125">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; shuffle &gt; should handle empty array" time="0.000036709">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; shuffle &gt; should handle single item" time="0.000035833">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; chunk &gt; should split array into chunks" time="0.000077125">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; chunk &gt; should handle chunk size larger than array" time="0.00004">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; chunk &gt; should handle empty array" time="0.00003675">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; chunk &gt; should handle chunk size of 1" time="0.000042708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; union &gt; should return unique values from multiple arrays" time="0.000052334">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; union &gt; should handle empty arrays" time="0.000036875">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; union &gt; should handle single array" time="0.000039292">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; union &gt; should handle no arrays" time="0.000035958">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; intersection &gt; should return common elements" time="0.000075708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; intersection &gt; should handle no common elements" time="0.000036375">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; intersection &gt; should handle empty arrays" time="0.000046833">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; intersection &gt; should handle single array" time="0.000036417">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; difference &gt; should return elements in first array but not second" time="0.000047375">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; difference &gt; should handle no differences" time="0.000035333">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; difference &gt; should handle empty arrays" time="0.000047958">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; findLast &gt; should find last matching element" time="0.000111917">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; findLast &gt; should return undefined if no match" time="0.000050667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; findLast &gt; should handle empty array" time="0.000035042">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; findLast &gt; should work with complex objects" time="0.000049583">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; isEmpty &gt; should identify empty arrays" time="0.000063416">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; isEmpty &gt; should identify non-empty arrays" time="0.000065667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; getRandomItem &gt; should return item from array" time="0.000194875">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; getRandomItem &gt; should return undefined for empty array" time="0.0000355">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; getRandomItem &gt; should return single item from single-item array" time="0.000039166">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; moveItem &gt; should move item to new position" time="0.0000695">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; moveItem &gt; should handle invalid indices" time="0.000052667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; moveItem &gt; should not mutate original array" time="0.000040708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; moveItem &gt; should handle empty array" time="0.000033833">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; flatten &gt; should flatten nested arrays" time="0.00006275">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; flatten &gt; should handle already flat arrays" time="0.000040792">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; flatten &gt; should handle empty arrays" time="0.000046959">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; flatten &gt; should handle deeply nested arrays" time="0.0000405">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; countOccurrences &gt; should count occurrences of each item" time="0.000061458">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; countOccurrences &gt; should handle strings" time="0.000048292">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; countOccurrences &gt; should handle empty array" time="0.000033541">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; countOccurrences &gt; should handle single item" time="0.000035916">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/array.test.ts" name="Array Utilities &gt; countOccurrences &gt; should handle mixed types" time="0.000036875">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/shared/src/__tests__/utils/date.test.ts" timestamp="2025-07-11T05:09:01.706Z" hostname="MacBookPro.attlocal.net" tests="24" failures="0" errors="0" skipped="0" time="0.085427666">
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDate &gt; should format date without time" time="0.05396225">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDate &gt; should format date with time" time="0.000261">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDate &gt; should format date with different formats" time="0.021545583">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDate &gt; should handle invalid dates" time="0.000201625">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateShort &gt; should format date as MM/DD/YYYY" time="0.000157667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateShort &gt; should handle string dates" time="0.000132708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateShort &gt; should handle invalid dates" time="0.000052791">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateRelative &gt; should format recent dates" time="0.000153292">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateRelative &gt; should handle &quot;just now&quot; for very recent dates" time="0.000171625">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateRelative &gt; should handle singular forms correctly" time="0.000076167">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateRelative &gt; should handle hours correctly" time="0.000098083">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateRelative &gt; should handle days correctly" time="0.0000455">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDateRelative &gt; should handle invalid dates" time="0.000038125">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDuration &gt; should format duration in minutes" time="0.000068541">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDuration &gt; should format duration in hours" time="0.000049708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDuration &gt; should format duration in hours and minutes" time="0.000049666">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; formatDuration &gt; should handle zero duration" time="0.000033708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; isToday &gt; should return true for today" time="0.000180417">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; isToday &gt; should return false for yesterday" time="0.000043208">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; isToday &gt; should return false for tomorrow" time="0.000039417">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; isToday &gt; should handle string dates" time="0.000045834">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; isThisWeek &gt; should return true for dates in current week" time="0.000051125">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; isThisWeek &gt; should return false for dates outside current week" time="0.000036458">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/date.test.ts" name="Date Utilities &gt; isThisWeek &gt; should handle string dates" time="0.000038167">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/shared/src/__tests__/utils/string.test.ts" timestamp="2025-07-11T05:09:01.708Z" hostname="MacBookPro.attlocal.net" tests="67" failures="0" errors="0" skipped="0" time="0.135601542">
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should capitalize first letter" time="0.025876291">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should handle empty string" time="0.00041525">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should handle single character" time="0.008777083">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should only capitalize first letter" time="0.000595334">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; capitalize &gt; should handle special characters" time="0.000406">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should convert to title case" time="0.000323667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should handle single word" time="0.000070708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should handle empty string" time="0.000101292">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should handle mixed case" time="0.000174042">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toTitleCase &gt; should handle special characters" time="0.0000915">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should convert to kebab case" time="0.000318334">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should handle camelCase" time="0.000369167">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should handle underscores" time="0.000083667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should handle multiple spaces" time="0.000058">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toKebabCase &gt; should handle empty string" time="0.000049083">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should convert to camel case" time="0.0001585">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should handle kebab case" time="0.0000615">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should handle underscores" time="0.000043792">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should handle mixed separators" time="0.000047958">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; toCamelCase &gt; should handle empty string" time="0.000038084">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should truncate long strings" time="0.000077">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should handle custom suffix" time="0.000041792">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should handle empty string" time="0.000040125">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should handle zero length" time="0.000037167">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; truncate &gt; should handle negative length" time="0.000036">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should remove HTML tags" time="0.000100625">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should handle self-closing tags" time="0.000054792">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should handle nested tags" time="0.003411875">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should handle empty string" time="0.000071792">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; stripHtml &gt; should handle text without HTML" time="0.000054667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should create valid slugs" time="0.00025575">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle special characters" time="0.000064208">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle accented characters" time="0.000067667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle numbers" time="0.000043666">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle empty string" time="0.000042">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; slugify &gt; should handle multiple spaces and dashes" time="0.000042916">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should get initials from name" time="0.000092167">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should handle single name" time="0.00003975">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should handle empty string" time="0.000038959">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should handle extra spaces" time="0.000044458">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should handle lowercase names" time="0.00004575">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; getInitials &gt; should limit to 3 initials maximum" time="0.000051416">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isValidEmail &gt; should validate correct emails" time="0.000122375">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isValidEmail &gt; should reject invalid emails" time="0.000071667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isValidEmail &gt; should handle empty string" time="0.000038708">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isValidEmail &gt; should handle whitespace" time="0.000053">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should format numbers with commas" time="0.056961583">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should handle decimal numbers" time="0.000123583">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should handle negative numbers" time="0.000073834">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should handle zero" time="0.000063084">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; formatNumber &gt; should handle small numbers" time="0.000060959">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; generateRandomString &gt; should generate string of specified length" time="0.000684958">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; generateRandomString &gt; should generate different strings" time="0.004023625">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; generateRandomString &gt; should handle zero length" time="0.000068959">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; generateRandomString &gt; should only contain valid characters" time="0.000113917">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isWhitespace &gt; should identify whitespace strings" time="0.000074417">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; isWhitespace &gt; should identify non-whitespace strings" time="0.000057291">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should count words correctly" time="0.000155125">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should handle single word" time="0.000041667">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should handle empty string" time="0.000034208">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should handle multiple spaces" time="0.000034542">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; countWords &gt; should handle leading/trailing spaces" time="0.000033125">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should escape HTML entities" time="0.000107416">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should handle quotes" time="0.000048833">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should handle empty string" time="0.000032875">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should handle text without HTML" time="0.000038375">
+        </testcase>
+        <testcase classname="packages/shared/src/__tests__/utils/string.test.ts" name="String Utilities &gt; escapeHtml &gt; should handle multiple entities" time="0.00003925">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/ui/Button.test.tsx" timestamp="2025-07-11T05:09:01.714Z" hostname="MacBookPro.attlocal.net" tests="23" failures="0" errors="0" skipped="0" time="0.175931791">
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render button with text" time="0.063747958">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render button with custom type" time="0.044722375">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render disabled button" time="0.002033542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render primary variant" time="0.005319166">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render secondary variant" time="0.00761275">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render danger variant" time="0.001298833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render ghost variant" time="0.001087542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render small size" time="0.001007084">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render medium size (default)" time="0.002019333">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render large size" time="0.000838458">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should render loading state" time="0.015668583">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should show loading spinner when loading" time="0.0010585">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should not be clickable when loading" time="0.018608083">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Icons &gt; should render with left icon" time="0.0007885">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Icons &gt; should render with right icon" time="0.000441833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Event Handling &gt; should handle click events" time="0.00186925">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Event Handling &gt; should not handle click events when disabled" time="0.000710541">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept custom className" time="0.000616708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept custom data attributes" time="0.000352375">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept ARIA attributes" time="0.000567208">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should have proper role" time="0.000533667">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should be focusable" time="0.001023625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should not be focusable when disabled" time="0.000607041">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/ui/Card.test.tsx" timestamp="2025-07-11T05:09:01.716Z" hostname="MacBookPro.attlocal.net" tests="23" failures="0" errors="0" skipped="0" time="0.116543458">
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Basic Rendering &gt; should render card with content" time="0.015519417">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Basic Rendering &gt; should render card with header" time="0.002204833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Basic Rendering &gt; should render card with footer" time="0.001540625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Basic Rendering &gt; should render card with header and footer" time="0.001630292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Variants &gt; should render default variant" time="0.001821292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Variants &gt; should render outlined variant" time="0.000539125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Variants &gt; should render elevated variant" time="0.000416958">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Padding &gt; should render with no padding" time="0.000558583">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Padding &gt; should render with small padding" time="0.000886">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Padding &gt; should render with medium padding (default)" time="0.010619792">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Padding &gt; should render with large padding" time="0.031569042">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Interactive Features &gt; should handle click events" time="0.020987084">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Interactive Features &gt; should handle hover events" time="0.00247375">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Custom Props &gt; should accept custom className" time="0.000470959">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Custom Props &gt; should accept custom data attributes" time="0.000398292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Custom Props &gt; should accept ARIA attributes" time="0.000570791">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; CardHeader &gt; should render header with proper styling" time="0.000315334">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; CardHeader &gt; should accept custom className" time="0.005480166">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; CardContent &gt; should render content" time="0.000777167">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; CardContent &gt; should accept custom className" time="0.000345292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; CardFooter &gt; should render footer with proper styling" time="0.000311333">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; CardFooter &gt; should accept custom className" time="0.000376542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Card.test.tsx" name="Card Component &gt; Composition &gt; should render complex card structure" time="0.005858041">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/server/src/__tests__/unit/middleware/auth.test.ts" timestamp="2025-07-11T05:09:01.718Z" hostname="MacBookPro.attlocal.net" tests="11" failures="0" errors="0" skipped="0" time="0.076231375">
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should authenticate valid token and add user to request" time="0.028660667">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should throw ApiError for missing authorization header" time="0.001176708">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should throw ApiError for invalid token format" time="0.000438667">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should throw ApiError for expired token" time="0.000409375">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should throw ApiError for invalid token" time="0.000248084">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; authenticate &gt; should handle ApiError from AuthUtils correctly" time="0.0002925">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should authenticate valid token and add user to request" time="0.000316125">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should continue without user for missing authorization header" time="0.000151084">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should continue without user for invalid token format" time="0.000232292">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should continue without user for expired token" time="0.000134875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/middleware/auth.test.ts" name="Auth Middleware &gt; optionalAuth &gt; should continue without user for invalid token" time="0.000093791">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/server/src/__tests__/unit/utils/auth.test.ts" timestamp="2025-07-11T05:09:01.719Z" hostname="MacBookPro.attlocal.net" tests="27" failures="0" errors="0" skipped="0" time="9.738846833">
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; hashPassword &gt; should hash a password" time="3.632648875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; hashPassword &gt; should create different hashes for the same password" time="3.038443625">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; hashPassword &gt; should handle empty password" time="1.053889333">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; comparePassword &gt; should return true for matching password and hash" time="0.851435042">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; comparePassword &gt; should return false for non-matching password and hash" time="0.568312416">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; comparePassword &gt; should return false for empty password" time="0.583925541">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; comparePassword &gt; should return false for invalid hash" time="0.00024625">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; generateTokens &gt; should generate access and refresh tokens" time="0.000365708">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; generateAccessToken &gt; should generate an access token" time="0.001993917">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; generateRefreshToken &gt; should generate a refresh token" time="0.000322209">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; verifyToken &gt; should verify a valid token" time="0.000195958">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; verifyToken &gt; should throw error for invalid token" time="0.000507834">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; verifyToken &gt; should throw error for expired token" time="0.000113708">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; verifyToken &gt; should throw generic error for other verification failures" time="0.000085">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should extract token from Authorization header" time="0.000057208">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should return null for missing Authorization header" time="0.000045708">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should return null for invalid Authorization header format" time="0.000034042">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should return null for missing Bearer prefix" time="0.0000325">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; extractTokenFromHeader &gt; should return null for empty token" time="0.000031958">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should validate a strong password" time="0.000259041">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password that is too short" time="0.000206875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password without lowercase" time="0.000067209">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password without uppercase" time="0.000058583">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password without number" time="0.000054541">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should reject password without special character" time="0.000104041">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; validatePassword &gt; should return multiple errors for weak password" time="0.00004875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/utils/auth.test.ts" name="AuthUtils &gt; sanitizeUserResponse &gt; should remove password_hash from user object" time="0.000304958">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/server/src/__tests__/unit/services/recipeService.test.ts" timestamp="2025-07-11T05:09:01.721Z" hostname="MacBookPro.attlocal.net" tests="20" failures="0" errors="0" skipped="0" time="0.03824325">
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should return paginated recipes with default pagination" time="0.003521625">
+            <system-out>
+[32minfo[39m: Retrieved 1 recipes (page 1/1) {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.086Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should filter recipes by search term" time="0.002718875">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes (page 1/0) {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.088Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should filter recipes by category" time="0.000363708">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes (page 1/0) {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.091Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should filter recipes by difficulty and user" time="0.000294542">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes (page 1/0) {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.092Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getAllRecipes &gt; should handle custom pagination" time="0.000375458">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes (page 2/3) {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.092Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getRecipeById &gt; should return recipe by ID" time="0.000439542">
+            <system-out>
+[32minfo[39m: Retrieved recipe: Test Recipe {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.092Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getRecipeById &gt; should return null if recipe not found" time="0.000085458">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; createRecipe &gt; should create a new recipe successfully" time="0.000360209">
+            <system-out>
+[32minfo[39m: Created recipe: New Recipe {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.093Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; createRecipe &gt; should handle database errors" time="0.001976333">
+            <system-out>
+[31merror[39m: Error creating recipe: Database error {&quot;stack&quot;:&quot;Error: Database error\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/recipeService.test.ts:307:76\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (&lt;anonymous&gt;)\n    at runWithTimeout (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.094Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; updateRecipe &gt; should update recipe successfully" time="0.000874791">
+            <system-out>
+[32minfo[39m: Updated recipe: Updated Recipe {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.095Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; updateRecipe &gt; should handle database errors" time="0.000475709">
+            <system-out>
+[31merror[39m: Error updating recipe: Database error {&quot;stack&quot;:&quot;Error: Database error\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/recipeService.test.ts:367:76\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (&lt;anonymous&gt;)\n    at runWithTimeout (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.096Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; deleteRecipe &gt; should delete recipe successfully" time="0.000355042">
+            <system-out>
+[32minfo[39m: Deleted recipe: Recipe to Delete {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.097Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; deleteRecipe &gt; should throw error if recipe not found" time="0.000446542">
+            <system-out>
+[31merror[39m: Error deleting recipe: Recipe not found {&quot;stack&quot;:&quot;Error: Recipe not found\n    at Function.deleteRecipe (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/recipes/crud.ts:117:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.097Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getUserRecipes &gt; should return user recipes with pagination" time="0.000260375">
+            <system-out>
+[32minfo[39m: Retrieved 1 user recipes (page 1/1) {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.098Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; searchRecipes &gt; should search recipes by query" time="0.006561583">
+            <system-out>
+[32minfo[39m: Search &quot;pasta&quot; returned 0 recipes (page 1/0) {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.114Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getRecipesByCategory &gt; should return recipes by category" time="0.000801916">
+            <system-out>
+[32minfo[39m: Retrieved 0 recipes in category &quot;Main Course&quot; (page 1/0) {&quot;timestamp&quot;:&quot;2025-07-11T05:08:56.118Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; getRecipeCategories &gt; should return unique recipe categories" time="0.000433875">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; verifyRecipeOwnership &gt; should return true if user owns the recipe" time="0.000321292">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; verifyRecipeOwnership &gt; should return false if user does not own the recipe" time="0.000069209">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/recipeService.test.ts" name="RecipeService &gt; verifyRecipeOwnership &gt; should return false if recipe not found" time="0.0000555">
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/server/src/__tests__/unit/services/userService.test.ts" timestamp="2025-07-11T05:09:01.724Z" hostname="MacBookPro.attlocal.net" tests="21" failures="0" errors="0" skipped="0" time="0.046026375">
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; createUser &gt; should create a new user successfully" time="0.025137875">
+            <system-out>
+[32minfo[39m: Created user: test@example.com {&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.303Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; createUser &gt; should throw error if user already exists" time="0.004841334">
+            <system-out>
+[31merror[39m: Error creating user: User with this email already exists {&quot;stack&quot;:&quot;Error: User with this email already exists\n    at Function.createUser (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/users/crud.ts:15:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.327Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; createUser &gt; should handle database errors" time="0.001748125">
+            <system-out>
+[31merror[39m: Error creating user: Database error {&quot;stack&quot;:&quot;Error: Database error\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/userService.test.ts:112:74\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (&lt;anonymous&gt;)\n    at runWithTimeout (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.332Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserById &gt; should return user by ID" time="0.000261542">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserById &gt; should return null if user not found" time="0.000185708">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserById &gt; should handle database errors" time="0.000499709">
+            <system-out>
+[31merror[39m: Error fetching user by ID: Database error {&quot;stack&quot;:&quot;Error: Database error\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/userService.test.ts:154:78\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (&lt;anonymous&gt;)\n    at runWithTimeout (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.334Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserByEmail &gt; should return user by email" time="0.000262042">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserByEmail &gt; should return null if user not found" time="0.0000755">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; updateUser &gt; should update user successfully" time="0.000766208">
+            <system-out>
+[32minfo[39m: Updated user: updated@example.com {&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.335Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; updateUser &gt; should throw error if user not found" time="0.000376458">
+            <system-out>
+[31merror[39m: Error updating user: User not found {&quot;stack&quot;:&quot;Error: User not found\n    at Function.updateUser (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/users/crud.ts:73:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.335Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; updateUser &gt; should throw error if email already exists" time="0.000666541">
+            <system-out>
+[31merror[39m: Error updating user: Email already in use {&quot;stack&quot;:&quot;Error: Email already in use\n    at Function.updateUser (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/users/crud.ts:83:17)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/userService.test.ts:281:7\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.336Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; deleteUser &gt; should delete user successfully" time="0.000634541">
+            <system-out>
+[32minfo[39m: Deleted user: test@example.com {&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.336Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; deleteUser &gt; should throw error if user not found" time="0.001879959">
+            <system-out>
+[31merror[39m: Error deleting user: User not found {&quot;stack&quot;:&quot;Error: User not found\n    at Function.deleteUser (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/users/crud.ts:114:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.337Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; authenticateUser &gt; should authenticate user successfully" time="0.0018475">
+            <system-out>
+[32minfo[39m: User authenticated: test@example.com {&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.340Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; authenticateUser &gt; should return null if user not found" time="0.000098625">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; authenticateUser &gt; should return null if password is invalid" time="0.000069208">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; changePassword &gt; should change password successfully" time="0.000785417">
+            <system-out>
+[32minfo[39m: Password changed for user: test@example.com {&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.341Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; changePassword &gt; should throw error if user not found" time="0.000470541">
+            <system-out>
+[31merror[39m: Error changing password: User not found {&quot;stack&quot;:&quot;Error: User not found\n    at Function.changePassword (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/users/auth.ts:49:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.342Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; changePassword &gt; should throw error if current password is invalid" time="0.000272834">
+            <system-out>
+[31merror[39m: Error changing password: Current password is incorrect {&quot;stack&quot;:&quot;Error: Current password is incorrect\n    at Function.changePassword (/Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/services/users/auth.ts:59:15)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at /Users/benh/GitHub/Recipe-Manager-SPA/packages/server/src/__tests__/unit/services/userService.test.ts:466:7\n    at file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20&quot;,&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.342Z&quot;}
+
+            </system-out>
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getAllUsers &gt; should return all users" time="0.000894833">
+        </testcase>
+        <testcase classname="packages/server/src/__tests__/unit/services/userService.test.ts" name="UserService &gt; getUserStats &gt; should return user statistics" time="0.000641375">
+            <system-out>
+[32minfo[39m: Retrieved stats for user user-id: 5 recipes {&quot;timestamp&quot;:&quot;2025-07-11T05:08:53.344Z&quot;}
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" timestamp="2025-07-11T05:09:01.727Z" hostname="MacBookPro.attlocal.net" tests="17" failures="0" errors="0" skipped="0" time="2.210321292">
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Rendering &gt; should render form with all required fields" time="0.039600875">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Rendering &gt; should render create mode by default" time="0.048465708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Rendering &gt; should render back button" time="0.007197542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Rendering &gt; should render cancel button" time="0.091545292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Interaction &gt; should update form fields when user types" time="0.303317041">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Interaction &gt; should update ingredients field" time="0.314813958">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Interaction &gt; should update instructions field" time="0.299495125">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Interaction &gt; should update numeric fields" time="0.078870416">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Submission &gt; should submit form with valid data" time="0.381475667">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Submission &gt; should show loading state during submission" time="0.23456725">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Form Submission &gt; should handle submission error" time="0.212450834">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Navigation &gt; should navigate back when back button is clicked" time="0.018755833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Navigation &gt; should navigate to recipes list when cancel button is clicked" time="0.014890958">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Navigation &gt; should navigate to recipe detail after successful creation" time="0.146036292">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Image Upload &gt; should render image upload section" time="0.004226333">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Accessibility &gt; should have proper form elements" time="0.005538417">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeForm.test.tsx" name="RecipeForm Component &gt; Accessibility &gt; should have proper button roles" time="0.00492775">
         </testcase>
     </testsuite>
 </testsuites>
+
