@@ -437,7 +437,7 @@ export const Navigation: React.FC = () => {
 
                     {/* Search panel */}
                     <div className="fixed inset-x-0 top-0 bg-white/98 dark:bg-surface-900/98 backdrop-blur-xl border-b border-surface-200 dark:border-surface-800 animate-in slide-in-from-top duration-300 max-h-screen overflow-y-auto">
-                        <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-4xl">
+                        <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-7xl">
                             {/* Header */}
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center space-x-3">
@@ -621,9 +621,9 @@ export const Navigation: React.FC = () => {
                                     </div>
 
                                     {/* Main Content Grid */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8">
                                         {/* Categories & Trending */}
-                                        <div className="lg:col-span-1 space-y-6">
+                                        <div className="md:col-span-1 lg:col-span-4 space-y-6">
                                             {/* Popular Categories */}
                                             <div className="bg-white dark:bg-surface-900 rounded-2xl p-6 border border-surface-200 dark:border-surface-700">
                                                 <div className="flex items-center space-x-2 mb-4">
@@ -695,7 +695,7 @@ export const Navigation: React.FC = () => {
                                         </div>
 
                                         {/* Popular Recipes */}
-                                        <div className="lg:col-span-1">
+                                        <div className="md:col-span-1 lg:col-span-4">
                                             {popularRecipes.length > 0 && (
                                                 <div className="bg-white dark:bg-surface-900 rounded-2xl p-6 border border-surface-200 dark:border-surface-700">
                                                     <div className="flex items-center space-x-2 mb-4">
@@ -745,7 +745,7 @@ export const Navigation: React.FC = () => {
                                         </div>
 
                                         {/* Recent Searches & Examples */}
-                                        <div className="lg:col-span-1 space-y-6">
+                                        <div className="md:col-span-2 lg:col-span-4 space-y-6">
                                             {/* Recent Searches */}
                                             {recentSearches.length > 0 && (
                                                 <div className="bg-white dark:bg-surface-900 rounded-2xl p-6 border border-surface-200 dark:border-surface-700">
