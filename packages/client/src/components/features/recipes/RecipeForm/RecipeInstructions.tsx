@@ -73,19 +73,21 @@ export const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({ instruct
                     onChange={(e) => onChange(e.target.value)}
                     error={error}
                     rows={12}
-                    className="font-mono text-sm leading-relaxed"
+                    className="font-mono text-sm leading-relaxed pl-12"
                 />
 
-                {/* Line numbers overlay */}
-                <div className="absolute left-3 top-3 pointer-events-none">
-                    <div className="text-xs text-surface-400 dark:text-surface-500 font-mono leading-relaxed">
-                        {Array.from({ length: Math.max(12, instructions.split('\n').length) }, (_, i) => (
-                            <div key={i} className="h-6 flex items-center">
-                                {i + 1}
-                            </div>
-                        ))}
+                {/* Line numbers overlay - only show when there's content */}
+                {instructions.trim() && (
+                    <div className="absolute left-3 top-3 pointer-events-none">
+                        <div className="text-xs text-surface-300 dark:text-surface-600 font-mono leading-relaxed">
+                            {instructions.split('\n').map((_, i) => (
+                                <div key={i} className="h-6 flex items-center">
+                                    {i + 1}
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Quick Actions */}
