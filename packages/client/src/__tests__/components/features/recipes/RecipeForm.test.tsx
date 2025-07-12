@@ -80,9 +80,9 @@ describe('RecipeForm Component', () => {
         it('should render form with all required fields', () => {
             render(<RecipeForm />, { wrapper: createWrapper() });
 
-            expect(screen.getByPlaceholderText(/enter recipe title/i)).toBeInTheDocument();
-            expect(screen.getByPlaceholderText(/enter each ingredient/i)).toBeInTheDocument();
-            expect(screen.getByPlaceholderText(/enter cooking instructions/i)).toBeInTheDocument();
+            expect(screen.getByPlaceholderText(/grandma's famous chocolate chip cookies/i)).toBeInTheDocument();
+            expect(screen.getByPlaceholderText(/2 cups all-purpose flour/i)).toBeInTheDocument();
+            expect(screen.getByPlaceholderText(/preheat oven to 350°F/i)).toBeInTheDocument();
             expect(screen.getByDisplayValue('30')).toBeInTheDocument(); // cook time
             expect(screen.getByDisplayValue('4')).toBeInTheDocument(); // servings
         });
@@ -160,9 +160,9 @@ describe('RecipeForm Component', () => {
             render(<RecipeForm />, { wrapper: createWrapper() });
 
             // Fill out the form
-            await user.type(screen.getByPlaceholderText(/enter recipe title/i), 'Test Recipe');
-            await user.type(screen.getByPlaceholderText(/enter each ingredient/i), '2 cups flour{enter}1 cup sugar');
-            await user.type(screen.getByPlaceholderText(/enter cooking instructions/i), 'Step 1: Mix{enter}Step 2: Bake');
+            await user.type(screen.getByPlaceholderText(/grandma's famous chocolate chip cookies/i), 'Test Recipe');
+            await user.type(screen.getByPlaceholderText(/2 cups all-purpose flour/i), '2 cups flour{enter}1 cup sugar');
+            await user.type(screen.getByPlaceholderText(/preheat oven to 350°F/i), 'Step 1: Mix{enter}Step 2: Bake');
 
             // Submit the form
             await user.click(screen.getByRole('button', { name: /create recipe/i }));
@@ -185,9 +185,9 @@ describe('RecipeForm Component', () => {
             render(<RecipeForm />, { wrapper: createWrapper() });
 
             // Fill out the form with minimum required data
-            await user.type(screen.getByPlaceholderText(/enter recipe title/i), 'Test Recipe');
-            await user.type(screen.getByPlaceholderText(/enter each ingredient/i), '2 cups flour');
-            await user.type(screen.getByPlaceholderText(/enter cooking instructions/i), 'Step 1: Mix');
+            await user.type(screen.getByPlaceholderText(/grandma's famous chocolate chip cookies/i), 'Test Recipe');
+            await user.type(screen.getByPlaceholderText(/2 cups all-purpose flour/i), '2 cups flour');
+            await user.type(screen.getByPlaceholderText(/preheat oven to 350°F/i), 'Step 1: Mix');
 
             // Submit the form
             await user.click(screen.getByRole('button', { name: /create recipe/i }));
@@ -202,9 +202,9 @@ describe('RecipeForm Component', () => {
             render(<RecipeForm />, { wrapper: createWrapper() });
 
             // Fill out the form with minimum required data
-            await user.type(screen.getByPlaceholderText(/enter recipe title/i), 'Test Recipe');
-            await user.type(screen.getByPlaceholderText(/enter each ingredient/i), '2 cups flour');
-            await user.type(screen.getByPlaceholderText(/enter cooking instructions/i), 'Step 1: Mix');
+            await user.type(screen.getByPlaceholderText(/grandma's famous chocolate chip cookies/i), 'Test Recipe');
+            await user.type(screen.getByPlaceholderText(/2 cups all-purpose flour/i), '2 cups flour');
+            await user.type(screen.getByPlaceholderText(/preheat oven to 350°F/i), 'Step 1: Mix');
 
             // Submit the form
             await user.click(screen.getByRole('button', { name: /create recipe/i }));
@@ -241,9 +241,9 @@ describe('RecipeForm Component', () => {
             render(<RecipeForm />, { wrapper: createWrapper() });
 
             // Fill out and submit the form
-            await user.type(screen.getByPlaceholderText(/enter recipe title/i), 'Test Recipe');
-            await user.type(screen.getByPlaceholderText(/enter each ingredient/i), '2 cups flour');
-            await user.type(screen.getByPlaceholderText(/enter cooking instructions/i), 'Step 1: Mix');
+            await user.type(screen.getByPlaceholderText(/grandma's famous chocolate chip cookies/i), 'Test Recipe');
+            await user.type(screen.getByPlaceholderText(/2 cups all-purpose flour/i), '2 cups flour');
+            await user.type(screen.getByPlaceholderText(/preheat oven to 350°F/i), 'Step 1: Mix');
             await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
             await waitFor(() => {
