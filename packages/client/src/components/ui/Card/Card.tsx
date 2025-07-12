@@ -1,7 +1,8 @@
-import { forwardRef, HTMLAttributes } from 'react';
+import { forwardRef, ElementType, HTMLAttributes } from 'react';
 import { cn } from '../../../utils/cn';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+    as?: ElementType;
     className?: string;
     variant?: 'default' | 'elevated' | 'glass' | 'interactive' | 'gradient';
     padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
@@ -14,6 +15,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
     ({
+        as: Component = 'div',
         className,
         variant = 'default',
         padding = 'md',
@@ -60,7 +62,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         const borderStyles = bordered ? "border-surface-200 dark:border-surface-800" : "border-transparent";
 
         return (
-            <div
+            <Component
                 ref={ref}
                 className={cn(
                     baseStyles,

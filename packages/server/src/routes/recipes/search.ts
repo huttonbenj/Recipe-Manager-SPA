@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { RecipeService } from '../../services/recipeService';
 import { asyncHandler } from '../../utils/asyncHandler';
+import { optionalAuth } from '../../middleware/auth';
+import { prisma } from '../../config/database';
 import { validateQuery } from '../../middleware/validation';
 import { 
   RecipeSearchParamsSchema,
@@ -20,6 +22,7 @@ const SearchQuerySchema = z.object({
 // GET /api/recipes - Get all recipes with filtering and pagination
 router.get(
   '/',
+  optionalAuth,
   validateQuery(RecipeSearchParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
     const { 
@@ -46,10 +49,23 @@ router.get(
     };
 
     const result = await RecipeService.getAllRecipes(filters, pagination);
-    
+
+    // Enrich with liked flag when user authenticated
+    let recipes = result.recipes as any[];
+    const userId = (req as any).user?.userId;
+    if (userId) {
+      // @ts-expect-error recipeLike model included after migration
+      const likes: { recipe_id: string }[] = await prisma.recipeLike.findMany({
+        where: { user_id: userId },
+        select: { recipe_id: true },
+      });
+      const likedIds = new Set<string>(likes.map((like) => like.recipe_id));
+      recipes = recipes.map(r => ({ ...r, liked: likedIds.has(r.id) }));
+    }
+
     res.json({
       success: true,
-      data: result.recipes,
+      data: recipes,
       pagination: {
         page: pagination.page,
         limit: pagination.limit,

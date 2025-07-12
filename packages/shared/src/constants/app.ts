@@ -24,8 +24,8 @@ export const USER_CONFIG = {
 
 // File Upload Configuration
 export const UPLOAD_CONFIG = {
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
-  MAX_REQUEST_SIZE: 10 * 1024 * 1024, // 10MB
+  MAX_FILE_SIZE: 25 * 1024 * 1024, // 25MB (increased from 5MB for development)
+  MAX_REQUEST_SIZE: 30 * 1024 * 1024, // 30MB (increased from 10MB for development)
   ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as const,
   UPLOAD_DIR: 'uploads',
 } as const;

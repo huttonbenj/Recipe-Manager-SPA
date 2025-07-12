@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../useAuth';
 import { apiClient } from '../../services/api';
 import toast from 'react-hot-toast';
+import { Recipe, PaginatedResponse } from '@recipe-manager/shared';
 
 export const useUserProfile = () => {
     const { user, updateProfile } = useAuth();
@@ -17,6 +18,13 @@ export const useUserProfile = () => {
     const { data: stats } = useQuery({
         queryKey: ['user-stats'],
         queryFn: apiClient.getUserStats,
+    });
+
+    // Fetch user recipes
+    const { data: recipeResponse } = useQuery<PaginatedResponse<Recipe>, Error>({
+        queryKey: ['user-recipes', user?.id],
+        queryFn: () => apiClient.getUserRecipes(user?.id),
+        enabled: !!user?.id,
     });
 
     // Update user mutation
@@ -66,6 +74,7 @@ export const useUserProfile = () => {
     return {
         user,
         stats: normalizedStats,
+        recipes: recipeResponse?.data || [],
         isEditing,
         formData,
         isLoading: updateUserMutation.isPending,

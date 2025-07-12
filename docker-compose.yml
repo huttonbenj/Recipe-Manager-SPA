@@ -21,19 +21,17 @@ services:
 
   server:
     build:
-      context: .
-      dockerfile: packages/server/Dockerfile
+      context: ./packages/server
     container_name: recipe-manager-server
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/recipe_manager
-      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
       PORT: 3001
     ports:
       - "3001:3001"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - db
     volumes:
       - ./packages/server/src:/app/src
       - ./packages/shared:/app/shared
@@ -43,8 +41,7 @@ services:
 
   client:
     build:
-      context: .
-      dockerfile: packages/client/Dockerfile
+      context: ./packages/client
     container_name: recipe-manager-client
     environment:
       NODE_ENV: development

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Button, Input, Select, FormField } from '../../../ui';
 
 interface RecipeFiltersProps {
@@ -62,40 +62,40 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty;
 
     return (
-        <div className="glass-card p-6 rounded-2xl mb-6">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-50 flex items-center">
-                    <Filter className="h-5 w-5 mr-2" />
-                    Filters
-                </h2>
+        <form onSubmit={onSearch} className="space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Filter Recipes</h3>
                 {hasActiveFilters && (
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={onClearFilters}
-                        leftIcon={<X className="h-4 w-4" />}
+                        className="flex items-center text-sm"
                     >
+                        <X className="h-4 w-4 mr-1" />
                         Clear Filters
                     </Button>
                 )}
             </div>
 
-            <form onSubmit={onSearch} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Search */}
-                <FormField label={<label htmlFor="search-recipes-input">Search recipes</label>}>
-                    <Input
-                        id="search-recipes-input"
-                        type="text"
-                        placeholder="Search by title, ingredients, or instructions..."
-                        value={searchTerm}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                        leftIcon={<Search className="h-4 w-4" />}
-                    />
-                </FormField>
+                <div className="md:col-span-1">
+                    <FormField label="Search">
+                        <Input
+                            id="search-recipes-input"
+                            type="text"
+                            placeholder="Find a recipe..."
+                            value={searchTerm}
+                            onChange={(e) => onSearchChange(e.target.value)}
+                            rightIcon={<Search className="h-4 w-4" />}
+                        />
+                    </FormField>
+                </div>
 
-                {/* Filter Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <FormField label={<label htmlFor="category-select">Category</label>}>
+                {/* Category & Difficulty */}
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField label="Category">
                         <Select
                             id="category-select"
                             value={selectedCategory}
@@ -103,8 +103,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                             options={categoryOptions}
                         />
                     </FormField>
-
-                    <FormField label={<label htmlFor="difficulty-select">Difficulty</label>}>
+                    <FormField label="Difficulty">
                         <Select
                             id="difficulty-select"
                             value={selectedDifficulty}
@@ -112,8 +111,12 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                             options={difficultyOptions}
                         />
                     </FormField>
+                </div>
 
-                    <FormField label={<label htmlFor="sortby-select">Sort by</label>}>
+
+                {/* Sorting */}
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField label="Sort by">
                         <Select
                             id="sortby-select"
                             value={sortBy}
@@ -121,8 +124,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                             options={sortOptions}
                         />
                     </FormField>
-
-                    <FormField label={<label htmlFor="order-select">Order</label>}>
+                    <FormField label="Order">
                         <Select
                             id="order-select"
                             value={sortOrder}
@@ -131,14 +133,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                         />
                     </FormField>
                 </div>
-
-                {/* Search Button */}
-                <div className="flex justify-end">
-                    <Button type="submit" leftIcon={<Search className="h-4 w-4" />}>
-                        Search Recipes
-                    </Button>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
     );
 }; 

@@ -11,7 +11,15 @@ export class BaseService {
   // Get stored user data
   getStoredUser(): User | null {
     const userData = localStorage.getItem(STORAGE_KEYS.USER);
-    return userData ? JSON.parse(userData) : null;
+    if (!userData || userData === 'undefined') {
+        return null;
+    }
+    try {
+        return JSON.parse(userData);
+    } catch (error) {
+        console.error("Failed to parse user data from storage", error);
+        return null;
+    }
   }
 
   // Clear authentication data

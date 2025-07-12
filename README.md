@@ -1,292 +1,207 @@
 # Recipe Manager SPA
 
-A full-stack Recipe Management application built with React, Node.js, TypeScript, and PostgreSQL. This project demonstrates modern web development practices including monorepo architecture, comprehensive testing, CI/CD, and Docker containerization.
+A full-stack Single Page Application (SPA) for managing recipes, built with React, Node.js, Express, and PostgreSQL.
 
 ## 🚀 Features
 
-### Core Functionality
+- **Frontend (React SPA)**
+  - Built with React and React Router
+  - Responsive design with Tailwind CSS
+  - Recipe listing with search and filtering
+  - Recipe detail view with full information
+  - Add/Edit recipe forms with validation
+  - User authentication and profile management
+  - Modern UI with dark/light theme support
 
-- **User Authentication**: Secure JWT-based authentication with registration and login
-- **Recipe Management**: Create, read, update, and delete recipes with detailed information
-- **Rich Recipe Data**: Support for ingredients, cooking steps, prep time, cook time, difficulty levels, and cuisine types
-- **User Profiles**: Manage personal information and account settings
-- **Search & Filtering**: Find recipes by title, difficulty, cuisine type, and more
-- **Responsive Design**: Mobile-first design that works on all devices
+- **Backend (Node.js + Express)**
+  - RESTful API with Express
+  - PostgreSQL database with Prisma ORM
+  - JWT authentication
+  - Image upload support
+  - Input validation and error handling
+  - Rate limiting and security middleware
 
-### Technical Features
+- **Database**
+  - PostgreSQL with Prisma ORM
+  - User management with secure password hashing
+  - Recipe CRUD operations
+  - Database seeding with sample data
 
-- **Type Safety**: Full TypeScript implementation across frontend and backend
-- **Monorepo Architecture**: Organized codebase with shared types and utilities
-- **Comprehensive Testing**: Unit tests with high coverage (94%+ statements, 85%+ branches)
-- **CI/CD Pipeline**: GitHub Actions for automated testing and deployment
-- **Docker Support**: Full containerization for development and production
-- **Security**: Input validation, SQL injection prevention, and secure authentication
-- **Performance**: Optimized database queries and efficient React components
+## 📋 Prerequisites
 
-## 🏗️ Architecture
+- Node.js >= 18.0.0
+- npm >= 8.0.0
+- PostgreSQL >= 12.0
 
-### Project Structure
+## 🛠️ Quick Setup
 
-```
-recipe-manager-spa/
-├── packages/
-│   ├── client/          # React frontend application
-│   ├── server/          # Node.js backend API
-│   └── shared/          # Shared TypeScript types and utilities
-├── docker-compose.yml   # Docker development environment
-├── .github/workflows/   # CI/CD pipeline configuration
-└── docs/               # Additional documentation
-```
-
-### Technology Stack
-
-**Frontend:**
-
-- React 18 with TypeScript
-- React Router for routing
-- Modern CSS with utility classes
-- Vite for build tooling
-- ESLint + Prettier for code quality
-
-**Backend:**
-
-- Node.js with Express
-- TypeScript for type safety
-- PostgreSQL with connection pooling
-- JWT authentication
-- Zod for runtime validation
-- Comprehensive logging with Winston
-
-**DevOps:**
-
-- Docker & Docker Compose
-- GitHub Actions CI/CD
-- Automated testing and linting
-- Multi-stage builds for production
-
-## 🛠️ Quick Start
-
-### Prerequisites
-
-- Node.js 18+ and npm
-- PostgreSQL 15+ (or use Docker)
-- Docker and Docker Compose (optional)
-
-### Option 1: Docker Development (Recommended)
-
-1. **Clone the repository:**
-
+1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd recipe-manager-spa
+   cd Recipe-Manager-SPA
    ```
 
-2. **Start the development environment:**
-
+2. **Install dependencies**
    ```bash
-   docker-compose up
+   npm run install:all
    ```
 
-3. **Access the application:**
-   - Frontend: <http://localhost:3000>
-   - Backend API: <http://localhost:3001>
-   - Database: localhost:5432
+3. **Setup PostgreSQL database**
+   - Create a PostgreSQL database named `recipe_manager`
+   - Update the `DATABASE_URL` in `packages/server/.env` with your credentials
 
-### Option 2: Local Development
-
-1. **Clone and install dependencies:**
-
+4. **Run the setup script**
    ```bash
-   git clone <repository-url>
-   cd recipe-manager-spa
-   npm install
+   npm run setup
    ```
+   This will:
+   - Generate Prisma client
+   - Run database migrations
+   - Seed the database with sample data (10+ recipes and 3 users)
 
-2. **Set up the database:**
-
+5. **Start the development servers**
    ```bash
-   # Create PostgreSQL database
-   createdb recipe_manager
-   
-   # Run migrations (if available)
-   npm run db:migrate
+   npm run dev
    ```
+   This starts both frontend (http://localhost:3000) and backend (http://localhost:3001)
 
-3. **Configure environment variables:**
+## 🔧 Manual Setup
 
-   ```bash
-   # Copy example environment files
-   cp packages/server/.env.example packages/server/.env
-   cp packages/client/.env.example packages/client/.env
-   
-   # Edit the files with your configuration
-   ```
+If you prefer to set up each component manually:
 
-4. **Start the development servers:**
-
-   ```bash
-   # Terminal 1: Start backend
-   npm run dev:server
-   
-   # Terminal 2: Start frontend
-   npm run dev:client
-   ```
-
-## 📖 Usage
-
-### Getting Started
-
-1. **Register a new account** or login with existing credentials
-2. **Create your first recipe** using the "Add Recipe" button
-3. **Browse recipes** in the recipe list with search and filtering
-4. **View recipe details** by clicking on any recipe card
-5. **Edit or delete** your own recipes using the action buttons
-
-### API Endpoints
-
-The backend provides a RESTful API with the following main endpoints:
-
+### Server Setup
+```bash
+cd packages/server
+cp .env.example .env
+# Update DATABASE_URL in .env
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run dev
 ```
-Authentication:
-POST /api/auth/register    # Register new user
-POST /api/auth/login       # User login
 
-Recipes:
-GET    /api/recipes        # Get all recipes (paginated)
-POST   /api/recipes        # Create new recipe
-GET    /api/recipes/:id    # Get specific recipe
-PUT    /api/recipes/:id    # Update recipe
-DELETE /api/recipes/:id    # Delete recipe
-
-User Profile:
-GET    /api/users/profile  # Get user profile
-PUT    /api/users/profile  # Update user profile
+### Client Setup
+```bash
+cd packages/client
+npm run dev
 ```
 
 ## 🧪 Testing
 
-### Running Tests
-
+Run tests for all packages:
 ```bash
-# Run all tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run linting
-npm run lint
-
-# Run type checking
-npm run typecheck
+npm run test
 ```
 
-### Test Coverage
+Run tests for specific packages:
+```bash
+# Server tests
+npm run test --workspace=packages/server
 
-The project maintains high test coverage:
+# Client tests
+npm run test --workspace=packages/client
 
-- **Statements**: 94%+
-- **Branches**: 85%+
-- **Functions**: 86%+
-- **Lines**: 95%+
+# E2E tests
+npm run test:e2e
+```
+
+## 🎯 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/profile` - Get user profile
+- `PUT /api/auth/profile` - Update user profile
+
+### Recipes
+- `GET /api/recipes` - Get all recipes (with pagination and filtering)
+- `GET /api/recipes/:id` - Get recipe by ID
+- `POST /api/recipes` - Create new recipe (auth required)
+- `PUT /api/recipes/:id` - Update recipe (auth required, owner only)
+- `DELETE /api/recipes/:id` - Delete recipe (auth required, owner only)
+- `GET /api/recipes/search` - Search recipes
+- `GET /api/recipes/categories` - Get recipe categories
+
+### Users
+- `GET /api/users/me/recipes` - Get current user's recipes
+- `GET /api/users/:id/recipes` - Get user's recipes by ID
+
+## 🗄️ Database Schema
+
+### Users Table
+- `id` (String, Primary Key)
+- `email` (String, Unique)
+- `name` (String)
+- `password_hash` (String)
+- `created_at` (DateTime)
+- `updated_at` (DateTime)
+
+### Recipes Table
+- `id` (String, Primary Key)
+- `title` (String)
+- `ingredients` (String, JSON)
+- `instructions` (String)
+- `image_url` (String, Optional)
+- `cook_time` (Integer, Optional)
+- `servings` (Integer, Optional)
+- `difficulty` (String, Optional)
+- `category` (String, Optional)
+- `tags` (String, JSON, Optional)
+- `created_at` (DateTime)
+- `updated_at` (DateTime)
+- `user_id` (String, Foreign Key)
+
+## 🔐 Sample Users
+
+After running the setup script, you can login with these test accounts:
+
+- **Admin User**: admin@example.com / admin123
+- **Chef User**: chef@example.com / chef123
+- **Home Cook**: home@example.com / home123
+
+## 📱 Responsive Design
+
+The application is fully responsive and optimized for:
+- **Mobile**: ≤768px
+- **Tablet**: 768px - 1024px
+- **Desktop**: ≥1024px
+
+## 🌟 Additional Features
+
+- **Image Upload**: Support for recipe images
+- **Search & Filter**: Full-text search and category filtering
+- **Authentication**: JWT-based authentication with refresh tokens
+- **Validation**: Client-side and server-side validation
+- **Error Handling**: Comprehensive error handling and user feedback
+- **Security**: CORS, rate limiting, and input sanitization
 
 ## 🚀 Deployment
 
-### Production Build
-
+### Frontend (Vercel/Netlify)
 ```bash
-# Build all packages
+cd packages/client
 npm run build
-
-# Build specific package
-npm run build --workspace=@recipe-manager/client
-npm run build --workspace=@recipe-manager/server
+# Deploy the dist folder
 ```
 
-### Docker Production
-
+### Backend (Render/Railway)
 ```bash
-# Build production images
-docker-compose -f docker-compose.prod.yml build
-
-# Deploy to production
-docker-compose -f docker-compose.prod.yml up -d
+cd packages/server
+npm run build
+# Deploy with start script: npm start
 ```
 
-### Environment Variables
-
-**Server (.env):**
-
-```env
-NODE_ENV=production
-DATABASE_URL=postgresql://postgres:password@localhost:5432/recipe_manager
-JWT_SECRET=your-super-secret-jwt-key
-PORT=3001
-```
-
-**Client (.env):**
-
-```env
-VITE_API_URL=http://localhost:3001
-```
-
-## 🔧 Development
-
-### Code Quality
-
-- **ESLint**: Configured with TypeScript and React rules
-- **Prettier**: Consistent code formatting
-- **Husky**: Pre-commit hooks for quality checks
-- **TypeScript**: Strict mode with additional checks
-
-### Database Schema
-
-The application uses PostgreSQL with the following main tables:
-
-- `users`: User accounts and authentication
-- `recipes`: Recipe information and metadata
-- `recipe_ingredients`: Recipe ingredients with amounts
-- `recipe_steps`: Cooking instructions and steps
-
-### Adding New Features
-
-1. **Create feature branch**: `git checkout -b feature/new-feature`
-2. **Implement changes** with tests
-3. **Run quality checks**: `npm run lint && npm test`
-4. **Commit changes**: Follow conventional commit format
-5. **Create pull request** with description
+### Database (Neon/Supabase)
+Update the `DATABASE_URL` in production environment variables.
 
 ## 🤝 Contributing
 
-### Development Workflow
-
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes with tests
-4. Ensure all tests pass
+3. Make your changes
+4. Run tests
 5. Submit a pull request
 
-### Code Style
+## 📄 License
 
-- Use TypeScript for all new code
-- Follow the existing code style
-- Add tests for new functionality
-- Update documentation as needed
-
-## 📝 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with modern web technologies
-- Follows industry best practices
-- Designed for scalability and maintainability
-- Comprehensive testing and documentation
-
----
-
-For more detailed information, see the individual package README files in the `packages/` directory.
+This project is licensed under the MIT License.

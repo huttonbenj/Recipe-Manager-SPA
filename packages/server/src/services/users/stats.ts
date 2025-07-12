@@ -23,6 +23,13 @@ export class UserStatsService {
         where: { user_id: userId },
       });
 
+      // Get total likes given by the user
+      const totalLikes = await prisma.recipeLike.count({
+        where: {
+          user_id: userId,
+        },
+      });
+
       // Get recipe count by category
       const recipesByCategory = await prisma.recipe.groupBy({
         by: ['category'],
@@ -42,10 +49,13 @@ export class UserStatsService {
         count: item._count.category,
       }));
 
-      logger.info(`Retrieved stats for user ${userId}: ${totalRecipes} recipes`);
+      logger.info(`Retrieved stats for user ${userId}: ${totalRecipes} recipes, ${totalLikes} likes`);
 
       return {
         totalRecipes,
+        totalLikes,
+        averageRating: 0, // TODO: Implement when ratings are added
+        totalViews: 0, // TODO: Implement when views are tracked
         recipesByCategory: formattedStats,
       };
     } catch (error) {

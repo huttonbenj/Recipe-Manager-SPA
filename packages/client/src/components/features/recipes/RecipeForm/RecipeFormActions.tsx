@@ -1,5 +1,4 @@
 import React from 'react';
-import { ImageIcon } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 
 interface RecipeFormActionsProps {
@@ -8,36 +7,24 @@ interface RecipeFormActionsProps {
     onCancel: () => void;
 }
 
-export const RecipeFormActions: React.FC<RecipeFormActionsProps> = ({
-    isEditing,
-    isSubmitting,
-    onCancel,
-}) => {
-    const getButtonText = () => {
-        if (isSubmitting) {
-            return isEditing ? 'Updating Recipe...' : 'Creating Recipe...';
-        }
-        return isEditing ? 'Update Recipe' : 'Create Recipe';
-    };
-
+export const RecipeFormActions: React.FC<RecipeFormActionsProps> = ({ isEditing, isSubmitting, onCancel }) => {
     return (
-        <div className="flex items-center justify-end space-x-4">
+        <div className="flex items-center justify-end gap-4 pt-8">
             <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 onClick={onCancel}
+                disabled={isSubmitting}
             >
                 Cancel
             </Button>
-
             <Button
                 type="submit"
                 variant="primary"
                 disabled={isSubmitting}
                 isLoading={isSubmitting}
             >
-                {!isSubmitting && <ImageIcon className="h-4 w-4 mr-2" />}
-                {getButtonText()}
+                {isEditing ? 'Save Changes' : 'Create Recipe'}
             </Button>
         </div>
     );

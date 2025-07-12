@@ -13,28 +13,28 @@ interface UserProfileStatsProps {
 export const UserProfileStats: React.FC<UserProfileStatsProps> = ({ stats }) => {
     const statCards = [
         {
-            title: 'Recipes',
+            title: 'Recipes Created',
             value: stats?.totalRecipes || 0,
             icon: ChefHat,
-            color: 'text-blue-600 dark:text-blue-400',
-            bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+            color: 'text-brand-600 dark:text-brand-400',
+            bgColor: 'bg-brand-100 dark:bg-brand-900/30',
         },
         {
-            title: 'Likes',
+            title: 'Total Likes',
             value: stats?.totalLikes || 0,
             icon: Heart,
             color: 'text-red-600 dark:text-red-400',
             bgColor: 'bg-red-100 dark:bg-red-900/30',
         },
         {
-            title: 'Views',
+            title: 'Total Views',
             value: stats?.totalViews || 0,
             icon: Eye,
             color: 'text-green-600 dark:text-green-400',
             bgColor: 'bg-green-100 dark:bg-green-900/30',
         },
         {
-            title: 'Avg Rating',
+            title: 'Average Rating',
             value: stats?.averageRating ? stats.averageRating.toFixed(1) : 'N/A',
             icon: Award,
             color: 'text-yellow-600 dark:text-yellow-400',
@@ -43,22 +43,27 @@ export const UserProfileStats: React.FC<UserProfileStatsProps> = ({ stats }) => 
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {statCards.map((card) => {
-                const Icon = card.icon;
-                return (
-                    <div
-                        key={card.title}
-                        className="glass-card p-6 rounded-lg text-center group hover:scale-105 transition-all duration-300"
-                    >
-                        <div className={`w-12 h-12 ${card.bgColor} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                            <Icon className={`h-6 w-6 ${card.color}`} />
+        <div className="bg-surface-50 dark:bg-surface-800 p-6 rounded-lg shadow-sm">
+            <h2 className="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">User Statistics</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {statCards.map((card) => {
+                    const Icon = card.icon;
+                    return (
+                        <div
+                            key={card.title}
+                            className="bg-white dark:bg-surface-700 p-4 rounded-lg flex items-center space-x-4 transition-transform duration-300 hover:scale-105"
+                        >
+                            <div className={`w-12 h-12 ${card.bgColor} rounded-full flex items-center justify-center`}>
+                                <Icon className={`h-6 w-6 ${card.color}`} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-surface-600 dark:text-surface-400">{card.title}</p>
+                                <p className="text-2xl font-bold text-surface-900 dark:text-surface-50">{card.value}</p>
+                            </div>
                         </div>
-                        <div className="text-2xl font-bold text-surface-900 dark:text-surface-50">{card.value}</div>
-                        <div className="text-sm text-surface-600 dark:text-surface-400">{card.title}</div>
-                    </div>
-                );
-            })}
+                    );
+                })}
+            </div>
         </div>
     );
 }; 

@@ -97,8 +97,13 @@ export class RecipeService extends BaseService {
 
   // Get user's recipes
   async getUserRecipes(userId?: string, params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Recipe>> {
+    // Use the correct endpoint based on whether it's current user or specific user
+    const endpoint = userId && userId !== 'me' 
+      ? API_ENDPOINTS.USERS.USER_RECIPES.replace(':id', userId)
+      : API_ENDPOINTS.USERS.MY_RECIPES;
+      
     const response: AxiosResponse<PaginatedResponse<Recipe>> = await axiosInstance.get(
-      API_ENDPOINTS.RECIPES.USER_RECIPES.replace(':userId', userId || 'me'),
+      endpoint,
       { params }
     );
     
@@ -120,6 +125,28 @@ export class RecipeService extends BaseService {
     }
     
     throw new Error(response.data.error || 'Failed to fetch recipe categories');
+  }
+
+  // Like a recipe
+  async likeRecipe(id: string): Promise<void> {
+    const likeEndpoint = API_ENDPOINTS.RECIPES.LIKE || `/api/recipes/:id/like`;
+    const response: AxiosResponse<ApiResponse<void>> = await axiosInstance.post(
+      likeEndpoint.replace(':id', id)
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.error || 'Failed to like recipe');
+    }
+  }
+
+  // Unlike a recipe
+  async unlikeRecipe(id: string): Promise<void> {
+    const likeEndpoint = API_ENDPOINTS.RECIPES.LIKE || `/api/recipes/:id/like`;
+    const response: AxiosResponse<ApiResponse<void>> = await axiosInstance.delete(
+      likeEndpoint.replace(':id', id)
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.error || 'Failed to unlike recipe');
+    }
   }
 }
 

@@ -29,7 +29,9 @@
     "check:all": "npm run typecheck && npm run typecheck:strict && npm run lint",
     "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules",
     "install:all": "npm install && npm install --workspaces",
-    "seed": "cd packages/server && npx ts-node src/scripts/seed.ts"
+    "seed": "cd packages/server && npx ts-node src/scripts/seed.ts",
+    "setup": "cd packages/server && npx ts-node src/scripts/setup.ts",
+    "check-db": "cd packages/server && npx ts-node src/scripts/check-db.ts"
   },
   "engines": {
     "node": ">=18.0.0",

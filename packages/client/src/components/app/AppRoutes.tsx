@@ -1,10 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '../features/auth/ProtectedRoute';
+import { UnprotectedRoute } from '../features/auth/UnprotectedRoute';
 import { Layout } from './Layout';
 
 // Pages
 import { LoginForm } from '../features/auth/login';
 import { RegisterForm } from '../features/auth/register';
+import { LandingPage } from '../features/landing/LandingPage';
 import { Dashboard } from '../features/dashboard';
 import { RecipeList } from '../features/recipes/RecipeList';
 import { RecipeDetail } from '../features/recipes/RecipeDetail';
@@ -14,22 +16,33 @@ import { UserProfile } from '../features/user-profile';
 export const AppRoutes = () => {
     return (
         <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<RegisterForm />} />
-
-            {/* Protected Routes */}
+            {/* Unprotected Routes */}
             <Route
                 path="/"
                 element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <Navigate to="/dashboard" replace />
-                        </Layout>
-                    </ProtectedRoute>
+                    <UnprotectedRoute>
+                        <LandingPage />
+                    </UnprotectedRoute>
+                }
+            />
+            <Route
+                path="/login"
+                element={
+                    <UnprotectedRoute>
+                        <LoginForm />
+                    </UnprotectedRoute>
+                }
+            />
+            <Route
+                path="/register"
+                element={
+                    <UnprotectedRoute>
+                        <RegisterForm />
+                    </UnprotectedRoute>
                 }
             />
 
+            {/* Protected Routes */}
             <Route
                 path="/dashboard"
                 element={
@@ -97,7 +110,7 @@ export const AppRoutes = () => {
             />
 
             {/* Fallback Route */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 }; 

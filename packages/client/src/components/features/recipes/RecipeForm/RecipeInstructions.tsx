@@ -1,38 +1,22 @@
 import React from 'react';
-import { Card, CardContent, CardHeader } from '../../../ui/Card';
-import { TextArea, FormField } from '../../../ui/Form';
+import { Textarea } from '../../../ui/Form/Textarea';
 
 interface RecipeInstructionsProps {
     instructions: string;
-    error?: string;
     onChange: (value: string) => void;
+    error?: string;
 }
 
-export const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({
-    instructions,
-    error,
-    onChange,
-}) => {
+export const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({ instructions, onChange, error }) => {
     return (
-        <Card>
-            <CardHeader>
-                <h2 className="text-xl font-semibold text-gray-900">Instructions</h2>
-            </CardHeader>
-            <CardContent>
-                <FormField
-                    label="Instructions"
-                    required
-                    {...(error && { error })}
-                >
-                    <TextArea
-                        value={instructions}
-                        onChange={(e) => onChange(e.target.value)}
-                        rows={10}
-                        placeholder="Enter cooking instructions step by step, e.g.:&#10;1. Preheat oven to 350°F&#10;2. Mix dry ingredients in a bowl&#10;3. Add wet ingredients and stir until combined"
-                        required
-                    />
-                </FormField>
-            </CardContent>
-        </Card>
+        <Textarea
+            id="instructions"
+            label=""
+            placeholder="e.g., Mix ingredients, bake at 350°F for 30 minutes..."
+            value={instructions}
+            onChange={(e) => onChange(e.target.value)}
+            error={error}
+            rows={10}
+        />
     );
 }; 

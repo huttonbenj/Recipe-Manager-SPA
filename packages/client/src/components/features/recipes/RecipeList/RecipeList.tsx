@@ -5,9 +5,10 @@ import { Plus } from 'lucide-react';
 import { Recipe } from '@recipe-manager/shared';
 import { apiClient } from '../../../../services/api';
 import { useDebounce } from '../../../../hooks';
-import { Button } from '../../../ui';
+import { Button, Card, CardContent } from '../../../ui';
 import { RecipeFilters } from './RecipeFilters';
 import { RecipeGrid } from './RecipeGrid';
+import { PageTransitionScale } from '../../../ui/PageTransition';
 
 export const RecipeList = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -101,43 +102,51 @@ export const RecipeList = () => {
     }
 
     return (
-        <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-50">Recipe Collection</h1>
-                    <p className="text-surface-600 dark:text-surface-400 mt-2">Discover and share amazing recipes</p>
+        <PageTransitionScale>
+            <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
+                {/* Header */}
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Recipe Collection</h1>
+                        <p className="text-gray-600 dark:text-gray-300 mt-1">
+                            Discover and share amazing recipes from our community.
+                        </p>
+                    </div>
+                    <Link to="/recipes/new">
+                        <Button variant="gradient" size="sm" leftIcon={<Plus className="h-4 w-4" />}>
+                            Create Recipe
+                        </Button>
+                    </Link>
                 </div>
-                <Link to="/recipes/new">
-                    <Button leftIcon={<Plus className="h-5 w-5" />}>
-                        Create Recipe
-                    </Button>
-                </Link>
+
+                {/* Filters */}
+                <Card>
+                    <CardContent>
+                        <RecipeFilters
+                            searchTerm={searchTerm}
+                            selectedCategory={selectedCategory}
+                            selectedDifficulty={selectedDifficulty}
+                            sortBy={sortBy}
+                            sortOrder={sortOrder}
+                            onSearchChange={setSearchTerm}
+                            onCategoryChange={setSelectedCategory}
+                            onDifficultyChange={setSelectedDifficulty}
+                            onSortByChange={setSortBy}
+                            onSortOrderChange={setSortOrder}
+                            onClearFilters={clearFilters}
+                            onSearch={handleSearch}
+                        />
+                    </CardContent>
+                </Card>
+
+                {/* Recipe Grid */}
+                <RecipeGrid
+                    recipes={recipes}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    isLoading={isLoading}
+                />
             </div>
-
-            {/* Filters */}
-            <RecipeFilters
-                searchTerm={searchTerm}
-                selectedCategory={selectedCategory}
-                selectedDifficulty={selectedDifficulty}
-                sortBy={sortBy}
-                sortOrder={sortOrder}
-                onSearchChange={setSearchTerm}
-                onCategoryChange={setSelectedCategory}
-                onDifficultyChange={setSelectedDifficulty}
-                onSortByChange={setSortBy}
-                onSortOrderChange={setSortOrder}
-                onClearFilters={clearFilters}
-                onSearch={handleSearch}
-            />
-
-            {/* Recipe Grid */}
-            <RecipeGrid
-                recipes={recipes}
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-                isLoading={isLoading}
-            />
-        </div>
+        </PageTransitionScale>
     );
 }; 

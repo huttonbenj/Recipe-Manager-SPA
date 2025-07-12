@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigation } from '../features/navigation';
 import { Footer } from './Footer';
+import { PageTransitionScale } from '../ui/PageTransition';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -12,9 +13,11 @@ export const Layout = ({ children }: LayoutProps) => {
             <Navigation />
 
             <main className="flex-grow">
-                <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8 animate-fade-in">
-                    {children}
-                </div>
+                <PageTransitionScale>
+                    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+                        {children}
+                    </div>
+                </PageTransitionScale>
             </main>
 
             <Footer />

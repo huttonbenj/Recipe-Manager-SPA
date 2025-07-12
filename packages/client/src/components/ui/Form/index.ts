@@ -1,2 +1,5 @@
-export { FormField, Input, TextArea, Select } from './Form';
-export type { FormFieldProps, InputProps, TextAreaProps, SelectProps } from './Form'; 
+export * from './Input';
+export * from './Textarea';
+export * from './Select';
+export * from './TagsInput';
+export * from './FormField'; 

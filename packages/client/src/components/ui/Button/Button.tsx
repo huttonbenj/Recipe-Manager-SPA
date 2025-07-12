@@ -114,21 +114,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 aria-label={iconOnly ? (typeof children === 'string' ? children : 'Button') : undefined}
                 {...props}
             >
-                {isLoading && (
+                {isLoading ? (
                     <>
-                        <Loader2 className={cn(loadingSpinnerSize, "animate-spin", children && "mr-2")} />
-                        {loadingText && <span className="sr-only">{loadingText}</span>}
+                        <Loader2 className={cn(loadingSpinnerSize, "animate-spin")} />
+                        {loadingText ? (
+                            <span className="ml-2">{loadingText}</span>
+                        ) : (
+                            <span className="ml-2 opacity-0">{children}</span>
+                        )}
                     </>
-                )}
-                {!isLoading && leftIcon && (
-                    <span className={cn(iconSize, children && "mr-2")}>{leftIcon}</span>
-                )}
-                {!iconOnly && children && (
-                    <span className={isLoading ? "opacity-0" : ""}>{children}</span>
-                )}
-                {iconOnly && !isLoading && children}
-                {!isLoading && rightIcon && (
-                    <span className={cn(iconSize, children && "ml-2")}>{rightIcon}</span>
+                ) : (
+                    <>
+                        {leftIcon && <span className={cn(iconSize, "mr-2")}>{leftIcon}</span>}
+                        {children}
+                        {rightIcon && <span className={cn(iconSize, "ml-2")}>{rightIcon}</span>}
+                    </>
                 )}
             </button>
         );

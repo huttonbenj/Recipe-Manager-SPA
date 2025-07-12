@@ -21,6 +21,7 @@ model User {
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
   recipes       Recipe[]
+  likes         RecipeLike[]
 
   @@map("users")
 }
@@ -40,9 +41,22 @@ model Recipe {
   updated_at   DateTime @updatedAt
   user_id      String
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  likes        RecipeLike[]
 
   @@map("recipes")
   @@index([user_id])
   @@index([title])
   @@index([category])
+}
+
+model RecipeLike {
+  user_id   String
+  recipe_id String
+  created_at DateTime @default(now())
+
+  user   User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, recipe_id])
+  @@map("recipe_likes")
 }

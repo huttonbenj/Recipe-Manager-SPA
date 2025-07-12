@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { RecipeService } from '../../services/recipeService';
-import { authenticate, AuthenticatedRequest } from '../../middleware/auth';
+import { authenticate, optionalAuth, AuthenticatedRequest } from '../../middleware/auth';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { validateBody, validateParams, IdParamsSchema } from '../../middleware/validation';
 import { 
@@ -9,17 +9,29 @@ import {
   HTTP_STATUS
 } from '@recipe-manager/shared';
 import logger from '../../utils/logger';
+import { prisma } from '../../config/database';
 
 const router = Router();
 
 // GET /api/recipes/:id - Get recipe by ID
 router.get(
   '/:id',
+  optionalAuth,
   validateParams(IdParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     
     const recipe = await RecipeService.getRecipeById(id!);
+
+    let liked = false;
+    // If authenticated, check like status
+    if ((req as any).user) {
+      const userId = (req as AuthenticatedRequest).user.userId;
+      // @ts-expect-error recipeLike exists after client generation
+      liked = await prisma.recipeLike.findUnique({
+        where: { user_id_recipe_id: { user_id: userId, recipe_id: id! } },
+      }) !== null;
+    }
     
     if (!recipe) {
       res.status(HTTP_STATUS.NOT_FOUND).json({
@@ -31,7 +43,7 @@ router.get(
 
     res.json({
       success: true,
-      data: recipe,
+      data: { ...recipe, liked },
     });
   })
 );

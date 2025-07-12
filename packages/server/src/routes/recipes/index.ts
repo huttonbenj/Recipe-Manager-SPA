@@ -2,6 +2,7 @@ import { Router } from 'express';
 import searchRoutes from './search';
 import categoriesRoutes from './categories';
 import crudRoutes from './crud';
+import likesRoutes from './likes';
 
 const router = Router();
 
@@ -12,6 +13,7 @@ router.use('/', searchRoutes);
 router.use('/', categoriesRoutes);
 
 // Mount CRUD routes (these should be last due to /:id parameter)
+router.use('/:id', likesRoutes);
 router.use('/', crudRoutes);
 
 export default router; 

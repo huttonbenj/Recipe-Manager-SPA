@@ -18,6 +18,9 @@ export interface UserLoginData {
 
 export interface UserStats {
   totalRecipes: number;
+  totalLikes: number;
+  averageRating: number;
+  totalViews: number;
   recipesByCategory: Array<{ category: string; count: number }>;
 }
 

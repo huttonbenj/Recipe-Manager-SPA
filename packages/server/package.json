@@ -24,6 +24,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "ts-node src/scripts/seed.ts",
+    "db:setup": "ts-node src/scripts/setup.ts",
+    "db:check": "ts-node src/scripts/check-db.ts",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset --force"
   },

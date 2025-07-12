@@ -1,14 +1,16 @@
 import React from 'react';
 import { useUserProfile } from '../../../hooks';
 import { UserProfileHeader } from './UserProfileHeader';
-import { UserProfileEditModal } from './UserProfileEditModal';
 import { UserProfileStats } from './UserProfileStats';
 import { UserProfileActivity } from './UserProfileActivity';
+import { UserProfileEditModal } from './UserProfileEditModal';
+import { PageTransitionScale } from '../../ui/PageTransition';
 
 export const UserProfile: React.FC = () => {
     const {
         user,
         stats,
+        recipes,
         isEditing,
         formData,
         isLoading,
@@ -27,27 +29,32 @@ export const UserProfile: React.FC = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
-            <UserProfileHeader
-                user={user}
-                onEditClick={handleEditClick}
-            />
+        <PageTransitionScale>
+            <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Main Content */}
+                    <div className="lg:col-span-2 space-y-8">
+                        <UserProfileHeader user={user} onEditClick={handleEditClick} />
+                        <UserProfileStats stats={stats} />
+                    </div>
 
-            <UserProfileEditModal
-                isOpen={isEditing}
-                formData={formData}
-                isLoading={isLoading}
-                onSubmit={handleSubmit}
-                onCancel={handleCancel}
-                onFormDataChange={handleFormDataChange}
-            />
+                    {/* Sidebar */}
+                    <div className="lg:col-span-1">
+                        <UserProfileActivity recipes={recipes} />
+                    </div>
+                </div>
 
-            <UserProfileStats stats={stats} />
-
-            <UserProfileActivity
-                user={user}
-                totalRecipes={stats.totalRecipes}
-            />
-        </div>
+                {isEditing && (
+                    <UserProfileEditModal
+                        isOpen={isEditing}
+                        formData={formData}
+                        isLoading={isLoading}
+                        onSubmit={handleSubmit}
+                        onCancel={handleCancel}
+                        onFormDataChange={handleFormDataChange}
+                    />
+                )}
+            </div>
+        </PageTransitionScale>
     );
 }; 

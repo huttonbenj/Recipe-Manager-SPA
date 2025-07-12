@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../../../../services/api';
+import { recipeService } from '../../../../services';
 import { useAuth } from '../../../../hooks';
 import { RecipeDetailHeader } from './RecipeDetailHeader';
 import { RecipeDetailImage } from './RecipeDetailImage';
-import { RecipeDetailInfo } from './RecipeDetailInfo';
-import { RecipeDetailIngredients } from './RecipeDetailIngredients';
-import { RecipeDetailTags } from './RecipeDetailTags';
+import { RecipeDetailSidebar } from './RecipeDetailSidebar';
 import { RecipeDetailInstructions } from './RecipeDetailInstructions';
 import { RecipeDetailRelated } from './RecipeDetailRelated';
 import { Loader2, ChefHat, AlertCircle, Home } from 'lucide-react';
+import { Button } from '../../../ui';
+import { PageTransitionScale } from '../../../ui/PageTransition';
 
 export const RecipeDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -19,16 +19,50 @@ export const RecipeDetail: React.FC = () => {
     const { user } = useAuth();
     const [isLiked, setIsLiked] = useState(false);
 
+    const likeMutation = useMutation({
+        mutationFn: () => recipeService.likeRecipe(id!),
+        onSuccess: () => {
+            setIsLiked(true);
+            // Invalidate stats cache to refresh the like count
+            if (user) {
+                queryClient.invalidateQueries({ queryKey: ['userStats', user.id] });
+            }
+        },
+        onError: (error) => {
+            console.error('Like mutation failed:', error);
+        },
+    });
+    const unlikeMutation = useMutation({
+        mutationFn: () => recipeService.unlikeRecipe(id!),
+        onSuccess: () => {
+            setIsLiked(false);
+            // Invalidate stats cache to refresh the like count
+            if (user) {
+                queryClient.invalidateQueries({ queryKey: ['userStats', user.id] });
+            }
+        },
+        onError: (error) => {
+            console.error('Unlike mutation failed:', error);
+        },
+    });
+
     // Fetch recipe details
     const { data: recipe, isLoading, error } = useQuery({
         queryKey: ['recipe', id],
-        queryFn: () => apiClient.getRecipe(id!),
+        queryFn: () => recipeService.getRecipe(id!),
         enabled: !!id,
     });
 
+    // Sync liked state with API response
+    useEffect(() => {
+        if (recipe && (recipe as any).liked !== undefined) {
+            setIsLiked((recipe as any).liked);
+        }
+    }, [recipe]);
+
     // Delete recipe mutation
     const deleteMutation = useMutation({
-        mutationFn: (recipeId: string) => apiClient.deleteRecipe(recipeId),
+        mutationFn: (recipeId: string) => recipeService.deleteRecipe(recipeId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['recipes'] });
             navigate('/recipes');
@@ -42,31 +76,28 @@ export const RecipeDetail: React.FC = () => {
     };
 
     const handleLikeToggle = () => {
-        setIsLiked(!isLiked);
+        if (!id) {
+            console.error('No recipe ID available');
+            return;
+        }
+        if (!user) {
+            console.error('User not authenticated');
+            return;
+        }
+
+        if (isLiked) {
+            unlikeMutation.mutate();
+        } else {
+            likeMutation.mutate();
+        }
     };
 
     if (isLoading) {
         return (
-            <div className="min-h-[70vh] flex items-center justify-center p-8">
-                <div className="glass-card p-12 max-w-md mx-auto text-center">
-                    <div className="relative mb-8">
-                        <div className="w-24 h-24 mx-auto rounded-full gradient-brand opacity-20 animate-pulse"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <ChefHat className="h-12 w-12 text-brand-600 dark:text-brand-400 animate-bounce" />
-                        </div>
-                    </div>
-                    <Loader2 className="h-8 w-8 animate-spin text-brand-600 dark:text-brand-400 mx-auto mb-4" data-testid="loading-spinner" />
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
-                        Loading Recipe
-                    </h3>
-                    <p className="text-surface-600 dark:text-surface-400 animate-pulse">
-                        Preparing something delicious...
-                    </p>
-                    <div className="mt-6 flex justify-center space-x-1">
-                        <div className="w-2 h-2 bg-brand-600 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-brand-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-brand-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    </div>
+            <div className="min-h-[70vh] flex items-center justify-center">
+                <div className="flex items-center gap-4 text-lg text-gray-500 dark:text-gray-400">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+                    <span>Loading delicious recipe...</span>
                 </div>
             </div>
         );
@@ -74,31 +105,29 @@ export const RecipeDetail: React.FC = () => {
 
     if (error || !recipe) {
         return (
-            <div className="min-h-[70vh] flex flex-col items-center justify-center p-8">
-                <div className="glass-card p-12 max-w-lg mx-auto text-center">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-error-100 dark:bg-error-950 flex items-center justify-center">
-                        <AlertCircle className="h-10 w-10 text-error-600 dark:text-error-400" />
+            <div className="min-h-[70vh] flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md mx-auto">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50">
+                        <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
                     </div>
-                    <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-3">
-                        Recipe Not Found
+                    <h3 className="mt-5 text-2xl font-bold text-gray-900 dark:text-white">
+                        Oops! Recipe Not Found
                     </h3>
-                    <p className="text-surface-600 dark:text-surface-400 mb-8 leading-relaxed">
-                        The recipe you're looking for doesn't exist or has been removed from our kitchen.
+                    <p className="mt-2 text-base text-gray-600 dark:text-gray-400">
+                        The recipe you're looking for seems to have vanished from our kitchen.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            to="/recipes"
-                            className="btn btn-primary flex items-center justify-center gap-2"
-                        >
-                            <ChefHat className="h-4 w-4" />
-                            Browse Recipes
+                    <div className="mt-6 flex justify-center gap-4">
+                        <Link to="/recipes">
+                            <Button variant="primary">
+                                <ChefHat className="mr-2 h-5 w-5" />
+                                Browse Recipes
+                            </Button>
                         </Link>
-                        <Link
-                            to="/"
-                            className="btn btn-ghost flex items-center justify-center gap-2"
-                        >
-                            <Home className="h-4 w-4" />
-                            Home
+                        <Link to="/">
+                            <Button variant="outline">
+                                <Home className="mr-2 h-5 w-5" />
+                                Go Home
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -107,33 +136,33 @@ export const RecipeDetail: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-brand-50/30 to-accent-50/30 dark:from-surface-900 dark:to-surface-950">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="animate-fade-in" data-testid="recipe-detail-root">
-                    <RecipeDetailHeader
-                        recipe={recipe}
-                        user={user}
-                        isLiked={isLiked}
-                        onLikeToggle={handleLikeToggle}
-                        onDelete={handleDelete}
-                    />
+        <PageTransitionScale>
+            <div className="bg-surface-900 text-surface-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+                    <div className="space-y-8">
+                        <RecipeDetailHeader
+                            recipe={recipe}
+                            user={user}
+                            isLiked={isLiked}
+                            onLikeToggle={handleLikeToggle}
+                            onDelete={handleDelete}
+                        />
 
-                    <RecipeDetailImage recipe={recipe} />
+                        <RecipeDetailImage recipe={recipe} />
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                        <div className="lg:col-span-2 space-y-8">
-                            <RecipeDetailInstructions recipe={recipe} />
-                        </div>
-                        <div className="space-y-6">
-                            <RecipeDetailInfo recipe={recipe} />
-                            <RecipeDetailIngredients recipe={recipe} />
-                            <RecipeDetailTags recipe={recipe} />
+                        {/* Main recipe content in a two-column layout */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-8">
+                            <div className="lg:col-span-2 space-y-8">
+                                <RecipeDetailInstructions recipe={recipe} />
+                                <RecipeDetailRelated />
+                            </div>
+                            <div className="lg:col-span-1 space-y-8">
+                                <RecipeDetailSidebar recipe={recipe} />
+                            </div>
                         </div>
                     </div>
-
-                    <RecipeDetailRelated />
                 </div>
             </div>
-        </div>
+        </PageTransitionScale>
     );
 }; 

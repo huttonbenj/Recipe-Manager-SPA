@@ -8,12 +8,10 @@ import {
     Star, ChevronRight, Bookmark,
     Utensils, Award, Leaf, TrendingUp, BookOpen
 } from 'lucide-react';
-import { DashboardStats } from './DashboardStats';
 import { DashboardInsights } from './DashboardInsights';
 import { DashboardActivity } from './DashboardActivity';
 
 // Memoized components for better performance
-const MemoizedDashboardStats = React.memo(DashboardStats);
 const MemoizedDashboardInsights = React.memo(DashboardInsights);
 const MemoizedDashboardActivity = React.memo(DashboardActivity);
 
@@ -36,19 +34,19 @@ export const Dashboard: React.FC = () => {
         communityRecipes,
         activities,
         isLoading,
+        userStats,
+        statsLoading,
         isFavorite,
         toggleFavorite
     } = useDashboard();
 
-    // Memoized stats data
+    // Use stats from API or fallback to calculated values
     const stats = React.useMemo(() => ({
-        totalRecipes: userRecipes.length,
-        totalLikes: userRecipes.reduce((acc, recipe) => acc + ((recipe as unknown as RecipeWithAnalytics).likes_count || 0), 0),
-        averageRating: userRecipes.length > 0
-            ? userRecipes.reduce((acc, recipe) => acc + ((recipe as unknown as RecipeWithAnalytics).rating || 0), 0) / userRecipes.length
-            : 0,
-        totalViews: userRecipes.reduce((acc, recipe) => acc + ((recipe as unknown as RecipeWithAnalytics).views_count || 0), 0),
-    }), [userRecipes]);
+        totalRecipes: userStats?.totalRecipes || userRecipes.length,
+        totalLikes: userStats?.totalLikes || 0,
+        averageRating: userStats?.averageRating || 0,
+        totalViews: userStats?.totalViews || 0,
+    }), [userStats, userRecipes.length]);
 
     // Memoized categories data with improved icons
     const categories = React.useMemo(() => [
@@ -165,7 +163,13 @@ export const Dashboard: React.FC = () => {
                                         <Heart className="h-5 w-5 text-rose-600 dark:text-rose-400" />
                                     </div>
                                     <div>
-                                        <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors duration-300">{stats.totalLikes}</div>
+                                        <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors duration-300">
+                                            {statsLoading ? (
+                                                <div className="w-8 h-8 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
+                                            ) : (
+                                                stats.totalLikes
+                                            )}
+                                        </div>
                                         <div className="text-xs text-surface-600 dark:text-surface-400">Total Likes</div>
                                     </div>
                                 </div>
@@ -236,7 +240,7 @@ export const Dashboard: React.FC = () => {
                                             aria-label={`View recipe: ${recipe.title}`}
                                         >
                                             <img
-                                                src={recipe.image_url || 'https://via.placeholder.com/300x200?text=No+Image'}
+                                                src={recipe.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=200&fit=crop&crop=center'}
                                                 alt={recipe.title}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                 loading="lazy"
@@ -314,7 +318,7 @@ export const Dashboard: React.FC = () => {
                                         >
                                             <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-105">
                                                 <img
-                                                    src={recipe.image_url || 'https://via.placeholder.com/300x200?text=No+Image'}
+                                                    src={recipe.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150&h=150&fit=crop&crop=center'}
                                                     alt={recipe.title}
                                                     className="w-full h-full object-cover"
                                                     loading="lazy"
