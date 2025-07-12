@@ -33,9 +33,9 @@ export type UserRegistration = z.infer<typeof UserRegistrationSchema>;
 // User Stats Schema
 export const UserStatsSchema = z.object({
   totalRecipes: z.number().int().min(0),
-  totalLikes: z.number().int().min(0),
-  totalViews: z.number().int().min(0),
-  averageRating: z.number().min(0).max(5),
+  totalFavorites: z.number().int().min(0), // Recipes the user has liked
+  totalSaved: z.number().int().min(0), // Recipes the user has saved
+  totalViews: z.number().int().min(0), // Keep this for now as 4th stat
   recipesByCategory: z.array(z.object({
     category: z.string(),
     count: z.number().int().min(0)

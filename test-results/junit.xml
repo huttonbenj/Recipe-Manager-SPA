@@ -1,51 +1,815 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="23" failures="0" errors="0" time="0.047362084">
-    <testsuite name="packages/client/src/__tests__/components/ui/Button.test.tsx" timestamp="2025-07-12T15:18:27.107Z" hostname="Bens-MacBook-Pro.local" tests="23" failures="0" errors="0" skipped="0" time="0.047362084">
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render button with text" time="0.015330667">
+<testsuites name="vitest tests" tests="19" failures="8" errors="0" time="0.218329208">
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx" timestamp="2025-07-12T16:26:09.137Z" hostname="Bens-MacBook-Pro.local" tests="2" failures="2" errors="0" skipped="0" time="0.003467333">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx" name="Dashboard &gt; renders all dashboard sections and passes props" time="0.001355542">
+            <failure message="Cannot read properties of undefined (reading &apos;mockReset&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;mockReset&apos;)
+ ❯ packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx:41:37
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render button with custom type" time="0.002628875">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx" name="Dashboard &gt; shows loading skeletons when loading" time="0.00024275">
+            <failure message="Cannot read properties of undefined (reading &apos;mockReset&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;mockReset&apos;)
+ ❯ packages/client/src/__tests__/components/features/dashboard/Dashboard.test.tsx:41:37
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render disabled button" time="0.002154667">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardCommunityRecipes.test.tsx" timestamp="2025-07-12T16:26:09.181Z" hostname="Bens-MacBook-Pro.local" tests="3" failures="3" errors="0" skipped="0" time="0.028890583">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardCommunityRecipes.test.tsx" name="DashboardCommunityRecipes &gt; shows loading skeletons when loading" time="0.018724458">
+            <system-err>
+The above error occurred in the &lt;DashboardCommunityRecipes&gt; component:
+
+    at DashboardCommunityRecipes (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:10:38)
+    at QueryClientProvider (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at AuthProvider (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/contexts/AuthProvider.tsx:14:25)
+    at Router (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at TestProviders (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/__tests__/utils/test-utils.tsx:26:26)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="Cannot read properties of undefined (reading &apos;length&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;length&apos;)
+ ❯ DashboardCommunityRecipes packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:40:34
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:14
+ ❯ HTMLUnknownElement.#callDispatchEventListeners node_modules/happy-dom/src/event/EventTarget.ts:289:42
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:136:35
+ ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:198:33
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:129:38
+ ❯ Object.invokeGuardedCallbackDev node_modules/react-dom/cjs/react-dom.development.js:4213:16
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render primary variant" time="0.001673291">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardCommunityRecipes.test.tsx" name="DashboardCommunityRecipes &gt; renders community recipes when present" time="0.002795417">
+            <system-err>
+The above error occurred in the &lt;DashboardCommunityRecipes&gt; component:
+
+    at DashboardCommunityRecipes (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:10:38)
+    at QueryClientProvider (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at AuthProvider (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/contexts/AuthProvider.tsx:14:25)
+    at Router (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at TestProviders (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/__tests__/utils/test-utils.tsx:26:26)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="Cannot read properties of undefined (reading &apos;length&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;length&apos;)
+ ❯ DashboardCommunityRecipes packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:40:34
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:14
+ ❯ HTMLUnknownElement.#callDispatchEventListeners node_modules/happy-dom/src/event/EventTarget.ts:289:42
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:136:35
+ ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:198:33
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:129:38
+ ❯ Object.invokeGuardedCallbackDev node_modules/react-dom/cjs/react-dom.development.js:4213:16
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render secondary variant" time="0.002342709">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardCommunityRecipes.test.tsx" name="DashboardCommunityRecipes &gt; shows empty state when no recipes" time="0.00451825">
+            <system-err>
+The above error occurred in the &lt;DashboardCommunityRecipes&gt; component:
+
+    at DashboardCommunityRecipes (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:10:38)
+    at QueryClientProvider (file:///Users/benh/GitHub/Recipe-Manager-SPA/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at AuthProvider (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/contexts/AuthProvider.tsx:14:25)
+    at Router (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/benh/GitHub/Recipe-Manager-SPA/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at TestProviders (/Users/benh/GitHub/Recipe-Manager-SPA/packages/client/src/__tests__/utils/test-utils.tsx:26:26)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="Cannot read properties of undefined (reading &apos;length&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;length&apos;)
+ ❯ DashboardCommunityRecipes packages/client/src/components/features/dashboard/DashboardCommunityRecipes.tsx:40:34
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ HTMLUnknownElement.callCallback node_modules/react-dom/cjs/react-dom.development.js:4164:14
+ ❯ HTMLUnknownElement.#callDispatchEventListeners node_modules/happy-dom/src/event/EventTarget.ts:289:42
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:136:35
+ ❯ HTMLUnknownElement.#goThroughDispatchEventPhases node_modules/happy-dom/src/event/EventTarget.ts:198:33
+ ❯ HTMLUnknownElement.dispatchEvent node_modules/happy-dom/src/event/EventTarget.ts:129:38
+ ❯ Object.invokeGuardedCallbackDev node_modules/react-dom/cjs/react-dom.development.js:4213:16
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render danger variant" time="0.001017666">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" timestamp="2025-07-12T16:26:09.194Z" hostname="Bens-MacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.066287042">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders greeting and user name" time="0.035691083">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render ghost variant" time="0.001182958">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders default user name when no user provided" time="0.004929791">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render small size" time="0.001147625">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders action buttons" time="0.008024084">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render medium size (default)" time="0.0022635">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders correct links for action buttons" time="0.002910209">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render large size" time="0.00095725">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders formatted date" time="0.004383667">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should render loading state" time="0.002704">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardHeader.test.tsx" name="DashboardHeader &gt; renders chef icon" time="0.007930333">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should show loading spinner when loading" time="0.001200583">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardQuickActions.test.tsx" timestamp="2025-07-12T16:26:09.200Z" hostname="Bens-MacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.040562667">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardQuickActions.test.tsx" name="DashboardQuickActions &gt; renders all quick actions" time="0.021921625">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should not be clickable when loading" time="0.001704542">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardQuickActions.test.tsx" name="DashboardQuickActions &gt; renders correct links for actions" time="0.009023459">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Icons &gt; should render with left icon" time="0.000653916">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardQuickActions.test.tsx" name="DashboardQuickActions &gt; renders action descriptions" time="0.007485167">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Icons &gt; should render with right icon" time="0.000509416">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardStats.test.tsx" timestamp="2025-07-12T16:26:09.203Z" hostname="Bens-MacBook-Pro.local" tests="2" failures="0" errors="0" skipped="0" time="0.036812625">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardStats.test.tsx" name="DashboardStats &gt; renders all stat cards" time="0.026118917">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Event Handling &gt; should handle click events" time="0.002080583">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardStats.test.tsx" name="DashboardStats &gt; shows loading skeletons when statsLoading" time="0.008555958">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Event Handling &gt; should not handle click events when disabled" time="0.000772833">
+    </testsuite>
+    <testsuite name="packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx" timestamp="2025-07-12T16:26:09.207Z" hostname="Bens-MacBook-Pro.local" tests="3" failures="3" errors="0" skipped="0" time="0.042308958">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx" name="DashboardUserRecipes &gt; shows loading skeletons when loading" time="0.029295417">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+            <failure message="Unable to find an element with the text: , which matches selector &apos;.animate-pulse&apos;. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m&lt;body&gt;[39m
+  [36m&lt;div&gt;[39m
+    [36m&lt;section[39m
+      [33mclass[39m=[32m&quot;bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl border border-surface-200/50 dark:border-surface-800/50 p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-300&quot;[39m
+    [36m&gt;[39m
+      [36m&lt;div[39m
+        [33mclass[39m=[32m&quot;flex items-center justify-between mb-6&quot;[39m
+      [36m&gt;[39m
+        [36m&lt;div[39m
+          [33mclass[39m=[32m&quot;flex items-center gap-3&quot;[39m
+        [36m&gt;[39m
+          [36m&lt;div[39m
+            [33mclass[39m=[32m&quot;w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;svg[39m
+              [33mclass[39m=[32m&quot;lucide lucide-chef-hat h-5 w-5 text-white&quot;[39m
+              [33mfill[39m=[32m&quot;none&quot;[39m
+              [33mheight[39m=[32m&quot;24&quot;[39m
+              [33mstroke[39m=[32m&quot;currentColor&quot;[39m
+              [33mstroke-linecap[39m=[32m&quot;round&quot;[39m
+              [33mstroke-linejoin[39m=[32m&quot;round&quot;[39m
+              [33mstroke-width[39m=[32m&quot;2&quot;[39m
+              [33mviewBox[39m=[32m&quot;0 0 24 24&quot;[39m
+              [33mwidth[39m=[32m&quot;24&quot;[39m
+              [33mxmlns[39m=[32m&quot;http://www.w3.org/2000/svg&quot;[39m
+            [36m&gt;[39m
+              [36m&lt;path[39m
+                [33md[39m=[32m&quot;M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z&quot;[39m
+              [36m/&gt;[39m
+              [36m&lt;path[39m
+                [33md[39m=[32m&quot;M6 17h12&quot;[39m
+              [36m/&gt;[39m
+            [36m&lt;/svg&gt;[39m
+          [36m&lt;/div&gt;[39m
+          [36m&lt;h2[39m
+            [33mclass[39m=[32m&quot;text-xl font-semibold text-surface-900 dark:text-white&quot;[39m
+          [36m&gt;[39m
+            [0mYour Recipes[0m
+          [36m&lt;/h2&gt;[39m
+        [36m&lt;/div&gt;[39m
+        [36m&lt;a[39m
+          [33maria-label[39m=[32m&quot;View all your recipes&quot;[39m
+          [33mclass[39m=[32m&quot;flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 transition-colors duration-200 hover:underline&quot;[39m
+          [33mhref[39m=[32m&quot;/recipes?filter=my-recipes&quot;[39m
+        [36m&gt;[39m
+          [0mView All[0m
+          [36m&lt;svg[39m
+            [33mclass[39m=[32m&quot;lucide lucide-chevron-right h-4 w-4&quot;[39m
+            [33mfill[39m=[32m&quot;none&quot;[39m
+            [33mheight[39m=[32m&quot;24&quot;[39m
+            [33mstroke[39m=[32m&quot;currentColor&quot;[39m
+            [33mstroke-linecap[39m=[32m&quot;round&quot;[39m
+            [33mstroke-linejoin[39m=[32m&quot;round&quot;[39m
+            [33mstroke-width[39m=[32m&quot;2&quot;[39m
+            [33mviewBox[39m=[32m&quot;0 0 24 24&quot;[39m
+            [33mwidth[39m=[32m&quot;24&quot;[39m
+            [33mxmlns[39m=[32m&quot;http://www.w3.org/2000/svg&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;path[39m
+              [33md[39m=[32m&quot;m9 18 6-6-6-6&quot;[39m
+            [36m/&gt;[39m
+          [36m&lt;/svg&gt;[39m
+        [36m&lt;/a&gt;[39m
+      [36m&lt;/div&gt;[39m
+      [36m&lt;div[39m
+        [33mclass[39m=[32m&quot;text-center py-12&quot;[39m
+      [36m&gt;[39m
+        [36m&lt;p[39m
+          [33mclass[39m=[32m&quot;text-surface-600 dark:text-surface-400&quot;[39m
+        [36m&gt;[39m
+          [0mYou haven&apos;t created any recipes yet.[0m
+        [36m&lt;/p&gt;[39m
+        [36m&lt;a[39m
+          [33mclass[39m=[32m&quot;text-brand-600 dark:text-brand-400 font-medium hover:underline mt-2 inline-block&quot;[39m
+          [33mhref[39m=[32m&quot;/recipes/new&quot;[39m
+        [36m&gt;[39m
+          [0mCreate your first recipe[0m
+        [36m&lt;/a&gt;[39m
+      [36m&lt;/div&gt;[39m
+    [36m&lt;/section&gt;[39m
+  [36m&lt;/div&gt;[39m
+[36m&lt;/body&gt;[39m" type="TestingLibraryElementError">
+TestingLibraryElementError: Unable to find an element with the text: , which matches selector &apos;.animate-pulse&apos;. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;section
+      class=&quot;bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl border border-surface-200/50 dark:border-surface-800/50 p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-300&quot;
+    &gt;
+      &lt;div
+        class=&quot;flex items-center justify-between mb-6&quot;
+      &gt;
+        &lt;div
+          class=&quot;flex items-center gap-3&quot;
+        &gt;
+          &lt;div
+            class=&quot;w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-chef-hat h-5 w-5 text-white&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;path
+                d=&quot;M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z&quot;
+              /&gt;
+              &lt;path
+                d=&quot;M6 17h12&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/div&gt;
+          &lt;h2
+            class=&quot;text-xl font-semibold text-surface-900 dark:text-white&quot;
+          &gt;
+            Your Recipes
+          &lt;/h2&gt;
+        &lt;/div&gt;
+        &lt;a
+          aria-label=&quot;View all your recipes&quot;
+          class=&quot;flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 transition-colors duration-200 hover:underline&quot;
+          href=&quot;/recipes?filter=my-recipes&quot;
+        &gt;
+          View All
+          &lt;svg
+            class=&quot;lucide lucide-chevron-right h-4 w-4&quot;
+            fill=&quot;none&quot;
+            height=&quot;24&quot;
+            stroke=&quot;currentColor&quot;
+            stroke-linecap=&quot;round&quot;
+            stroke-linejoin=&quot;round&quot;
+            stroke-width=&quot;2&quot;
+            viewBox=&quot;0 0 24 24&quot;
+            width=&quot;24&quot;
+            xmlns=&quot;http://www.w3.org/2000/svg&quot;
+          &gt;
+            &lt;path
+              d=&quot;m9 18 6-6-6-6&quot;
+            /&gt;
+          &lt;/svg&gt;
+        &lt;/a&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;text-center py-12&quot;
+      &gt;
+        &lt;p
+          class=&quot;text-surface-600 dark:text-surface-400&quot;
+        &gt;
+          You haven&apos;t created any recipes yet.
+        &lt;/p&gt;
+        &lt;a
+          class=&quot;text-brand-600 dark:text-brand-400 font-medium hover:underline mt-2 inline-block&quot;
+          href=&quot;/recipes/new&quot;
+        &gt;
+          Create your first recipe
+        &lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx:25:23
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept custom className" time="0.000687708">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx" name="DashboardUserRecipes &gt; renders user recipes when present" time="0.006967334">
+            <failure message="Unable to find an element with the text: /easy/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m&lt;body&gt;[39m
+  [36m&lt;div&gt;[39m
+    [36m&lt;section[39m
+      [33mclass[39m=[32m&quot;bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl border border-surface-200/50 dark:border-surface-800/50 p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-300&quot;[39m
+    [36m&gt;[39m
+      [36m&lt;div[39m
+        [33mclass[39m=[32m&quot;flex items-center justify-between mb-6&quot;[39m
+      [36m&gt;[39m
+        [36m&lt;div[39m
+          [33mclass[39m=[32m&quot;flex items-center gap-3&quot;[39m
+        [36m&gt;[39m
+          [36m&lt;div[39m
+            [33mclass[39m=[32m&quot;w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;svg[39m
+              [33mclass[39m=[32m&quot;lucide lucide-chef-hat h-5 w-5 text-white&quot;[39m
+              [33mfill[39m=[32m&quot;none&quot;[39m
+              [33mheight[39m=[32m&quot;24&quot;[39m
+              [33mstroke[39m=[32m&quot;currentColor&quot;[39m
+              [33mstroke-linecap[39m=[32m&quot;round&quot;[39m
+              [33mstroke-linejoin[39m=[32m&quot;round&quot;[39m
+              [33mstroke-width[39m=[32m&quot;2&quot;[39m
+              [33mviewBox[39m=[32m&quot;0 0 24 24&quot;[39m
+              [33mwidth[39m=[32m&quot;24&quot;[39m
+              [33mxmlns[39m=[32m&quot;http://www.w3.org/2000/svg&quot;[39m
+            [36m&gt;[39m
+              [36m&lt;path[39m
+                [33md[39m=[32m&quot;M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z&quot;[39m
+              [36m/&gt;[39m
+              [36m&lt;path[39m
+                [33md[39m=[32m&quot;M6 17h12&quot;[39m
+              [36m/&gt;[39m
+            [36m&lt;/svg&gt;[39m
+          [36m&lt;/div&gt;[39m
+          [36m&lt;h2[39m
+            [33mclass[39m=[32m&quot;text-xl font-semibold text-surface-900 dark:text-white&quot;[39m
+          [36m&gt;[39m
+            [0mYour Recipes[0m
+          [36m&lt;/h2&gt;[39m
+        [36m&lt;/div&gt;[39m
+        [36m&lt;a[39m
+          [33maria-label[39m=[32m&quot;View all your recipes&quot;[39m
+          [33mclass[39m=[32m&quot;flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 transition-colors duration-200 hover:underline&quot;[39m
+          [33mhref[39m=[32m&quot;/recipes?filter=my-recipes&quot;[39m
+        [36m&gt;[39m
+          [0mView All[0m
+          [36m&lt;svg[39m
+            [33mclass[39m=[32m&quot;lucide lucide-chevron-right h-4 w-4&quot;[39m
+            [33mfill[39m=[32m&quot;none&quot;[39m
+            [33mheight[39m=[32m&quot;24&quot;[39m
+            [33mstroke[39m=[32m&quot;currentColor&quot;[39m
+            [33mstroke-linecap[39m=[32m&quot;round&quot;[39m
+            [33mstroke-linejoin[39m=[32m&quot;round&quot;[39m
+            [33mstroke-width[39m=[32m&quot;2&quot;[39m
+            [33mviewBox[39m=[32m&quot;0 0 24 24&quot;[39m
+            [33mwidth[39m=[32m&quot;24&quot;[39m
+            [33mxmlns[39m=[32m&quot;http://www.w3.org/2000/svg&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;path[39m
+              [33md[39m=[32m&quot;m9 18 6-6-6-6&quot;[39m
+            [36m/&gt;[39m
+          [36m&lt;/svg&gt;[39m
+        [36m&lt;/a&gt;[39m
+      [36m&lt;/div&gt;[39m
+      [36m&lt;div[39m
+        [33mclass[39m=[32m&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4&quot;[39m
+      [36m&gt;[39m
+        [36m&lt;a[39m
+          [33maria-label[39m=[32m&quot;View recipe: Test Recipe&quot;[39m
+          [33mclass[39m=[32m&quot;group relative overflow-hidden rounded-xl aspect-[4/3] shadow-sm hover:shadow-lg transition-all duration-300&quot;[39m
+          [33mhref[39m=[32m&quot;/recipes/1&quot;[39m
+          [33mstyle[39m=[32m&quot;animation-delay: 0ms;&quot;[39m
+        [36m&gt;[39m
+          [36m&lt;img[39m
+            [33malt[39m=[32m&quot;Test Recipe&quot;[39m
+            [33mclass[39m=[32m&quot;w-full h-full object-cover group-hover:scale-105 transition-transform duration-500&quot;[39m
+            [33mloading[39m=[32m&quot;lazy&quot;[39m
+            [33msrc[39m=[32m&quot;https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&amp;h=200&amp;fit=crop&amp;crop=center&quot;[39m
+          [36m/&gt;[39m
+          [36m&lt;div[39m
+            [33mclass[39m=[32m&quot;absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4 opacity-90 group-hover:opacity-100 transition-opacity duration-300&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;h3[39m
+              [33mclass[39m=[32m&quot;text-white font-semibold line-clamp-1 group-hover:text-brand-300 transition-colors duration-300&quot;[39m
+            [36m&gt;[39m
+              [0mTest Recipe[0m
+            [36m&lt;/h3&gt;[39m
+            [36m&lt;div[39m
+              [33mclass[39m=[32m&quot;flex items-center gap-2 mt-1&quot;[39m
+            [36m&gt;[39m
+              [36m&lt;span[39m
+                [33mclass[39m=[32m&quot;text-xs text-white/80 flex items-center gap-1&quot;[39m
+              [36m&gt;[39m
+                [36m&lt;svg[39m
+                  [33mclass[39m=[32m&quot;lucide lucide-clock h-3 w-3&quot;[39m
+                  [33mfill[39m=[32m&quot;none&quot;[39m
+                  [33mheight[39m=[32m&quot;24&quot;[39m
+                  [33mstroke[39m=[32m&quot;currentColor&quot;[39m
+                  [33mstroke-linecap[39m=[32m&quot;round&quot;[39m
+                  [33mstroke-linejoin[39m=[32m&quot;round&quot;[39m
+                  [33mstroke-width[39m=[32m&quot;2&quot;[39m
+                  [33mviewBox[39m=[32m&quot;0 0 24 24&quot;[39m
+                  [33mwidth[39m=[32m&quot;24&quot;[39m
+                  [33mxmlns[39m=[32m&quot;http://www.w3.org/2000/svg&quot;[39m
+                [36m&gt;[39m
+                  [36m&lt;circle[39m
+                    [33mcx[39m=[32m&quot;12&quot;[39m
+                    [33mcy[39m=[32m&quot;12&quot;[39m
+                    [33mr[39m=[32m&quot;10&quot;[39m
+                  [36m/&gt;[39m
+                  [36m&lt;polyline[39m
+                    [33mpoints[39m=[32m&quot;12 6 12 12 16 14&quot;[39m
+                  [36m/&gt;[39m
+                [36m&lt;/svg&gt;[39m
+                [0m30[0m
+                [0m min[0m
+              [36m&lt;/span&gt;[39m
+              [36m&lt;span[39m
+                [33mclass[39m=[32m&quot;text-xs text-white/80 flex items-center gap-1&quot;[39m
+              [36m&gt;[39m
+                [36m&lt;svg[39m
+                  [33mclass[39m=[32m&quot;lucide lucide-star h-3 w-3 text-amber-400&quot;[39m
+                  [33mfill[39m=[32m&quot;none&quot;[39m
+                  [33mheight[39m=[32m&quot;24&quot;[39m
+                  [33mstroke[39m=[32m&quot;currentColor&quot;[39m
+                  [33mstroke-linecap[39m=[32m&quot;round&quot;[39m
+                  [33mstroke-linejoin[39m=[32m&quot;round&quot;[39m
+                  [33mstroke-width[39m=[32m&quot;2&quot;[39m
+                  [33mviewBox[39m=[32m&quot;0 0 24 24&quot;[39m
+                  [33mwidth[39m=[32m&quot;24&quot;[39m
+                  [33mxmlns[39m=[32m&quot;http://www.w3.org/2000/svg&quot;[39m
+                [36m&gt;[39m
+                  [36m&lt;path[39m
+                    [33md[39m=[32m&quot;M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z&quot;[39m
+                  [36m/&gt;[39m
+                [36m&lt;/svg&gt;[39m
+                [0mN/A[0m
+              [36m&lt;/span&gt;[39m
+            [36m&lt;/div&gt;[39m
+          [36m&lt;/div&gt;[39m
+        [36m&lt;/a&gt;[39m
+      [36m&lt;/div&gt;[39m
+    [36m&lt;/section&gt;[39m
+  [36m&lt;/div&gt;[39m
+[36m&lt;/body&gt;[39m" type="TestingLibraryElementError">
+TestingLibraryElementError: Unable to find an element with the text: /easy/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;section
+      class=&quot;bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl border border-surface-200/50 dark:border-surface-800/50 p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-300&quot;
+    &gt;
+      &lt;div
+        class=&quot;flex items-center justify-between mb-6&quot;
+      &gt;
+        &lt;div
+          class=&quot;flex items-center gap-3&quot;
+        &gt;
+          &lt;div
+            class=&quot;w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-chef-hat h-5 w-5 text-white&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;path
+                d=&quot;M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z&quot;
+              /&gt;
+              &lt;path
+                d=&quot;M6 17h12&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/div&gt;
+          &lt;h2
+            class=&quot;text-xl font-semibold text-surface-900 dark:text-white&quot;
+          &gt;
+            Your Recipes
+          &lt;/h2&gt;
+        &lt;/div&gt;
+        &lt;a
+          aria-label=&quot;View all your recipes&quot;
+          class=&quot;flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 transition-colors duration-200 hover:underline&quot;
+          href=&quot;/recipes?filter=my-recipes&quot;
+        &gt;
+          View All
+          &lt;svg
+            class=&quot;lucide lucide-chevron-right h-4 w-4&quot;
+            fill=&quot;none&quot;
+            height=&quot;24&quot;
+            stroke=&quot;currentColor&quot;
+            stroke-linecap=&quot;round&quot;
+            stroke-linejoin=&quot;round&quot;
+            stroke-width=&quot;2&quot;
+            viewBox=&quot;0 0 24 24&quot;
+            width=&quot;24&quot;
+            xmlns=&quot;http://www.w3.org/2000/svg&quot;
+          &gt;
+            &lt;path
+              d=&quot;m9 18 6-6-6-6&quot;
+            /&gt;
+          &lt;/svg&gt;
+        &lt;/a&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4&quot;
+      &gt;
+        &lt;a
+          aria-label=&quot;View recipe: Test Recipe&quot;
+          class=&quot;group relative overflow-hidden rounded-xl aspect-[4/3] shadow-sm hover:shadow-lg transition-all duration-300&quot;
+          href=&quot;/recipes/1&quot;
+          style=&quot;animation-delay: 0ms;&quot;
+        &gt;
+          &lt;img
+            alt=&quot;Test Recipe&quot;
+            class=&quot;w-full h-full object-cover group-hover:scale-105 transition-transform duration-500&quot;
+            loading=&quot;lazy&quot;
+            src=&quot;https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&amp;h=200&amp;fit=crop&amp;crop=center&quot;
+          /&gt;
+          &lt;div
+            class=&quot;absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4 opacity-90 group-hover:opacity-100 transition-opacity duration-300&quot;
+          &gt;
+            &lt;h3
+              class=&quot;text-white font-semibold line-clamp-1 group-hover:text-brand-300 transition-colors duration-300&quot;
+            &gt;
+              Test Recipe
+            &lt;/h3&gt;
+            &lt;div
+              class=&quot;flex items-center gap-2 mt-1&quot;
+            &gt;
+              &lt;span
+                class=&quot;text-xs text-white/80 flex items-center gap-1&quot;
+              &gt;
+                &lt;svg
+                  class=&quot;lucide lucide-clock h-3 w-3&quot;
+                  fill=&quot;none&quot;
+                  height=&quot;24&quot;
+                  stroke=&quot;currentColor&quot;
+                  stroke-linecap=&quot;round&quot;
+                  stroke-linejoin=&quot;round&quot;
+                  stroke-width=&quot;2&quot;
+                  viewBox=&quot;0 0 24 24&quot;
+                  width=&quot;24&quot;
+                  xmlns=&quot;http://www.w3.org/2000/svg&quot;
+                &gt;
+                  &lt;circle
+                    cx=&quot;12&quot;
+                    cy=&quot;12&quot;
+                    r=&quot;10&quot;
+                  /&gt;
+                  &lt;polyline
+                    points=&quot;12 6 12 12 16 14&quot;
+                  /&gt;
+                &lt;/svg&gt;
+                30
+                 min
+              &lt;/span&gt;
+              &lt;span
+                class=&quot;text-xs text-white/80 flex items-center gap-1&quot;
+              &gt;
+                &lt;svg
+                  class=&quot;lucide lucide-star h-3 w-3 text-amber-400&quot;
+                  fill=&quot;none&quot;
+                  height=&quot;24&quot;
+                  stroke=&quot;currentColor&quot;
+                  stroke-linecap=&quot;round&quot;
+                  stroke-linejoin=&quot;round&quot;
+                  stroke-width=&quot;2&quot;
+                  viewBox=&quot;0 0 24 24&quot;
+                  width=&quot;24&quot;
+                  xmlns=&quot;http://www.w3.org/2000/svg&quot;
+                &gt;
+                  &lt;path
+                    d=&quot;M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z&quot;
+                  /&gt;
+                &lt;/svg&gt;
+                N/A
+              &lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx:31:23
+            </failure>
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept custom data attributes" time="0.000424166">
-        </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept ARIA attributes" time="0.000642917">
-        </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should have proper role" time="0.000618708">
-        </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should be focusable" time="0.001124583">
-        </testcase>
-        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should not be focusable when disabled" time="0.000720542">
+        <testcase classname="packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx" name="DashboardUserRecipes &gt; shows empty state when no recipes" time="0.003596708">
+            <failure message="Unable to find an element with the text: /no recipes yet/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m&lt;body&gt;[39m
+  [36m&lt;div&gt;[39m
+    [36m&lt;section[39m
+      [33mclass[39m=[32m&quot;bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl border border-surface-200/50 dark:border-surface-800/50 p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-300&quot;[39m
+    [36m&gt;[39m
+      [36m&lt;div[39m
+        [33mclass[39m=[32m&quot;flex items-center justify-between mb-6&quot;[39m
+      [36m&gt;[39m
+        [36m&lt;div[39m
+          [33mclass[39m=[32m&quot;flex items-center gap-3&quot;[39m
+        [36m&gt;[39m
+          [36m&lt;div[39m
+            [33mclass[39m=[32m&quot;w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;svg[39m
+              [33mclass[39m=[32m&quot;lucide lucide-chef-hat h-5 w-5 text-white&quot;[39m
+              [33mfill[39m=[32m&quot;none&quot;[39m
+              [33mheight[39m=[32m&quot;24&quot;[39m
+              [33mstroke[39m=[32m&quot;currentColor&quot;[39m
+              [33mstroke-linecap[39m=[32m&quot;round&quot;[39m
+              [33mstroke-linejoin[39m=[32m&quot;round&quot;[39m
+              [33mstroke-width[39m=[32m&quot;2&quot;[39m
+              [33mviewBox[39m=[32m&quot;0 0 24 24&quot;[39m
+              [33mwidth[39m=[32m&quot;24&quot;[39m
+              [33mxmlns[39m=[32m&quot;http://www.w3.org/2000/svg&quot;[39m
+            [36m&gt;[39m
+              [36m&lt;path[39m
+                [33md[39m=[32m&quot;M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z&quot;[39m
+              [36m/&gt;[39m
+              [36m&lt;path[39m
+                [33md[39m=[32m&quot;M6 17h12&quot;[39m
+              [36m/&gt;[39m
+            [36m&lt;/svg&gt;[39m
+          [36m&lt;/div&gt;[39m
+          [36m&lt;h2[39m
+            [33mclass[39m=[32m&quot;text-xl font-semibold text-surface-900 dark:text-white&quot;[39m
+          [36m&gt;[39m
+            [0mYour Recipes[0m
+          [36m&lt;/h2&gt;[39m
+        [36m&lt;/div&gt;[39m
+        [36m&lt;a[39m
+          [33maria-label[39m=[32m&quot;View all your recipes&quot;[39m
+          [33mclass[39m=[32m&quot;flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 transition-colors duration-200 hover:underline&quot;[39m
+          [33mhref[39m=[32m&quot;/recipes?filter=my-recipes&quot;[39m
+        [36m&gt;[39m
+          [0mView All[0m
+          [36m&lt;svg[39m
+            [33mclass[39m=[32m&quot;lucide lucide-chevron-right h-4 w-4&quot;[39m
+            [33mfill[39m=[32m&quot;none&quot;[39m
+            [33mheight[39m=[32m&quot;24&quot;[39m
+            [33mstroke[39m=[32m&quot;currentColor&quot;[39m
+            [33mstroke-linecap[39m=[32m&quot;round&quot;[39m
+            [33mstroke-linejoin[39m=[32m&quot;round&quot;[39m
+            [33mstroke-width[39m=[32m&quot;2&quot;[39m
+            [33mviewBox[39m=[32m&quot;0 0 24 24&quot;[39m
+            [33mwidth[39m=[32m&quot;24&quot;[39m
+            [33mxmlns[39m=[32m&quot;http://www.w3.org/2000/svg&quot;[39m
+          [36m&gt;[39m
+            [36m&lt;path[39m
+              [33md[39m=[32m&quot;m9 18 6-6-6-6&quot;[39m
+            [36m/&gt;[39m
+          [36m&lt;/svg&gt;[39m
+        [36m&lt;/a&gt;[39m
+      [36m&lt;/div&gt;[39m
+      [36m&lt;div[39m
+        [33mclass[39m=[32m&quot;text-center py-12&quot;[39m
+      [36m&gt;[39m
+        [36m&lt;p[39m
+          [33mclass[39m=[32m&quot;text-surface-600 dark:text-surface-400&quot;[39m
+        [36m&gt;[39m
+          [0mYou haven&apos;t created any recipes yet.[0m
+        [36m&lt;/p&gt;[39m
+        [36m&lt;a[39m
+          [33mclass[39m=[32m&quot;text-brand-600 dark:text-brand-400 font-medium hover:underline mt-2 inline-block&quot;[39m
+          [33mhref[39m=[32m&quot;/recipes/new&quot;[39m
+        [36m&gt;[39m
+          [0mCreate your first recipe[0m
+        [36m&lt;/a&gt;[39m
+      [36m&lt;/div&gt;[39m
+    [36m&lt;/section&gt;[39m
+  [36m&lt;/div&gt;[39m
+[36m&lt;/body&gt;[39m" type="TestingLibraryElementError">
+TestingLibraryElementError: Unable to find an element with the text: /no recipes yet/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;section
+      class=&quot;bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl border border-surface-200/50 dark:border-surface-800/50 p-6 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-300&quot;
+    &gt;
+      &lt;div
+        class=&quot;flex items-center justify-between mb-6&quot;
+      &gt;
+        &lt;div
+          class=&quot;flex items-center gap-3&quot;
+        &gt;
+          &lt;div
+            class=&quot;w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105&quot;
+          &gt;
+            &lt;svg
+              class=&quot;lucide lucide-chef-hat h-5 w-5 text-white&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;path
+                d=&quot;M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z&quot;
+              /&gt;
+              &lt;path
+                d=&quot;M6 17h12&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/div&gt;
+          &lt;h2
+            class=&quot;text-xl font-semibold text-surface-900 dark:text-white&quot;
+          &gt;
+            Your Recipes
+          &lt;/h2&gt;
+        &lt;/div&gt;
+        &lt;a
+          aria-label=&quot;View all your recipes&quot;
+          class=&quot;flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 transition-colors duration-200 hover:underline&quot;
+          href=&quot;/recipes?filter=my-recipes&quot;
+        &gt;
+          View All
+          &lt;svg
+            class=&quot;lucide lucide-chevron-right h-4 w-4&quot;
+            fill=&quot;none&quot;
+            height=&quot;24&quot;
+            stroke=&quot;currentColor&quot;
+            stroke-linecap=&quot;round&quot;
+            stroke-linejoin=&quot;round&quot;
+            stroke-width=&quot;2&quot;
+            viewBox=&quot;0 0 24 24&quot;
+            width=&quot;24&quot;
+            xmlns=&quot;http://www.w3.org/2000/svg&quot;
+          &gt;
+            &lt;path
+              d=&quot;m9 18 6-6-6-6&quot;
+            /&gt;
+          &lt;/svg&gt;
+        &lt;/a&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;text-center py-12&quot;
+      &gt;
+        &lt;p
+          class=&quot;text-surface-600 dark:text-surface-400&quot;
+        &gt;
+          You haven&apos;t created any recipes yet.
+        &lt;/p&gt;
+        &lt;a
+          class=&quot;text-brand-600 dark:text-brand-400 font-medium hover:underline mt-2 inline-block&quot;
+          href=&quot;/recipes/new&quot;
+        &gt;
+          Create your first recipe
+        &lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ packages/client/src/__tests__/components/features/dashboard/DashboardUserRecipes.test.tsx:37:23
+            </failure>
         </testcase>
     </testsuite>
 </testsuites>

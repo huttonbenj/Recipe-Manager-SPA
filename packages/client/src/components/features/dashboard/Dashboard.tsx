@@ -6,7 +6,7 @@ import { DashboardActivity } from './DashboardActivity';
 import { DashboardInsights } from './DashboardInsights';
 import {
     ChefHat, BookOpen, Heart, Star, TrendingUp, PlusCircle, Search,
-    Utensils, Leaf, Clock, Award, ChevronRight, Sparkles, Zap, Coffee, Cake
+    Utensils, Leaf, Clock, Award, ChevronRight, Sparkles, Zap, Coffee, Cake, Bookmark, Eye
 } from 'lucide-react';
 
 // Memoized components for better performance
@@ -37,8 +37,8 @@ export const Dashboard: React.FC = () => {
     // Use stats from API or fallback to calculated values
     const stats = React.useMemo(() => ({
         totalRecipes: userStats?.totalRecipes || userRecipes.length,
-        totalLikes: userStats?.totalLikes || 0,
-        averageRating: userStats?.averageRating || 0,
+        totalFavorites: userStats?.totalFavorites || 0,
+        totalSaved: userStats?.totalSaved || 0,
         totalViews: userStats?.totalViews || 0,
     }), [userStats, userRecipes.length]);
 
@@ -143,10 +143,14 @@ export const Dashboard: React.FC = () => {
                     </div>
                 </header>
 
-                {/* Enhanced stats overview */}
+                {/* Enhanced stats overview - now clickable navigation cards */}
                 <section className="animate-fade-in-up animation-delay-300">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                        {/* Your Recipes */}
+                        <Link
+                            to="/recipes?filter=my-recipes"
+                            className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-accent-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
@@ -164,9 +168,13 @@ export const Dashboard: React.FC = () => {
                                     <div className="h-full bg-gradient-to-r from-brand-500 to-brand-600 rounded-full transform translate-x-0 group-hover:translate-x-2 transition-transform duration-500" style={{ width: '75%' }}></div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
 
-                        <div className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                        {/* Your Favorites */}
+                        <Link
+                            to="/recipes?filter=favorites"
+                            className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-error-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
@@ -178,44 +186,53 @@ export const Dashboard: React.FC = () => {
                                             {isLoading ? (
                                                 <div className="h-8 w-16 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
                                             ) : (
-                                                stats.totalLikes
+                                                stats.totalFavorites
                                             )}
                                         </div>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Total Likes</p>
+                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Your Favs</p>
                                     </div>
                                 </div>
                                 <div className="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                                     <div className="h-full bg-gradient-to-r from-error-500 to-pink-600 rounded-full transform translate-x-0 group-hover:translate-x-2 transition-transform duration-500" style={{ width: '60%' }}></div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
 
-                        <div className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                        {/* Your Saved */}
+                        <Link
+                            to="/recipes?filter=saved"
+                            className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-warning-500/5 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="p-3 rounded-xl bg-gradient-to-br from-warning-500 to-amber-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        <Star className="h-6 w-6 text-white" />
+                                        <Bookmark className="h-6 w-6 text-white" />
                                     </div>
                                     <div className="text-right">
                                         <div className="text-3xl font-bold text-surface-900 dark:text-white group-hover:text-warning-600 dark:group-hover:text-warning-400 transition-colors duration-300">
-                                            {stats.averageRating ? stats.averageRating.toFixed(1) : '0.0'}
+                                            {isLoading ? (
+                                                <div className="h-8 w-16 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
+                                            ) : (
+                                                stats.totalSaved
+                                            )}
                                         </div>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Avg Rating</p>
+                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Your Saves</p>
                                     </div>
                                 </div>
                                 <div className="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                                     <div className="h-full bg-gradient-to-r from-warning-500 to-amber-600 rounded-full transform translate-x-0 group-hover:translate-x-2 transition-transform duration-500" style={{ width: '85%' }}></div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
 
+                        {/* Total Views - keeping this for now as requested */}
                         <div className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                             <div className="absolute inset-0 bg-gradient-to-br from-accent-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="p-3 rounded-xl bg-gradient-to-br from-accent-500 to-blue-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        <TrendingUp className="h-6 w-6 text-white" />
+                                        <Eye className="h-6 w-6 text-white" />
                                     </div>
                                     <div className="text-right">
                                         <div className="text-3xl font-bold text-surface-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors duration-300">
@@ -398,18 +415,18 @@ export const Dashboard: React.FC = () => {
 
                         {/* Insights */}
                         <section className="relative animate-fade-in-up animation-delay-600">
-                            <div className="absolute inset-0 bg-gradient-to-r from-warning-500/5 via-amber-500/5 to-warning-500/5 rounded-3xl blur-xl"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-emerald-500/5 rounded-3xl blur-xl"></div>
                             <div className="relative bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl border border-surface-200/50 dark:border-surface-800/50 shadow-2xl p-6">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <div className="p-2 rounded-xl bg-gradient-to-br from-warning-500 to-amber-600 shadow-lg">
+                                    <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
                                         <Award className="h-5 w-5 text-white" />
                                     </div>
                                     <div>
                                         <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-                                            Recipe Insights
+                                            Insights
                                         </h2>
                                         <p className="text-sm text-surface-600 dark:text-surface-400">
-                                            Your cooking stats
+                                            Your cooking journey
                                         </p>
                                     </div>
                                 </div>
@@ -418,33 +435,6 @@ export const Dashboard: React.FC = () => {
                                     recipeCount={userRecipes.length}
                                     mostUsedCategory={userRecipes.length > 0 ? "Dinner" : undefined}
                                 />
-                            </div>
-                        </section>
-
-                        {/* Cooking tip */}
-                        <section className="relative animate-fade-in-up animation-delay-900">
-                            <div className="absolute inset-0 bg-gradient-to-r from-brand-500/5 via-accent-500/5 to-brand-500/5 rounded-3xl blur-xl"></div>
-                            <div className="relative bg-gradient-to-br from-brand-50 to-accent-50 dark:from-brand-950/20 dark:to-accent-950/20 backdrop-blur-sm rounded-3xl border border-brand-200/50 dark:border-brand-800/50 shadow-2xl p-6">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 shadow-lg">
-                                        <Sparkles className="h-5 w-5 text-white" />
-                                    </div>
-                                    <h2 className="text-xl font-bold text-brand-900 dark:text-brand-100">
-                                        Chef's Tip
-                                    </h2>
-                                </div>
-
-                                <p className="text-brand-800 dark:text-brand-200 mb-4 leading-relaxed">
-                                    Always let meat rest after cooking to allow juices to redistribute, resulting in a more flavorful and tender dish.
-                                </p>
-
-                                <Link
-                                    to="/tips"
-                                    className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 transition-colors duration-200 group"
-                                >
-                                    <span>More cooking tips</span>
-                                    <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-                                </Link>
                             </div>
                         </section>
                     </div>

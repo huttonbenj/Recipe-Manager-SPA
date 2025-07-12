@@ -18,13 +18,20 @@ export class UserStatsService {
 
   static async getUserStats(userId: string): Promise<UserStats> {
     try {
-      // Get total recipe count for user
+      // Get total recipe count for user (their own recipes)
       const totalRecipes = await prisma.recipe.count({
         where: { user_id: userId },
       });
 
-      // Get total likes given by the user
-      const totalLikes = await prisma.recipeLike.count({
+      // Get total recipes the user has liked (favorites)
+      const totalFavorites = await prisma.recipeLike.count({
+        where: {
+          user_id: userId,
+        },
+      });
+
+      // Get total recipes the user has saved
+      const totalSaved = await prisma.recipeSave.count({
         where: {
           user_id: userId,
         },
@@ -49,12 +56,12 @@ export class UserStatsService {
         count: item._count.category,
       }));
 
-      logger.info(`Retrieved stats for user ${userId}: ${totalRecipes} recipes, ${totalLikes} likes`);
+      logger.info(`Retrieved stats for user ${userId}: ${totalRecipes} recipes, ${totalFavorites} favorites, ${totalSaved} saved`);
 
       return {
         totalRecipes,
-        totalLikes,
-        averageRating: 0, // TODO: Implement when ratings are added
+        totalFavorites,
+        totalSaved,
         totalViews: 0, // TODO: Implement when views are tracked
         recipesByCategory: formattedStats,
       };

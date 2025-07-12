@@ -18,9 +18,9 @@ export interface UserLoginData {
 
 export interface UserStats {
   totalRecipes: number;
-  totalLikes: number;
-  averageRating: number;
-  totalViews: number;
+  totalFavorites: number; // Recipes the user has liked
+  totalSaved: number; // Recipes the user has saved
+  totalViews: number; // Keep this for now as 4th stat
   recipesByCategory: Array<{ category: string; count: number }>;
 }
 
