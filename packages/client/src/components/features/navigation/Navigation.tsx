@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigation } from '../../../hooks/ui/useNavigation';
 import { useDebounce, useLocalStorage } from '../../../hooks';
@@ -12,11 +12,10 @@ import { NavigationMobile } from './NavigationMobile';
 import { ThemeToggle } from '../../ui/ThemeToggle';
 import {
     Search, X, TrendingUp, Clock, ChefHat, Tag, Filter,
-    History, Star, Utensils, Flame, ArrowRight,
-    Sparkles, Zap, Heart, BookOpen
+    History, Star, Utensils, Sparkles, Zap, Heart, Lightbulb
 } from 'lucide-react';
 import { cn } from '../../../utils/cn';
-import { parseSearchQuery, formatSearchDescription } from '../../../utils/searchParser';
+import { parseSearchQuery } from '../../../utils/searchParser';
 
 interface SearchSuggestion {
     id: string;
@@ -72,11 +71,7 @@ export const Navigation: React.FC = () => {
     const [scrollProgress, setScrollProgress] = useState(0);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-
-    // Local storage for recent searches
     const [recentSearches, setRecentSearches] = useLocalStorage<RecentSearch[]>('recentSearches', []);
 
     // Debounced search query for API calls
@@ -115,15 +110,6 @@ export const Navigation: React.FC = () => {
         }),
         staleTime: 180000, // 3 minutes
     });
-
-    // Fetch trending searches (mock data for now, could be from analytics)
-    const trendingSearches = [
-        { query: 'pasta carbonara', count: 156 },
-        { query: 'chocolate cake', count: 142 },
-        { query: 'quick breakfast', count: 98 },
-        { query: 'healthy salad', count: 87 },
-        { query: 'chicken curry', count: 76 },
-    ];
 
     // Convert API results to suggestions format
     const recipeSuggestions: SearchSuggestion[] = searchResults?.data?.map(recipe => ({
@@ -348,15 +334,14 @@ export const Navigation: React.FC = () => {
 
     const openSearch = () => {
         setIsSearchOpen(true);
-        setSearchQuery('');
-        setSelectedSuggestionIndex(-1);
+        document.body.style.overflow = 'hidden';
     };
 
     const closeSearch = () => {
         setIsSearchOpen(false);
         setSearchQuery('');
-        setIsSearchFocused(false);
         setSelectedSuggestionIndex(-1);
+        document.body.style.overflow = 'unset';
     };
 
     return (
@@ -472,10 +457,6 @@ export const Navigation: React.FC = () => {
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         onKeyDown={handleKeyDown}
-                                        onFocus={() => setShowSuggestions(true)}
-                                        onBlur={() => {
-                                            setTimeout(() => setShowSuggestions(false), 200);
-                                        }}
                                         placeholder="Search for recipes, ingredients, or categories..."
                                         className="w-full pl-14 pr-24 py-4 bg-surface-50 dark:bg-surface-800 border-2 border-surface-200 dark:border-surface-700 rounded-2xl text-surface-900 dark:text-surface-50 placeholder-surface-500 dark:placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-lg font-medium shadow-sm"
                                         autoComplete="off"
@@ -588,166 +569,76 @@ export const Navigation: React.FC = () => {
 
                             {/* Content - only show when not actively searching */}
                             {searchQuery.length === 0 && (
-                                <div className="space-y-10">
-                                    {/* Quick Filters */}
-                                    <div className="bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 rounded-3xl p-8 border border-surface-200 dark:border-surface-700 shadow-sm">
-                                        <div className="flex items-center space-x-3 mb-6">
-                                            <div className="p-2 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl shadow-md">
-                                                <Zap className="h-5 w-5 text-white" />
-                                            </div>
-                                            <h3 className="text-xl font-bold text-surface-900 dark:text-surface-50 font-display">
-                                                Quick Filters
-                                            </h3>
-                                        </div>
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                            {quickFilters.map((filter) => {
-                                                const Icon = filter.icon;
-                                                const colorClasses = {
-                                                    green: 'bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl',
-                                                    blue: 'bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl',
-                                                    purple: 'bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl',
-                                                    orange: 'bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl',
-                                                };
-                                                return (
-                                                    <button
-                                                        key={filter.label}
-                                                        onClick={() => handleQuickFilterClick(filter)}
-                                                        className={cn(
-                                                            "p-6 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 hover:-translate-y-1 flex flex-col items-center space-y-3 text-center border-2 border-transparent",
-                                                            colorClasses[filter.color as keyof typeof colorClasses]
-                                                        )}
-                                                    >
-                                                        <Icon className="h-7 w-7" />
-                                                        <span className="text-sm font-bold">{filter.label}</span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
+                                <div className="space-y-6">
+                                    {/* Quick Filters Row - Small, inline, no background */}
+                                    <div className="flex items-center space-x-4">
+                                        <span className="text-sm text-surface-500 dark:text-surface-400">Quick Filters:</span>
+                                        {quickFilters.map((filter) => (
+                                            <button
+                                                key={filter.label}
+                                                onClick={() => handleQuickFilterClick(filter)}
+                                                className="flex items-center space-x-1.5 px-3 py-1.5 text-sm text-surface-700 dark:text-surface-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800"
+                                            >
+                                                <filter.icon className="h-4 w-4" />
+                                                <span>{filter.label}</span>
+                                            </button>
+                                        ))}
                                     </div>
 
-                                    {/* Main Content Grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
-                                        {/* Categories & Trending */}
-                                        <div className="md:col-span-1 lg:col-span-4 space-y-8">
-                                            {/* Popular Categories */}
-                                            <div className="bg-white dark:bg-surface-900 rounded-3xl p-8 border border-surface-200 dark:border-surface-700 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                                <div className="flex items-center space-x-3 mb-6">
-                                                    <div className="p-2 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl shadow-md">
-                                                        <TrendingUp className="h-5 w-5 text-white" />
-                                                    </div>
-                                                    <h3 className="text-xl font-bold text-surface-900 dark:text-surface-50 font-display">
-                                                        Categories
+                                    {/* Main Content Area - Asymmetric Layout */}
+                                    <div className="grid grid-cols-12 gap-8">
+                                        {/* Large Featured Section - Categories & Popular */}
+                                        <div className="col-span-12 md:col-span-8 space-y-8">
+                                            {/* Categories */}
+                                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8">
+                                                <div className="flex items-center space-x-3 mb-5">
+                                                    <Tag className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                                    <h3 className="text-lg font-bold text-surface-900 dark:text-white">
+                                                        Browse Categories
                                                     </h3>
                                                 </div>
-                                                <div className="space-y-3">
-                                                    {popularSearches.map((item) => {
-                                                        const Icon = item.icon;
-                                                        return (
-                                                            <Link
-                                                                key={item.category}
-                                                                to={`/recipes?category=${encodeURIComponent(item.category)}`}
-                                                                onClick={closeSearch}
-                                                                className="flex items-center space-x-4 p-4 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 group border border-transparent hover:border-surface-200 dark:hover:border-surface-700"
-                                                            >
-                                                                <div className="p-3 bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-800 dark:to-surface-700 rounded-xl group-hover:from-brand-100 group-hover:to-brand-200 dark:group-hover:from-brand-900/30 dark:group-hover:to-brand-800/30 transition-all duration-300 shadow-sm">
-                                                                    <Icon className="h-5 w-5 text-surface-600 dark:text-surface-400 group-hover:text-brand-600 dark:group-hover:text-brand-400" />
-                                                                </div>
-                                                                <span className="font-semibold text-surface-700 dark:text-surface-300 group-hover:text-surface-900 dark:group-hover:text-surface-50 text-base">
-                                                                    {item.label}
-                                                                </span>
-                                                                <ArrowRight className="h-4 w-4 text-surface-400 ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" />
-                                                            </Link>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-
-                                            {/* Trending Searches */}
-                                            <div className="bg-white dark:bg-surface-900 rounded-3xl p-8 border border-surface-200 dark:border-surface-700 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                                <div className="flex items-center space-x-3 mb-6">
-                                                    <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-md">
-                                                        <Flame className="h-5 w-5 text-white" />
-                                                    </div>
-                                                    <h3 className="text-xl font-bold text-surface-900 dark:text-surface-50 font-display">
-                                                        Trending
-                                                    </h3>
-                                                </div>
-                                                <div className="space-y-3">
-                                                    {trendingSearches.slice(0, 5).map((trend, index) => (
-                                                        <button
-                                                            key={trend.query}
-                                                            onClick={() => {
-                                                                navigate(`/recipes?search=${encodeURIComponent(trend.query)}`);
-                                                                closeSearch();
-                                                            }}
-                                                            className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 group border border-transparent hover:border-surface-200 dark:hover:border-surface-700"
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                                    {popularSearches.map((item) => (
+                                                        <Link
+                                                            key={item.category}
+                                                            to={`/recipes?category=${encodeURIComponent(item.category)}`}
+                                                            onClick={closeSearch}
+                                                            className="text-left p-4 bg-white dark:bg-surface-800 rounded-xl hover:shadow-lg transition-all duration-200 border border-surface-200 dark:border-surface-700 hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-1"
                                                         >
-                                                            <div className="flex items-center space-x-4">
-                                                                <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 text-white text-sm font-bold rounded-full shadow-md">
-                                                                    {index + 1}
-                                                                </div>
-                                                                <span className="font-semibold text-surface-700 dark:text-surface-300 group-hover:text-surface-900 dark:group-hover:text-surface-50 text-base">
-                                                                    {trend.query}
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex items-center space-x-3">
-                                                                <span className="text-xs text-surface-500 dark:text-surface-400 flex items-center bg-surface-100 dark:bg-surface-800 px-3 py-1.5 rounded-full font-medium">
-                                                                    <TrendingUp className="h-3 w-3 mr-1" />
-                                                                    {trend.count}
-                                                                </span>
-                                                                <ArrowRight className="h-4 w-4 text-surface-400 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" />
-                                                            </div>
-                                                        </button>
+                                                            <span className="font-semibold text-surface-800 dark:text-surface-200">
+                                                                {item.label}
+                                                            </span>
+                                                        </Link>
                                                     ))}
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {/* Popular Recipes */}
-                                        <div className="md:col-span-1 lg:col-span-4">
+                                            {/* Popular Recipes */}
                                             {popularRecipes.length > 0 && (
-                                                <div className="bg-white dark:bg-surface-900 rounded-3xl p-8 border border-surface-200 dark:border-surface-700 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                                    <div className="flex items-center space-x-3 mb-6">
-                                                        <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl shadow-md">
-                                                            <Star className="h-5 w-5 text-white" />
-                                                        </div>
-                                                        <h3 className="text-xl font-bold text-surface-900 dark:text-surface-50 font-display">
+                                                <div>
+                                                    <div className="flex items-center space-x-3 mb-5">
+                                                        <Star className="h-5 w-5 text-yellow-500" />
+                                                        <h3 className="text-lg font-bold text-surface-900 dark:text-white">
                                                             Popular Recipes
                                                         </h3>
                                                     </div>
-                                                    <div className="space-y-5">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                         {popularRecipes.slice(0, 4).map((recipe) => (
                                                             <Link
                                                                 key={recipe.id}
                                                                 to={`/recipes/${recipe.id}`}
                                                                 onClick={closeSearch}
-                                                                className="block p-5 bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-700 rounded-2xl hover:from-surface-100 hover:to-surface-200 dark:hover:from-surface-700 dark:hover:to-surface-600 transition-all duration-300 group border border-surface-200 dark:border-surface-700 hover:border-brand-200 dark:hover:border-brand-700 shadow-sm hover:shadow-md"
+                                                                className="block p-4 bg-white dark:bg-surface-800 rounded-2xl hover:shadow-xl transition-all duration-200 group border border-surface-200 dark:border-surface-700"
                                                             >
-                                                                <div className="flex items-center space-x-4">
-                                                                    <div className="w-14 h-14 bg-gradient-to-br from-brand-500 to-accent-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                                                        <ChefHat className="h-7 w-7 text-white" />
-                                                                    </div>
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <p className="font-bold text-surface-900 dark:text-surface-50 truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 text-base">
-                                                                            {recipe.title}
-                                                                        </p>
-                                                                        <div className="flex items-center space-x-3 mt-2">
-                                                                            <span className="text-xs px-3 py-1 bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-400 rounded-full font-medium border border-surface-200 dark:border-surface-700">
-                                                                                {recipe.category}
-                                                                            </span>
-                                                                            <span className="text-xs text-surface-500 dark:text-surface-400 font-medium">
-                                                                                {recipe.difficulty} • {recipe.cookTime}min
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="flex items-center space-x-3">
-                                                                        <span className="text-xs text-surface-500 dark:text-surface-400 flex items-center bg-surface-100 dark:bg-surface-800 px-3 py-1.5 rounded-full font-medium">
-                                                                            <Heart className="h-3 w-3 mr-1" />
-                                                                            {recipe.likes}
-                                                                        </span>
-                                                                        <ArrowRight className="h-4 w-4 text-surface-400 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" />
-                                                                    </div>
+                                                                <div className="h-32 bg-surface-100 dark:bg-surface-700 rounded-lg mb-4 overflow-hidden">
+                                                                    {recipe.image && <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />}
                                                                 </div>
+                                                                <h4 className="font-bold text-surface-900 dark:text-surface-100 truncate group-hover:text-brand-600 dark:group-hover:text-brand-400">
+                                                                    {recipe.title}
+                                                                </h4>
+                                                                <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
+                                                                    {recipe.cookTime}min • {recipe.difficulty}
+                                                                </p>
                                                             </Link>
                                                         ))}
                                                     </div>
@@ -755,91 +646,68 @@ export const Navigation: React.FC = () => {
                                             )}
                                         </div>
 
-                                        {/* Recent Searches & Examples */}
-                                        <div className="md:col-span-2 lg:col-span-4 space-y-8">
+                                        {/* Right Side - Stacked Sections */}
+                                        <div className="col-span-12 md:col-span-4 space-y-8">
+                                            {/* Pro Tip */}
+                                            <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-6">
+                                                <div className="flex items-center space-x-3 mb-3">
+                                                    <Lightbulb className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                                    <h3 className="text-md font-bold text-surface-800 dark:text-surface-200">
+                                                        Pro Tip
+                                                    </h3>
+                                                </div>
+                                                <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
+                                                    Use natural language like "easy 30-minute dinners" for better results!
+                                                </p>
+                                            </div>
                                             {/* Recent Searches */}
                                             {recentSearches.length > 0 && (
-                                                <div className="bg-white dark:bg-surface-900 rounded-3xl p-8 border border-surface-200 dark:border-surface-700 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                                    <div className="flex items-center justify-between mb-6">
-                                                        <div className="flex items-center space-x-3">
-                                                            <div className="p-2 bg-gradient-to-br from-surface-600 to-surface-700 rounded-xl shadow-md">
-                                                                <History className="h-5 w-5 text-white" />
-                                                            </div>
-                                                            <h3 className="text-xl font-bold text-surface-900 dark:text-surface-50 font-display">
+                                                <div className="bg-surface-50 dark:bg-surface-800/50 rounded-2xl p-6">
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <div className="flex items-center space-x-2">
+                                                            <History className="h-4 w-4 text-surface-500" />
+                                                            <h3 className="text-md font-bold text-surface-800 dark:text-surface-200">
                                                                 Recent
                                                             </h3>
                                                         </div>
-                                                        <button
-                                                            onClick={clearRecentSearches}
-                                                            className="text-sm text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200 px-3 py-1.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 font-medium"
-                                                        >
-                                                            Clear all
-                                                        </button>
+                                                        <button onClick={clearRecentSearches} className="text-xs text-surface-500 hover:text-red-500 dark:hover:text-red-400 font-medium">Clear</button>
                                                     </div>
-                                                    <div className="space-y-3">
+                                                    <div className="space-y-2">
                                                         {recentSearches.slice(0, 5).map((search) => (
                                                             <button
                                                                 key={search.id}
                                                                 onClick={() => handleRecentSearchClick(search)}
-                                                                className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 group border border-transparent hover:border-surface-200 dark:hover:border-surface-700"
+                                                                className="block w-full text-left text-sm text-surface-600 dark:text-surface-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors truncate"
                                                             >
-                                                                <div className="p-2 bg-surface-100 dark:bg-surface-800 rounded-xl group-hover:bg-surface-200 dark:group-hover:bg-surface-700 transition-colors duration-200">
-                                                                    <History className="h-4 w-4 text-surface-500 dark:text-surface-400" />
-                                                                </div>
-                                                                <span className="flex-1 text-left font-semibold text-surface-700 dark:text-surface-300 group-hover:text-surface-900 dark:group-hover:text-surface-50 text-base">
-                                                                    {search.query}
-                                                                </span>
-                                                                <span className="text-xs text-surface-400 bg-surface-100 dark:bg-surface-800 px-3 py-1.5 rounded-full font-medium">
-                                                                    {new Date(search.timestamp).toLocaleDateString()}
-                                                                </span>
+                                                                {search.query}
                                                             </button>
                                                         ))}
                                                     </div>
                                                 </div>
                                             )}
-
                                             {/* Smart Search Examples */}
-                                            <div className="bg-white dark:bg-surface-900 rounded-3xl p-8 border border-surface-200 dark:border-surface-700 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                                <div className="flex items-center space-x-3 mb-6">
-                                                    <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-md">
-                                                        <BookOpen className="h-5 w-5 text-white" />
-                                                    </div>
-                                                    <h3 className="text-xl font-bold text-surface-900 dark:text-surface-50 font-display">
+                                            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-6">
+                                                <div className="flex items-center space-x-3 mb-3">
+                                                    <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                                    <h3 className="text-md font-bold text-surface-800 dark:text-surface-200">
                                                         Try Smart Search
                                                     </h3>
                                                 </div>
-                                                <div className="text-sm text-surface-600 dark:text-surface-400 mb-6 font-medium">
-                                                    Use natural language to find exactly what you want
-                                                </div>
-                                                <div className="space-y-4">
+                                                <div className="space-y-2">
                                                     {[
-                                                        { query: 'easy chicken recipes', desc: 'Difficulty + ingredient', icon: '🍗' },
-                                                        { query: 'quick dessert ideas', desc: 'Time + category', icon: '🍰' },
-                                                        { query: 'healthy 30 minute meals', desc: 'Style + time constraint', icon: '🥗' },
-                                                        { query: 'vegetarian pasta dishes', desc: 'Diet + ingredient', icon: '🍝' },
+                                                        'easy chicken recipes',
+                                                        'quick dessert ideas',
+                                                        'healthy salads'
                                                     ].map((example) => (
                                                         <button
-                                                            key={example.query}
+                                                            key={example}
                                                             onClick={() => {
-                                                                navigate(`/recipes?search=${encodeURIComponent(example.query)}`);
-                                                                closeSearch();
+                                                                setSearchQuery(example);
+                                                                handleSearchSubmit({ preventDefault: () => { } } as React.FormEvent);
                                                             }}
-                                                            className="w-full p-5 bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-700 rounded-2xl hover:from-surface-100 hover:to-surface-200 dark:hover:from-surface-700 dark:hover:to-surface-600 transition-all duration-300 group border border-surface-200 dark:border-surface-700 hover:border-brand-200 dark:hover:border-brand-700 shadow-sm hover:shadow-md"
+                                                            className="block w-full text-left text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                                                         >
-                                                            <div className="flex items-center space-x-4">
-                                                                <div className="text-3xl bg-white dark:bg-surface-800 p-3 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                                                    {example.icon}
-                                                                </div>
-                                                                <div className="flex-1 text-left">
-                                                                    <p className="font-bold text-surface-900 dark:text-surface-50 group-hover:text-brand-600 dark:group-hover:text-brand-400 text-base">
-                                                                        "{example.query}"
-                                                                    </p>
-                                                                    <p className="text-sm text-surface-500 dark:text-surface-400 mt-1 font-medium">
-                                                                        {example.desc}
-                                                                    </p>
-                                                                </div>
-                                                                <ArrowRight className="h-5 w-5 text-surface-400 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" />
-                                                            </div>
+                                                            "{example}"
                                                         </button>
                                                     ))}
                                                 </div>

@@ -11,6 +11,7 @@ export interface FormFieldProps {
     className?: string;
     description?: string;
     disabled?: boolean;
+    htmlFor?: string;
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
@@ -22,14 +23,18 @@ export const FormField: React.FC<FormFieldProps> = ({
     className,
     description,
     disabled,
+    htmlFor,
 }) => {
     return (
         <div className={cn('space-y-2', className)}>
             {label && (
-                <label className={cn(
-                    "block text-sm font-medium text-surface-900 dark:text-surface-100 transition-colors",
-                    disabled && "opacity-50"
-                )}>
+                <label
+                    htmlFor={htmlFor}
+                    className={cn(
+                        "block text-sm font-medium text-surface-900 dark:text-surface-100 transition-colors",
+                        disabled && "opacity-50"
+                    )}
+                >
                     {label}
                     {required && <span className="text-error-500 ml-1">*</span>}
                 </label>

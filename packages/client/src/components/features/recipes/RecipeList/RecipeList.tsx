@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
+import { Plus, Search as SearchIcon } from 'lucide-react';
 import { Recipe } from '@recipe-manager/shared';
 import { apiClient } from '../../../../services/api';
 import { useDebounce } from '../../../../hooks';
+import { parseSearchQuery } from '../../../../utils/searchParser';
 import { Button, Card, CardContent } from '../../../ui';
 import { RecipeFilters } from './RecipeFilters';
 import { RecipeGrid } from './RecipeGrid';
@@ -17,20 +18,61 @@ export const RecipeList = () => {
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
     const [selectedDifficulty, setSelectedDifficulty] = useState(searchParams.get('difficulty') || '');
     const [selectedCookTime, setSelectedCookTime] = useState(searchParams.get('cookTime') || '');
+    const [isFavorites, setIsFavorites] = useState(searchParams.get('liked') === 'true');
     const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'created_at');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>((searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc');
+    const [quickFilter, setQuickFilter] = useState(searchParams.get('quickFilter') || '');
     const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
 
-    // Sync component state with URL parameters when they change
+    // Smart search parsing - handle complex queries from main navigation
     useEffect(() => {
-        setSearchTerm(searchParams.get('search') || '');
-        setSelectedCategory(searchParams.get('category') || '');
-        setSelectedDifficulty(searchParams.get('difficulty') || '');
-        setSelectedCookTime(searchParams.get('cookTime') || '');
-        setSortBy(searchParams.get('sortBy') || 'created_at');
-        setSortOrder((searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc');
-        setCurrentPage(parseInt(searchParams.get('page') || '1', 10));
-    }, [searchParams]);
+        const rawSearch = searchParams.get('search') || '';
+        const urlCategory = searchParams.get('category') || '';
+        const urlDifficulty = searchParams.get('difficulty') || '';
+        const urlCookTime = searchParams.get('cookTime') || '';
+        const urlLiked = searchParams.get('liked') === 'true';
+        const urlSortBy = searchParams.get('sortBy') || 'created_at';
+        const urlSortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
+        const urlQuickFilter = searchParams.get('quickFilter') || '';
+        const urlPage = parseInt(searchParams.get('page') || '1', 10);
+
+        // Parse the search query to extract smart filters
+        const parsedQuery = parseSearchQuery(rawSearch);
+
+        // Update state with URL params, giving priority to explicit URL params over parsed ones
+        setSearchTerm(parsedQuery.searchTerm || rawSearch);
+        setSelectedCategory(urlCategory || parsedQuery.category || '');
+        setSelectedDifficulty(urlDifficulty || parsedQuery.difficulty || '');
+        setSelectedCookTime(urlCookTime || parsedQuery.cookTime || '');
+        setIsFavorites(urlLiked);
+        setSortBy(urlSortBy);
+        setSortOrder(urlSortOrder);
+        setQuickFilter(urlQuickFilter);
+        setCurrentPage(urlPage);
+
+        // If we parsed filters from search, update URL to reflect them
+        if (parsedQuery.category || parsedQuery.difficulty || parsedQuery.cookTime) {
+            const newParams = new URLSearchParams(searchParams);
+
+            if (parsedQuery.searchTerm !== rawSearch) {
+                newParams.set('search', parsedQuery.searchTerm);
+            }
+            if (parsedQuery.category && !urlCategory) {
+                newParams.set('category', parsedQuery.category);
+            }
+            if (parsedQuery.difficulty && !urlDifficulty) {
+                newParams.set('difficulty', parsedQuery.difficulty);
+            }
+            if (parsedQuery.cookTime && !urlCookTime) {
+                newParams.set('cookTime', parsedQuery.cookTime);
+            }
+
+            // Only update URL if changes were made
+            if (newParams.toString() !== searchParams.toString()) {
+                setSearchParams(newParams, { replace: true });
+            }
+        }
+    }, [searchParams, setSearchParams]);
 
     // Debounced search term
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -42,6 +84,7 @@ export const RecipeList = () => {
             category: selectedCategory,
             difficulty: selectedDifficulty,
             cookTime: selectedCookTime,
+            liked: isFavorites,
             sortBy,
             sortOrder,
             page: currentPage
@@ -56,6 +99,7 @@ export const RecipeList = () => {
             if (selectedCategory) params.category = selectedCategory;
             if (selectedDifficulty) params.difficulty = selectedDifficulty;
             if (selectedCookTime) params.cookTime = selectedCookTime;
+            if (isFavorites) params.liked = true;
             if (sortBy) params.sortBy = sortBy;
             if (sortOrder) params.sortOrder = sortOrder;
 
@@ -64,18 +108,40 @@ export const RecipeList = () => {
     });
 
     const recipes: Recipe[] = recipesData?.data || [];
+    const totalRecipes = recipesData?.pagination?.totalCount || 0;
+    const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites;
 
     // Update URL params when filters change
     const updateSearchParams = (updates: Record<string, string>) => {
         const newParams = new URLSearchParams(searchParams);
 
         Object.entries(updates).forEach(([key, value]) => {
-            if (value) {
+            if (value && value !== '') {
                 newParams.set(key, value);
             } else {
                 newParams.delete(key);
             }
         });
+
+        // Handle favorites separately since it's boolean
+        if (isFavorites) {
+            newParams.set('liked', 'true');
+        } else {
+            newParams.delete('liked');
+        }
+
+        // Handle quickFilter separately
+        if (quickFilter) {
+            newParams.set('quickFilter', quickFilter);
+        } else {
+            newParams.delete('quickFilter');
+        }
+
+        // Reset page when filters change
+        if (updates.page === undefined) {
+            newParams.delete('page');
+            setCurrentPage(1);
+        }
 
         setSearchParams(newParams);
     };
@@ -87,9 +153,10 @@ export const RecipeList = () => {
             search: searchTerm,
             category: selectedCategory,
             difficulty: selectedDifficulty,
+            cookTime: selectedCookTime,
             sortBy,
             sortOrder,
-            page: '1',
+            quickFilter,
         });
     };
 
@@ -97,8 +164,11 @@ export const RecipeList = () => {
         setSearchTerm('');
         setSelectedCategory('');
         setSelectedDifficulty('');
+        setSelectedCookTime('');
+        setIsFavorites(false);
         setSortBy('created_at');
         setSortOrder('desc');
+        setQuickFilter('');
         setCurrentPage(1);
         setSearchParams({});
     };
@@ -121,9 +191,16 @@ export const RecipeList = () => {
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Recipe Collection</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <SearchIcon className="h-8 w-8" />
+                            Recipe Collection
+                        </h1>
                         <p className="text-gray-600 dark:text-gray-300 mt-1">
-                            Discover and share amazing recipes from our community.
+                            {hasActiveFilters ? (
+                                <>Showing <span className="font-medium">{totalRecipes}</span> filtered results</>
+                            ) : (
+                                <>Discover and share amazing recipes from our community • <span className="font-medium">{totalRecipes}</span> recipes</>
+                            )}
                         </p>
                     </div>
                     <Link to="/recipes/new">
@@ -133,18 +210,23 @@ export const RecipeList = () => {
                     </Link>
                 </div>
 
-                {/* Filters */}
-                <Card>
-                    <CardContent>
+                {/* Enhanced Filters */}
+                <Card className="border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
+                    <CardContent className="p-6">
                         <RecipeFilters
                             searchTerm={searchTerm}
                             selectedCategory={selectedCategory}
                             selectedDifficulty={selectedDifficulty}
+                            selectedCookTime={selectedCookTime}
+                            isFavorites={isFavorites}
                             sortBy={sortBy}
                             sortOrder={sortOrder}
+                            quickFilter={quickFilter}
                             onSearchChange={setSearchTerm}
                             onCategoryChange={setSelectedCategory}
                             onDifficultyChange={setSelectedDifficulty}
+                            onCookTimeChange={setSelectedCookTime}
+                            onFavoritesToggle={setIsFavorites}
                             onSortByChange={setSortBy}
                             onSortOrderChange={setSortOrder}
                             onClearFilters={clearFilters}

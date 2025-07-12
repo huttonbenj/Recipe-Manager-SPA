@@ -39,15 +39,13 @@ export class RecipeSearchService {
       }
       
       // Build orderBy clause
-      const orderBy: Prisma.RecipeOrderByWithRelationInput = {};
-      if (sortBy && ['created_at', 'updated_at', 'title', 'cook_time'].includes(sortBy)) {
-        orderBy[sortBy as keyof Prisma.RecipeOrderByWithRelationInput] = sortOrder === 'asc' ? 'asc' : 'desc';
-      } else {
-        orderBy.created_at = 'desc';
-      }
+      let recipes;
+      let totalCount;
       
-      const [recipes, totalCount] = await Promise.all([
-        prisma.recipe.findMany({
+      if (sortBy === 'likes') {
+        // For sorting by likes, we'll get all recipes first, then sort by like count
+        // This is less efficient but more reliable than raw SQL
+        const allRecipes = await prisma.recipe.findMany({
           where,
           include: {
             user: {
@@ -57,13 +55,48 @@ export class RecipeSearchService {
                 email: true,
               },
             },
+            likes: true, // Include likes to count them
           },
-          orderBy,
-          skip,
-          take: limit,
-        }),
-        prisma.recipe.count({ where }),
-      ]);
+        });
+        
+        // Sort by like count
+        const sortedRecipes = allRecipes.sort((a, b) => {
+          const aLikes = a.likes.length;
+          const bLikes = b.likes.length;
+          return sortOrder === 'asc' ? aLikes - bLikes : bLikes - aLikes;
+        });
+        
+        // Apply pagination
+        totalCount = sortedRecipes.length;
+        recipes = sortedRecipes.slice(skip, skip + limit);
+      } else {
+        // Standard sorting
+        const orderBy: Prisma.RecipeOrderByWithRelationInput = {};
+        if (sortBy && ['created_at', 'updated_at', 'title', 'cook_time'].includes(sortBy)) {
+          orderBy[sortBy as keyof Prisma.RecipeOrderByWithRelationInput] = sortOrder === 'asc' ? 'asc' : 'desc';
+        } else {
+          orderBy.created_at = 'desc';
+        }
+        
+        [recipes, totalCount] = await Promise.all([
+          prisma.recipe.findMany({
+            where,
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+            orderBy,
+            skip,
+            take: limit,
+          }),
+          prisma.recipe.count({ where }),
+        ]);
+      }
       
       const totalPages = Math.ceil(totalCount / limit);
       

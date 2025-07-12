@@ -60,7 +60,7 @@ export const RecipeSearchSchema = z.object({
   difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
   tags: z.string().optional(),
   user_id: z.string().optional(),
-  sortBy: z.enum(['created_at', 'updated_at', 'title', 'cook_time']).optional(),
+  sortBy: z.enum(['created_at', 'updated_at', 'title', 'cook_time', 'likes']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
   page: z.coerce.number().int().positive().default(PAGINATION_DEFAULTS.PAGE),
   limit: z.coerce.number().int().positive().max(PAGINATION_DEFAULTS.MAX_LIMIT).default(PAGINATION_DEFAULTS.LIMIT)

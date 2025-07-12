@@ -53,7 +53,7 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
     for (let i = 0; i < words.length; i++) {
       if (usedWords.has(i)) continue;
       
-      if (words[i] && keywords.includes(words[i])) {
+      if (words[i] && keywords.includes(words[i]!)) {
         const capitalizedDifficulty = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
         result.difficulty = capitalizedDifficulty;
         result.filters.difficulty = capitalizedDifficulty;
@@ -70,7 +70,7 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
       if (usedWords.has(i)) continue;
       
       // Check single words
-      if (words[i] && keywords.includes(words[i])) {
+      if (words[i] && keywords.includes(words[i]!)) {
         result.category = category;
         result.filters.category = category;
         usedWords.add(i);

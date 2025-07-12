@@ -197,7 +197,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
                         )} />
                     </div>
                 ) : (
-                    <IllustrationComponent className="mb-2" />
+                    IllustrationComponent("mb-2")
                 )}
             </div>
 

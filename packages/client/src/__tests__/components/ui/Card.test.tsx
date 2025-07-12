@@ -52,10 +52,10 @@ describe('Card Component', () => {
             expect(card).toHaveClass('bg-white', 'shadow-md');
         });
 
-        it('should render outlined variant', () => {
-            render(<Card variant="outlined" data-testid="card">Outlined Card</Card>);
+        it('should render glass variant', () => {
+            render(<Card variant="glass" data-testid="card">Glass Card</Card>);
             const card = screen.getByTestId('card');
-            expect(card).toHaveClass('bg-white', 'border', 'border-gray-200');
+            expect(card).toHaveClass('bg-white/80', 'backdrop-blur-sm');
         });
 
         it('should render elevated variant', () => {
