@@ -20,6 +20,7 @@ describe('RecipeFilters Component', () => {
         onFavoritesToggle: vi.fn(),
         onSortByChange: vi.fn(),
         onSortOrderChange: vi.fn(),
+        onQuickFilterChange: vi.fn(),
         onClearFilters: vi.fn(),
         onSearch: vi.fn(),
     };

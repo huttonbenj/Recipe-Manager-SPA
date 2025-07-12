@@ -276,15 +276,19 @@ export const Navigation: React.FC = () => {
         const params = new URLSearchParams();
         if (filter.type === 'difficulty') {
             params.set('difficulty', filter.value);
+            params.set('quickFilter', filter.value.toLowerCase());
         } else if (filter.type === 'cookTime') {
             params.set('cookTime', filter.value);
+            params.set('quickFilter', 'quick');
         } else if (filter.type === 'sort') {
             if (filter.value === 'popular') {
-                params.set('sortBy', 'created_at');
+                params.set('sortBy', 'likes');
                 params.set('sortOrder', 'desc');
+                params.set('quickFilter', 'popular');
             } else if (filter.value === 'recent') {
                 params.set('sortBy', 'created_at');
                 params.set('sortOrder', 'desc');
+                params.set('quickFilter', 'recent');
             }
         }
 

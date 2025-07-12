@@ -229,6 +229,7 @@ export const RecipeList = () => {
                             onFavoritesToggle={setIsFavorites}
                             onSortByChange={setSortBy}
                             onSortOrderChange={setSortOrder}
+                            onQuickFilterChange={setQuickFilter}
                             onClearFilters={clearFilters}
                             onSearch={handleSearch}
                         />

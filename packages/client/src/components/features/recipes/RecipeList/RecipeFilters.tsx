@@ -21,6 +21,7 @@ interface RecipeFiltersProps {
     onFavoritesToggle: (value: boolean) => void;
     onSortByChange: (value: string) => void;
     onSortOrderChange: (value: 'asc' | 'desc') => void;
+    onQuickFilterChange: (value: string) => void;
     onClearFilters: () => void;
     onSearch: (e: React.FormEvent) => void;
 }
@@ -46,6 +47,7 @@ const sortOptions = [
     { value: 'title', label: 'Title' },
     { value: 'cook_time', label: 'Cook Time' },
     { value: 'difficulty', label: 'Difficulty' },
+    { value: 'likes', label: 'Popularity (Likes)' },
 ];
 
 const sortOrderOptions = [
@@ -69,6 +71,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     onFavoritesToggle,
     onSortByChange,
     onSortOrderChange,
+    onQuickFilterChange,
     onClearFilters,
     onSearch,
 }) => {
@@ -114,6 +117,12 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         }
         if (quickFilter === 'recent') {
             return 'Recent';
+        }
+        if (quickFilter === 'easy') {
+            return 'Easy';
+        }
+        if (quickFilter === 'quick') {
+            return 'Quick';
         }
 
         // Fallback to sort parameters
@@ -266,6 +275,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                                 onClick={() => {
                                     onSortByChange('created_at');
                                     onSortOrderChange('desc');
+                                    onQuickFilterChange('');
                                 }}
                                 className="ml-1 hover:bg-black/10 rounded-full p-0.5"
                             >
