@@ -110,6 +110,11 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     // Check if sort is explicitly set (not default) or if a quick filter was used
     const hasExplicitSort = quickFilter || sortBy !== 'created_at' || sortOrder !== 'desc';
 
+    // Don't show sort tag if it's just representing favorites/saved that are already shown
+    const shouldShowSortTag = hasExplicitSort &&
+        quickFilter !== 'favorites' &&
+        quickFilter !== 'saved';
+
     const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || isSaved || hasExplicitSort;
     const hasSmartFilters = parsedQuery.category || parsedQuery.difficulty || parsedQuery.cookTime;
 
@@ -289,7 +294,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                             </button>
                         </span>
                     )}
-                    {hasExplicitSort && (
+                    {shouldShowSortTag && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                             <Zap className="h-3 w-3" />
                             {getSortDisplayName()}

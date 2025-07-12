@@ -117,59 +117,57 @@ export const RecipeList = () => {
     const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || isSaved;
 
     // Update URL params when filters change
-    const updateSearchParams = (updates: Record<string, string>) => {
+    const updateUrlParams = () => {
+        const newParams = new URLSearchParams();
+
+        if (searchTerm) newParams.set('search', searchTerm);
+        if (selectedCategory) newParams.set('category', selectedCategory);
+        if (selectedDifficulty) newParams.set('difficulty', selectedDifficulty);
+        if (selectedCookTime) newParams.set('cookTime', selectedCookTime);
+        if (isFavorites) newParams.set('liked', 'true');
+        if (isSaved) newParams.set('saved', 'true');
+        if (sortBy !== 'created_at') newParams.set('sortBy', sortBy);
+        if (sortOrder !== 'desc') newParams.set('sortOrder', sortOrder);
+        if (quickFilter) newParams.set('quickFilter', quickFilter);
+        if (currentPage > 1) newParams.set('page', currentPage.toString());
+
+        setSearchParams(newParams);
+    };
+
+    // Handle favorites toggle
+    const handleFavoritesToggle = (value: boolean) => {
+        setIsFavorites(value);
+        setCurrentPage(1);
+        // Update URL immediately
         const newParams = new URLSearchParams(searchParams);
-
-        Object.entries(updates).forEach(([key, value]) => {
-            if (value && value !== '') {
-                newParams.set(key, value);
-            } else {
-                newParams.delete(key);
-            }
-        });
-
-        // Handle favorites separately since it's boolean
-        if (isFavorites) {
+        if (value) {
             newParams.set('liked', 'true');
         } else {
             newParams.delete('liked');
         }
+        newParams.delete('page');
+        setSearchParams(newParams);
+    };
 
-        // Handle saved separately since it's boolean
-        if (isSaved) {
+    // Handle saved toggle
+    const handleSavedToggle = (value: boolean) => {
+        setIsSaved(value);
+        setCurrentPage(1);
+        // Update URL immediately
+        const newParams = new URLSearchParams(searchParams);
+        if (value) {
             newParams.set('saved', 'true');
         } else {
             newParams.delete('saved');
         }
-
-        // Handle quickFilter separately
-        if (quickFilter) {
-            newParams.set('quickFilter', quickFilter);
-        } else {
-            newParams.delete('quickFilter');
-        }
-
-        // Reset page when filters change
-        if (updates.page === undefined) {
-            newParams.delete('page');
-            setCurrentPage(1);
-        }
-
+        newParams.delete('page');
         setSearchParams(newParams);
     };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         setCurrentPage(1);
-        updateSearchParams({
-            search: searchTerm,
-            category: selectedCategory,
-            difficulty: selectedDifficulty,
-            cookTime: selectedCookTime,
-            sortBy,
-            sortOrder,
-            quickFilter,
-        });
+        updateUrlParams();
     };
 
     const clearFilters = () => {
@@ -240,8 +238,8 @@ export const RecipeList = () => {
                             onCategoryChange={setSelectedCategory}
                             onDifficultyChange={setSelectedDifficulty}
                             onCookTimeChange={setSelectedCookTime}
-                            onFavoritesToggle={setIsFavorites}
-                            onSavedToggle={setIsSaved}
+                            onFavoritesToggle={handleFavoritesToggle}
+                            onSavedToggle={handleSavedToggle}
                             onSortByChange={setSortBy}
                             onSortOrderChange={setSortOrder}
                             onQuickFilterChange={setQuickFilter}

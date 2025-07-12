@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="6" failures="0" errors="0" time="0.238981167">
+    <testsuite name="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" timestamp="2025-07-12T07:43:37.632Z" hostname="MacBookPro.attlocal.net" tests="6" failures="0" errors="0" skipped="0" time="0.238981167">
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; renders all filter controls" time="0.07284975">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; calls onClearFilters when clear button is clicked" time="0.052375">
+            <system-err>
+Unhandled GET request to http://localhost:3001/api/recipes/categories
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; calls onSearch when search button is clicked" time="0.045090084">
+            <system-err>
+Unhandled GET request to http://localhost:3001/api/recipes/categories
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; calls onFavoritesToggle when favorites checkbox is clicked" time="0.019266417">
+            <system-err>
+Unhandled GET request to http://localhost:3001/api/recipes/categories
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; shows active filter tags when filters are applied" time="0.019715167">
+            <system-err>
+Unhandled GET request to http://localhost:3001/api/recipes/categories
+
+            </system-err>
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; shows smart filter description when smart filters are detected" time="0.018861958">
+            <system-err>
+Unhandled GET request to http://localhost:3001/api/recipes/categories
+
+            </system-err>
+        </testcase>
+    </testsuite>
+</testsuites>
