@@ -35,7 +35,7 @@ export const UserStatsSchema = z.object({
   totalRecipes: z.number().int().min(0),
   totalFavorites: z.number().int().min(0), // Recipes the user has liked
   totalSaved: z.number().int().min(0), // Recipes the user has saved
-  totalViews: z.number().int().min(0), // Keep this for now as 4th stat
+  totalCategories: z.number().int().min(0), // Number of unique categories user has created recipes in
   recipesByCategory: z.array(z.object({
     category: z.string(),
     count: z.number().int().min(0)

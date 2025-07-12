@@ -20,7 +20,7 @@ export interface UserStats {
   totalRecipes: number;
   totalFavorites: number; // Recipes the user has liked
   totalSaved: number; // Recipes the user has saved
-  totalViews: number; // Keep this for now as 4th stat
+  totalCategories: number; // Number of unique categories user has created recipes in
   recipesByCategory: Array<{ category: string; count: number }>;
 }
 

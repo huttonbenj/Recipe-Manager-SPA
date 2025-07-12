@@ -6,7 +6,7 @@ import { DashboardActivity } from './DashboardActivity';
 import { DashboardInsights } from './DashboardInsights';
 import {
     ChefHat, BookOpen, Heart, Star, TrendingUp, PlusCircle, Search,
-    Utensils, Leaf, Clock, Award, ChevronRight, Sparkles, Zap, Coffee, Cake, Bookmark, Eye
+    Utensils, Leaf, Clock, Award, ChevronRight, Sparkles, Zap, Coffee, Cake, Bookmark, Grid3X3
 } from 'lucide-react';
 
 // Memoized components for better performance
@@ -39,7 +39,7 @@ export const Dashboard: React.FC = () => {
         totalRecipes: userStats?.totalRecipes || userRecipes.length,
         totalFavorites: userStats?.totalFavorites || 0,
         totalSaved: userStats?.totalSaved || 0,
-        totalViews: userStats?.totalViews || 0,
+        totalCategories: userStats?.totalCategories || 0,
     }), [userStats, userRecipes.length]);
 
     // Enhanced categories data with better icons and colors
@@ -226,26 +226,33 @@ export const Dashboard: React.FC = () => {
                             </div>
                         </Link>
 
-                        {/* Total Views - keeping this for now as requested */}
-                        <div className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                        {/* Your Categories */}
+                        <Link
+                            to="/recipes?filter=my-recipes&view=categories"
+                            className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-accent-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="p-3 rounded-xl bg-gradient-to-br from-accent-500 to-blue-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        <Eye className="h-6 w-6 text-white" />
+                                        <Grid3X3 className="h-6 w-6 text-white" />
                                     </div>
                                     <div className="text-right">
                                         <div className="text-3xl font-bold text-surface-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors duration-300">
-                                            {stats.totalViews}
+                                            {isLoading ? (
+                                                <div className="h-8 w-16 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
+                                            ) : (
+                                                stats.totalCategories
+                                            )}
                                         </div>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Total Views</p>
+                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Your Categories</p>
                                     </div>
                                 </div>
                                 <div className="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                                     <div className="h-full bg-gradient-to-r from-accent-500 to-blue-600 rounded-full transform translate-x-0 group-hover:translate-x-2 transition-transform duration-500" style={{ width: '90%' }}></div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     </div>
                 </section>
 

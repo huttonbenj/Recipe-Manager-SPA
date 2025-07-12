@@ -56,13 +56,16 @@ export class UserStatsService {
         count: item._count.category,
       }));
 
-      logger.info(`Retrieved stats for user ${userId}: ${totalRecipes} recipes, ${totalFavorites} favorites, ${totalSaved} saved`);
+      // Calculate total unique categories
+      const totalCategories = recipesByCategory.length;
+
+      logger.info(`Retrieved stats for user ${userId}: ${totalRecipes} recipes, ${totalFavorites} favorites, ${totalSaved} saved, ${totalCategories} categories`);
 
       return {
         totalRecipes,
         totalFavorites,
         totalSaved,
-        totalViews: 0, // TODO: Implement when views are tracked
+        totalCategories,
         recipesByCategory: formattedStats,
       };
     } catch (error) {
