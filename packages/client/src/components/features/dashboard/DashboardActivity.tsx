@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, ChefHat, Clock, Heart, MessageSquare, Star, ThumbsUp } from 'lucide-react';
+import { Activity, ChefHat, Clock, Heart, MessageSquare, Star, ThumbsUp, Sparkles, ChevronRight } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 
 interface ActivityItem {
@@ -22,20 +22,20 @@ export const DashboardActivity: React.FC<DashboardActivityProps> = ({
     activities = [],
     isLoading = false
 }) => {
-    // Mock activities if none provided
+    // Enhanced mock activities with more variety
     const mockActivities: ActivityItem[] = [
         {
             id: '1',
             type: 'create',
             recipeId: '101',
-            recipeTitle: 'Homemade Pizza',
+            recipeTitle: 'Homemade Sourdough Pizza',
             timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2) // 2 hours ago
         },
         {
             id: '2',
             type: 'like',
             recipeId: '102',
-            recipeTitle: 'Chocolate Chip Cookies',
+            recipeTitle: 'Triple Chocolate Chip Cookies',
             timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5 hours ago
             userName: 'Sarah Johnson',
             userAvatar: 'SJ'
@@ -44,19 +44,28 @@ export const DashboardActivity: React.FC<DashboardActivityProps> = ({
             id: '3',
             type: 'comment',
             recipeId: '101',
-            recipeTitle: 'Homemade Pizza',
+            recipeTitle: 'Homemade Sourdough Pizza',
             timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 hours ago
-            userName: 'Mike Smith',
-            userAvatar: 'MS'
+            userName: 'Mike Chen',
+            userAvatar: 'MC'
         },
         {
             id: '4',
             type: 'rating',
             recipeId: '103',
-            recipeTitle: 'Beef Stir Fry',
+            recipeTitle: 'Asian Beef Stir Fry',
             timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
             userName: 'Emma Wilson',
             userAvatar: 'EW'
+        },
+        {
+            id: '5',
+            type: 'view',
+            recipeId: '104',
+            recipeTitle: 'Mediterranean Quinoa Bowl',
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 36), // 1.5 days ago
+            userName: 'Alex Rivera',
+            userAvatar: 'AR'
         }
     ];
 
@@ -82,15 +91,15 @@ export const DashboardActivity: React.FC<DashboardActivityProps> = ({
     const getActivityColor = (type: string) => {
         switch (type) {
             case 'create':
-                return 'bg-brand-500 text-white';
+                return 'bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-lg';
             case 'like':
-                return 'bg-error-500 text-white';
+                return 'bg-gradient-to-br from-error-500 to-pink-600 text-white shadow-lg';
             case 'comment':
-                return 'bg-accent-500 text-white';
+                return 'bg-gradient-to-br from-accent-500 to-blue-600 text-white shadow-lg';
             case 'rating':
-                return 'bg-warning-500 text-white';
+                return 'bg-gradient-to-br from-warning-500 to-amber-600 text-white shadow-lg';
             case 'view':
-                return 'bg-success-500 text-white';
+                return 'bg-gradient-to-br from-success-500 to-emerald-600 text-white shadow-lg';
             default:
                 return 'bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-300';
         }
@@ -132,23 +141,12 @@ export const DashboardActivity: React.FC<DashboardActivityProps> = ({
     };
 
     return (
-        <div className="glass-card bg-white/70 dark:bg-surface-900/70 backdrop-blur-sm rounded-xl p-6 border border-surface-200/60 dark:border-surface-800/60">
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 flex items-center justify-center shadow-md">
-                        <Activity className="h-5 w-5 text-white" />
-                    </div>
-                    <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50 font-display">
-                        Recent Activity
-                    </h2>
-                </div>
-            </div>
-
+        <div className="space-y-6">
             {isLoading ? (
                 <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="flex items-start gap-3 animate-pulse">
-                            <div className="w-8 h-8 rounded-full bg-surface-200 dark:bg-surface-700"></div>
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="flex items-start gap-4 animate-pulse">
+                            <div className="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-700"></div>
                             <div className="flex-1 space-y-2">
                                 <div className="w-3/4 h-4 bg-surface-200 dark:bg-surface-700 rounded"></div>
                                 <div className="w-1/2 h-3 bg-surface-200 dark:bg-surface-700 rounded"></div>
@@ -156,70 +154,92 @@ export const DashboardActivity: React.FC<DashboardActivityProps> = ({
                         </div>
                     ))}
                 </div>
-            ) : (
-                <div className="space-y-5 relative">
-                    {/* Timeline connector */}
-                    <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-surface-200 dark:bg-surface-700"></div>
+            ) : displayActivities.length > 0 ? (
+                <div className="space-y-4 relative">
+                    {/* Enhanced timeline connector */}
+                    <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-gradient-to-b from-brand-200 via-accent-200 to-brand-200 dark:from-brand-800 dark:via-accent-800 dark:to-brand-800"></div>
 
-                    {displayActivities.map((activity, index) => (
+                    {displayActivities.slice(0, 5).map((activity, index) => (
                         <div
                             key={activity.id}
-                            className="flex items-start gap-4 relative"
+                            className="group relative flex items-start gap-4 hover:bg-surface-50 dark:hover:bg-surface-800/50 rounded-xl p-3 -m-3 transition-all duration-300"
                             style={{
                                 animationDelay: `${index * 0.1}s`
                             }}
                         >
-                            {/* Activity icon */}
+                            {/* Enhanced activity icon */}
                             <div className={cn(
-                                "z-10 w-8 h-8 rounded-full flex items-center justify-center shadow-sm",
+                                "relative z-10 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110",
                                 getActivityColor(activity.type)
                             )}>
                                 {getActivityIcon(activity.type)}
+                                {activity.type === 'create' && (
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-accent-400 to-brand-500 rounded-full flex items-center justify-center">
+                                        <Sparkles className="h-2 w-2 text-white" />
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="flex-1">
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-surface-900 dark:text-surface-50">
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-surface-900 dark:text-surface-100 leading-relaxed">
                                             {getActivityText(activity)}
                                         </p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-xs text-surface-500 dark:text-surface-400 flex items-center gap-1">
+                                        <div className="flex items-center gap-3 mt-2">
+                                            <span className="flex items-center gap-1 text-xs text-surface-500 dark:text-surface-400">
                                                 <Clock className="h-3 w-3" />
                                                 {formatTime(activity.timestamp)}
                                             </span>
 
                                             {activity.userName && (
-                                                <div className="flex items-center gap-1">
+                                                <>
                                                     <span className="h-1 w-1 rounded-full bg-surface-300 dark:bg-surface-600"></span>
-                                                    <div className="flex items-center gap-1">
-                                                        <div className="w-4 h-4 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center text-[10px] font-medium text-surface-600 dark:text-surface-400">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-surface-200 to-surface-300 dark:from-surface-700 dark:to-surface-600 flex items-center justify-center text-[10px] font-bold text-surface-600 dark:text-surface-300 shadow-sm">
                                                             {activity.userAvatar}
                                                         </div>
-                                                        <span className="text-xs text-surface-600 dark:text-surface-400">
+                                                        <span className="text-xs font-medium text-surface-600 dark:text-surface-400">
                                                             {activity.userName}
                                                         </span>
                                                     </div>
-                                                </div>
+                                                </>
                                             )}
                                         </div>
                                     </div>
 
+                                    {/* Recipe link */}
                                     <Link
                                         to={`/recipes/${activity.recipeId}`}
-                                        className="text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline"
+                                        className="flex-shrink-0 px-3 py-1 text-xs font-medium bg-surface-100 dark:bg-surface-700 hover:bg-brand-100 dark:hover:bg-brand-900/30 text-surface-600 dark:text-surface-400 hover:text-brand-600 dark:hover:text-brand-400 rounded-lg transition-all duration-200 hover:scale-105"
                                     >
                                         View
                                     </Link>
                                 </div>
-
-                                {/* Divider */}
-                                {index < displayActivities.length - 1 && (
-                                    <div className="pt-5"></div>
-                                )}
                             </div>
                         </div>
                     ))}
+
+                    {/* Show more activities link */}
+                    {displayActivities.length > 5 && (
+                        <div className="text-center pt-4">
+                            <Link
+                                to="/activity"
+                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-500 dark:hover:text-brand-300 transition-colors duration-200"
+                            >
+                                <span>View all activity</span>
+                                <ChevronRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="text-center py-8">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-800 dark:to-surface-700 rounded-2xl flex items-center justify-center">
+                        <Activity className="h-8 w-8 text-surface-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-surface-900 dark:text-white mb-2">No activity yet</h3>
+                    <p className="text-surface-600 dark:text-surface-400">Start cooking to see your activity here!</p>
                 </div>
             )}
         </div>

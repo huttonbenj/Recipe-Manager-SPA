@@ -1,6 +1,5 @@
 import React from 'react';
-import { Sparkles, TrendingUp, Lightbulb, ChefHat } from 'lucide-react';
-import { cn } from '../../../utils/cn';
+import { Sparkles, TrendingUp, Lightbulb, ChefHat, Target, Award, Zap } from 'lucide-react';
 
 interface DashboardInsightsProps {
     recipeCount: number;
@@ -11,77 +10,152 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
     recipeCount,
     mostUsedCategory
 }) => {
-    // Get a random cooking tip
+    // Enhanced cooking tips with categories
     const cookingTips = [
-        "Always read the entire recipe before you start cooking.",
-        "Taste as you go. Your palate is the most important tool.",
-        "Rest meat after cooking to retain its juices.",
-        "Keep your knives sharp. Dull knives are dangerous knives.",
-        "Mise en place (prep all ingredients) before cooking."
+        { tip: "Always read the entire recipe before you start cooking.", category: "Preparation" },
+        { tip: "Taste as you go. Your palate is the most important tool.", category: "Technique" },
+        { tip: "Rest meat after cooking to retain its juices.", category: "Protein" },
+        { tip: "Keep your knives sharp. Dull knives are dangerous knives.", category: "Safety" },
+        { tip: "Mise en place (prep all ingredients) before cooking.", category: "Organization" },
+        { tip: "Season in layers throughout the cooking process.", category: "Seasoning" },
+        { tip: "Don't overcrowd the pan when searing or sautéing.", category: "Technique" },
+        { tip: "Let your oven fully preheat before baking.", category: "Baking" }
     ];
 
-    const randomTip = cookingTips[Math.floor(Math.random() * cookingTips.length)];
+    const randomTipData = cookingTips[Math.floor(Math.random() * cookingTips.length)] || cookingTips[0];
+
+    // Get achievement level based on recipe count
+    const getAchievementLevel = (count: number) => {
+        if (count === 0) return { level: "Beginner", icon: ChefHat, color: "from-surface-500 to-surface-600" };
+        if (count < 5) return { level: "Home Cook", icon: ChefHat, color: "from-brand-500 to-brand-600" };
+        if (count < 10) return { level: "Recipe Creator", icon: Sparkles, color: "from-accent-500 to-blue-600" };
+        if (count < 20) return { level: "Culinary Artist", icon: Award, color: "from-warning-500 to-amber-600" };
+        return { level: "Master Chef", icon: Target, color: "from-error-500 to-pink-600" };
+    };
+
+    const achievement = getAchievementLevel(recipeCount);
+    const AchievementIcon = achievement.icon;
 
     return (
-        <div className="glass-card rounded-2xl p-6 border border-surface-200/50 dark:border-surface-700/50">
-            <div className="flex items-center justify-between mb-5">
-                <h3 className="font-bold text-lg text-surface-900 dark:text-white">
-                    Insights & Recommendations
-                </h3>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500/10 to-accent-500/10 flex items-center justify-center">
-                    <Sparkles className="h-5 w-5 text-accent-500" />
+        <div className="space-y-6">
+            {/* Today's Cooking Tip */}
+            <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-warning-50 to-amber-50 dark:from-warning-950/20 dark:to-amber-950/20 border border-warning-200/50 dark:border-warning-800/50">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-warning-500/10 rounded-full blur-2xl"></div>
+                <div className="relative">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-xl bg-gradient-to-br from-warning-500 to-amber-600 shadow-lg">
+                            <Lightbulb className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-warning-900 dark:text-warning-100">Chef's Tip</h3>
+                            <span className="text-xs font-medium px-2 py-1 bg-warning-100 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300 rounded-full">
+                                {randomTipData?.category || 'General'}
+                            </span>
+                        </div>
+                    </div>
+                    <blockquote className="text-warning-800 dark:text-warning-200 leading-relaxed font-medium">
+                        "{randomTipData?.tip || 'Always read the entire recipe before you start cooking.'}"
+                    </blockquote>
                 </div>
             </div>
 
-            {/* Cooking Tip */}
-            <div className="mb-6">
-                <div className="flex items-center gap-2 mb-3">
-                    <Lightbulb className="h-4 w-4 text-warning-500" />
-                    <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300">Today's Tip</h4>
+            {/* Achievement Level */}
+            <div className="relative overflow-hidden rounded-2xl p-6 bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm border border-surface-200/50 dark:border-surface-800/50 shadow-lg">
+                <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-2xl bg-gradient-to-br ${achievement.color} shadow-lg`}>
+                        <AchievementIcon className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-bold text-surface-900 dark:text-white">
+                                {achievement.level}
+                            </h3>
+                            <Sparkles className="h-4 w-4 text-accent-500" />
+                        </div>
+                        <p className="text-sm text-surface-600 dark:text-surface-400">
+                            {recipeCount} recipe{recipeCount !== 1 ? 's' : ''} created
+                        </p>
+                    </div>
+                    <div className="text-right">
+                        <div className="text-2xl font-bold text-surface-900 dark:text-white">
+                            {recipeCount}
+                        </div>
+                        <div className="text-xs text-surface-500 dark:text-surface-400">
+                            recipes
+                        </div>
+                    </div>
                 </div>
-                <blockquote className="text-surface-700 dark:text-surface-300 italic leading-relaxed text-sm pl-3 border-l-2 border-accent-500/30">
-                    "{randomTip}"
-                </blockquote>
+
+                {/* Progress bar */}
+                <div className="mt-4">
+                    <div className="flex justify-between text-xs text-surface-500 dark:text-surface-400 mb-2">
+                        <span>Progress to next level</span>
+                        <span>{Math.min(recipeCount % 5, 5)}/5</span>
+                    </div>
+                    <div className="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                        <div
+                            className={`h-full bg-gradient-to-r ${achievement.color} rounded-full transition-all duration-500`}
+                            style={{ width: `${Math.min((recipeCount % 5) * 20, 100)}%` }}
+                        ></div>
+                    </div>
+                </div>
             </div>
 
             {/* Personal Insights */}
             <div className="space-y-4">
                 {recipeCount > 0 ? (
                     <>
-                        <div className="p-4 rounded-xl bg-surface-100/70 dark:bg-surface-800/70">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-white shadow-md">
-                                    <TrendingUp className="h-5 w-5" />
+                        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-brand-50 to-accent-50 dark:from-brand-950/20 dark:to-accent-950/20 border border-brand-200/50 dark:border-brand-800/50">
+                            <div className="flex items-start gap-4">
+                                <div className="p-2 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 shadow-lg">
+                                    <TrendingUp className="h-5 w-5 text-white" />
                                 </div>
-                                <div>
-                                    <h4 className="font-medium text-surface-900 dark:text-white">
-                                        Your Recipe Activity
+                                <div className="flex-1">
+                                    <h4 className="font-bold text-brand-900 dark:text-brand-100 mb-2">
+                                        Your Cooking Journey
                                     </h4>
-                                    <p className="text-sm text-surface-600 dark:text-surface-400">
+                                    <p className="text-brand-800 dark:text-brand-200 leading-relaxed">
                                         {recipeCount < 3
-                                            ? "You're just getting started! Create more recipes to see insights."
-                                            : `You've created ${recipeCount} recipes. ${mostUsedCategory ? `Your favorite category is ${mostUsedCategory}.` : ''}`}
+                                            ? "You're just getting started! Create more recipes to unlock personalized insights and track your culinary progress."
+                                            : `Amazing! You've created ${recipeCount} recipes. ${mostUsedCategory ? `Your favorite category is ${mostUsedCategory}, showing your passion for these flavors.` : 'Keep exploring different cuisines and techniques!'}`}
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         {recipeCount >= 3 && (
-                            <div className={cn(
-                                "p-4 rounded-xl bg-gradient-to-br",
-                                "from-brand-500/10 to-accent-500/10",
-                                "dark:from-brand-500/20 dark:to-accent-500/20"
-                            )}>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-500 to-brand-500 flex items-center justify-center text-white shadow-md">
-                                        <Sparkles className="h-5 w-5" />
+                            <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-success-50 to-emerald-50 dark:from-success-950/20 dark:to-emerald-950/20 border border-success-200/50 dark:border-success-800/50">
+                                <div className="flex items-start gap-4">
+                                    <div className="p-2 rounded-xl bg-gradient-to-br from-success-500 to-emerald-600 shadow-lg">
+                                        <Zap className="h-5 w-5 text-white" />
                                     </div>
-                                    <div>
-                                        <h4 className="font-medium text-surface-900 dark:text-white">
+                                    <div className="flex-1">
+                                        <h4 className="font-bold text-success-900 dark:text-success-100 mb-2">
                                             Personalized Recommendation
                                         </h4>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400">
-                                            Try creating a {mostUsedCategory ? `${mostUsedCategory.toLowerCase()} recipe` : 'new recipe'} with seasonal ingredients this week.
+                                        <p className="text-success-800 dark:text-success-200 leading-relaxed">
+                                            {mostUsedCategory
+                                                ? `Since you love ${mostUsedCategory.toLowerCase()} recipes, try experimenting with fusion cuisine or seasonal variations of your favorites!`
+                                                : 'Try exploring a new cuisine this week! Mediterranean or Asian fusion could be great starting points.'
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {recipeCount >= 10 && (
+                            <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 border border-purple-200/50 dark:border-purple-800/50">
+                                <div className="flex items-start gap-4">
+                                    <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg">
+                                        <Award className="h-5 w-5 text-white" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="font-bold text-purple-900 dark:text-purple-100 mb-2">
+                                            Expert Challenge
+                                        </h4>
+                                        <p className="text-purple-800 dark:text-purple-200 leading-relaxed">
+                                            You're becoming a true culinary artist! Consider creating a signature dish or starting a themed recipe collection.
                                         </p>
                                     </div>
                                 </div>
@@ -89,16 +163,19 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
                         )}
                     </>
                 ) : (
-                    <div className="p-5 rounded-xl bg-surface-100/70 dark:bg-surface-800/70 text-center">
-                        <div className="inline-flex h-14 w-14 rounded-full bg-gradient-to-br from-brand-500/20 to-accent-500/20 items-center justify-center mb-3">
-                            <ChefHat className="h-7 w-7 text-brand-500 dark:text-brand-400" />
+                    <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 border border-surface-200/50 dark:border-surface-700/50 text-center">
+                        <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-accent-500/5"></div>
+                        <div className="relative">
+                            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-brand-100 to-accent-100 dark:from-brand-900/30 dark:to-accent-900/30 rounded-2xl flex items-center justify-center">
+                                <ChefHat className="h-8 w-8 text-brand-600 dark:text-brand-400" />
+                            </div>
+                            <h4 className="font-bold text-surface-900 dark:text-white mb-2">
+                                Start Your Culinary Journey
+                            </h4>
+                            <p className="text-surface-600 dark:text-surface-400 leading-relaxed">
+                                Create your first recipe to unlock personalized insights, track your progress, and get tailored recommendations for your cooking adventure.
+                            </p>
                         </div>
-                        <h4 className="font-medium text-surface-900 dark:text-white mb-1">
-                            Start Your Culinary Journey
-                        </h4>
-                        <p className="text-sm text-surface-600 dark:text-surface-400">
-                            Create your first recipe to unlock personalized insights and recommendations.
-                        </p>
                     </div>
                 )}
             </div>
