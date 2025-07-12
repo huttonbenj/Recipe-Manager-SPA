@@ -76,7 +76,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(({
         return () => {
             document.removeEventListener('keydown', handleEscape);
             if (preventScroll) {
-                document.body.style.overflow = 'unset';
+                document.body.style.overflow = '';
             }
         };
     }, [isOpen, onClose, closable, closeOnEscape, preventScroll]);

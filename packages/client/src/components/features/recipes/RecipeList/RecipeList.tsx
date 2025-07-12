@@ -19,6 +19,7 @@ export const RecipeList = () => {
     const [selectedDifficulty, setSelectedDifficulty] = useState(searchParams.get('difficulty') || '');
     const [selectedCookTime, setSelectedCookTime] = useState(searchParams.get('cookTime') || '');
     const [isFavorites, setIsFavorites] = useState(searchParams.get('liked') === 'true');
+    const [isSaved, setIsSaved] = useState(searchParams.get('saved') === 'true');
     const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'created_at');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>((searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc');
     const [quickFilter, setQuickFilter] = useState(searchParams.get('quickFilter') || '');
@@ -31,6 +32,7 @@ export const RecipeList = () => {
         const urlDifficulty = searchParams.get('difficulty') || '';
         const urlCookTime = searchParams.get('cookTime') || '';
         const urlLiked = searchParams.get('liked') === 'true';
+        const urlSaved = searchParams.get('saved') === 'true';
         const urlSortBy = searchParams.get('sortBy') || 'created_at';
         const urlSortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
         const urlQuickFilter = searchParams.get('quickFilter') || '';
@@ -45,6 +47,7 @@ export const RecipeList = () => {
         setSelectedDifficulty(urlDifficulty || parsedQuery.difficulty || '');
         setSelectedCookTime(urlCookTime || parsedQuery.cookTime || '');
         setIsFavorites(urlLiked);
+        setIsSaved(urlSaved);
         setSortBy(urlSortBy);
         setSortOrder(urlSortOrder);
         setQuickFilter(urlQuickFilter);
@@ -85,6 +88,7 @@ export const RecipeList = () => {
             difficulty: selectedDifficulty,
             cookTime: selectedCookTime,
             liked: isFavorites,
+            saved: isSaved,
             sortBy,
             sortOrder,
             page: currentPage
@@ -100,6 +104,7 @@ export const RecipeList = () => {
             if (selectedDifficulty) params.difficulty = selectedDifficulty;
             if (selectedCookTime) params.cookTime = selectedCookTime;
             if (isFavorites) params.liked = true;
+            if (isSaved) params.saved = true;
             if (sortBy) params.sortBy = sortBy;
             if (sortOrder) params.sortOrder = sortOrder;
 
@@ -109,7 +114,7 @@ export const RecipeList = () => {
 
     const recipes: Recipe[] = recipesData?.data || [];
     const totalRecipes = recipesData?.pagination?.totalCount || 0;
-    const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites;
+    const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || isSaved;
 
     // Update URL params when filters change
     const updateSearchParams = (updates: Record<string, string>) => {
@@ -128,6 +133,13 @@ export const RecipeList = () => {
             newParams.set('liked', 'true');
         } else {
             newParams.delete('liked');
+        }
+
+        // Handle saved separately since it's boolean
+        if (isSaved) {
+            newParams.set('saved', 'true');
+        } else {
+            newParams.delete('saved');
         }
 
         // Handle quickFilter separately
@@ -166,6 +178,7 @@ export const RecipeList = () => {
         setSelectedDifficulty('');
         setSelectedCookTime('');
         setIsFavorites(false);
+        setIsSaved(false);
         setSortBy('created_at');
         setSortOrder('desc');
         setQuickFilter('');
@@ -219,6 +232,7 @@ export const RecipeList = () => {
                             selectedDifficulty={selectedDifficulty}
                             selectedCookTime={selectedCookTime}
                             isFavorites={isFavorites}
+                            isSaved={isSaved}
                             sortBy={sortBy}
                             sortOrder={sortOrder}
                             quickFilter={quickFilter}
@@ -227,6 +241,7 @@ export const RecipeList = () => {
                             onDifficultyChange={setSelectedDifficulty}
                             onCookTimeChange={setSelectedCookTime}
                             onFavoritesToggle={setIsFavorites}
+                            onSavedToggle={setIsSaved}
                             onSortByChange={setSortBy}
                             onSortOrderChange={setSortOrder}
                             onQuickFilterChange={setQuickFilter}

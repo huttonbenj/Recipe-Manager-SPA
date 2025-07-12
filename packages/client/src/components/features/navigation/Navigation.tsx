@@ -177,6 +177,8 @@ export const Navigation: React.FC = () => {
         { label: 'Quick (≤30min)', type: 'cookTime', value: '30', icon: Clock, color: 'blue' },
         { label: 'Popular', type: 'sort', value: 'popular', icon: TrendingUp, color: 'purple' },
         { label: 'Recent', type: 'sort', value: 'recent', icon: Sparkles, color: 'orange' },
+        { label: 'Favorites', type: 'favorites', value: 'true', icon: Heart, color: 'red' },
+        { label: 'Saved', type: 'saved', value: 'true', icon: Star, color: 'yellow' },
     ];
 
     // Handle scroll effect for navigation
@@ -198,13 +200,26 @@ export const Navigation: React.FC = () => {
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isSearchOpen) {
-                setIsSearchOpen(false);
-                setSelectedSuggestionIndex(-1);
+                closeSearch();
             }
         };
 
         document.addEventListener('keydown', handleEscape);
         return () => document.removeEventListener('keydown', handleEscape);
+    }, [isSearchOpen]);
+
+    // Cleanup body overflow on unmount or when search state changes
+    useEffect(() => {
+        if (isSearchOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+
+        // Cleanup on unmount
+        return () => {
+            document.body.style.overflow = '';
+        };
     }, [isSearchOpen]);
 
     // Save search to recent searches
@@ -243,9 +258,7 @@ export const Navigation: React.FC = () => {
             // Always navigate to recipes page, even if only filters are present
             const queryString = params.toString();
             navigate(`/recipes${queryString ? `?${queryString}` : ''}`);
-            setIsSearchOpen(false);
-            setSearchQuery('');
-            setSelectedSuggestionIndex(-1);
+            closeSearch();
         }
     };
 
@@ -267,9 +280,7 @@ export const Navigation: React.FC = () => {
         // Save to recent searches
         saveRecentSearch(suggestion.title);
 
-        setIsSearchOpen(false);
-        setSearchQuery('');
-        setSelectedSuggestionIndex(-1);
+        closeSearch();
     };
 
     const handleQuickFilterClick = (filter: any) => {
@@ -290,10 +301,16 @@ export const Navigation: React.FC = () => {
                 params.set('sortOrder', 'desc');
                 params.set('quickFilter', 'recent');
             }
+        } else if (filter.type === 'favorites') {
+            params.set('liked', 'true');
+            params.set('quickFilter', 'favorites');
+        } else if (filter.type === 'saved') {
+            params.set('saved', 'true');
+            params.set('quickFilter', 'saved');
         }
 
         navigate(`/recipes?${params.toString()}`);
-        setIsSearchOpen(false);
+        closeSearch();
     };
 
     const handleRecentSearchClick = (recentSearch: RecentSearch) => {
@@ -307,8 +324,7 @@ export const Navigation: React.FC = () => {
         }
 
         navigate(`/recipes?${params.toString()}`);
-        setIsSearchOpen(false);
-        setSearchQuery('');
+        closeSearch();
     };
 
     const clearRecentSearches = () => {
@@ -338,14 +354,13 @@ export const Navigation: React.FC = () => {
 
     const openSearch = () => {
         setIsSearchOpen(true);
-        document.body.style.overflow = 'hidden';
     };
 
     const closeSearch = () => {
         setIsSearchOpen(false);
         setSearchQuery('');
         setSelectedSuggestionIndex(-1);
-        document.body.style.overflow = 'unset';
+        document.body.style.overflow = '';
     };
 
     return (

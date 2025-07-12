@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, X, Heart, Tag, Clock, Zap, Filter, ChefHat } from 'lucide-react';
+import { Search, X, Heart, Tag, Clock, Zap, Filter, ChefHat, Star } from 'lucide-react';
 import { Button, Input, Select, FormField } from '../../../ui';
 import { recipeService } from '../../../../services';
 import { parseSearchQuery, formatSearchDescription } from '../../../../utils/searchParser';
@@ -11,6 +11,7 @@ interface RecipeFiltersProps {
     selectedDifficulty: string;
     selectedCookTime: string;
     isFavorites: boolean;
+    isSaved: boolean;
     sortBy: string;
     sortOrder: 'asc' | 'desc';
     quickFilter: string;
@@ -19,6 +20,7 @@ interface RecipeFiltersProps {
     onDifficultyChange: (value: string) => void;
     onCookTimeChange: (value: string) => void;
     onFavoritesToggle: (value: boolean) => void;
+    onSavedToggle: (value: boolean) => void;
     onSortByChange: (value: string) => void;
     onSortOrderChange: (value: 'asc' | 'desc') => void;
     onQuickFilterChange: (value: string) => void;
@@ -61,6 +63,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     selectedDifficulty,
     selectedCookTime,
     isFavorites,
+    isSaved,
     sortBy,
     sortOrder,
     quickFilter,
@@ -69,6 +72,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     onDifficultyChange,
     onCookTimeChange,
     onFavoritesToggle,
+    onSavedToggle,
     onSortByChange,
     onSortOrderChange,
     onQuickFilterChange,
@@ -106,7 +110,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     // Check if sort is explicitly set (not default) or if a quick filter was used
     const hasExplicitSort = quickFilter || sortBy !== 'created_at' || sortOrder !== 'desc';
 
-    const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || hasExplicitSort;
+    const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || isSaved || hasExplicitSort;
     const hasSmartFilters = parsedQuery.category || parsedQuery.difficulty || parsedQuery.cookTime;
 
     // Helper function to get sort display name
@@ -123,6 +127,12 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         }
         if (quickFilter === 'quick') {
             return 'Quick';
+        }
+        if (quickFilter === 'favorites') {
+            return 'Favorites';
+        }
+        if (quickFilter === 'saved') {
+            return 'Saved';
         }
 
         // Fallback to sort parameters
@@ -266,6 +276,19 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                             </button>
                         </span>
                     )}
+                    {isSaved && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                            <Star className="h-3 w-3" />
+                            Saved
+                            <button
+                                type="button"
+                                onClick={() => onSavedToggle(false)}
+                                className="ml-1 hover:bg-black/10 rounded-full p-0.5"
+                            >
+                                <X className="h-3 w-3" />
+                            </button>
+                        </span>
+                    )}
                     {hasExplicitSort && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                             <Zap className="h-3 w-3" />
@@ -286,8 +309,8 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                 </div>
             )}
 
-            {/* Search & Favorites Row */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            {/* Search & Favorites/Saved Row */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 {/* Enhanced Search Input */}
                 <div className="md:col-span-3">
                     <Input
@@ -319,6 +342,21 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                     <label htmlFor="favorites-toggle" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center cursor-pointer">
                         <Heart className={`h-4 w-4 mr-1 ${isFavorites ? 'fill-current text-red-500' : ''}`} />
                         Favorites
+                    </label>
+                </div>
+
+                {/* Saved Toggle */}
+                <div className="flex items-center justify-center space-x-2 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <input
+                        id="saved-toggle"
+                        type="checkbox"
+                        checked={isSaved}
+                        onChange={(e) => onSavedToggle(e.target.checked)}
+                        className="h-4 w-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
+                    />
+                    <label htmlFor="saved-toggle" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center cursor-pointer">
+                        <Star className={`h-4 w-4 mr-1 ${isSaved ? 'fill-current text-yellow-500' : ''}`} />
+                        Saved
                     </label>
                 </div>
             </div>
