@@ -1,9 +1,16 @@
-export const RegisterFormFooter = () => {
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+export const RegisterFormFooter: React.FC = () => {
     return (
-        <div className="text-center">
-            <p className="text-sm text-gray-600">
-                By creating an account, you agree to our Terms of Service and Privacy Policy.
-            </p>
-        </div>
+        <p className="text-sm text-surface-600 dark:text-surface-400 text-center">
+            Already have an account?{' '}
+            <Link
+                to="/login"
+                className="font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300"
+            >
+                Sign in
+            </Link>
+        </p>
     );
 }; 

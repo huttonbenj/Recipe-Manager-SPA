@@ -4,6 +4,9 @@ import { Clock, ChefHat, Users, Star, Eye } from 'lucide-react';
 import { Recipe } from '@recipe-manager/shared';
 import { Badge } from '../../../ui/Badge';
 import { cn } from '../../../../utils/cn';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { recipeService } from '../../../../services';
+import { useAuth } from '../../../../hooks';
 
 interface RecipeCardProps {
     recipe: Recipe;
@@ -14,6 +17,42 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, className }) => 
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
     const { id, title, image_url, cook_time = 0, servings = 0, category, difficulty } = recipe;
+
+    const queryClient = useQueryClient();
+    const { user } = useAuth();
+    const [isSaved, setIsSaved] = useState((recipe as any).saved ?? false);
+
+    const saveMutation = useMutation({
+        mutationFn: () => recipeService.saveRecipe(recipe.id),
+        onSuccess: () => {
+            setIsSaved(true);
+            queryClient.invalidateQueries({ queryKey: ['recipes'] });
+            queryClient.invalidateQueries({ queryKey: ['recipe', recipe.id] });
+        },
+        onError: (error) => {
+            console.error('RecipeCard: Save mutation failed:', error);
+        },
+    });
+    const unsaveMutation = useMutation({
+        mutationFn: () => recipeService.unsaveRecipe(recipe.id),
+        onSuccess: () => {
+            setIsSaved(false);
+            queryClient.invalidateQueries({ queryKey: ['recipes'] });
+            queryClient.invalidateQueries({ queryKey: ['recipe', recipe.id] });
+        },
+        onError: (error) => {
+            console.error('RecipeCard: Unsave mutation failed:', error);
+        },
+    });
+    const toggleSaved = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (!user) return;
+        if (isSaved) {
+            unsaveMutation.mutate();
+        } else {
+            saveMutation.mutate();
+        }
+    };
 
     const getDifficultyBadgeVariant = (): 'success' | 'warning' | 'error' | 'secondary' => {
         switch (difficulty?.toLowerCase()) {
@@ -50,6 +89,15 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, className }) => 
                         <ChefHat className="h-16 w-16 text-surface-600" />
                     </div>
                 )}
+                {/* Save (star) button - interactive */}
+                <button
+                    className={cn("absolute top-2 right-2 glass-card rounded-full p-2 transition-colors z-10", isSaved ? "text-yellow-500" : "text-surface-400 dark:text-surface-500 hover:text-yellow-500")}
+                    onClick={toggleSaved}
+                    aria-label={isSaved ? 'Unsave recipe' : 'Save recipe'}
+                    tabIndex={0}
+                >
+                    <Star className={cn("h-5 w-5", isSaved && "fill-current")} />
+                </button>
             </div>
 
             {/* Combined Content and Hover Overlay */}

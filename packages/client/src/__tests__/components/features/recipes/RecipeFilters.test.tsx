@@ -33,7 +33,6 @@ describe('RecipeFilters Component', () => {
         expect(screen.getByRole('combobox', { name: /category/i })).toBeInTheDocument();
         expect(screen.getByRole('combobox', { name: /difficulty/i })).toBeInTheDocument();
         expect(screen.getByRole('combobox', { name: /cook time/i })).toBeInTheDocument();
-        expect(screen.getByLabelText(/favorites/i)).toBeInTheDocument();
         expect(screen.getByRole('combobox', { name: /sort by/i })).toBeInTheDocument();
         expect(screen.getByRole('combobox', { name: /sort order/i })).toBeInTheDocument();
     });
@@ -50,10 +49,48 @@ describe('RecipeFilters Component', () => {
         expect(defaultProps.onSearch).toHaveBeenCalled();
     });
 
-    it('calls onFavoritesToggle when favorites checkbox is clicked', () => {
+    it('calls onQuickFilterChange when quick filter button is clicked', () => {
         renderWithProviders(<RecipeFilters {...defaultProps} />);
-        fireEvent.click(screen.getByLabelText(/favorites/i));
-        expect(defaultProps.onFavoritesToggle).toHaveBeenCalledWith(true);
+        fireEvent.click(screen.getByRole('button', { name: /favorites/i }));
+        expect(defaultProps.onQuickFilterChange).toHaveBeenCalledWith('favorites');
+    });
+
+    it('calls individual filter removal handlers when filter tag X button is clicked', () => {
+        renderWithProviders(<RecipeFilters {...defaultProps} selectedCategory="Dessert" selectedDifficulty="Easy" isFavorites={true} />);
+
+        // Click the X button on the category filter
+        const categoryFilter = screen.getByTitle('Remove Dessert filter');
+        fireEvent.click(categoryFilter);
+        expect(defaultProps.onCategoryChange).toHaveBeenCalledWith('');
+
+        // Click the X button on the difficulty filter
+        const difficultyFilter = screen.getByTitle('Remove Easy filter');
+        fireEvent.click(difficultyFilter);
+        expect(defaultProps.onDifficultyChange).toHaveBeenCalledWith('');
+
+        // Click the X button on the favorites filter
+        const favoritesFilter = screen.getByTitle('Remove Favorites filter');
+        fireEvent.click(favoritesFilter);
+        expect(defaultProps.onFavoritesToggle).toHaveBeenCalledWith(false);
+    });
+
+    it('shows quick filter tags in active filters when applied', () => {
+        renderWithProviders(<RecipeFilters {...defaultProps} quickFilter="popular" />);
+
+        // Check that Popular filter appears in active filters
+        expect(screen.getByText('Popular')).toBeInTheDocument();
+        expect(screen.getByTitle('Remove Popular filter')).toBeInTheDocument();
+    });
+
+    it('removes quick filters when X button is clicked', () => {
+        renderWithProviders(<RecipeFilters {...defaultProps} quickFilter="recent" />);
+
+        // Click the X button on the recent filter
+        const recentFilter = screen.getByTitle('Remove Recent filter');
+        fireEvent.click(recentFilter);
+        expect(defaultProps.onQuickFilterChange).toHaveBeenCalledWith('');
+        expect(defaultProps.onSortByChange).toHaveBeenCalledWith('created_at');
+        expect(defaultProps.onSortOrderChange).toHaveBeenCalledWith('desc');
     });
 
     it('shows active filter tags when filters are applied', () => {
@@ -61,6 +98,11 @@ describe('RecipeFilters Component', () => {
         expect(screen.getByText('Dessert')).toBeInTheDocument();
         expect(screen.getAllByText('Easy')[0]).toBeInTheDocument(); // First instance is the filter tag
         expect(screen.getAllByText('Favorites')[0]).toBeInTheDocument(); // First instance is the filter tag
+
+        // Check that X buttons are present for removing filters
+        expect(screen.getByTitle('Remove Dessert filter')).toBeInTheDocument();
+        expect(screen.getByTitle('Remove Easy filter')).toBeInTheDocument();
+        expect(screen.getByTitle('Remove Favorites filter')).toBeInTheDocument();
     });
 
     it('shows smart filter description when smart filters are detected', () => {

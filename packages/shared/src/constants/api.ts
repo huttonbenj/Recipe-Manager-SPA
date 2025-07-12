@@ -33,6 +33,7 @@ export const API_ENDPOINTS = {
     CATEGORIES: '/api/recipes/categories',
     STATS: '/api/recipes/stats',
     LIKE: '/api/recipes/:id/like',
+    SAVE: '/api/recipes/:id/save',
   },
   
   // User endpoints

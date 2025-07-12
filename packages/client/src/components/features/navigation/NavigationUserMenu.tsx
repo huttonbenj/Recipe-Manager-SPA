@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { User as UserType } from '@recipe-manager/shared';
-import { User, Settings, LogOut } from 'lucide-react';
+import { User, Settings, LogOut, Palette, Moon } from 'lucide-react';
 import { cn } from '../../../utils/cn';
+import { ThemeToggle } from '../../ui/ThemeToggle';
 
 interface NavigationUserMenuProps {
     user: UserType | null;
@@ -97,6 +98,24 @@ export const NavigationUserMenu: React.FC<NavigationUserMenuProps> = ({
                         <Settings className="mr-3 h-4 w-4 text-surface-500 dark:text-surface-400" />
                         Settings
                     </Link>
+
+                    {/* Theme Toggles */}
+                    <div className="px-4 py-2 border-t border-surface-200 dark:border-surface-700">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center">
+                                <Moon className="mr-3 h-4 w-4 text-surface-500 dark:text-surface-400" />
+                                <span className="text-sm text-surface-700 dark:text-surface-300">Theme Mode</span>
+                            </div>
+                            <ThemeToggle variant="dropdown" size="sm" position="top" />
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <Palette className="mr-3 h-4 w-4 text-surface-500 dark:text-surface-400" />
+                                <span className="text-sm text-surface-700 dark:text-surface-300">Color Theme</span>
+                            </div>
+                            <ThemeToggle variant="color" size="sm" position="top" />
+                        </div>
+                    </div>
 
                     <button
                         onClick={() => {

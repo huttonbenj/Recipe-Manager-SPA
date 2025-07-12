@@ -1,29 +1,42 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { STORAGE_KEYS } from '@recipe-manager/shared';
 
-type Theme = 'light' | 'dark' | 'system';
+type ThemeMode = 'light' | 'dark' | 'system';
+type ThemeColor = 'default' | 'royal';
+
+interface ThemeState {
+    mode: ThemeMode;
+    color: ThemeColor;
+}
 
 interface ThemeContextType {
-    theme: Theme;
-    setTheme: (theme: Theme) => void;
+    theme: ThemeState;
+    setThemeMode: (mode: ThemeMode) => void;
+    setThemeColor: (color: ThemeColor) => void;
     isDarkMode: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [theme, setThemeState] = useState<Theme>(() => {
-        // Get theme from localStorage or default to 'system'
-        const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
-        return (savedTheme as Theme) || 'system';
+    const [theme, setThemeState] = useState<ThemeState>(() => {
+        // Get theme mode from localStorage or default to 'system'
+        const savedMode = localStorage.getItem(STORAGE_KEYS.THEME_MODE);
+        // Get theme color from localStorage or default to 'default'
+        const savedColor = localStorage.getItem(STORAGE_KEYS.THEME_COLOR);
+
+        return {
+            mode: (savedMode as ThemeMode) || 'system',
+            color: (savedColor as ThemeColor) || 'default'
+        };
     });
 
     const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
         if (typeof window !== 'undefined') {
             // Check for saved theme or system preference
-            const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
-            if (savedTheme === 'dark') return true;
-            if (savedTheme === 'light') return false;
+            const savedMode = localStorage.getItem(STORAGE_KEYS.THEME_MODE);
+            if (savedMode === 'dark') return true;
+            if (savedMode === 'light') return false;
 
             // Check system preference
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -31,48 +44,71 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return false;
     });
 
-    // Update the theme when it changes
-    const setTheme = (newTheme: Theme) => {
-        setThemeState(newTheme);
-        localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
+    // Update the theme mode when it changes
+    const setThemeMode = (newMode: ThemeMode) => {
+        setThemeState(prev => ({ ...prev, mode: newMode }));
+        localStorage.setItem(STORAGE_KEYS.THEME_MODE, newMode);
+    };
+
+    // Update the theme color when it changes
+    const setThemeColor = (newColor: ThemeColor) => {
+        setThemeState(prev => ({ ...prev, color: newColor }));
+        localStorage.setItem(STORAGE_KEYS.THEME_COLOR, newColor);
     };
 
     // Effect to handle theme changes and system preference changes
     useEffect(() => {
         const root = window.document.documentElement;
 
-        // Remove previous theme class
-        root.classList.remove('light', 'dark');
+        // Remove all theme classes first
+        root.classList.remove('light', 'dark', 'theme-default', 'theme-royal');
 
         // Determine if dark mode should be active
         let isDark = false;
 
-        if (theme === 'system') {
+        if (theme.mode === 'system') {
             isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
             // Listen for system preference changes
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
             const handleChange = (e: MediaQueryListEvent) => {
                 setIsDarkMode(e.matches);
-                root.classList.toggle('dark', e.matches);
+                // Update classes when system preference changes
+                root.classList.remove('light', 'dark');
+                root.classList.add(e.matches ? 'dark' : 'light');
             };
 
             mediaQuery.addEventListener('change', handleChange);
+
+            // Clean up listener when component unmounts or theme changes
             return () => mediaQuery.removeEventListener('change', handleChange);
         } else {
-            isDark = theme === 'dark';
+            isDark = theme.mode === 'dark';
         }
 
-        // Apply theme class
+        // Apply light/dark mode class
         root.classList.add(isDark ? 'dark' : 'light');
+
+        // Apply color theme class
+        root.classList.add(`theme-${theme.color}`);
+
+        // Update dark mode state
         setIsDarkMode(isDark);
+
+        // Log for debugging
+        console.log('Theme applied:', {
+            mode: theme.mode,
+            color: theme.color,
+            isDark,
+            classes: root.classList.toString()
+        });
 
         // Return empty cleanup function for non-system theme paths
         return () => { };
-    }, [theme]);
+    }, [theme.mode, theme.color]);
 
     return (
-        <ThemeContext.Provider value={{ theme, setTheme, isDarkMode }}>
+        <ThemeContext.Provider value={{ theme, setThemeMode, setThemeColor, isDarkMode }}>
             {children}
         </ThemeContext.Provider>
     );

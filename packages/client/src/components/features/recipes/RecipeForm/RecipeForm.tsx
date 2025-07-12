@@ -31,11 +31,11 @@ export const RecipeForm: React.FC = () => {
 
     return (
         <PageTransitionScale>
-            <div className="min-h-screen bg-surface-950 text-white">
+            <div className="min-h-screen bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-white">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                     <RecipeFormHeader isEditing={isEditing} />
                     <form onSubmit={handleSubmit} className="space-y-8 mt-8" noValidate>
-                        <Card className="p-8 bg-surface-900 border-surface-800">
+                        <Card className="p-8 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800">
                             <RecipeImageUpload
                                 imagePreview={imagePreview}
                                 onImageChange={handleImageChange}
@@ -44,8 +44,8 @@ export const RecipeForm: React.FC = () => {
                             />
                         </Card>
 
-                        <Card className="p-8 bg-surface-900 border-surface-800">
-                            <h2 className="text-2xl font-bold mb-6">Recipe Details</h2>
+                        <Card className="p-8 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800">
+                            <h2 className="text-2xl font-bold mb-6 text-surface-900 dark:text-white">Recipe Details</h2>
                             <RecipeBasicInfo
                                 formData={formData}
                                 errors={errors}
@@ -53,8 +53,8 @@ export const RecipeForm: React.FC = () => {
                             />
                         </Card>
 
-                        <Card className="p-8 bg-surface-900 border-surface-800">
-                            <h2 className="text-2xl font-bold mb-6">Ingredients</h2>
+                        <Card className="p-8 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800">
+                            <h2 className="text-2xl font-bold mb-6 text-surface-900 dark:text-white">Ingredients</h2>
                             <RecipeIngredients
                                 ingredients={formData.ingredients}
                                 onChange={(value) => updateFormData('ingredients', value)}
@@ -62,8 +62,8 @@ export const RecipeForm: React.FC = () => {
                             />
                         </Card>
 
-                        <Card className="p-8 bg-surface-900 border-surface-800">
-                            <h2 className="text-2xl font-bold mb-6">Instructions</h2>
+                        <Card className="p-8 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800">
+                            <h2 className="text-2xl font-bold mb-6 text-surface-900 dark:text-white">Instructions</h2>
                             <RecipeInstructions
                                 instructions={formData.instructions}
                                 onChange={(value) => updateFormData('instructions', value)}

@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sun, Moon, Monitor, Check, ChevronDown } from 'lucide-react';
+import { Sun, Moon, Monitor, Check, ChevronDown, Palette } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { cn } from '../../../utils/cn';
 
 interface ThemeToggleProps {
     className?: string;
-    variant?: 'button' | 'switch' | 'dropdown' | 'compact';
+    variant?: 'button' | 'switch' | 'dropdown' | 'compact' | 'color';
     size?: 'sm' | 'md' | 'lg';
     showLabel?: boolean;
     showSystemIndicator?: boolean;
@@ -24,16 +24,21 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
     rounded = 'md',
     position = 'bottom',
 }) => {
-    const { theme, setTheme, isDarkMode } = useTheme();
+    const { theme, setThemeMode, setThemeColor, isDarkMode } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
+    const [isColorOpen, setIsColorOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const colorDropdownRef = useRef<HTMLDivElement>(null);
 
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
+            }
+            if (colorDropdownRef.current && !colorDropdownRef.current.contains(event.target as Node)) {
+                setIsColorOpen(false);
             }
         };
 
@@ -48,26 +53,40 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         }
 
         setIsAnimating(true);
-        if (theme === 'light') {
-            setTheme('dark');
-        } else if (theme === 'dark') {
-            setTheme('system');
+        if (theme.mode === 'light') {
+            setThemeMode('dark');
+        } else if (theme.mode === 'dark') {
+            setThemeMode('system');
         } else {
-            setTheme('light');
+            setThemeMode('light');
         }
 
         setTimeout(() => setIsAnimating(false), 300);
     };
 
-    const selectTheme = (newTheme: 'light' | 'dark' | 'system') => {
+    const selectThemeMode = (newMode: 'light' | 'dark' | 'system') => {
         setIsAnimating(true);
-        setTheme(newTheme);
+        setThemeMode(newMode);
         setIsOpen(false);
         setTimeout(() => setIsAnimating(false), 300);
     };
 
+    const toggleColorTheme = () => {
+        if (variant === 'color') {
+            setIsColorOpen(!isColorOpen);
+            return;
+        }
+    };
+
+    const selectThemeColor = (newColor: 'default' | 'royal') => {
+        setIsAnimating(true);
+        setThemeColor(newColor);
+        setIsColorOpen(false);
+        setTimeout(() => setIsAnimating(false), 300);
+    };
+
     const getThemeLabel = () => {
-        switch (theme) {
+        switch (theme.mode) {
             case 'light':
                 return 'Light';
             case 'dark':
@@ -79,11 +98,26 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         }
     };
 
+    const getColorThemeLabel = () => {
+        switch (theme.color) {
+            case 'default':
+                return 'Teal';
+            case 'royal':
+                return 'Royal Purple';
+            default:
+                return 'Teal';
+        }
+    };
+
     const getThemeIcon = () => {
-        if (theme === 'system') {
+        if (theme.mode === 'system') {
             return <Monitor className="h-full w-full" />;
         }
         return isDarkMode ? <Moon className="h-full w-full" /> : <Sun className="h-full w-full" />;
+    };
+
+    const getColorThemeIcon = () => {
+        return <Palette className="h-full w-full" />;
     };
 
     const sizeStyles = {
@@ -125,6 +159,86 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         bottom: 'bottom-full mb-2',
     };
 
+    // Color theme toggle
+    if (variant === 'color') {
+        return (
+            <div className="relative" ref={colorDropdownRef}>
+                <button
+                    onClick={toggleColorTheme}
+                    className={cn(
+                        "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+                        "dark:border-surface-800 dark:bg-surface-900 dark:hover:bg-surface-800 dark:ring-offset-surface-950",
+                        sizeStyles[size],
+                        roundedStyles[rounded],
+                        animationStyles[animation],
+                        showLabel && "px-3 w-auto",
+                        isAnimating && "scale-95",
+                        className
+                    )}
+                    aria-label="Change color theme"
+                    type="button"
+                >
+                    <div className={cn(
+                        "relative flex items-center justify-center",
+                        iconSizeStyles[size],
+                    )}>
+                        {getColorThemeIcon()}
+                    </div>
+
+                    {showLabel && (
+                        <span className={cn("ml-2 font-medium", textSizeStyles[size])}>
+                            {getColorThemeLabel()}
+                        </span>
+                    )}
+
+                    <ChevronDown className={cn("ml-1 h-3 w-3 transition-transform", isColorOpen && "rotate-180")} />
+                </button>
+
+                {isColorOpen && (
+                    <div className={cn(
+                        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border border-surface-200 bg-white p-1 text-surface-950 shadow-md animate-in fade-in-80 dark:border-surface-800 dark:bg-surface-950 dark:text-surface-50",
+                        positionStyles[position]
+                    )}>
+                        <button
+                            onClick={() => selectThemeColor('default')}
+                            className={cn(
+                                "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-surface-100 dark:hover:bg-surface-800",
+                                theme.color === 'default' && "bg-surface-100 dark:bg-surface-800"
+                            )}
+                        >
+                            <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                <span className="h-full w-full rounded-full bg-gradient-to-br from-brand-500 to-accent-500" />
+                            </span>
+                            <span>Teal & Orange</span>
+                            {theme.color === 'default' && (
+                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-4 w-4" />
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => selectThemeColor('royal')}
+                            className={cn(
+                                "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-surface-100 dark:hover:bg-surface-800",
+                                theme.color === 'royal' && "bg-surface-100 dark:bg-surface-800"
+                            )}
+                        >
+                            <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                <span className="h-full w-full rounded-full bg-gradient-to-br from-brand-500 to-accent-500" />
+                            </span>
+                            <span>Royal Purple & Gold</span>
+                            {theme.color === 'royal' && (
+                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-4 w-4" />
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     // Button variant
     if (variant === 'button') {
         return (
@@ -140,7 +254,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                     isAnimating && "scale-95",
                     className
                 )}
-                aria-label={`Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} mode`}
+                aria-label={`Switch to ${theme.mode === 'light' ? 'dark' : theme.mode === 'dark' ? 'system' : 'light'} mode`}
                 type="button"
             >
                 <div className={cn(
@@ -160,10 +274,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                                 "absolute transition-all duration-300",
                                 isDarkMode ? "rotate-0 scale-100" : "-rotate-90 scale-0"
                             )} />
-                            {theme === 'system' && (
+                            {theme.mode === 'system' && (
                                 <Monitor className={cn(
                                     "absolute transition-all duration-300",
-                                    theme === 'system' ? "rotate-0 scale-100" : "rotate-90 scale-0"
+                                    theme.mode === 'system' ? "rotate-0 scale-100" : "rotate-90 scale-0"
                                 )} />
                             )}
                         </>
@@ -177,7 +291,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                     </span>
                 )}
 
-                {showSystemIndicator && theme === 'system' && (
+                {showSystemIndicator && theme.mode === 'system' && (
                     <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
                 )}
             </button>
@@ -225,8 +339,105 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                     </span>
                 )}
 
-                {showSystemIndicator && theme === 'system' && (
+                {showSystemIndicator && theme.mode === 'system' && (
                     <div className="h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
+                )}
+            </div>
+        );
+    }
+
+    // Dropdown variant
+    if (variant === 'dropdown') {
+        return (
+            <div className="relative" ref={dropdownRef}>
+                <button
+                    onClick={toggleTheme}
+                    className={cn(
+                        "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+                        "dark:border-surface-800 dark:bg-surface-900 dark:hover:bg-surface-800 dark:ring-offset-surface-950",
+                        sizeStyles[size],
+                        roundedStyles[rounded],
+                        animationStyles[animation],
+                        showLabel && "px-3 w-auto",
+                        isAnimating && "scale-95",
+                        className
+                    )}
+                    aria-label="Change theme"
+                    type="button"
+                >
+                    <div className={cn(
+                        "relative flex items-center justify-center",
+                        iconSizeStyles[size],
+                    )}>
+                        {getThemeIcon()}
+                    </div>
+
+                    {showLabel && (
+                        <span className={cn("ml-2 font-medium", textSizeStyles[size])}>
+                            {getThemeLabel()}
+                        </span>
+                    )}
+
+                    <ChevronDown className={cn("ml-1 h-3 w-3 transition-transform", isOpen && "rotate-180")} />
+                </button>
+
+                {isOpen && (
+                    <div className={cn(
+                        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border border-surface-200 bg-white p-1 text-surface-950 shadow-md animate-in fade-in-80 dark:border-surface-800 dark:bg-surface-950 dark:text-surface-50",
+                        positionStyles[position]
+                    )}>
+                        <button
+                            onClick={() => selectThemeMode('light')}
+                            className={cn(
+                                "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-surface-100 dark:hover:bg-surface-800",
+                                theme.mode === 'light' && "bg-surface-100 dark:bg-surface-800"
+                            )}
+                        >
+                            <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                <Sun className="h-4 w-4" />
+                            </span>
+                            <span>Light</span>
+                            {theme.mode === 'light' && (
+                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-4 w-4" />
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => selectThemeMode('dark')}
+                            className={cn(
+                                "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-surface-100 dark:hover:bg-surface-800",
+                                theme.mode === 'dark' && "bg-surface-100 dark:bg-surface-800"
+                            )}
+                        >
+                            <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                <Moon className="h-4 w-4" />
+                            </span>
+                            <span>Dark</span>
+                            {theme.mode === 'dark' && (
+                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-4 w-4" />
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => selectThemeMode('system')}
+                            className={cn(
+                                "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-surface-100 dark:hover:bg-surface-800",
+                                theme.mode === 'system' && "bg-surface-100 dark:bg-surface-800"
+                            )}
+                        >
+                            <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                <Monitor className="h-4 w-4" />
+                            </span>
+                            <span>System</span>
+                            {theme.mode === 'system' && (
+                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-4 w-4" />
+                                </span>
+                            )}
+                        </button>
+                    </div>
                 )}
             </div>
         );
@@ -244,89 +455,15 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                     isAnimating && "scale-95",
                     className
                 )}
-                aria-label={`Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} mode`}
+                aria-label={`Switch to ${theme.mode === 'light' ? 'dark' : theme.mode === 'dark' ? 'system' : 'light'} mode`}
                 type="button"
             >
                 {getThemeIcon()}
-                {showSystemIndicator && theme === 'system' && (
-                    <div className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-brand-500 animate-pulse" />
-                )}
             </button>
         );
     }
 
-    // Dropdown variant
-    return (
-        <div className="relative" ref={dropdownRef}>
-            <button
-                onClick={toggleTheme}
-                className={cn(
-                    "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-                    "dark:border-surface-800 dark:bg-surface-900 dark:hover:bg-surface-800 dark:ring-offset-surface-950",
-                    sizeStyles[size],
-                    roundedStyles[rounded],
-                    showLabel && "px-3 w-auto",
-                    className
-                )}
-                aria-label="Toggle theme"
-                type="button"
-                aria-expanded={isOpen}
-                aria-haspopup="true"
-            >
-                <div className={cn("relative flex items-center justify-center", iconSizeStyles[size])}>
-                    {getThemeIcon()}
-                </div>
-
-                {showLabel && (
-                    <span className={cn("ml-2 font-medium", textSizeStyles[size])}>
-                        {getThemeLabel()}
-                    </span>
-                )}
-
-                <ChevronDown className={cn(
-                    "ml-1 h-3 w-3 transition-transform duration-200",
-                    isOpen && "rotate-180"
-                )} />
-
-                {showSystemIndicator && theme === 'system' && (
-                    <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
-                )}
-            </button>
-
-            {isOpen && (
-                <div className={cn(
-                    "absolute z-50 mt-1 w-32 origin-top-right rounded-md bg-white dark:bg-surface-900 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
-                    "border border-surface-200 dark:border-surface-700",
-                    "animate-in slide-in-from-top-2 duration-200",
-                    positionStyles[position]
-                )}>
-                    {[
-                        { value: 'light', label: 'Light', icon: Sun },
-                        { value: 'dark', label: 'Dark', icon: Moon },
-                        { value: 'system', label: 'System', icon: Monitor },
-                    ].map((option) => {
-                        const Icon = option.icon;
-                        return (
-                            <button
-                                key={option.value}
-                                onClick={() => selectTheme(option.value as 'light' | 'dark' | 'system')}
-                                className={cn(
-                                    "flex w-full items-center px-3 py-2 text-sm text-surface-900 dark:text-surface-50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors",
-                                    theme === option.value && "bg-surface-50 dark:bg-surface-800"
-                                )}
-                            >
-                                <Icon className="mr-2 h-4 w-4" />
-                                <span className="flex-1">{option.label}</span>
-                                {theme === option.value && (
-                                    <Check className="h-4 w-4 text-brand-500" />
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
-    );
+    return null;
 };
 
 ThemeToggle.displayName = 'ThemeToggle'; 

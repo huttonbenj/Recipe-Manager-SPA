@@ -1,4 +1,4 @@
-import { Prisma } from '../../generated/prisma';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../config/database';
 import logger from '../../utils/logger';
 import { PAGINATION_DEFAULTS } from '@recipe-manager/shared';
@@ -10,13 +10,13 @@ export class RecipeSearchService {
     pagination: PaginationOptions = {}
   ): Promise<RecipeListResult> {
     try {
-      const { search, category, difficulty, user_id, sortBy = 'created_at', sortOrder = 'desc' } = filters;
+      const { search, category, difficulty, cookTime, user_id, sortBy = 'created_at', sortOrder = 'desc', saved, liked } = filters;
       const { page = PAGINATION_DEFAULTS.PAGE, limit = PAGINATION_DEFAULTS.LIMIT } = pagination;
       
       const skip = (page - 1) * limit;
       
       // Build where clause
-      const where: Prisma.RecipeWhereInput = {};
+      let where: Prisma.RecipeWhereInput = {};
       
       if (user_id) {
         where.user_id = user_id;
@@ -29,6 +29,13 @@ export class RecipeSearchService {
       if (difficulty) {
         where.difficulty = difficulty;
       }
+
+      if (cookTime) {
+        const maxCook = typeof cookTime === 'string' ? parseInt(cookTime, 10) : cookTime;
+        if (!isNaN(maxCook)) {
+          where.cook_time = { lte: maxCook } as any;
+        }
+      }
       
       if (search) {
         where.OR = [
@@ -37,7 +44,39 @@ export class RecipeSearchService {
           { instructions: { contains: search, mode: Prisma.QueryMode.insensitive } },
         ];
       }
+
+      // If filtering by saved, join with RecipeSave
+      if (saved && user_id) {
+        const prismaAny = prisma as any;
+        // Find all recipe IDs saved by the user
+        const savedRecipes = await prismaAny.recipeSave.findMany({
+          where: { user_id },
+          select: { recipe_id: true },
+        });
+        const savedIds = savedRecipes.map((s: { recipe_id: string }) => s.recipe_id);
+        where = { ...where, id: { in: savedIds.length > 0 ? savedIds : [''] } };
+      }
       
+      // If filtering by liked, join with RecipeLike
+      if (liked && user_id) {
+        // Find all recipe IDs liked by the user
+        const likedRecipes = await prisma.recipeLike.findMany({
+          where: { user_id },
+          select: { recipe_id: true },
+        });
+        const likedIds = likedRecipes.map((l: { recipe_id: string }) => l.recipe_id);
+        where = { ...where, id: { in: likedIds.length > 0 ? likedIds : [''] } };
+      }
+      
+      // If filtering by liked or saved but no user_id, return empty result
+      if ((liked || saved) && !user_id) {
+        return {
+          recipes: [],
+          totalCount: 0,
+          totalPages: 0,
+        };
+      }
+
       // Build orderBy clause
       let recipes;
       let totalCount;

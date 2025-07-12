@@ -9,7 +9,9 @@ interface RecipeDetailHeaderProps {
     recipe: Recipe;
     user: any;
     isLiked: boolean;
+    isSaved: boolean;
     onLikeToggle: () => void;
+    onSaveToggle: () => void;
     onDelete: () => void;
 }
 
@@ -17,7 +19,9 @@ export const RecipeDetailHeader: React.FC<RecipeDetailHeaderProps> = ({
     recipe,
     user,
     isLiked,
+    isSaved,
     onLikeToggle,
+    onSaveToggle,
     onDelete,
 }) => {
     const navigate = useNavigate();
@@ -98,6 +102,16 @@ export const RecipeDetailHeader: React.FC<RecipeDetailHeaderProps> = ({
                         leftIcon={<Heart className={cn("h-4 w-4 transition-colors", isLiked ? "fill-current text-red-400" : "")} />}
                     >
                         {isLiked ? 'Liked' : 'Like'}
+                    </Button>
+                    <Button
+                        variant="glass"
+                        size="sm"
+                        onClick={onSaveToggle}
+                        aria-label={isSaved ? "Unsave recipe" : "Save recipe"}
+                        className={isSaved ? 'text-yellow-400' : ''}
+                        leftIcon={<Star className={cn("h-4 w-4 transition-colors", isSaved ? "fill-current text-yellow-400" : "")} />}
+                    >
+                        {isSaved ? 'Saved' : 'Save'}
                     </Button>
 
                     <Button

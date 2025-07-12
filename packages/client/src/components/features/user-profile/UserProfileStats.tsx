@@ -23,22 +23,22 @@ export const UserProfileStats: React.FC<UserProfileStatsProps> = ({ stats }) => 
             title: 'Total Likes',
             value: stats?.totalLikes || 0,
             icon: Heart,
-            color: 'text-red-600 dark:text-red-400',
-            bgColor: 'bg-red-100 dark:bg-red-900/30',
+            color: 'text-error-600 dark:text-error-400',
+            bgColor: 'bg-error-100 dark:bg-error-900/30',
         },
         {
             title: 'Total Views',
             value: stats?.totalViews || 0,
             icon: Eye,
-            color: 'text-green-600 dark:text-green-400',
-            bgColor: 'bg-green-100 dark:bg-green-900/30',
+            color: 'text-success-600 dark:text-success-400',
+            bgColor: 'bg-success-100 dark:bg-success-900/30',
         },
         {
             title: 'Average Rating',
             value: stats?.averageRating ? stats.averageRating.toFixed(1) : 'N/A',
             icon: Award,
-            color: 'text-yellow-600 dark:text-yellow-400',
-            bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+            color: 'text-warning-600 dark:text-warning-400',
+            bgColor: 'bg-warning-100 dark:bg-warning-900/30',
         },
     ];
 

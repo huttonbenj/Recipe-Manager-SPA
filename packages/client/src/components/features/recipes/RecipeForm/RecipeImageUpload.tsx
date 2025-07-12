@@ -18,14 +18,14 @@ export const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({
 }) => {
     return (
         <div>
-            <label className="block text-sm font-medium text-surface-300 mb-2">
+            <label className="block text-sm font-medium text-surface-900 dark:text-surface-100 mb-2">
                 Recipe Image
             </label>
             <div
                 className={cn(
-                    "group relative flex justify-center items-center w-full h-64 bg-surface-800 border-2 border-dashed rounded-lg transition-colors",
-                    "border-surface-700 hover:border-brand-500",
-                    error && "border-red-500"
+                    "group relative flex justify-center items-center w-full h-64 bg-surface-50 dark:bg-surface-800 border-2 border-dashed rounded-lg transition-colors",
+                    "border-surface-300 dark:border-surface-700 hover:border-brand-500",
+                    error && "border-error-500"
                 )}
             >
                 {imagePreview ? (
@@ -49,13 +49,13 @@ export const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({
                     </>
                 ) : (
                     <div className="text-center">
-                        <div className="flex justify-center items-center w-12 h-12 bg-surface-700 rounded-full mx-auto mb-4">
-                            <Image className="h-6 w-6 text-surface-400" />
+                        <div className="flex justify-center items-center w-12 h-12 bg-surface-100 dark:bg-surface-700 rounded-full mx-auto mb-4">
+                            <Image className="h-6 w-6 text-surface-500 dark:text-surface-400" />
                         </div>
-                        <p className="text-sm text-surface-400">
-                            <span className="font-semibold text-brand-400">Click to upload</span> or drag and drop
+                        <p className="text-sm text-surface-600 dark:text-surface-400">
+                            <span className="font-semibold text-brand-600 dark:text-brand-400">Click to upload</span> or drag and drop
                         </p>
-                        <p className="text-xs text-surface-500">
+                        <p className="text-xs text-surface-500 dark:text-surface-500">
                             SVG, PNG, JPG or GIF (max. 800x400px)
                         </p>
                     </div>
@@ -70,7 +70,7 @@ export const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({
                     aria-label="Upload recipe image"
                 />
             </div>
-            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+            {error && <p className="mt-2 text-sm text-error-500">{error}</p>}
         </div>
     );
 }; 

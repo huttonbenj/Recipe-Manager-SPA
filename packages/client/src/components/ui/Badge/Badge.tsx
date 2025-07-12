@@ -160,11 +160,11 @@ export interface StatusBadgeProps extends Omit<BadgeProps, 'variant'> {
 export const StatusBadge = forwardRef<HTMLDivElement, StatusBadgeProps>(
     ({ status, showText = true, ...props }, ref) => {
         const statusConfig = {
-            online: { variant: 'success' as const, text: 'Online', color: 'bg-green-500' },
-            offline: { variant: 'secondary' as const, text: 'Offline', color: 'bg-gray-500' },
-            away: { variant: 'warning' as const, text: 'Away', color: 'bg-yellow-500' },
-            busy: { variant: 'error' as const, text: 'Busy', color: 'bg-red-500' },
-            idle: { variant: 'accent' as const, text: 'Idle', color: 'bg-orange-500' },
+            online: { variant: 'success' as const, text: 'Online', color: 'bg-success-500' },
+            offline: { variant: 'secondary' as const, text: 'Offline', color: 'bg-surface-500' },
+            away: { variant: 'warning' as const, text: 'Away', color: 'bg-warning-500' },
+            busy: { variant: 'error' as const, text: 'Busy', color: 'bg-error-500' },
+            idle: { variant: 'accent' as const, text: 'Idle', color: 'bg-accent-500' },
         };
 
         const config = statusConfig[status];

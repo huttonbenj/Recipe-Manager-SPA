@@ -28,7 +28,7 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
                 <h3 className="font-bold text-lg text-surface-900 dark:text-white">
                     Insights & Recommendations
                 </h3>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/10 to-accent-500/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500/10 to-accent-500/10 flex items-center justify-center">
                     <Sparkles className="h-5 w-5 text-accent-500" />
                 </div>
             </div>
@@ -36,7 +36,7 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
             {/* Cooking Tip */}
             <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
-                    <Lightbulb className="h-4 w-4 text-amber-500" />
+                    <Lightbulb className="h-4 w-4 text-warning-500" />
                     <h4 className="text-sm font-medium text-surface-700 dark:text-surface-300">Today's Tip</h4>
                 </div>
                 <blockquote className="text-surface-700 dark:text-surface-300 italic leading-relaxed text-sm pl-3 border-l-2 border-accent-500/30">
@@ -73,7 +73,7 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
                                 "dark:from-brand-500/20 dark:to-accent-500/20"
                             )}>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-500 to-purple-500 flex items-center justify-center text-white shadow-md">
+                                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-500 to-brand-500 flex items-center justify-center text-white shadow-md">
                                         <Sparkles className="h-5 w-5" />
                                     </div>
                                     <div>

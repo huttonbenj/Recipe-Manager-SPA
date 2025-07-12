@@ -44,7 +44,7 @@ export const DashboardRecommendations: React.FC<DashboardRecommendationsProps> =
         <div className="glass-card bg-white/70 dark:bg-surface-900/70 backdrop-blur-sm rounded-xl p-6 border border-surface-200/60 dark:border-surface-800/60">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-accent-600 flex items-center justify-center shadow-md">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 flex items-center justify-center shadow-md">
                         <Sparkles className="h-5 w-5 text-white" />
                     </div>
                     <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50 font-display">
@@ -103,7 +103,7 @@ export const DashboardRecommendations: React.FC<DashboardRecommendationsProps> =
                                             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : (
-                                        <div className="h-full w-full bg-gradient-to-br from-purple-500/20 to-accent-500/20 flex items-center justify-center">
+                                        <div className="h-full w-full bg-gradient-to-br from-brand-500/20 to-accent-500/20 flex items-center justify-center">
                                             <Sparkles className="h-10 w-10 text-accent-400" />
                                         </div>
                                     )}

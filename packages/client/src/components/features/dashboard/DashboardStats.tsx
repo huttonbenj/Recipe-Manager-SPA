@@ -9,7 +9,7 @@ interface DashboardStatsProps {
         averageRating: number;
         totalViews: number;
     };
-    statsLoading: boolean;
+    statsLoading?: boolean;
 }
 
 interface StatCard {
@@ -42,36 +42,36 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats, statsLoad
             title: 'Your Recipes',
             value: stats.totalRecipes,
             icon: BookOpen,
-            color: 'text-teal-600 dark:text-teal-400',
-            bgColor: 'bg-teal-500/10',
-            accentColor: 'bg-teal-500',
+            color: 'text-brand-600 dark:text-brand-400',
+            bgColor: 'bg-brand-500/10',
+            accentColor: 'bg-brand-500',
             trend: generateTrend()
         },
         {
             title: 'Total Likes',
             value: stats.totalLikes,
             icon: Heart,
-            color: 'text-rose-600 dark:text-rose-400',
-            bgColor: 'bg-rose-500/10',
-            accentColor: 'bg-rose-500',
+            color: 'text-error-600 dark:text-error-400',
+            bgColor: 'bg-error-500/10',
+            accentColor: 'bg-error-500',
             trend: generateTrend()
         },
         {
             title: 'Avg Rating',
             value: stats.averageRating ? stats.averageRating.toFixed(1) : '0.0',
             icon: Star,
-            color: 'text-amber-600 dark:text-amber-400',
-            bgColor: 'bg-amber-500/10',
-            accentColor: 'bg-amber-500',
+            color: 'text-warning-600 dark:text-warning-400',
+            bgColor: 'bg-warning-500/10',
+            accentColor: 'bg-warning-500',
             trend: generateTrend()
         },
         {
             title: 'Total Views',
             value: stats.totalViews,
             icon: TrendingUp,
-            color: 'text-blue-600 dark:text-blue-400',
-            bgColor: 'bg-blue-500/10',
-            accentColor: 'bg-blue-500',
+            color: 'text-accent-600 dark:text-accent-400',
+            bgColor: 'bg-accent-500/10',
+            accentColor: 'bg-accent-500',
             trend: generateTrend()
         },
     ];
@@ -136,8 +136,8 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats, statsLoad
                                     <div className={cn(
                                         "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all duration-300",
                                         card.trend.isPositive
-                                            ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                                            : "bg-red-500/10 text-red-600 dark:text-red-400",
+                                            ? "bg-success-500/10 text-success-600 dark:text-success-400"
+                                            : "bg-error-500/10 text-error-600 dark:text-error-400",
                                         "group-hover:scale-105"
                                     )}>
                                         <TrendIcon className="h-3 w-3" />
@@ -146,52 +146,38 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats, statsLoad
                                 )}
                             </div>
 
-                            {/* Title */}
-                            <p className="text-sm font-medium text-surface-500 dark:text-surface-400 mb-2 transition-colors duration-300 group-hover:text-surface-600 dark:group-hover:text-surface-300">
-                                {card.title}
-                            </p>
-
                             {/* Value */}
-                            {statsLoading ? (
-                                <div className="space-y-2">
-                                    <div className="w-20 h-8 bg-surface-200 dark:bg-surface-700 rounded-lg animate-pulse"></div>
-                                    <div className="w-16 h-3 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
-                                </div>
-                            ) : (
-                                <div className="space-y-1">
-                                    <div className="flex items-end gap-1">
-                                        <p className={cn(
-                                            "text-3xl font-bold transition-all duration-300",
-                                            "text-surface-900 dark:text-white",
-                                            "group-hover:text-4xl group-hover:scale-105"
-                                        )}>
-                                            {card.value}
-                                        </p>
-                                        {card.title === 'Avg Rating' && (
-                                            <Star className="h-4 w-4 text-amber-500 mb-1.5 ml-1 transition-all duration-300 group-hover:scale-110" />
-                                        )}
+                            <div className="mb-2">
+                                {statsLoading ? (
+                                    <div className="h-8 bg-surface-200 dark:bg-surface-700 rounded animate-pulse" />
+                                ) : (
+                                    <div className={cn(
+                                        "text-2xl font-bold text-surface-900 dark:text-white transition-all duration-300",
+                                        "group-hover:scale-105"
+                                    )}>
+                                        {card.value}
                                     </div>
+                                )}
+                            </div>
 
-                                    {/* Trend description */}
-                                    {card.trend && (
-                                        <p className={cn(
-                                            "text-xs transition-colors duration-300",
-                                            card.trend.isPositive
-                                                ? "text-green-600 dark:text-green-400"
-                                                : "text-red-600 dark:text-red-400"
-                                        )}>
-                                            {card.trend.value}% {card.trend.label} this week
-                                        </p>
-                                    )}
-                                </div>
-                            )}
+                            {/* Title and description */}
+                            <div>
+                                <h3 className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-1">
+                                    {card.title}
+                                </h3>
+                                {card.trend && !statsLoading && (
+                                    <p className="text-xs text-surface-500 dark:text-surface-500">
+                                        {card.trend.value}% {card.trend.label} from last month
+                                    </p>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Hover glow effect */}
+                        {/* Subtle shine effect on hover */}
                         <div className={cn(
-                            "absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                            "bg-gradient-to-r from-transparent via-white/5 to-transparent dark:via-white/5",
-                            "animate-pulse"
+                            "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700",
+                            "bg-gradient-to-r from-transparent via-white/5 to-transparent",
+                            "transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%]"
                         )} />
                     </div>
                 );

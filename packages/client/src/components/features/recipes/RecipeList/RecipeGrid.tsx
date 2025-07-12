@@ -80,7 +80,7 @@ export const RecipeGrid: React.FC<RecipeGridProps> = ({
         <div className="space-y-4">
             {/* Header with View Mode Toggle */}
             <div className="flex items-center justify-between">
-                <h3 className="text-md font-medium text-gray-600 dark:text-gray-400">
+                <h3 className="text-md font-medium text-surface-600 dark:text-surface-400">
                     Showing {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
                 </h3>
                 <div className="flex items-center gap-1">

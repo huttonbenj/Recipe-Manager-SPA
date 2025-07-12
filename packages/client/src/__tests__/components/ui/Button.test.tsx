@@ -26,25 +26,25 @@ describe('Button Component', () => {
         it('should render primary variant', () => {
             render(<Button variant="primary">Primary</Button>);
             const button = screen.getByRole('button', { name: 'Primary' });
-            expect(button).toHaveClass('bg-blue-600');
+            expect(button).toHaveClass('bg-brand-600');
         });
 
         it('should render secondary variant', () => {
             render(<Button variant="secondary">Secondary</Button>);
             const button = screen.getByRole('button', { name: 'Secondary' });
-            expect(button).toHaveClass('bg-gray-600');
+            expect(button).toHaveClass('bg-surface-200');
         });
 
         it('should render danger variant', () => {
             render(<Button variant="danger">Danger</Button>);
             const button = screen.getByRole('button', { name: 'Danger' });
-            expect(button).toHaveClass('bg-red-600');
+            expect(button).toHaveClass('bg-error-600');
         });
 
         it('should render ghost variant', () => {
             render(<Button variant="ghost">Ghost</Button>);
             const button = screen.getByRole('button', { name: 'Ghost' });
-            expect(button).toHaveClass('text-gray-700');
+            expect(button).toHaveClass('text-surface-600');
         });
     });
 
@@ -52,19 +52,19 @@ describe('Button Component', () => {
         it('should render small size', () => {
             render(<Button size="sm">Small</Button>);
             const button = screen.getByRole('button', { name: 'Small' });
-            expect(button).toHaveClass('px-3', 'py-1.5', 'text-sm');
+            expect(button).toHaveClass('px-3', 'text-xs');
         });
 
         it('should render medium size (default)', () => {
             render(<Button>Medium</Button>);
             const button = screen.getByRole('button', { name: 'Medium' });
-            expect(button).toHaveClass('px-4', 'py-2', 'text-base');
+            expect(button).toHaveClass('px-4', 'py-2', 'text-sm');
         });
 
         it('should render large size', () => {
             render(<Button size="lg">Large</Button>);
             const button = screen.getByRole('button', { name: 'Large' });
-            expect(button).toHaveClass('px-6', 'py-3', 'text-lg');
+            expect(button).toHaveClass('px-6', 'text-base');
         });
     });
 

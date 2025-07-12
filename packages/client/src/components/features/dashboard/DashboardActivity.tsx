@@ -84,13 +84,13 @@ export const DashboardActivity: React.FC<DashboardActivityProps> = ({
             case 'create':
                 return 'bg-brand-500 text-white';
             case 'like':
-                return 'bg-rose-500 text-white';
+                return 'bg-error-500 text-white';
             case 'comment':
-                return 'bg-blue-500 text-white';
+                return 'bg-accent-500 text-white';
             case 'rating':
-                return 'bg-amber-500 text-white';
+                return 'bg-warning-500 text-white';
             case 'view':
-                return 'bg-green-500 text-white';
+                return 'bg-success-500 text-white';
             default:
                 return 'bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-300';
         }
@@ -135,7 +135,7 @@ export const DashboardActivity: React.FC<DashboardActivityProps> = ({
         <div className="glass-card bg-white/70 dark:bg-surface-900/70 backdrop-blur-sm rounded-xl p-6 border border-surface-200/60 dark:border-surface-800/60">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-md">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 flex items-center justify-center shadow-md">
                         <Activity className="h-5 w-5 text-white" />
                     </div>
                     <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50 font-display">

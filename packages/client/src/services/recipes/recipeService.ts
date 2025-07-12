@@ -148,6 +148,28 @@ export class RecipeService extends BaseService {
       throw new Error(response.data.error || 'Failed to unlike recipe');
     }
   }
+
+  // Save a recipe
+  async saveRecipe(id: string): Promise<void> {
+    const saveEndpoint = API_ENDPOINTS.RECIPES.SAVE || `/api/recipes/:id/save`;
+    const response: AxiosResponse<ApiResponse<void>> = await axiosInstance.post(
+      saveEndpoint.replace(':id', id)
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.error || 'Failed to save recipe');
+    }
+  }
+
+  // Unsave a recipe
+  async unsaveRecipe(id: string): Promise<void> {
+    const saveEndpoint = API_ENDPOINTS.RECIPES.SAVE || `/api/recipes/:id/save`;
+    const response: AxiosResponse<ApiResponse<void>> = await axiosInstance.delete(
+      saveEndpoint.replace(':id', id)
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.error || 'Failed to unsave recipe');
+    }
+  }
 }
 
 // Export singleton instance

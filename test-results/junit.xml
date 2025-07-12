@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="6" failures="0" errors="0" time="0.238981167">
-    <testsuite name="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" timestamp="2025-07-12T07:43:37.632Z" hostname="MacBookPro.attlocal.net" tests="6" failures="0" errors="0" skipped="0" time="0.238981167">
-        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; renders all filter controls" time="0.07284975">
-            <system-err>
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
-            </system-err>
+<testsuites name="vitest tests" tests="23" failures="0" errors="0" time="0.047362084">
+    <testsuite name="packages/client/src/__tests__/components/ui/Button.test.tsx" timestamp="2025-07-12T15:18:27.107Z" hostname="Bens-MacBook-Pro.local" tests="23" failures="0" errors="0" skipped="0" time="0.047362084">
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render button with text" time="0.015330667">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; calls onClearFilters when clear button is clicked" time="0.052375">
-            <system-err>
-Unhandled GET request to http://localhost:3001/api/recipes/categories
-
-            </system-err>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render button with custom type" time="0.002628875">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; calls onSearch when search button is clicked" time="0.045090084">
-            <system-err>
-Unhandled GET request to http://localhost:3001/api/recipes/categories
-
-            </system-err>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Basic Rendering &gt; should render disabled button" time="0.002154667">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; calls onFavoritesToggle when favorites checkbox is clicked" time="0.019266417">
-            <system-err>
-Unhandled GET request to http://localhost:3001/api/recipes/categories
-
-            </system-err>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render primary variant" time="0.001673291">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; shows active filter tags when filters are applied" time="0.019715167">
-            <system-err>
-Unhandled GET request to http://localhost:3001/api/recipes/categories
-
-            </system-err>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render secondary variant" time="0.002342709">
         </testcase>
-        <testcase classname="packages/client/src/__tests__/components/features/recipes/RecipeFilters.test.tsx" name="RecipeFilters Component &gt; shows smart filter description when smart filters are detected" time="0.018861958">
-            <system-err>
-Unhandled GET request to http://localhost:3001/api/recipes/categories
-
-            </system-err>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render danger variant" time="0.001017666">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Variants &gt; should render ghost variant" time="0.001182958">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render small size" time="0.001147625">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render medium size (default)" time="0.0022635">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Sizes &gt; should render large size" time="0.00095725">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should render loading state" time="0.002704">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should show loading spinner when loading" time="0.001200583">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; States &gt; should not be clickable when loading" time="0.001704542">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Icons &gt; should render with left icon" time="0.000653916">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Icons &gt; should render with right icon" time="0.000509416">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Event Handling &gt; should handle click events" time="0.002080583">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Event Handling &gt; should not handle click events when disabled" time="0.000772833">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept custom className" time="0.000687708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept custom data attributes" time="0.000424166">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Custom Props &gt; should accept ARIA attributes" time="0.000642917">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should have proper role" time="0.000618708">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should be focusable" time="0.001124583">
+        </testcase>
+        <testcase classname="packages/client/src/__tests__/components/ui/Button.test.tsx" name="Button Component &gt; Accessibility &gt; should not be focusable when disabled" time="0.000720542">
         </testcase>
     </testsuite>
 </testsuites>

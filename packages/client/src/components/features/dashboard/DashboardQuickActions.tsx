@@ -10,88 +10,127 @@ export const DashboardQuickActions: React.FC = () => {
             description: 'Add a new recipe to your collection',
             icon: PlusCircle,
             to: '/recipes/new',
-            color: 'text-teal-600 dark:text-teal-400',
-            bgColor: 'bg-teal-500/10',
-            accentColor: 'bg-teal-500',
-            gradient: 'from-teal-500 to-emerald-500'
+            color: 'text-brand-600 dark:text-brand-400',
+            bgColor: 'bg-brand-500/10',
+            accentColor: 'bg-brand-500',
+            gradient: 'from-brand-500 to-brand-600'
         },
         {
             title: 'Browse Recipes',
             description: 'Explore recipes from other users',
             icon: BookOpen,
             to: '/recipes',
-            color: 'text-blue-600 dark:text-blue-400',
-            bgColor: 'bg-blue-500/10',
-            accentColor: 'bg-blue-500',
-            gradient: 'from-blue-500 to-indigo-500'
+            color: 'text-accent-600 dark:text-accent-400',
+            bgColor: 'bg-accent-500/10',
+            accentColor: 'bg-accent-500',
+            gradient: 'from-accent-500 to-accent-600'
         },
         {
             title: 'Search Recipes',
             description: 'Find recipes by ingredients or cuisine',
             icon: Search,
             to: '/recipes?view=search',
-            color: 'text-purple-600 dark:text-purple-400',
-            bgColor: 'bg-purple-500/10',
-            accentColor: 'bg-purple-500',
-            gradient: 'from-purple-500 to-violet-500'
+            color: 'text-surface-600 dark:text-surface-400',
+            bgColor: 'bg-surface-500/10',
+            accentColor: 'bg-surface-500',
+            gradient: 'from-surface-500 to-surface-600'
         },
         {
             title: 'Filter Favorites',
             description: 'View your favorite recipes',
             icon: Filter,
             to: '/recipes?filter=favorites',
-            color: 'text-rose-600 dark:text-rose-400',
-            bgColor: 'bg-rose-500/10',
-            accentColor: 'bg-rose-500',
-            gradient: 'from-rose-500 to-pink-500'
+            color: 'text-error-600 dark:text-error-400',
+            bgColor: 'bg-error-500/10',
+            accentColor: 'bg-error-500',
+            gradient: 'from-error-500 to-error-600'
         },
     ];
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => {
                 const Icon = action.icon;
+
                 return (
                     <Link
                         key={action.title}
                         to={action.to}
                         className={cn(
-                            "group relative p-6 rounded-2xl transition-all duration-300 overflow-hidden",
-                            "bg-white/90 dark:bg-surface-900/80 backdrop-blur-md",
-                            "border border-surface-200/60 dark:border-surface-700/60",
-                            "hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02]",
-                            "focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                            "group relative overflow-hidden rounded-2xl p-5 transition-all duration-300 h-full",
+                            "bg-white/80 dark:bg-surface-900/60 backdrop-blur-sm",
+                            "border border-surface-200/50 dark:border-surface-800/50",
+                            "hover:shadow-lg hover:shadow-surface-500/10 dark:hover:shadow-surface-900/20",
+                            "hover:border-surface-300/60 dark:hover:border-surface-700/60",
+                            "hover:-translate-y-1 cursor-pointer"
                         )}
-                        style={{ animationDelay: `${index * 100}ms` }}
+                        style={{
+                            animationDelay: `${index * 100}ms`
+                        }}
                     >
-                        {/* Enhanced background gradient effect */}
-                        <div
-                            className={`absolute -right-10 -top-10 w-20 h-20 rounded-full opacity-10 dark:opacity-20 group-hover:scale-150 group-hover:opacity-20 dark:group-hover:opacity-30 transition-all duration-500 ease-out bg-gradient-to-br ${action.gradient}`}
-                        ></div>
+                        {/* Animated background gradient */}
+                        <div className={cn(
+                            "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                            "bg-gradient-to-br from-transparent via-transparent to-surface-50/50 dark:to-surface-800/50"
+                        )} />
+
+                        {/* Top accent line with animation */}
+                        <div className={cn(
+                            "absolute top-0 left-0 right-0 h-0.5 transition-all duration-300",
+                            action.accentColor,
+                            "group-hover:h-1"
+                        )} />
 
                         {/* Floating orb decoration */}
-                        <div className={`absolute top-2 right-2 w-3 h-3 rounded-full opacity-30 group-hover:opacity-60 transition-opacity duration-300 bg-gradient-to-br ${action.gradient}`}></div>
+                        <div className={cn(
+                            "absolute -top-2 -right-2 w-6 h-6 rounded-full opacity-20 transition-all duration-500",
+                            action.accentColor,
+                            "group-hover:scale-150 group-hover:opacity-30"
+                        )} />
 
-                        {/* Enhanced Icon */}
-                        <div className="relative z-10 mb-5">
-                            <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${action.gradient} text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
-                                <Icon className="h-6 w-6" />
+                        <div className="relative z-10">
+                            {/* Header with icon */}
+                            <div className="flex items-center justify-between mb-4">
+                                <div className={cn(
+                                    "p-2.5 rounded-xl transition-all duration-300",
+                                    action.bgColor,
+                                    "group-hover:scale-110 group-hover:shadow-md"
+                                )}>
+                                    <Icon className={cn(
+                                        "h-5 w-5 transition-colors duration-300",
+                                        action.color
+                                    )} />
+                                </div>
+
+                                {/* Arrow icon */}
+                                <ArrowRight className={cn(
+                                    "h-4 w-4 transition-all duration-300",
+                                    "text-surface-400 dark:text-surface-500",
+                                    "group-hover:text-surface-600 dark:group-hover:text-surface-400",
+                                    "group-hover:translate-x-1"
+                                )} />
+                            </div>
+
+                            {/* Title and description */}
+                            <div>
+                                <h3 className={cn(
+                                    "text-sm font-semibold text-surface-900 dark:text-white mb-1",
+                                    "transition-colors duration-300"
+                                )}>
+                                    {action.title}
+                                </h3>
+                                <p className="text-xs text-surface-600 dark:text-surface-400">
+                                    {action.description}
+                                </p>
                             </div>
                         </div>
 
-                        {/* Enhanced Content */}
-                        <div className="relative z-10">
-                            <h3 className="font-bold text-lg text-surface-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors flex items-center mb-2">
-                                {action.title}
-                                <ArrowRight className="h-4 w-4 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                            </h3>
-                            <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed line-clamp-2">
-                                {action.description}
-                            </p>
-                        </div>
-
-                        {/* Subtle hover glow */}
-                        <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/5 to-transparent dark:via-white/5`}></div>
+                        {/* Subtle shine effect on hover */}
+                        <div className={cn(
+                            "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700",
+                            "bg-gradient-to-r from-transparent via-white/5 to-transparent",
+                            "transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%]"
+                        )} />
                     </Link>
                 );
             })}

@@ -1,15 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../../hooks/useAuth';
 import { useDashboard } from '../../../hooks/user/useDashboard';
-import { cn } from '../../../utils/cn';
-import {
-    ChefHat, PlusCircle, Heart, Clock, Search,
-    Star, ChevronRight, Bookmark,
-    Utensils, Award, Leaf, TrendingUp, BookOpen
-} from 'lucide-react';
-import { DashboardInsights } from './DashboardInsights';
+import { useAuth } from '../../../hooks/useAuth';
 import { DashboardActivity } from './DashboardActivity';
+import { DashboardInsights } from './DashboardInsights';
+import {
+    ChefHat, BookOpen, Heart, Star, TrendingUp, PlusCircle, Search,
+    Utensils, Leaf, Clock, Award, ChevronRight
+} from 'lucide-react';
+import { cn } from '../../../utils/cn';
 
 // Memoized components for better performance
 const MemoizedDashboardInsights = React.memo(DashboardInsights);
@@ -35,7 +34,6 @@ export const Dashboard: React.FC = () => {
         activities,
         isLoading,
         userStats,
-        statsLoading,
         isFavorite,
         toggleFavorite
     } = useDashboard();
@@ -50,10 +48,10 @@ export const Dashboard: React.FC = () => {
 
     // Memoized categories data with improved icons
     const categories = React.useMemo(() => [
-        { name: 'Breakfast', icon: <Utensils className="h-5 w-5" />, color: 'from-amber-500 to-amber-600', count: 12 },
-        { name: 'Desserts', icon: <Leaf className="h-5 w-5" />, color: 'from-pink-500 to-pink-600', count: 24 },
-        { name: 'Healthy', icon: <Leaf className="h-5 w-5" />, color: 'from-green-500 to-green-600', count: 18 },
-        { name: 'Quick', icon: <Clock className="h-5 w-5" />, color: 'from-blue-500 to-blue-600', count: 9 }
+        { name: 'Breakfast', icon: <Utensils className="h-5 w-5" />, color: 'from-warning-500 to-warning-600', count: 12 },
+        { name: 'Desserts', icon: <Leaf className="h-5 w-5" />, color: 'from-error-500 to-error-600', count: 24 },
+        { name: 'Healthy', icon: <Leaf className="h-5 w-5" />, color: 'from-success-500 to-success-600', count: 18 },
+        { name: 'Quick', icon: <Clock className="h-5 w-5" />, color: 'from-accent-500 to-accent-600', count: 9 }
     ], []);
 
     // Format current day
@@ -79,124 +77,99 @@ export const Dashboard: React.FC = () => {
             <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
                 <div className="absolute top-[10%] right-[5%] w-72 h-72 bg-brand-500/5 blur-[100px] rounded-full animate-pulse-slow"></div>
                 <div className="absolute top-[40%] left-[10%] w-64 h-64 bg-accent-500/5 blur-[100px] rounded-full animate-pulse-slow animation-delay-1000"></div>
-                <div className="absolute bottom-[10%] right-[15%] w-48 h-48 bg-purple-500/5 blur-[100px] rounded-full animate-pulse-slow animation-delay-2000"></div>
+                <div className="absolute bottom-[10%] right-[15%] w-48 h-48 bg-surface-500/5 blur-[100px] rounded-full animate-pulse-slow animation-delay-2000"></div>
             </div>
 
             {/* Main content container */}
-            <div className="relative z-10 container mx-auto px-4 sm:px-6 py-8 md:py-12">
-                {/* Refined header section with improved glass effect */}
-                <div className="mb-8 animate-fade-in-up">
-                    <div className="bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl border border-surface-200/50 dark:border-surface-800/50 p-6 shadow-sm hover:shadow-md transition-all duration-300">
-                        <div className="flex flex-col lg:flex-row lg:items-center gap-6">
-                            {/* Left side - Greeting with enhanced animation */}
-                            <div className="flex-1">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                                        <ChefHat className="h-7 w-7 text-white" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-surface-600 dark:text-surface-400 mb-1">{formattedDate}</div>
-                                        <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
-                                            {greeting}, <span className="text-brand-600 dark:text-brand-400">{user?.name || 'Chef'}</span>
-                                        </h1>
-                                        <p className="text-surface-600 dark:text-surface-400 text-sm mt-1">
-                                            Ready to cook something amazing today?
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+            <div className="relative z-10 container mx-auto px-4 py-8 space-y-8">
+                {/* Enhanced welcome header */}
+                <header className="text-center space-y-4 mb-12 animate-fade-in-up">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                        <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></div>
+                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium tracking-wider uppercase">
+                            {formattedDate}
+                        </p>
+                        <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse animation-delay-300"></div>
+                    </div>
 
-                            {/* Right side - Quick Actions with improved hover effects */}
-                            <div className="lg:w-auto">
-                                <h3 className="text-lg font-semibold text-surface-900 dark:text-white mb-4 lg:text-right">Quick Actions</h3>
-                                <div className="grid grid-cols-4 gap-3">
-                                    <Link
-                                        to="/recipes/new"
-                                        className="flex flex-col items-center justify-center p-3 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 text-brand-600 dark:text-brand-400 transition-all duration-200 hover:scale-105 hover:shadow-md"
-                                        aria-label="Create new recipe"
-                                    >
-                                        <PlusCircle className="h-5 w-5 mb-1" />
-                                        <span className="text-xs font-medium">New</span>
-                                    </Link>
-                                    <Link
-                                        to="/recipes"
-                                        className="flex flex-col items-center justify-center p-3 rounded-xl bg-accent-500/10 hover:bg-accent-500/20 text-accent-600 dark:text-accent-400 transition-all duration-200 hover:scale-105 hover:shadow-md"
-                                        aria-label="Search recipes"
-                                    >
-                                        <Search className="h-5 w-5 mb-1" />
-                                        <span className="text-xs font-medium">Search</span>
-                                    </Link>
-                                    <Link
-                                        to="/recipes?filter=favorites"
-                                        className="flex flex-col items-center justify-center p-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 transition-all duration-200 hover:scale-105 hover:shadow-md"
-                                        aria-label="View favorite recipes"
-                                    >
-                                        <Heart className="h-5 w-5 mb-1" />
-                                        <span className="text-xs font-medium">Favs</span>
-                                    </Link>
-                                    <Link
-                                        to="/recipes?filter=saved"
-                                        className="flex flex-col items-center justify-center p-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 transition-all duration-200 hover:scale-105 hover:shadow-md"
-                                        aria-label="View saved recipes"
-                                    >
-                                        <Bookmark className="h-5 w-5 mb-1" />
-                                        <span className="text-xs font-medium">Saved</span>
-                                    </Link>
-                                </div>
-                            </div>
+                    <h1 className="text-4xl md:text-5xl font-bold text-surface-900 dark:text-white mb-4 font-display">
+                        {greeting}, <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-accent-500">{user?.name}</span>! 👋
+                    </h1>
+
+                    <p className="text-lg text-surface-600 dark:text-surface-400 max-w-2xl mx-auto leading-relaxed">
+                        Ready to create something delicious? Your culinary journey continues here.
+                    </p>
+
+                    {/* Enhanced action buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+                        <Link
+                            to="/recipes/new"
+                            className="flex flex-col items-center justify-center p-3 rounded-xl bg-error-500/10 hover:bg-error-500/20 text-error-600 dark:text-error-400 transition-all duration-200 hover:scale-105 hover:shadow-md"
+                        >
+                            <PlusCircle className="h-6 w-6 mb-1" />
+                            <span className="text-sm font-medium">Create Recipe</span>
+                        </Link>
+
+                        <Link
+                            to="/recipes"
+                            className="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-500/10 hover:bg-surface-500/20 text-surface-600 dark:text-surface-400 transition-all duration-200 hover:scale-105 hover:shadow-md"
+                        >
+                            <Search className="h-6 w-6 mb-1" />
+                            <span className="text-sm font-medium">Explore</span>
+                        </Link>
+                    </div>
+                </header>
+
+                {/* Enhanced stats overview with better spacing */}
+                <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up animation-delay-300">
+                    <div className="group bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                        <div className="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <BookOpen className="h-5 w-5 text-brand-600 dark:text-brand-400" />
                         </div>
-
-                        {/* Enhanced Stats row with improved spacing and animations */}
-                        <div className="mt-6 pt-6 border-t border-surface-200/50 dark:border-surface-800/50">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="flex items-center gap-3 group">
-                                    <div className="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                        <BookOpen className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-300">{stats.totalRecipes}</div>
-                                        <div className="text-xs text-surface-600 dark:text-surface-400">Your Recipes</div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 group">
-                                    <div className="w-10 h-10 rounded-lg bg-rose-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                        <Heart className="h-5 w-5 text-rose-600 dark:text-rose-400" />
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors duration-300">
-                                            {statsLoading ? (
-                                                <div className="w-8 h-8 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
-                                            ) : (
-                                                stats.totalLikes
-                                            )}
-                                        </div>
-                                        <div className="text-xs text-surface-600 dark:text-surface-400">Total Likes</div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 group">
-                                    <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                        <Star className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors duration-300">
-                                            {stats.averageRating.toFixed(1)}
-                                        </div>
-                                        <div className="text-xs text-surface-600 dark:text-surface-400">Avg Rating</div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 group">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                        <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">{stats.totalViews}</div>
-                                        <div className="text-xs text-surface-600 dark:text-surface-400">Total Views</div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="mt-4">
+                            <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors duration-300">{stats.totalRecipes}</div>
+                            <p className="text-sm text-surface-600 dark:text-surface-400">Your Recipes</p>
                         </div>
                     </div>
-                </div>
+
+                    <div className="group bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                        <div className="w-10 h-10 rounded-lg bg-error-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <Heart className="h-5 w-5 text-error-600 dark:text-error-400" />
+                        </div>
+                        <div className="mt-4">
+                            <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-error-600 dark:group-hover:text-error-400 transition-colors duration-300">
+                                {isLoading ? (
+                                    <div className="h-8 w-16 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
+                                ) : (
+                                    stats.totalLikes
+                                )}
+                            </div>
+                            <p className="text-sm text-surface-600 dark:text-surface-400">Total Likes</p>
+                        </div>
+                    </div>
+
+                    <div className="group bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                        <div className="w-10 h-10 rounded-lg bg-warning-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <Star className="h-5 w-5 text-warning-600 dark:text-warning-400" />
+                        </div>
+                        <div className="mt-4">
+                            <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-warning-600 dark:group-hover:text-warning-400 transition-colors duration-300">
+                                {stats.averageRating ? stats.averageRating.toFixed(1) : '0.0'}
+                            </div>
+                            <p className="text-sm text-surface-600 dark:text-surface-400">Avg Rating</p>
+                        </div>
+                    </div>
+
+                    <div className="group bg-white/90 dark:bg-surface-900/90 backdrop-blur-md rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                        <div className="w-10 h-10 rounded-lg bg-accent-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <TrendingUp className="h-5 w-5 text-accent-600 dark:text-accent-400" />
+                        </div>
+                        <div className="mt-4">
+                            <div className="text-2xl font-bold text-surface-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors duration-300">{stats.totalViews}</div>
+                            <p className="text-sm text-surface-600 dark:text-surface-400">Total Views</p>
+                        </div>
+                    </div>
+                </section>
 
                 {/* Main content grid with staggered animations */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

@@ -32,6 +32,32 @@
     --color-accent-900: 124 45 18;
     --color-accent-950: 67 20 7;
     
+    /* Royal Purple Theme - Brand colors */
+    --color-royal-brand-50: 245 243 255;
+    --color-royal-brand-100: 237 233 254;
+    --color-royal-brand-200: 221 214 254;
+    --color-royal-brand-300: 196 181 253;
+    --color-royal-brand-400: 167 139 250;
+    --color-royal-brand-500: 139 92 246;
+    --color-royal-brand-600: 124 58 237;
+    --color-royal-brand-700: 109 40 217;
+    --color-royal-brand-800: 91 33 182;
+    --color-royal-brand-900: 76 29 149;
+    --color-royal-brand-950: 46 16 101;
+    
+    /* Royal Purple Theme - Accent colors (Gold) */
+    --color-royal-accent-50: 255 251 235;
+    --color-royal-accent-100: 254 243 199;
+    --color-royal-accent-200: 253 230 138;
+    --color-royal-accent-300: 252 211 77;
+    --color-royal-accent-400: 251 191 36;
+    --color-royal-accent-500: 245 158 11;
+    --color-royal-accent-600: 217 119 6;
+    --color-royal-accent-700: 180 83 9;
+    --color-royal-accent-800: 146 64 14;
+    --color-royal-accent-900: 120 53 15;
+    --color-royal-accent-950: 69 26 3;
+    
     /* Light mode surface colors */
     --color-surface-50: 250 250 250;
     --color-surface-100: 244 244 245;
@@ -131,6 +157,40 @@
     --transition-opacity: opacity var(--duration-normal) cubic-bezier(0.4, 0, 0.2, 1);
   }
   
+  /* Royal Purple Theme Class */
+  .theme-royal {
+    /* Override brand colors with royal purple */
+    --color-brand-50: var(--color-royal-brand-50);
+    --color-brand-100: var(--color-royal-brand-100);
+    --color-brand-200: var(--color-royal-brand-200);
+    --color-brand-300: var(--color-royal-brand-300);
+    --color-brand-400: var(--color-royal-brand-400);
+    --color-brand-500: var(--color-royal-brand-500);
+    --color-brand-600: var(--color-royal-brand-600);
+    --color-brand-700: var(--color-royal-brand-700);
+    --color-brand-800: var(--color-royal-brand-800);
+    --color-brand-900: var(--color-royal-brand-900);
+    --color-brand-950: var(--color-royal-brand-950);
+    
+    /* Override accent colors with gold */
+    --color-accent-50: var(--color-royal-accent-50);
+    --color-accent-100: var(--color-royal-accent-100);
+    --color-accent-200: var(--color-royal-accent-200);
+    --color-accent-300: var(--color-royal-accent-300);
+    --color-accent-400: var(--color-royal-accent-400);
+    --color-accent-500: var(--color-royal-accent-500);
+    --color-accent-600: var(--color-royal-accent-600);
+    --color-accent-700: var(--color-royal-accent-700);
+    --color-accent-800: var(--color-royal-accent-800);
+    --color-accent-900: var(--color-royal-accent-900);
+    --color-accent-950: var(--color-royal-accent-950);
+  }
+  
+  /* Default Theme Class - for backward compatibility */
+  .theme-default {
+    /* Default theme uses the root variables */
+  }
+  
   .dark {
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
@@ -150,6 +210,16 @@
     --glass-opacity: 0.1;
     --glass-blur: 20px;
     --glass-border-opacity: 0.15;
+  }
+  
+  /* Dark mode for Royal Purple theme */
+  .dark.theme-royal {
+    /* Adjust shadows for dark royal theme */
+    --shadow-glass: 0 8px 32px 0 rgba(139, 92, 246, 0.12), 0 2px 16px 0 rgba(139, 92, 246, 0.08);
+    --shadow-glass-lg: 0 16px 64px 0 rgba(139, 92, 246, 0.16), 0 4px 32px 0 rgba(139, 92, 246, 0.12);
+    
+    --shadow-elevated: 0 4px 12px 0 rgba(139, 92, 246, 0.12), 0 2px 6px 0 rgba(139, 92, 246, 0.08);
+    --shadow-elevated-lg: 0 8px 24px 0 rgba(139, 92, 246, 0.16), 0 4px 12px 0 rgba(139, 92, 246, 0.12);
   }
   
   html {
@@ -1094,4 +1164,21 @@
 .masonry-item:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+} 
+
+.glass-card {
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.35s cubic-bezier(0.4,0,0.2,1);
 } 

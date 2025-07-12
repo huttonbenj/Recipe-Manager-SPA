@@ -4,6 +4,8 @@ export const STORAGE_KEYS = {
   REFRESH_TOKEN: 'refreshToken',
   USER: 'user',
   THEME: 'theme',
+  THEME_MODE: 'themeMode',
+  THEME_COLOR: 'themeColor',
   LANGUAGE: 'language',
 } as const;
 

@@ -17,10 +17,10 @@ export const Select: React.FC<SelectProps> = ({ id, error, className, options = 
             <select
                 id={id}
                 className={cn(
-                    "w-full bg-surface-800 border-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-500",
+                    "w-full bg-white dark:bg-surface-900 border-surface-300 dark:border-surface-700 text-surface-900 dark:text-surface-100 placeholder-surface-500",
                     "rounded-md shadow-sm px-4 py-2 border transition-colors",
                     "focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500",
-                    error && "border-red-500",
+                    error && "border-error-500",
                     className
                 )}
                 {...props}
@@ -31,7 +31,7 @@ export const Select: React.FC<SelectProps> = ({ id, error, className, options = 
                     </option>
                 ))}
             </select>
-            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+            {error && <p className="mt-2 text-sm text-error-500">{error}</p>}
         </div>
     );
 }; 

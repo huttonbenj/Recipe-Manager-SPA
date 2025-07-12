@@ -401,18 +401,18 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     danger = false,
     ...modalProps
 }) => {
-    const icons = {
-        info: <Info className="w-6 h-6 text-blue-500" />,
-        success: <CheckCircle className="w-6 h-6 text-green-500" />,
-        warning: <AlertTriangle className="w-6 h-6 text-yellow-500" />,
-        error: <AlertCircle className="w-6 h-6 text-red-500" />,
+    const iconMap = {
+        success: <CheckCircle className="w-6 h-6 text-success-500" />,
+        warning: <AlertTriangle className="w-6 h-6 text-warning-500" />,
+        error: <AlertCircle className="w-6 h-6 text-error-500" />,
+        info: <Info className="w-6 h-6 text-brand-500" />,
     };
 
-    const colors = {
-        info: 'text-blue-600 dark:text-blue-400',
-        success: 'text-green-600 dark:text-green-400',
-        warning: 'text-yellow-600 dark:text-yellow-400',
-        error: 'text-red-600 dark:text-red-400',
+    const colorMap = {
+        success: 'text-success-600 dark:text-success-400',
+        warning: 'text-warning-600 dark:text-warning-400',
+        error: 'text-error-600 dark:text-error-400',
+        info: 'text-brand-600 dark:text-brand-400',
     };
 
     return (
@@ -424,12 +424,12 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         >
             <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
-                    {icons[type]}
+                    {iconMap[type]}
                 </div>
                 <div className="flex-1 min-w-0">
                     <h3 className={cn(
                         'text-lg font-semibold font-display',
-                        colors[type]
+                        colorMap[type]
                     )}>
                         {message}
                     </h3>
@@ -456,7 +456,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                         'px-4 py-2 text-sm font-medium text-white rounded-md transition-colors',
                         'flex items-center space-x-2',
                         danger || type === 'error'
-                            ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                            ? 'bg-error-600 hover:bg-error-700 focus:ring-error-500'
                             : 'bg-brand-600 hover:bg-brand-700 focus:ring-brand-500',
                         loading && 'opacity-50 cursor-not-allowed'
                     )}

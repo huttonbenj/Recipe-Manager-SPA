@@ -12,7 +12,10 @@ export interface RecipeCreateData extends CreateRecipeRequest {
 export interface RecipeUpdateData extends UpdateRecipeRequest {}
 
 export interface RecipeFilters extends Pick<RecipeSearchParams, 'search' | 'category' | 'difficulty' | 'sortBy' | 'sortOrder'> {
+  cookTime?: number;
   user_id?: string;
+  saved?: boolean;
+  liked?: boolean;
 }
 
 export interface PaginationOptions {

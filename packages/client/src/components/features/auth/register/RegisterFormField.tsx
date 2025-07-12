@@ -26,12 +26,12 @@ export const RegisterFormField = ({
 }: RegisterFormFieldProps) => {
     return (
         <div>
-            <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+            <label htmlFor={id} className="block text-sm font-medium text-surface-900 dark:text-surface-100">
                 {label}
             </label>
             <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Icon className="h-5 w-5 text-gray-400" />
+                    <Icon className="h-5 w-5 text-surface-400 dark:text-surface-500" />
                 </div>
                 <input
                     id={id}
@@ -40,14 +40,14 @@ export const RegisterFormField = ({
                     value={value}
                     onChange={onChange}
                     className={`appearance-none relative block w-full px-3 py-2 pl-10 border ${error
-                        ? 'border-red-300 placeholder-red-400 focus:outline-none focus:ring-red-500 focus:border-red-500'
-                        : 'border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500'
-                        } rounded-md text-gray-900 focus:z-10 sm:text-sm`}
+                        ? 'border-error-300 placeholder-error-400 focus:outline-none focus:ring-error-500 focus:border-error-500 dark:border-error-700 dark:placeholder-error-500'
+                        : 'border-surface-300 placeholder-surface-500 focus:outline-none focus:ring-brand-500 focus:border-brand-500 dark:border-surface-700 dark:placeholder-surface-400'
+                        } rounded-md text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 focus:z-10 sm:text-sm`}
                     placeholder={placeholder}
                 />
             </div>
             {error && (
-                <p className="mt-1 text-sm text-red-600">{error}</p>
+                <p className="mt-1 text-sm text-error-600 dark:text-error-400">{error}</p>
             )}
         </div>
     );

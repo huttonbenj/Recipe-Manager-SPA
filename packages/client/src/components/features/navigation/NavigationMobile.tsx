@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { User as UserType } from '@recipe-manager/shared';
-import { Home, ChefHat, PlusCircle, Bookmark, User, Settings, LogOut } from 'lucide-react';
+import { Home, ChefHat, PlusCircle, Bookmark, User, Settings, LogOut, Moon, Palette } from 'lucide-react';
 import { cn } from '../../../utils/cn';
+import { ThemeToggle } from '../../ui/ThemeToggle';
 
 interface NavigationMobileProps {
     isMenuOpen: boolean;
@@ -134,6 +135,29 @@ export const NavigationMobile: React.FC<NavigationMobileProps> = ({
                                 <LogOut className="mr-3 h-5 w-5 text-surface-500 dark:text-surface-400" />
                                 Sign out
                             </button>
+                        </div>
+                    </div>
+
+                    {/* Theme Settings */}
+                    <div className="mt-6 px-4">
+                        <h3 className="px-2 text-xs font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+                            Theme Settings
+                        </h3>
+                        <div className="mt-2 space-y-3 px-2">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <Moon className="mr-3 h-5 w-5 text-surface-500 dark:text-surface-400" />
+                                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">Mode</span>
+                                </div>
+                                <ThemeToggle variant="dropdown" size="sm" position="left" />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <Palette className="mr-3 h-5 w-5 text-surface-500 dark:text-surface-400" />
+                                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">Colors</span>
+                                </div>
+                                <ThemeToggle variant="color" size="sm" position="left" />
+                            </div>
                         </div>
                     </div>
                 </div>

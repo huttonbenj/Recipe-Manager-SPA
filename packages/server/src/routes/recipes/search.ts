@@ -32,16 +32,26 @@ router.get(
       category, 
       difficulty,
       sortBy = 'created_at',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
+      cookTime,
+      saved,
+      liked,
+      user_id
     } = req.query;
     
-    const filters = {
+    const filters: any = {
       search: search as string,
       category: category as string,
       difficulty: difficulty as 'Easy' | 'Medium' | 'Hard' | undefined,
       sortBy: sortBy as 'created_at' | 'updated_at' | 'title' | 'cook_time',
-      sortOrder: sortOrder as 'asc' | 'desc'
+      sortOrder: sortOrder as 'asc' | 'desc',
+      cookTime: cookTime ? Number(cookTime) : undefined,
+      saved: typeof saved === 'boolean' ? saved : saved === 'true',
+      liked: typeof liked === 'boolean' ? liked : liked === 'true',
     };
+    if (typeof user_id === 'string') {
+      filters.user_id = user_id;
+    }
     
     const pagination = {
       page: parseInt(page as string, 10),
@@ -50,7 +60,7 @@ router.get(
 
     const result = await RecipeService.getAllRecipes(filters, pagination);
 
-    // Enrich with liked flag when user authenticated
+    // Enrich with liked and saved flag when user authenticated
     let recipes = result.recipes as any[];
     const userId = (req as any).user?.userId;
     if (userId) {
@@ -59,7 +69,13 @@ router.get(
         select: { recipe_id: true },
       });
       const likedIds = new Set<string>(likes.map((like) => like.recipe_id));
-      recipes = recipes.map(r => ({ ...r, liked: likedIds.has(r.id) }));
+      const prismaAny = prisma as any;
+      const saves: { recipe_id: string }[] = await prismaAny.recipeSave.findMany({
+        where: { user_id: userId },
+        select: { recipe_id: true },
+      });
+      const savedIds = new Set<string>(saves.map((save) => save.recipe_id));
+      recipes = recipes.map(r => ({ ...r, liked: likedIds.has(r.id), saved: savedIds.has(r.id) }));
     }
 
     res.json({

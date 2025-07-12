@@ -24,10 +24,15 @@ router.get(
     const recipe = await RecipeService.getRecipeById(id!);
 
     let liked = false;
-    // If authenticated, check like status
+    let saved = false;
+    // If authenticated, check like and save status
     if ((req as any).user) {
       const userId = (req as AuthenticatedRequest).user.userId;
       liked = await prisma.recipeLike.findUnique({
+        where: { user_id_recipe_id: { user_id: userId, recipe_id: id! } },
+      }) !== null;
+      const prismaAny = prisma as any;
+      saved = await prismaAny.recipeSave.findUnique({
         where: { user_id_recipe_id: { user_id: userId, recipe_id: id! } },
       }) !== null;
     }
@@ -42,7 +47,7 @@ router.get(
 
     res.json({
       success: true,
-      data: { ...recipe, liked },
+      data: { ...recipe, liked, saved },
     });
   })
 );

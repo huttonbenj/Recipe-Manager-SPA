@@ -23,7 +23,7 @@ export const UserProfile: React.FC = () => {
     if (!user) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-600">Please log in to view your profile</p>
+                <p className="text-surface-600 dark:text-surface-400">Please log in to view your profile</p>
             </div>
         );
     }

@@ -18,6 +18,7 @@ export const RecipeDetail: React.FC = () => {
     const queryClient = useQueryClient();
     const { user } = useAuth();
     const [isLiked, setIsLiked] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
 
     const likeMutation = useMutation({
         mutationFn: () => recipeService.likeRecipe(id!),
@@ -53,12 +54,46 @@ export const RecipeDetail: React.FC = () => {
         enabled: !!id,
     });
 
-    // Sync liked state with API response
+    // Sync liked and saved state with API response
     useEffect(() => {
-        if (recipe && (recipe as any).liked !== undefined) {
-            setIsLiked((recipe as any).liked);
+        if (recipe) {
+            if ((recipe as any).liked !== undefined) {
+                setIsLiked((recipe as any).liked);
+            }
+            if ((recipe as any).saved !== undefined) {
+                setIsSaved((recipe as any).saved);
+            }
         }
     }, [recipe]);
+
+    // Save/Unsave mutations
+    const saveMutation = useMutation({
+        mutationFn: () => recipeService.saveRecipe(id!),
+        onSuccess: () => setIsSaved(true),
+        onError: (error) => console.error('Save mutation failed:', error),
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['recipe', id] });
+            queryClient.invalidateQueries({ queryKey: ['recipes'] });
+        },
+    });
+    const unsaveMutation = useMutation({
+        mutationFn: () => recipeService.unsaveRecipe(id!),
+        onSuccess: () => setIsSaved(false),
+        onError: (error) => console.error('Unsave mutation failed:', error),
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['recipe', id] });
+            queryClient.invalidateQueries({ queryKey: ['recipes'] });
+        },
+    });
+    const handleSaveToggle = () => {
+        if (!id) return;
+        if (!user) return;
+        if (isSaved) {
+            unsaveMutation.mutate();
+        } else {
+            saveMutation.mutate();
+        }
+    };
 
     // Delete recipe mutation
     const deleteMutation = useMutation({
@@ -95,7 +130,7 @@ export const RecipeDetail: React.FC = () => {
     if (isLoading) {
         return (
             <div className="min-h-[70vh] flex items-center justify-center">
-                <div className="flex items-center gap-4 text-lg text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-4 text-lg text-surface-500 dark:text-surface-400">
                     <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
                     <span>Loading delicious recipe...</span>
                 </div>
@@ -105,15 +140,15 @@ export const RecipeDetail: React.FC = () => {
 
     if (error || !recipe) {
         return (
-            <div className="min-h-[70vh] flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-                <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md mx-auto">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50">
-                        <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+            <div className="min-h-[70vh] flex items-center justify-center bg-surface-50 dark:bg-surface-900">
+                <div className="text-center p-8 bg-white dark:bg-surface-800 rounded-lg shadow-xl max-w-md mx-auto">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-error-100 dark:bg-error-900/50">
+                        <AlertCircle className="h-6 w-6 text-error-600 dark:text-error-400" />
                     </div>
-                    <h3 className="mt-5 text-2xl font-bold text-gray-900 dark:text-white">
+                    <h3 className="mt-5 text-2xl font-bold text-surface-900 dark:text-white">
                         Oops! Recipe Not Found
                     </h3>
-                    <p className="mt-2 text-base text-gray-600 dark:text-gray-400">
+                    <p className="mt-2 text-base text-surface-600 dark:text-surface-400">
                         The recipe you're looking for seems to have vanished from our kitchen.
                     </p>
                     <div className="mt-6 flex justify-center gap-4">
@@ -144,7 +179,9 @@ export const RecipeDetail: React.FC = () => {
                             recipe={recipe}
                             user={user}
                             isLiked={isLiked}
+                            isSaved={isSaved}
                             onLikeToggle={handleLikeToggle}
+                            onSaveToggle={handleSaveToggle}
                             onDelete={handleDelete}
                         />
 

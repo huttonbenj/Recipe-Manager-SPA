@@ -60,6 +60,10 @@ export const RecipeSearchSchema = z.object({
   difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
   tags: z.string().optional(),
   user_id: z.string().optional(),
+  // New boolean filters for saved and liked recipes (coerced from query string)
+  saved: z.coerce.boolean().optional(),
+  liked: z.coerce.boolean().optional(),
+  cookTime: z.coerce.number().int().optional(),
   sortBy: z.enum(['created_at', 'updated_at', 'title', 'cook_time', 'likes']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
   page: z.coerce.number().int().positive().default(PAGINATION_DEFAULTS.PAGE),

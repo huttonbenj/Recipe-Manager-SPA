@@ -9,7 +9,6 @@ import { NavigationDesktop } from './NavigationDesktop';
 import { NavigationUserMenu } from './NavigationUserMenu';
 import { NavigationMobileButton } from './NavigationMobileButton';
 import { NavigationMobile } from './NavigationMobile';
-import { ThemeToggle } from '../../ui/ThemeToggle';
 import {
     Search, X, TrendingUp, Clock, ChefHat, Tag, Filter,
     History, Star, Utensils, Sparkles, Zap, Heart, Lightbulb
@@ -404,8 +403,6 @@ export const Navigation: React.FC = () => {
                                 <span className="sr-only">Search recipes</span>
                             </button>
 
-                            <ThemeToggle variant="compact" />
-
                             <NavigationUserMenu
                                 user={user}
                                 isUserMenuOpen={isUserMenuOpen}
@@ -518,69 +515,73 @@ export const Navigation: React.FC = () => {
 
                                 {/* Search suggestions - only show when actively typing */}
                                 {allSuggestions.length > 0 && searchQuery.length > 0 && (
-                                    <div className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700 overflow-hidden animate-in slide-in-from-top-2 duration-200 max-h-80 overflow-y-auto z-10">
-                                        <div className="py-3">
-                                            <div className="px-5 py-3 border-b border-surface-100 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center space-x-2">
-                                                        <Sparkles className="h-4 w-4 text-brand-500" />
-                                                        <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">
-                                                            Quick suggestions
-                                                        </span>
-                                                    </div>
-                                                    <span className="text-xs text-surface-500 dark:text-surface-400 font-medium">
-                                                        ↑↓ navigate • Enter select
-                                                    </span>
+                                    <div className="absolute top-full left-0 right-0 mt-3 z-30 animate-fade-in">
+                                        <div className="glass-card shadow-2xl rounded-2xl border border-surface-200/60 dark:border-surface-700/60 backdrop-blur-xl bg-white/80 dark:bg-surface-900/80 relative overflow-hidden">
+                                            {/* Accent bar */}
+                                            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-brand-500 to-accent-500 rounded-l-2xl" />
+                                            <div className="px-4 py-2 border-b border-transparent flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Sparkles className="h-5 w-5 text-brand-500" />
+                                                    <span className="text-base font-bold text-surface-800 dark:text-surface-100 tracking-tight">Suggestions</span>
                                                 </div>
+                                                <span className="text-xs text-surface-500 dark:text-surface-400 font-medium">↑↓ navigate • Enter select</span>
                                             </div>
-                                            {allSuggestions.map((suggestion, index) => {
-                                                const Icon = suggestion.icon;
-                                                const isSelected = selectedSuggestionIndex === index;
-                                                return (
-                                                    <button
-                                                        key={suggestion.id}
-                                                        onClick={() => handleSuggestionClick(suggestion)}
-                                                        className={cn(
-                                                            "w-full px-5 py-4 text-left hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 flex items-center space-x-4 group",
-                                                            isSelected && "bg-brand-50 dark:bg-brand-900/20 border-l-4 border-brand-500"
-                                                        )}
-                                                    >
-                                                        <div className={cn(
-                                                            "p-2 rounded-xl bg-surface-100 dark:bg-surface-800 group-hover:bg-surface-200 dark:group-hover:bg-surface-700 transition-colors",
-                                                            isSelected && "bg-brand-100 dark:bg-brand-900/30"
-                                                        )}>
-                                                            <Icon className={cn(
-                                                                "h-5 w-5 text-surface-600 dark:text-surface-400",
-                                                                isSelected && "text-brand-600 dark:text-brand-400"
-                                                            )} />
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className={cn(
-                                                                "font-semibold text-surface-900 dark:text-surface-50 text-base",
-                                                                isSelected && "text-brand-900 dark:text-brand-100"
+                                            <div className="divide-y divide-surface-100 dark:divide-surface-800">
+                                                {allSuggestions.map((suggestion, index) => {
+                                                    const Icon = suggestion.icon;
+                                                    const isSelected = selectedSuggestionIndex === index;
+                                                    let pillColor = '';
+                                                    switch (suggestion.type) {
+                                                        case 'recipe': pillColor = 'bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-200'; break;
+                                                        case 'category': pillColor = 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-200'; break;
+                                                        case 'ingredient': pillColor = 'bg-success-100 text-success-700 dark:bg-success-900/40 dark:text-success-200'; break;
+                                                        case 'user': pillColor = 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-200'; break;
+                                                        default: pillColor = 'bg-surface-200 text-surface-700 dark:bg-surface-700 dark:text-surface-200';
+                                                    }
+                                                    return (
+                                                        <button
+                                                            key={suggestion.id}
+                                                            onClick={() => handleSuggestionClick(suggestion)}
+                                                            className={cn(
+                                                                'w-full flex items-center gap-4 px-4 py-3 transition-all duration-200 group relative focus:outline-none',
+                                                                isSelected ? 'bg-gradient-to-r from-brand-100/80 to-accent-100/80 dark:from-brand-900/40 dark:to-accent-900/40 scale-[1.03] shadow-xl ring-2 ring-brand-400 dark:ring-brand-600 z-10' : 'hover:bg-surface-100/60 dark:hover:bg-surface-800/60',
+                                                                'rounded-xl my-1',
+                                                                'transition-transform'
+                                                            )}
+                                                            tabIndex={0}
+                                                            aria-selected={isSelected}
+                                                        >
+                                                            <div className={cn(
+                                                                'flex-shrink-0 flex items-center justify-center rounded-full shadow-md',
+                                                                isSelected ? 'bg-brand-200 dark:bg-brand-800' : 'bg-surface-100 dark:bg-surface-800',
+                                                                'h-10 w-10'
                                                             )}>
-                                                                {suggestion.title}
-                                                            </p>
-                                                            {suggestion.description && (
-                                                                <p className="text-sm text-surface-500 dark:text-surface-400 truncate mt-0.5">
-                                                                    {suggestion.description}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex items-center space-x-3">
-                                                            {suggestion.metadata?.likes && (
-                                                                <span className="text-xs text-surface-500 dark:text-surface-400 flex items-center bg-surface-100 dark:bg-surface-800 px-2 py-1 rounded-full">
-                                                                    <Heart className="h-3 w-3 mr-1" />
-                                                                    {suggestion.metadata.likes}
+                                                                <Icon className={cn('h-5 w-5', isSelected ? 'text-brand-700 dark:text-brand-200' : 'text-surface-600 dark:text-surface-400')} />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0 text-left">
+                                                                <p className={cn('font-bold text-base truncate', isSelected ? 'text-brand-900 dark:text-brand-100' : 'text-surface-900 dark:text-surface-50')}>{suggestion.title}</p>
+                                                                {suggestion.description && (
+                                                                    <p className="text-xs text-surface-500 dark:text-surface-400 truncate mt-0.5 font-medium">{suggestion.description}</p>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex flex-col items-end gap-1 min-w-[60px]">
+                                                                {suggestion.metadata?.likes && (
+                                                                    <span className="text-[10px] flex items-center gap-1 bg-error-100 text-error-700 dark:bg-error-900/40 dark:text-error-200 px-1.5 py-0.5 rounded-full font-semibold">
+                                                                        <Heart className="h-3 w-3" />
+                                                                        {suggestion.metadata.likes}
+                                                                    </span>
+                                                                )}
+                                                                <span className={cn('text-[10px] px-2 py-0.5 rounded-full font-bold capitalize shadow-sm', pillColor)}>
+                                                                    {suggestion.type}
                                                                 </span>
+                                                            </div>
+                                                            {isSelected && (
+                                                                <span className="absolute left-0 top-0 h-full w-1 bg-brand-500 rounded-l-xl animate-pulse" />
                                                             )}
-                                                            <span className="text-xs px-2.5 py-1 bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-400 rounded-full font-medium">
-                                                                {suggestion.type}
-                                                            </span>
-                                                        </div>
-                                                    </button>
-                                                );
-                                            })}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -609,9 +610,9 @@ export const Navigation: React.FC = () => {
                                         {/* Large Featured Section - Categories & Popular */}
                                         <div className="col-span-12 md:col-span-8 space-y-8">
                                             {/* Categories */}
-                                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8">
+                                            <div className="bg-gradient-to-br from-accent-50 to-accent-100 dark:from-accent-900/20 dark:to-accent-800/20 rounded-2xl p-8">
                                                 <div className="flex items-center space-x-3 mb-5">
-                                                    <Tag className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                                    <Tag className="h-5 w-5 text-accent-600 dark:text-accent-400" />
                                                     <h3 className="text-lg font-bold text-surface-900 dark:text-white">
                                                         Browse Categories
                                                     </h3>
@@ -622,7 +623,7 @@ export const Navigation: React.FC = () => {
                                                             key={item.category}
                                                             to={`/recipes?category=${encodeURIComponent(item.category)}`}
                                                             onClick={closeSearch}
-                                                            className="text-left p-4 bg-white dark:bg-surface-800 rounded-xl hover:shadow-lg transition-all duration-200 border border-surface-200 dark:border-surface-700 hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-1"
+                                                            className="text-left p-4 bg-white dark:bg-surface-800 rounded-xl hover:shadow-lg transition-all duration-200 border border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-600 hover:-translate-y-1"
                                                         >
                                                             <span className="font-semibold text-surface-800 dark:text-surface-200">
                                                                 {item.label}
@@ -668,9 +669,9 @@ export const Navigation: React.FC = () => {
                                         {/* Right Side - Stacked Sections */}
                                         <div className="col-span-12 md:col-span-4 space-y-8">
                                             {/* Pro Tip */}
-                                            <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-6">
+                                            <div className="bg-success-50 dark:bg-success-900/20 rounded-2xl p-6">
                                                 <div className="flex items-center space-x-3 mb-3">
-                                                    <Lightbulb className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                                    <Lightbulb className="h-5 w-5 text-success-600 dark:text-success-400" />
                                                     <h3 className="text-md font-bold text-surface-800 dark:text-surface-200">
                                                         Pro Tip
                                                     </h3>
@@ -705,9 +706,9 @@ export const Navigation: React.FC = () => {
                                                 </div>
                                             )}
                                             {/* Smart Search Examples */}
-                                            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-6">
+                                            <div className="bg-brand-50 dark:bg-brand-900/20 rounded-2xl p-6">
                                                 <div className="flex items-center space-x-3 mb-3">
-                                                    <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                                    <Sparkles className="h-5 w-5 text-brand-600 dark:text-brand-400" />
                                                     <h3 className="text-md font-bold text-surface-800 dark:text-surface-200">
                                                         Try Smart Search
                                                     </h3>
@@ -724,7 +725,7 @@ export const Navigation: React.FC = () => {
                                                                 setSearchQuery(example);
                                                                 handleSearchSubmit({ preventDefault: () => { } } as React.FormEvent);
                                                             }}
-                                                            className="block w-full text-left text-sm text-surface-600 dark:text-surface-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                                                            className="block w-full text-left text-sm text-surface-600 dark:text-surface-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
                                                         >
                                                             "{example}"
                                                         </button>
