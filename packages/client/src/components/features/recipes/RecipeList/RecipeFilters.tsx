@@ -1,6 +1,8 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Search, X } from 'lucide-react';
 import { Button, Input, Select, FormField } from '../../../ui';
+import { recipeService } from '../../../../services';
 
 interface RecipeFiltersProps {
     searchTerm: string;
@@ -16,15 +18,6 @@ interface RecipeFiltersProps {
     onClearFilters: () => void;
     onSearch: (e: React.FormEvent) => void;
 }
-
-const categoryOptions = [
-    { value: '', label: 'All Categories' },
-    { value: 'Appetizers', label: 'Appetizers' },
-    { value: 'Main Course', label: 'Main Course' },
-    { value: 'Desserts', label: 'Desserts' },
-    { value: 'Beverages', label: 'Beverages' },
-    { value: 'Snacks', label: 'Snacks' },
-];
 
 const difficultyOptions = [
     { value: '', label: 'All Difficulties' },
@@ -61,6 +54,22 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
 }) => {
     const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty;
 
+    // Fetch categories from backend
+    const { data: categories = [] } = useQuery({
+        queryKey: ['recipe-categories'],
+        queryFn: () => recipeService.getRecipeCategories(),
+        staleTime: 300000, // 5 minutes
+    });
+
+    // Build category options from backend data
+    const categoryOptions = [
+        { value: '', label: 'All Categories' },
+        ...categories.map(category => ({
+            value: category,
+            label: category,
+        })),
+    ];
+
     return (
         <form onSubmit={onSearch} className="space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between">
@@ -81,16 +90,15 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Search */}
                 <div className="md:col-span-1">
-                    <FormField label="Search">
-                        <Input
-                            id="search-recipes-input"
-                            type="text"
-                            placeholder="Find a recipe..."
-                            value={searchTerm}
-                            onChange={(e) => onSearchChange(e.target.value)}
-                            rightIcon={<Search className="h-4 w-4" />}
-                        />
-                    </FormField>
+                    <Input
+                        id="search-recipes-input"
+                        type="text"
+                        label="Search"
+                        placeholder="Find a recipe..."
+                        value={searchTerm}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        rightIcon={<Search className="h-4 w-4" />}
+                    />
                 </div>
 
                 {/* Category & Difficulty */}

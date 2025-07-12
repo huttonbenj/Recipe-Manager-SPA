@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { renderWithProviders, screen } from '../../../utils/test-utils';
+import { describe, it, expect, vi } from 'vitest';
+import { renderWithProviders, screen, fireEvent } from '../../../utils/test-utils';
 import { RecipeGrid } from '../../../../components/features/recipes/RecipeList/RecipeGrid';
 import { Recipe } from '@recipe-manager/shared';
 
@@ -51,5 +51,17 @@ describe('RecipeGrid Component', () => {
             <RecipeGrid recipes={[]} viewMode="grid" onViewModeChange={() => { }} isLoading />
         );
         expect(screen.getAllByText('', { selector: '.animate-pulse' }).length).toBeGreaterThan(0);
+    });
+
+    it('calls onClearFilters when clear filters button is clicked in empty state', () => {
+        const mockClearFilters = vi.fn();
+        renderWithProviders(
+            <RecipeGrid recipes={[]} viewMode="grid" onViewModeChange={() => { }} onClearFilters={mockClearFilters} />
+        );
+
+        const clearButton = screen.getByRole('button', { name: /clear filters/i });
+        fireEvent.click(clearButton);
+
+        expect(mockClearFilters).toHaveBeenCalled();
     });
 }); 

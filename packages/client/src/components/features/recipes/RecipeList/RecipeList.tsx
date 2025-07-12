@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
@@ -16,9 +16,21 @@ export const RecipeList = () => {
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
     const [selectedDifficulty, setSelectedDifficulty] = useState(searchParams.get('difficulty') || '');
+    const [selectedCookTime, setSelectedCookTime] = useState(searchParams.get('cookTime') || '');
     const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'created_at');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>((searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc');
     const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
+
+    // Sync component state with URL parameters when they change
+    useEffect(() => {
+        setSearchTerm(searchParams.get('search') || '');
+        setSelectedCategory(searchParams.get('category') || '');
+        setSelectedDifficulty(searchParams.get('difficulty') || '');
+        setSelectedCookTime(searchParams.get('cookTime') || '');
+        setSortBy(searchParams.get('sortBy') || 'created_at');
+        setSortOrder((searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc');
+        setCurrentPage(parseInt(searchParams.get('page') || '1', 10));
+    }, [searchParams]);
 
     // Debounced search term
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -29,6 +41,7 @@ export const RecipeList = () => {
             search: debouncedSearchTerm,
             category: selectedCategory,
             difficulty: selectedDifficulty,
+            cookTime: selectedCookTime,
             sortBy,
             sortOrder,
             page: currentPage
@@ -42,6 +55,7 @@ export const RecipeList = () => {
             if (debouncedSearchTerm) params.search = debouncedSearchTerm;
             if (selectedCategory) params.category = selectedCategory;
             if (selectedDifficulty) params.difficulty = selectedDifficulty;
+            if (selectedCookTime) params.cookTime = selectedCookTime;
             if (sortBy) params.sortBy = sortBy;
             if (sortOrder) params.sortOrder = sortOrder;
 
@@ -145,6 +159,7 @@ export const RecipeList = () => {
                     viewMode={viewMode}
                     onViewModeChange={setViewMode}
                     isLoading={isLoading}
+                    onClearFilters={clearFilters}
                 />
             </div>
         </PageTransitionScale>

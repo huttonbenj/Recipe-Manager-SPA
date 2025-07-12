@@ -27,7 +27,6 @@ router.get(
     // If authenticated, check like status
     if ((req as any).user) {
       const userId = (req as AuthenticatedRequest).user.userId;
-      // @ts-expect-error recipeLike exists after client generation
       liked = await prisma.recipeLike.findUnique({
         where: { user_id_recipe_id: { user_id: userId, recipe_id: id! } },
       }) !== null;

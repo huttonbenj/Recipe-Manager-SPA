@@ -1,29 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigation } from '../../../hooks/ui/useNavigation';
+import { useDebounce, useLocalStorage } from '../../../hooks';
+import { recipeService } from '../../../services';
 import { NavigationLogo } from './NavigationLogo';
 import { NavigationDesktop } from './NavigationDesktop';
 import { NavigationUserMenu } from './NavigationUserMenu';
 import { NavigationMobileButton } from './NavigationMobileButton';
 import { NavigationMobile } from './NavigationMobile';
 import { ThemeToggle } from '../../ui/ThemeToggle';
-import { Search, X, TrendingUp, Clock, Star, ChefHat } from 'lucide-react';
+import {
+    Search, X, TrendingUp, Clock, ChefHat, Tag, Filter,
+    History, Star, Utensils, Flame, ArrowRight,
+    Sparkles, Zap, Heart, BookOpen
+} from 'lucide-react';
 import { cn } from '../../../utils/cn';
+import { parseSearchQuery, formatSearchDescription } from '../../../utils/searchParser';
 
 interface SearchSuggestion {
     id: string;
     title: string;
-    type: 'recipe' | 'ingredient' | 'category';
+    type: 'recipe' | 'ingredient' | 'category' | 'user';
     icon: React.ComponentType<any>;
     description?: string;
+    metadata?: {
+        difficulty?: string;
+        cookTime?: number;
+        category?: string;
+        rating?: number;
+        likes?: number;
+    };
 }
 
-const mockSuggestions: SearchSuggestion[] = [
-    { id: '1', title: 'Chocolate Cake', type: 'recipe', icon: ChefHat, description: 'Decadent chocolate dessert' },
-    { id: '2', title: 'Chicken Parmesan', type: 'recipe', icon: ChefHat, description: 'Italian-style chicken breast' },
-    { id: '3', title: 'Avocado', type: 'ingredient', icon: Star, description: 'Fresh produce' },
-    { id: '4', title: 'Breakfast', type: 'category', icon: Clock, description: 'Morning recipes' },
-];
+interface RecentSearch {
+    id: string;
+    query: string;
+    timestamp: number;
+    filters?: {
+        category?: string;
+        difficulty?: string;
+        cookTime?: string;
+    };
+}
+
+interface PopularRecipe {
+    id: string;
+    title: string;
+    category?: string;
+    difficulty?: string;
+    cookTime?: number;
+    likes: number;
+    image?: string;
+}
 
 export const Navigation: React.FC = () => {
     const {
@@ -37,12 +66,131 @@ export const Navigation: React.FC = () => {
         toggleUserMenu,
     } = useNavigation();
 
+    const navigate = useNavigate();
+
     const [isScrolled, setIsScrolled] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchSuggestions, setSearchSuggestions] = useState<SearchSuggestion[]>([]);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+
+    // Local storage for recent searches
+    const [recentSearches, setRecentSearches] = useLocalStorage<RecentSearch[]>('recentSearches', []);
+
+    // Debounced search query for API calls
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+    // Parse current search query for filter preview
+    const parsedQuery = parseSearchQuery(searchQuery);
+
+    // Fetch search suggestions from backend
+    const { data: searchResults } = useQuery({
+        queryKey: ['search-suggestions', debouncedSearchQuery],
+        queryFn: () => recipeService.searchRecipes({
+            search: debouncedSearchQuery,
+            page: 1,
+            limit: 8
+        }),
+        enabled: Boolean(debouncedSearchQuery && debouncedSearchQuery.length > 1),
+        staleTime: 30000, // 30 seconds
+    });
+
+    // Fetch categories for popular searches
+    const { data: categories } = useQuery({
+        queryKey: ['recipe-categories'],
+        queryFn: () => recipeService.getRecipeCategories(),
+        staleTime: 300000, // 5 minutes
+    });
+
+    // Fetch popular recipes
+    const { data: popularRecipesData } = useQuery({
+        queryKey: ['popular-recipes'],
+        queryFn: () => recipeService.getRecipes({
+            page: 1,
+            limit: 6,
+            sortBy: 'created_at',
+            sortOrder: 'desc'
+        }),
+        staleTime: 180000, // 3 minutes
+    });
+
+    // Fetch trending searches (mock data for now, could be from analytics)
+    const trendingSearches = [
+        { query: 'pasta carbonara', count: 156 },
+        { query: 'chocolate cake', count: 142 },
+        { query: 'quick breakfast', count: 98 },
+        { query: 'healthy salad', count: 87 },
+        { query: 'chicken curry', count: 76 },
+    ];
+
+    // Convert API results to suggestions format
+    const recipeSuggestions: SearchSuggestion[] = searchResults?.data?.map(recipe => ({
+        id: recipe.id,
+        title: recipe.title,
+        type: 'recipe' as const,
+        icon: ChefHat,
+        description: `${recipe.category || 'Unknown'} • ${recipe.difficulty || 'Unknown'} • ${recipe.cook_time || 0}min`,
+        ...(recipe.difficulty || recipe.cook_time || recipe.category ? {
+            metadata: {
+                ...(recipe.difficulty && { difficulty: recipe.difficulty }),
+                ...(recipe.cook_time && { cookTime: recipe.cook_time }),
+                ...(recipe.category && { category: recipe.category }),
+                likes: 0, // Would come from API
+            },
+        } : {}),
+    })) || [];
+
+    // Add category suggestions if search query matches
+    const categorySuggestions: SearchSuggestion[] = categories?.filter(category =>
+        category.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+    ).slice(0, 3).map(category => ({
+        id: `category-${category}`,
+        title: category,
+        type: 'category' as const,
+        icon: Tag,
+        description: `Browse ${category} recipes`,
+    })) || [];
+
+    // Add ingredient suggestions (mock data - could be from ingredients API)
+    const ingredientSuggestions: SearchSuggestion[] = debouncedSearchQuery.length > 2 ? [
+        { id: 'ing-chicken', title: 'Chicken', type: 'ingredient' as const, icon: Utensils, description: 'Recipes with chicken' },
+        { id: 'ing-pasta', title: 'Pasta', type: 'ingredient' as const, icon: Utensils, description: 'Pasta dishes' },
+        { id: 'ing-chocolate', title: 'Chocolate', type: 'ingredient' as const, icon: Utensils, description: 'Chocolate desserts' },
+    ].filter(ing => ing.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())).slice(0, 2) : [];
+
+    // Combine all suggestions
+    const allSuggestions = [...recipeSuggestions, ...categorySuggestions, ...ingredientSuggestions];
+
+    // Popular recipes for display
+    const popularRecipes: PopularRecipe[] = popularRecipesData?.data?.map(recipe => ({
+        id: recipe.id,
+        title: recipe.title,
+        category: recipe.category,
+        difficulty: recipe.difficulty,
+        cookTime: recipe.cook_time,
+        likes: 0, // Would come from API
+        image: recipe.image_url,
+    } as PopularRecipe)) || [];
+
+    // Popular searches from categories
+    const popularSearches = categories?.slice(0, 6).map(category => ({
+        label: category,
+        category: category,
+        icon: Tag,
+    })) || [
+            { label: 'Main Course', category: 'Main Course', icon: Tag },
+            { label: 'Dessert', category: 'Dessert', icon: Tag },
+            { label: 'Salad', category: 'Salad', icon: Tag },
+        ];
+
+    // Quick filter suggestions
+    const quickFilters = [
+        { label: 'Easy', type: 'difficulty', value: 'Easy', icon: Zap, color: 'green' },
+        { label: 'Quick (≤30min)', type: 'cookTime', value: '30', icon: Clock, color: 'blue' },
+        { label: 'Popular', type: 'sort', value: 'popular', icon: TrendingUp, color: 'purple' },
+        { label: 'Recent', type: 'sort', value: 'recent', icon: Sparkles, color: 'orange' },
+    ];
 
     // Handle scroll effect for navigation
     useEffect(() => {
@@ -59,23 +207,12 @@ export const Navigation: React.FC = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Handle search suggestions
-    useEffect(() => {
-        if (searchQuery.length > 0) {
-            const filtered = mockSuggestions.filter(suggestion =>
-                suggestion.title.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setSearchSuggestions(filtered);
-        } else {
-            setSearchSuggestions([]);
-        }
-    }, [searchQuery]);
-
     // Handle escape key to close search
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isSearchOpen) {
                 setIsSearchOpen(false);
+                setSelectedSuggestionIndex(-1);
             }
         };
 
@@ -83,32 +220,142 @@ export const Navigation: React.FC = () => {
         return () => document.removeEventListener('keydown', handleEscape);
     }, [isSearchOpen]);
 
+    // Save search to recent searches
+    const saveRecentSearch = (query: string, filters?: any) => {
+        const newSearch: RecentSearch = {
+            id: Date.now().toString(),
+            query,
+            timestamp: Date.now(),
+            filters,
+        };
+
+        const updatedSearches = [
+            newSearch,
+            ...recentSearches.filter(search => search.query !== query)
+        ].slice(0, 10); // Keep only last 10 searches
+
+        setRecentSearches(updatedSearches);
+    };
+
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchQuery.trim()) {
-            // Handle search submission
-            console.log('Search for:', searchQuery);
+            // Parse the search query to extract filters
+            const parsed = parseSearchQuery(searchQuery.trim());
+
+            // Save to recent searches
+            saveRecentSearch(searchQuery.trim(), parsed);
+
+            // Build URL with extracted filters
+            const params = new URLSearchParams();
+            if (parsed.searchTerm) params.set('search', parsed.searchTerm);
+            if (parsed.category) params.set('category', parsed.category);
+            if (parsed.difficulty) params.set('difficulty', parsed.difficulty);
+            if (parsed.cookTime) params.set('cookTime', parsed.cookTime);
+
+            // Always navigate to recipes page, even if only filters are present
+            const queryString = params.toString();
+            navigate(`/recipes${queryString ? `?${queryString}` : ''}`);
             setIsSearchOpen(false);
             setSearchQuery('');
+            setSelectedSuggestionIndex(-1);
         }
     };
 
     const handleSuggestionClick = (suggestion: SearchSuggestion) => {
-        setSearchQuery(suggestion.title);
+        if (suggestion.type === 'recipe') {
+            // Navigate to recipe detail page
+            navigate(`/recipes/${suggestion.id}`);
+        } else if (suggestion.type === 'category') {
+            // Navigate to recipes page with category filter
+            navigate(`/recipes?category=${encodeURIComponent(suggestion.title)}`);
+        } else if (suggestion.type === 'ingredient') {
+            // Navigate to recipes page with ingredient search
+            navigate(`/recipes?search=${encodeURIComponent(suggestion.title)}`);
+        } else {
+            // Navigate to recipes page with search query
+            navigate(`/recipes?search=${encodeURIComponent(suggestion.title)}`);
+        }
+
+        // Save to recent searches
+        saveRecentSearch(suggestion.title);
+
         setIsSearchOpen(false);
-        // Navigate to suggestion
-        console.log('Navigate to:', suggestion);
+        setSearchQuery('');
+        setSelectedSuggestionIndex(-1);
+    };
+
+    const handleQuickFilterClick = (filter: any) => {
+        const params = new URLSearchParams();
+        if (filter.type === 'difficulty') {
+            params.set('difficulty', filter.value);
+        } else if (filter.type === 'cookTime') {
+            params.set('cookTime', filter.value);
+        } else if (filter.type === 'sort') {
+            if (filter.value === 'popular') {
+                params.set('sortBy', 'created_at');
+                params.set('sortOrder', 'desc');
+            } else if (filter.value === 'recent') {
+                params.set('sortBy', 'created_at');
+                params.set('sortOrder', 'desc');
+            }
+        }
+
+        navigate(`/recipes?${params.toString()}`);
+        setIsSearchOpen(false);
+    };
+
+    const handleRecentSearchClick = (recentSearch: RecentSearch) => {
+        const params = new URLSearchParams();
+        params.set('search', recentSearch.query);
+
+        if (recentSearch.filters) {
+            Object.entries(recentSearch.filters).forEach(([key, value]) => {
+                if (value) params.set(key, value);
+            });
+        }
+
+        navigate(`/recipes?${params.toString()}`);
+        setIsSearchOpen(false);
+        setSearchQuery('');
+    };
+
+    const clearRecentSearches = () => {
+        setRecentSearches([]);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (!isSearchOpen) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setSelectedSuggestionIndex(prev =>
+                prev < allSuggestions.length - 1 ? prev + 1 : prev
+            );
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setSelectedSuggestionIndex(prev => prev > 0 ? prev - 1 : -1);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selectedSuggestionIndex >= 0 && allSuggestions[selectedSuggestionIndex]) {
+                handleSuggestionClick(allSuggestions[selectedSuggestionIndex]);
+            } else {
+                handleSearchSubmit(e);
+            }
+        }
     };
 
     const openSearch = () => {
         setIsSearchOpen(true);
         setSearchQuery('');
+        setSelectedSuggestionIndex(-1);
     };
 
     const closeSearch = () => {
         setIsSearchOpen(false);
         setSearchQuery('');
         setIsSearchFocused(false);
+        setSelectedSuggestionIndex(-1);
     };
 
     return (
@@ -189,14 +436,21 @@ export const Navigation: React.FC = () => {
                     />
 
                     {/* Search panel */}
-                    <div className="fixed inset-x-0 top-0 bg-white/95 dark:bg-surface-900/95 backdrop-blur-xl border-b border-surface-200 dark:border-surface-800 animate-in slide-in-from-top duration-300">
-                        <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
+                    <div className="fixed inset-x-0 top-0 bg-white/95 dark:bg-surface-900/95 backdrop-blur-xl border-b border-surface-200 dark:border-surface-800 animate-in slide-in-from-top duration-300 max-h-screen overflow-y-auto">
+                        <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center space-x-3">
-                                    <Search className="h-6 w-6 text-brand-500" />
-                                    <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50 font-display">
-                                        Search Recipes
-                                    </h2>
+                                    <div className="p-2 bg-brand-100 dark:bg-brand-900/30 rounded-lg">
+                                        <Search className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50 font-display">
+                                            Search Recipes
+                                        </h2>
+                                        <p className="text-sm text-surface-500 dark:text-surface-400">
+                                            Find recipes, ingredients, and more
+                                        </p>
+                                    </div>
                                 </div>
                                 <button
                                     onClick={closeSearch}
@@ -207,7 +461,7 @@ export const Navigation: React.FC = () => {
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSearchSubmit} className="relative">
+                            <form onSubmit={handleSearchSubmit} className="relative mb-8" autoComplete="off">
                                 <div className="relative">
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-surface-400 dark:text-surface-500" />
                                     <input
@@ -215,113 +469,330 @@ export const Navigation: React.FC = () => {
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         onFocus={() => setIsSearchFocused(true)}
-                                        onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                                        placeholder="Search for recipes, ingredients, or categories..."
+                                        onBlur={() => setTimeout(() => setIsSearchFocused(false), 300)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder={
+                                            parsedQuery.category || parsedQuery.difficulty || parsedQuery.cookTime
+                                                ? `Searching: ${formatSearchDescription(parsedQuery)}`
+                                                : "Search for recipes, ingredients, or categories..."
+                                        }
                                         className={cn(
-                                            "w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-surface-900 border-2 border-surface-200 dark:border-surface-700",
+                                            "w-full h-14 pl-12 pr-32 text-lg bg-white dark:bg-surface-900 border-2 border-surface-200 dark:border-surface-700",
                                             "rounded-2xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/20 transition-all duration-200",
                                             "placeholder:text-surface-400 dark:placeholder:text-surface-500",
                                             isSearchFocused && "shadow-lg"
                                         )}
                                         autoFocus
                                     />
+                                    {/* Search hint */}
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-surface-400 dark:text-surface-500 flex items-center space-x-1">
+                                        <span>⌘K</span>
+                                        <span>•</span>
+                                        <span>Enter to search</span>
+                                    </div>
                                 </div>
 
-                                {/* Search suggestions */}
-                                {(searchSuggestions.length > 0 || isSearchFocused) && (
-                                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-surface-900 rounded-2xl shadow-xl border border-surface-200 dark:border-surface-700 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                        {searchSuggestions.length > 0 ? (
-                                            <div className="py-2">
-                                                {searchSuggestions.map((suggestion) => {
-                                                    const Icon = suggestion.icon;
-                                                    return (
-                                                        <button
-                                                            key={suggestion.id}
-                                                            onClick={() => handleSuggestionClick(suggestion)}
-                                                            className="w-full px-4 py-3 text-left hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors flex items-center space-x-3"
-                                                        >
-                                                            <Icon className="h-5 w-5 text-surface-400 dark:text-surface-500" />
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="font-medium text-surface-900 dark:text-surface-50">
-                                                                    {suggestion.title}
+                                {/* Filter preview - show when filters are detected */}
+                                {(parsedQuery.category || parsedQuery.difficulty || parsedQuery.cookTime) && (
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        {parsedQuery.category && (
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                <Tag className="h-3 w-3 mr-1" />
+                                                {parsedQuery.category}
+                                            </span>
+                                        )}
+                                        {parsedQuery.difficulty && (
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                <Filter className="h-3 w-3 mr-1" />
+                                                {parsedQuery.difficulty}
+                                            </span>
+                                        )}
+                                        {parsedQuery.cookTime && (
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                                <Clock className="h-3 w-3 mr-1" />
+                                                ≤ {parsedQuery.cookTime}min
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Search suggestions - only show when actively typing */}
+                                {allSuggestions.length > 0 && searchQuery.length > 0 && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-surface-900 rounded-2xl shadow-xl border border-surface-200 dark:border-surface-700 overflow-hidden animate-in slide-in-from-top-2 duration-200 max-h-80 overflow-y-auto z-10">
+                                        <div className="py-2">
+                                            <div className="px-4 py-2 border-b border-surface-100 dark:border-surface-800">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center space-x-2">
+                                                        <Sparkles className="h-4 w-4 text-brand-500" />
+                                                        <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                                                            Suggestions
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-xs text-surface-500 dark:text-surface-400">
+                                                        ↑↓ to navigate, Enter to select
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {allSuggestions.map((suggestion, index) => {
+                                                const Icon = suggestion.icon;
+                                                const isSelected = selectedSuggestionIndex === index;
+                                                return (
+                                                    <button
+                                                        key={suggestion.id}
+                                                        onClick={() => handleSuggestionClick(suggestion)}
+                                                        className={cn(
+                                                            "w-full px-4 py-3 text-left hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors flex items-center space-x-3",
+                                                            isSelected && "bg-brand-50 dark:bg-brand-900/20"
+                                                        )}
+                                                    >
+                                                        <Icon className={cn(
+                                                            "h-5 w-5 text-surface-400 dark:text-surface-500",
+                                                            isSelected && "text-brand-500"
+                                                        )} />
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className={cn(
+                                                                "font-medium text-surface-900 dark:text-surface-50",
+                                                                isSelected && "text-brand-900 dark:text-brand-100"
+                                                            )}>
+                                                                {suggestion.title}
+                                                            </p>
+                                                            {suggestion.description && (
+                                                                <p className="text-sm text-surface-500 dark:text-surface-400 truncate">
+                                                                    {suggestion.description}
                                                                 </p>
-                                                                {suggestion.description && (
-                                                                    <p className="text-sm text-surface-500 dark:text-surface-400 truncate">
-                                                                        {suggestion.description}
-                                                                    </p>
-                                                                )}
-                                                            </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center space-x-2">
+                                                            {suggestion.metadata?.likes && (
+                                                                <span className="text-xs text-surface-500 dark:text-surface-400 flex items-center">
+                                                                    <Heart className="h-3 w-3 mr-1" />
+                                                                    {suggestion.metadata.likes}
+                                                                </span>
+                                                            )}
                                                             <span className="text-xs px-2 py-1 bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 rounded-full">
                                                                 {suggestion.type}
                                                             </span>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        ) : (
-                                            <div className="p-4 text-center text-surface-500 dark:text-surface-400">
-                                                <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                                <p>Start typing to search...</p>
-                                            </div>
-                                        )}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 )}
                             </form>
 
-                            {/* Popular searches */}
-                            <div className="mt-6 space-y-4">
-                                <div className="flex items-center space-x-2">
-                                    <TrendingUp className="h-4 w-4 text-brand-500" />
+                            {/* Quick filters */}
+                            <div className="mb-8">
+                                <div className="flex items-center space-x-2 mb-4">
+                                    <Zap className="h-4 w-4 text-brand-500" />
                                     <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                                        Popular searches
+                                        Quick Filters
                                     </span>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                    {[
-                                        { label: 'Breakfast', category: 'breakfast' },
-                                        { label: 'Vegetarian', category: 'vegetarian' },
-                                        { label: 'Desserts', category: 'desserts' },
-                                        { label: 'Quick & Easy', category: 'quick' },
-                                        { label: 'Healthy', category: 'healthy' },
-                                        { label: 'Pasta', category: 'pasta' },
-                                    ].map((item) => (
-                                        <Link
-                                            key={item.category}
-                                            to={`/recipes?category=${item.category}`}
-                                            onClick={closeSearch}
-                                            className="px-3 py-1.5 bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 rounded-full text-sm hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors hover:scale-105"
-                                        >
-                                            {item.label}
-                                        </Link>
-                                    ))}
+                                    {quickFilters.map((filter) => {
+                                        const Icon = filter.icon;
+                                        const colorClasses = {
+                                            green: 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200',
+                                            blue: 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200',
+                                            purple: 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-200',
+                                            orange: 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-200',
+                                        };
+                                        return (
+                                            <button
+                                                key={filter.label}
+                                                onClick={() => handleQuickFilterClick(filter)}
+                                                className={cn(
+                                                    "px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105 flex items-center space-x-2",
+                                                    colorClasses[filter.color as keyof typeof colorClasses]
+                                                )}
+                                            >
+                                                <Icon className="h-4 w-4" />
+                                                <span>{filter.label}</span>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
-                            {/* Recent searches */}
-                            <div className="mt-6 space-y-4">
-                                <div className="flex items-center space-x-2">
-                                    <Clock className="h-4 w-4 text-surface-500" />
-                                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
-                                        Recent searches
-                                    </span>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {/* Left column */}
+                                <div className="space-y-8">
+                                    {/* Recent searches */}
+                                    {recentSearches.length > 0 && (
+                                        <div>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center space-x-2">
+                                                    <History className="h-4 w-4 text-surface-500" />
+                                                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                                                        Recent Searches
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={clearRecentSearches}
+                                                    className="text-xs text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200"
+                                                >
+                                                    Clear all
+                                                </button>
+                                            </div>
+                                            <div className="space-y-1">
+                                                {recentSearches.slice(0, 5).map((search) => (
+                                                    <button
+                                                        key={search.id}
+                                                        onClick={() => handleRecentSearchClick(search)}
+                                                        className="w-full text-left px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-50 hover:bg-surface-50 dark:hover:bg-surface-800 rounded-lg transition-colors flex items-center space-x-2"
+                                                    >
+                                                        <History className="h-4 w-4 text-surface-400" />
+                                                        <span className="flex-1">{search.query}</span>
+                                                        <span className="text-xs text-surface-400">
+                                                            {new Date(search.timestamp).toLocaleDateString()}
+                                                        </span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Popular categories */}
+                                    <div>
+                                        <div className="flex items-center space-x-2 mb-4">
+                                            <TrendingUp className="h-4 w-4 text-brand-500" />
+                                            <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                                                Popular Categories
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {popularSearches.map((item) => {
+                                                const Icon = item.icon;
+                                                return (
+                                                    <Link
+                                                        key={item.category}
+                                                        to={`/recipes?category=${encodeURIComponent(item.category)}`}
+                                                        onClick={closeSearch}
+                                                        className="px-3 py-2 bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 rounded-full text-sm hover:bg-surface-200 dark:hover:bg-surface-700 transition-all duration-200 hover:scale-105 flex items-center space-x-2"
+                                                    >
+                                                        <Icon className="h-4 w-4" />
+                                                        <span>{item.label}</span>
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Trending searches */}
+                                    <div>
+                                        <div className="flex items-center space-x-2 mb-4">
+                                            <Flame className="h-4 w-4 text-orange-500" />
+                                            <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                                                Trending Now
+                                            </span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {trendingSearches.slice(0, 5).map((trend, index) => (
+                                                <button
+                                                    key={trend.query}
+                                                    onClick={() => {
+                                                        navigate(`/recipes?search=${encodeURIComponent(trend.query)}`);
+                                                        closeSearch();
+                                                    }}
+                                                    className="w-full text-left px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-50 hover:bg-surface-50 dark:hover:bg-surface-800 rounded-lg transition-colors flex items-center justify-between"
+                                                >
+                                                    <div className="flex items-center space-x-3">
+                                                        <span className="text-xs font-medium text-surface-500 dark:text-surface-400 w-4">
+                                                            {index + 1}
+                                                        </span>
+                                                        <span>{trend.query}</span>
+                                                    </div>
+                                                    <span className="text-xs text-surface-400 flex items-center">
+                                                        <TrendingUp className="h-3 w-3 mr-1" />
+                                                        {trend.count}
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    {[
-                                        'Chicken tikka masala',
-                                        'Chocolate chip cookies',
-                                        'Caesar salad',
-                                    ].map((search) => (
-                                        <button
-                                            key={search}
-                                            onClick={() => {
-                                                setSearchQuery(search);
-                                                handleSearchSubmit(new Event('submit') as any);
-                                            }}
-                                            className="block w-full text-left px-3 py-2 text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-50 hover:bg-surface-50 dark:hover:bg-surface-800 rounded-lg transition-colors"
-                                        >
-                                            {search}
-                                        </button>
-                                    ))}
+
+                                {/* Right column */}
+                                <div className="space-y-8">
+                                    {/* Popular recipes */}
+                                    {popularRecipes.length > 0 && (
+                                        <div>
+                                            <div className="flex items-center space-x-2 mb-4">
+                                                <Star className="h-4 w-4 text-yellow-500" />
+                                                <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                                                    Popular Recipes
+                                                </span>
+                                            </div>
+                                            <div className="space-y-3">
+                                                {popularRecipes.slice(0, 4).map((recipe) => (
+                                                    <Link
+                                                        key={recipe.id}
+                                                        to={`/recipes/${recipe.id}`}
+                                                        onClick={closeSearch}
+                                                        className="block p-3 bg-surface-50 dark:bg-surface-800 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
+                                                    >
+                                                        <div className="flex items-center space-x-3">
+                                                            <div className="w-12 h-12 bg-surface-200 dark:bg-surface-700 rounded-lg flex items-center justify-center">
+                                                                <ChefHat className="h-6 w-6 text-surface-500" />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="font-medium text-surface-900 dark:text-surface-50 truncate">
+                                                                    {recipe.title}
+                                                                </p>
+                                                                <p className="text-sm text-surface-500 dark:text-surface-400">
+                                                                    {recipe.category} • {recipe.difficulty} • {recipe.cookTime}min
+                                                                </p>
+                                                            </div>
+                                                            <ArrowRight className="h-4 w-4 text-surface-400" />
+                                                        </div>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Smart search examples */}
+                                    <div>
+                                        <div className="flex items-center space-x-2 mb-4">
+                                            <BookOpen className="h-4 w-4 text-surface-500" />
+                                            <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                                                Smart Search Examples
+                                            </span>
+                                        </div>
+                                        <div className="text-xs text-surface-500 dark:text-surface-400 mb-3">
+                                            Try these natural language searches
+                                        </div>
+                                        <div className="space-y-2">
+                                            {[
+                                                { query: 'easy chicken recipes', desc: 'Difficulty + ingredient' },
+                                                { query: 'quick dessert ideas', desc: 'Time + category' },
+                                                { query: 'healthy 30 minute meals', desc: 'Style + time constraint' },
+                                                { query: 'vegetarian pasta dishes', desc: 'Diet + ingredient' },
+                                            ].map((example) => (
+                                                <button
+                                                    key={example.query}
+                                                    onClick={() => {
+                                                        navigate(`/recipes?search=${encodeURIComponent(example.query)}`);
+                                                        closeSearch();
+                                                    }}
+                                                    className="w-full text-left p-3 bg-surface-50 dark:bg-surface-800 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-sm font-medium text-surface-900 dark:text-surface-50">
+                                                                "{example.query}"
+                                                            </p>
+                                                            <p className="text-xs text-surface-500 dark:text-surface-400">
+                                                                {example.desc}
+                                                            </p>
+                                                        </div>
+                                                        <ArrowRight className="h-4 w-4 text-surface-400" />
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

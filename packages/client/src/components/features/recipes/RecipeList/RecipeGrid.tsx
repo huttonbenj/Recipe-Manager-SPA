@@ -10,6 +10,7 @@ interface RecipeGridProps {
     viewMode: 'grid' | 'list';
     onViewModeChange: (mode: 'grid' | 'list') => void;
     isLoading?: boolean;
+    onClearFilters?: () => void;
 }
 
 export const RecipeGrid: React.FC<RecipeGridProps> = ({
@@ -17,6 +18,7 @@ export const RecipeGrid: React.FC<RecipeGridProps> = ({
     viewMode,
     onViewModeChange,
     isLoading = false,
+    onClearFilters,
 }) => {
     if (isLoading) {
         const skeletons = Array.from({ length: 10 }).map((_, index) => (
@@ -61,11 +63,13 @@ export const RecipeGrid: React.FC<RecipeGridProps> = ({
                             href: "/recipes/new",
                             variant: "primary"
                         }}
-                        secondaryAction={{
-                            label: "Clear Filters",
-                            onClick: () => window.location.reload(),
-                            variant: "outline"
-                        }}
+                        {...(onClearFilters && {
+                            secondaryAction: {
+                                label: "Clear Filters",
+                                onClick: onClearFilters,
+                                variant: "outline"
+                            }
+                        })}
                     />
                 </CardContent>
             </Card>

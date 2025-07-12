@@ -54,7 +54,6 @@ router.get(
     let recipes = result.recipes as any[];
     const userId = (req as any).user?.userId;
     if (userId) {
-      // @ts-expect-error recipeLike model included after migration
       const likes: { recipe_id: string }[] = await prisma.recipeLike.findMany({
         where: { user_id: userId },
         select: { recipe_id: true },
