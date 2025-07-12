@@ -5,6 +5,8 @@ import { Button, Input, Select, FormField } from '../../../ui';
 import { recipeService } from '../../../../services';
 import { parseSearchQuery, formatSearchDescription } from '../../../../utils/searchParser';
 import { cn } from '../../../../utils/cn';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../utils/theme';
 
 interface RecipeFiltersProps {
     searchTerm: string;
@@ -13,15 +15,18 @@ interface RecipeFiltersProps {
     selectedCookTime: string;
     isFavorites: boolean;
     isSaved: boolean;
+    isMyRecipes: boolean;
     sortBy: string;
     sortOrder: 'asc' | 'desc';
     quickFilter: string;
+    showFilters?: boolean;
     onSearchChange: (value: string) => void;
     onCategoryChange: (value: string) => void;
     onDifficultyChange: (value: string) => void;
     onCookTimeChange: (value: string) => void;
     onFavoritesToggle: (value: boolean) => void;
     onSavedToggle: (value: boolean) => void;
+    onMyRecipesToggle: (value: boolean) => void;
     onSortByChange: (value: string) => void;
     onSortOrderChange: (value: 'asc' | 'desc') => void;
     onQuickFilterChange: (value: string) => void;
@@ -36,27 +41,41 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     selectedCookTime,
     isFavorites,
     isSaved,
+    isMyRecipes,
     sortBy,
     sortOrder,
     quickFilter,
+    showFilters = false,
     onSearchChange,
     onCategoryChange,
     onDifficultyChange,
     onCookTimeChange,
     onFavoritesToggle,
     onSavedToggle,
+    onMyRecipesToggle,
     onSortByChange,
     onSortOrderChange,
     onQuickFilterChange,
     onClearFilters,
     onSearch,
 }) => {
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
+
     const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+    const [isAdvancedOpen, setIsAdvancedOpen] = useState(showFilters);
 
     // Sync local search term with prop
     useEffect(() => {
         setLocalSearchTerm(searchTerm);
     }, [searchTerm]);
+
+    // Update advanced filters visibility when showFilters prop changes
+    useEffect(() => {
+        if (showFilters) {
+            setIsAdvancedOpen(true);
+        }
+    }, [showFilters]);
 
     const handleSearchChange = (value: string) => {
         setLocalSearchTerm(value);
@@ -68,7 +87,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     const hasSmartFilters = parsedQuery.category || parsedQuery.difficulty || parsedQuery.cookTime;
 
     // Check if any filters are active
-    const hasActiveFilters = selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || isSaved || quickFilter;
+    const hasActiveFilters = selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || isSaved || isMyRecipes || quickFilter;
 
     // Get filter icons
     const getFilterIcon = (type: string) => {
@@ -88,15 +107,17 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     const getFilterColor = (type: string): string => {
         switch (type) {
             case 'category':
-                return 'bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 dark:from-brand-900/30 dark:to-brand-800/30 dark:text-brand-300 border-brand-300 dark:border-brand-700';
+                return `bg-gradient-to-r from-${themeColors.primary}-100 to-${themeColors.primary}-200 text-${themeColors.primary}-800 dark:from-${themeColors.primary}-900/30 dark:to-${themeColors.primary}-800/30 dark:text-${themeColors.primary}-300 border-${themeColors.primary}-300 dark:border-${themeColors.primary}-700`;
             case 'difficulty':
                 return 'bg-gradient-to-r from-success-100 to-emerald-200 text-success-800 dark:from-success-900/30 dark:to-emerald-800/30 dark:text-success-300 border-success-300 dark:border-success-700';
             case 'cookTime':
-                return 'bg-gradient-to-r from-accent-100 to-blue-200 text-accent-800 dark:from-accent-900/30 dark:to-blue-800/30 dark:text-accent-300 border-accent-300 dark:border-accent-700';
+                return `bg-gradient-to-r from-${themeColors.secondary}-100 to-blue-200 text-${themeColors.secondary}-800 dark:from-${themeColors.secondary}-900/30 dark:to-blue-800/30 dark:text-${themeColors.secondary}-300 border-${themeColors.secondary}-300 dark:border-${themeColors.secondary}-700`;
             case 'favorites':
                 return 'bg-gradient-to-r from-error-100 to-rose-200 text-error-800 dark:from-error-900/30 dark:to-rose-800/30 dark:text-error-300 border-error-300 dark:border-error-700';
             case 'saved':
                 return 'bg-gradient-to-r from-warning-100 to-amber-200 text-warning-800 dark:from-warning-900/30 dark:to-amber-800/30 dark:text-warning-300 border-warning-300 dark:border-warning-700';
+            case 'myRecipes':
+                return `bg-gradient-to-r from-${themeColors.primary}-100 to-${themeColors.primary}-200 text-${themeColors.primary}-800 dark:from-${themeColors.primary}-900/30 dark:to-${themeColors.primary}-800/30 dark:text-${themeColors.primary}-300 border-${themeColors.primary}-300 dark:border-${themeColors.primary}-700`;
             case 'quickFilter':
                 return 'bg-gradient-to-r from-purple-100 to-violet-200 text-purple-800 dark:from-purple-900/30 dark:to-violet-800/30 dark:text-purple-300 border-purple-300 dark:border-purple-700';
             default:
@@ -161,30 +182,48 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         ...(selectedCookTime ? [{ key: 'cookTime', type: 'cookTime', label: `≤ ${selectedCookTime}min`, icon: getFilterIcon('cookTime') }] : []),
         ...(isFavorites ? [{ key: 'favorites', type: 'favorites', label: 'Favorites', icon: <Heart className="h-3 w-3" /> }] : []),
         ...(isSaved ? [{ key: 'saved', type: 'saved', label: 'Saved', icon: <Star className="h-3 w-3" /> }] : []),
+        ...(isMyRecipes ? [{ key: 'myRecipes', type: 'myRecipes', label: 'My Recipes', icon: <ChefHat className="h-3 w-3" /> }] : []),
         ...(quickFilter === 'popular' ? [{ key: 'popular', type: 'quickFilter', label: 'Popular', icon: <Zap className="h-3 w-3" /> }] : []),
         ...(quickFilter === 'recent' ? [{ key: 'recent', type: 'quickFilter', label: 'Recent', icon: <Clock className="h-3 w-3" /> }] : []),
-        ...(quickFilter === 'easy' && selectedDifficulty === 'Easy' ? [] : quickFilter === 'easy' ? [{ key: 'quickEasy', type: 'quickFilter', label: 'Easy', icon: <Zap className="h-3 w-3" /> }] : []),
-        ...(quickFilter === 'quick' && selectedCookTime === '30' ? [] : quickFilter === 'quick' ? [{ key: 'quickTime', type: 'quickFilter', label: 'Quick', icon: <Clock className="h-3 w-3" /> }] : []),
+        // Note: We no longer show quick filters for easy/quick/favorites/saved since they map to actual filters
     ];
 
     const handleQuickFilterClick = (value: string) => {
-        onQuickFilterChange(value);
-
-        // Apply the specific quick filter without clearing others
-        if (value === 'popular') {
-            onSortByChange('likes');
-            onSortOrderChange('desc');
-        } else if (value === 'recent') {
+        // Handle "All Recipes" - clear all quick filter related filters
+        if (value === '') {
+            onDifficultyChange('');
+            onCookTimeChange('');
+            onFavoritesToggle(false);
+            onSavedToggle(false);
+            onQuickFilterChange('');
+            // Reset sort to default
             onSortByChange('created_at');
             onSortOrderChange('desc');
-        } else if (value === 'easy') {
+        }
+        // For filters that map to actual filter values, don't set quickFilter
+        else if (value === 'easy') {
             onDifficultyChange('Easy');
+            onQuickFilterChange(''); // Clear quick filter since we're using actual difficulty filter
         } else if (value === 'quick') {
             onCookTimeChange('30');
+            onQuickFilterChange(''); // Clear quick filter since we're using actual cook time filter
         } else if (value === 'favorites') {
             onFavoritesToggle(true);
+            onQuickFilterChange(''); // Clear quick filter since we're using actual favorites filter
         } else if (value === 'saved') {
             onSavedToggle(true);
+            onQuickFilterChange(''); // Clear quick filter since we're using actual saved filter
+        } else {
+            // For other quick filters (popular, recent), set the quickFilter state
+            onQuickFilterChange(value);
+
+            if (value === 'popular') {
+                onSortByChange('likes');
+                onSortOrderChange('desc');
+            } else if (value === 'recent') {
+                onSortByChange('created_at');
+                onSortOrderChange('desc');
+            }
         }
     };
 
@@ -206,21 +245,16 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
             case 'saved':
                 onSavedToggle(false);
                 break;
+            case 'myRecipes':
+                onMyRecipesToggle(false);
+                break;
             case 'popular':
             case 'recent':
-            case 'quickEasy':
-            case 'quickTime':
                 onQuickFilterChange('');
                 // Reset sort to default when removing quick filters
                 if (filterKey === 'popular' || filterKey === 'recent') {
                     onSortByChange('created_at');
                     onSortOrderChange('desc');
-                }
-                if (filterKey === 'quickEasy') {
-                    onDifficultyChange('');
-                }
-                if (filterKey === 'quickTime') {
-                    onCookTimeChange('');
                 }
                 break;
             default:
@@ -234,7 +268,10 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg">
+                        <div className={cn(
+                            "p-2 rounded-xl shadow-lg",
+                            `bg-gradient-to-br from-${themeColors.primary} to-${themeColors.primaryHover}`
+                        )}>
                             <ChefHat className="h-6 w-6 text-white" />
                         </div>
                         <div>
@@ -247,11 +284,15 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                         </div>
                     </div>
                     {hasSmartFilters && (
-                        <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-brand-50 to-accent-50 dark:from-brand-900/20 dark:to-accent-900/20 rounded-lg border border-brand-200 dark:border-brand-800">
+                        <div className={cn(
+                            "flex items-center gap-2 p-3 rounded-lg border",
+                            `bg-gradient-to-r from-${themeColors.primary}-50 to-${themeColors.secondary}-50 dark:from-${themeColors.primary}-900/20 dark:to-${themeColors.secondary}-900/20`,
+                            `border-${themeColors.primary}-200 dark:border-${themeColors.primary}-800`
+                        )}>
                             <div className="flex-shrink-0">
-                                <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></div>
+                                <div className={cn("w-2 h-2 rounded-full animate-pulse", `bg-${themeColors.primary}`)}></div>
                             </div>
-                            <p className="text-sm text-brand-700 dark:text-brand-300 font-medium">
+                            <p className={cn("text-sm font-medium", `text-${themeColors.primary}-700 dark:text-${themeColors.primary}-300`)}>
                                 🧠 Smart filters detected: {formatSearchDescription(parsedQuery)}
                             </p>
                         </div>
@@ -313,32 +354,56 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
             <div className="space-y-4">
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                        <Zap className="h-4 w-4 text-accent-600 dark:text-accent-400" />
+                        <Zap className={cn("h-4 w-4", `text-${themeColors.secondary}-600 dark:text-${themeColors.secondary}-400`)} />
                         <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">Quick Filters</span>
                     </div>
                     <div className="h-px flex-1 bg-gradient-to-r from-accent-300 to-transparent dark:from-accent-600"></div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                    {quickFilterOptions.map((option, index) => (
-                        <Button
-                            key={option.value}
-                            variant={quickFilter === option.value ? 'primary' : 'outline'}
-                            size="sm"
-                            onClick={() => handleQuickFilterClick(option.value)}
-                            className={cn(
-                                'flex items-center justify-center gap-2 h-12 transition-all duration-200',
-                                'hover:scale-105 hover:shadow-md',
-                                quickFilter === option.value
-                                    ? 'bg-gradient-to-r from-brand-500 to-brand-600 shadow-lg shadow-brand-500/25'
-                                    : 'hover:bg-gradient-to-r hover:from-surface-50 hover:to-surface-100 dark:hover:from-surface-800 dark:hover:to-surface-700',
-                                'animate-in slide-in-from-bottom-2 fade-in-0'
-                            )}
-                            style={{ animationDelay: `${index * 50}ms` }}
-                        >
-                            {option.icon}
-                            <span className="hidden sm:inline">{option.label}</span>
-                        </Button>
-                    ))}
+                    {quickFilterOptions.map((option, index) => {
+                        // Determine if this quick filter is active based on the actual filter state
+                        const isActive = (() => {
+                            switch (option.value) {
+                                case '': // "All Recipes"
+                                    // "All Recipes" is active when no quick filters are active
+                                    return !selectedDifficulty && !selectedCookTime && !isFavorites && !isSaved && !quickFilter;
+                                case 'easy':
+                                    return selectedDifficulty === 'Easy';
+                                case 'quick':
+                                    return selectedCookTime === '30';
+                                case 'favorites':
+                                    return isFavorites;
+                                case 'saved':
+                                    return isSaved;
+                                case 'popular':
+                                case 'recent':
+                                    return quickFilter === option.value;
+                                default:
+                                    return quickFilter === option.value;
+                            }
+                        })();
+
+                        return (
+                            <Button
+                                key={option.value}
+                                variant={isActive ? 'primary' : 'outline'}
+                                size="sm"
+                                onClick={() => handleQuickFilterClick(option.value)}
+                                className={cn(
+                                    'flex items-center justify-center gap-2 h-12 transition-all duration-200',
+                                    'hover:scale-105 hover:shadow-md',
+                                    isActive
+                                        ? 'bg-gradient-to-r from-brand-500 to-brand-600 shadow-lg shadow-brand-500/25'
+                                        : 'hover:bg-gradient-to-r hover:from-surface-50 hover:to-surface-100 dark:hover:from-surface-800 dark:hover:to-surface-700',
+                                    'animate-in slide-in-from-bottom-2 fade-in-0'
+                                )}
+                                style={{ animationDelay: `${index * 50}ms` }}
+                            >
+                                {option.icon}
+                                <span className="hidden sm:inline">{option.label}</span>
+                            </Button>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -347,7 +412,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
-                            <Search className="h-4 w-4 text-brand-600 dark:text-brand-400" />
+                            <Search className={cn("h-4 w-4", `text-${themeColors.primary}-600 dark:text-${themeColors.primary}-400`)} />
                             <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">Search & Discover</span>
                         </div>
                         <div className="h-px flex-1 bg-gradient-to-r from-brand-300 to-transparent dark:from-brand-600"></div>
@@ -381,103 +446,122 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
 
                 {/* Filter Controls with Enhanced Design */}
                 <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                            <Tag className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                            <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">Filter Options</span>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                                <Tag className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">Advanced Filters</span>
+                            </div>
+                            <div className="h-px flex-1 bg-gradient-to-r from-purple-300 to-transparent dark:from-purple-600"></div>
                         </div>
-                        <div className="h-px flex-1 bg-gradient-to-r from-purple-300 to-transparent dark:from-purple-600"></div>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
+                            className="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-200"
+                        >
+                            <span>{isAdvancedOpen ? 'Hide' : 'Show'} Advanced</span>
+                            <Filter className={cn(
+                                "h-4 w-4 transition-transform duration-200",
+                                isAdvancedOpen ? "rotate-180" : "rotate-0"
+                            )} />
+                        </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-2">
-                            <FormField label="Category" htmlFor="category-select">
-                                <Select
-                                    id="category-select"
-                                    value={selectedCategory}
-                                    onChange={(e) => onCategoryChange(e.target.value)}
-                                    options={categoryOptions}
-                                    className={cn(
-                                        'h-12 transition-all duration-200',
-                                        selectedCategory
-                                            ? 'ring-2 ring-brand-200 dark:ring-brand-800 shadow-md'
-                                            : 'hover:shadow-sm'
-                                    )}
-                                />
-                            </FormField>
-                        </div>
+                    {isAdvancedOpen && (
+                        <div className="space-y-6 animate-in slide-in-from-top-2 fade-in-0 duration-300">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-2">
+                                    <FormField label="Category" htmlFor="category-select">
+                                        <Select
+                                            id="category-select"
+                                            value={selectedCategory}
+                                            onChange={(e) => onCategoryChange(e.target.value)}
+                                            options={categoryOptions}
+                                            className={cn(
+                                                'h-12 transition-all duration-200',
+                                                selectedCategory
+                                                    ? 'ring-2 ring-brand-200 dark:ring-brand-800 shadow-md'
+                                                    : 'hover:shadow-sm'
+                                            )}
+                                        />
+                                    </FormField>
+                                </div>
 
-                        <div className="space-y-2">
-                            <FormField label="Difficulty" htmlFor="difficulty-select">
-                                <Select
-                                    id="difficulty-select"
-                                    value={selectedDifficulty}
-                                    onChange={(e) => onDifficultyChange(e.target.value)}
-                                    options={difficultyOptions}
-                                    className={cn(
-                                        'h-12 transition-all duration-200',
-                                        selectedDifficulty
-                                            ? 'ring-2 ring-success-200 dark:ring-success-800 shadow-md'
-                                            : 'hover:shadow-sm'
-                                    )}
-                                />
-                            </FormField>
-                        </div>
+                                <div className="space-y-2">
+                                    <FormField label="Difficulty" htmlFor="difficulty-select">
+                                        <Select
+                                            id="difficulty-select"
+                                            value={selectedDifficulty}
+                                            onChange={(e) => onDifficultyChange(e.target.value)}
+                                            options={difficultyOptions}
+                                            className={cn(
+                                                'h-12 transition-all duration-200',
+                                                selectedDifficulty
+                                                    ? 'ring-2 ring-success-200 dark:ring-success-800 shadow-md'
+                                                    : 'hover:shadow-sm'
+                                            )}
+                                        />
+                                    </FormField>
+                                </div>
 
-                        <div className="space-y-2">
-                            <FormField label="Cook Time" htmlFor="cooktime-select">
-                                <Select
-                                    id="cooktime-select"
-                                    value={selectedCookTime}
-                                    onChange={(e) => onCookTimeChange(e.target.value)}
-                                    options={cookTimeOptions}
-                                    className={cn(
-                                        'h-12 transition-all duration-200',
-                                        selectedCookTime
-                                            ? 'ring-2 ring-accent-200 dark:ring-accent-800 shadow-md'
-                                            : 'hover:shadow-sm'
-                                    )}
-                                />
-                            </FormField>
-                        </div>
-                    </div>
-                </div>
+                                <div className="space-y-2">
+                                    <FormField label="Cook Time" htmlFor="cooktime-select">
+                                        <Select
+                                            id="cooktime-select"
+                                            value={selectedCookTime}
+                                            onChange={(e) => onCookTimeChange(e.target.value)}
+                                            options={cookTimeOptions}
+                                            className={cn(
+                                                'h-12 transition-all duration-200',
+                                                selectedCookTime
+                                                    ? 'ring-2 ring-accent-200 dark:ring-accent-800 shadow-md'
+                                                    : 'hover:shadow-sm'
+                                            )}
+                                        />
+                                    </FormField>
+                                </div>
+                            </div>
 
-                {/* Sorting Controls with Enhanced Design */}
-                <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                            <ArrowUpDown className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                            <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">Sort Results</span>
-                        </div>
-                        <div className="h-px flex-1 bg-gradient-to-r from-orange-300 to-transparent dark:from-orange-600"></div>
-                    </div>
+                            {/* Sorting Controls with Enhanced Design */}
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <ArrowUpDown className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                                        <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">Sort Results</span>
+                                    </div>
+                                    <div className="h-px flex-1 bg-gradient-to-r from-orange-300 to-transparent dark:from-orange-600"></div>
+                                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <FormField label="Sort By" htmlFor="sortby-select">
-                                <Select
-                                    id="sortby-select"
-                                    value={sortBy}
-                                    onChange={(e) => onSortByChange(e.target.value)}
-                                    options={sortByOptions}
-                                    className="h-12 transition-all duration-200 hover:shadow-sm"
-                                />
-                            </FormField>
-                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <FormField label="Sort By" htmlFor="sortby-select">
+                                            <Select
+                                                id="sortby-select"
+                                                value={sortBy}
+                                                onChange={(e) => onSortByChange(e.target.value)}
+                                                options={sortByOptions}
+                                                className="h-12 transition-all duration-200 hover:shadow-sm"
+                                            />
+                                        </FormField>
+                                    </div>
 
-                        <div className="space-y-2">
-                            <FormField label="Sort Order" htmlFor="sortorder-select">
-                                <Select
-                                    id="sortorder-select"
-                                    value={sortOrder}
-                                    onChange={(e) => onSortOrderChange(e.target.value as 'asc' | 'desc')}
-                                    options={sortOrderOptions}
-                                    className="h-12 transition-all duration-200 hover:shadow-sm"
-                                />
-                            </FormField>
+                                    <div className="space-y-2">
+                                        <FormField label="Sort Order" htmlFor="sortorder-select">
+                                            <Select
+                                                id="sortorder-select"
+                                                value={sortOrder}
+                                                onChange={(e) => onSortOrderChange(e.target.value as 'asc' | 'desc')}
+                                                options={sortOrderOptions}
+                                                className="h-12 transition-all duration-200 hover:shadow-sm"
+                                            />
+                                        </FormField>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 {/* Enhanced Apply Button */}

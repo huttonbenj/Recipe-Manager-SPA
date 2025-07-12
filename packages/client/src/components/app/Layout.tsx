@@ -5,6 +5,8 @@ import { PageTransitionScale } from '../ui/PageTransition';
 import { useLocation } from 'react-router-dom';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { cn } from '../../utils/cn';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -13,6 +15,8 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
     const location = useLocation();
     const isHomePage = location.pathname === '/';
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
 
     return (
         <div className="flex min-h-screen flex-col bg-surface-50 text-surface-900 dark:bg-surface-950 dark:text-surface-50 transition-colors duration-300">
@@ -21,11 +25,20 @@ export const Layout = ({ children }: LayoutProps) => {
             {isHomePage && (
                 <div className="relative overflow-hidden">
                     {/* Hero Background with gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-500/10 to-accent-500/10 dark:from-brand-500/20 dark:to-accent-500/20 z-0"></div>
+                    <div className={cn(
+                        "absolute inset-0 z-0",
+                        `bg-gradient-to-br from-${themeColors.primary}/10 to-${themeColors.secondary}/10 dark:from-${themeColors.primary}/20 dark:to-${themeColors.secondary}/20`
+                    )}></div>
 
                     {/* Decorative elements */}
-                    <div className="absolute top-20 right-[10%] w-72 h-72 bg-brand-300/20 dark:bg-brand-600/10 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-10 left-[5%] w-64 h-64 bg-accent-300/20 dark:bg-accent-600/10 rounded-full blur-3xl"></div>
+                    <div className={cn(
+                        "absolute top-20 right-[10%] w-72 h-72 rounded-full blur-3xl",
+                        `bg-${themeColors.primary}-300/20 dark:bg-${themeColors.primary}-600/10`
+                    )}></div>
+                    <div className={cn(
+                        "absolute bottom-10 left-[5%] w-64 h-64 rounded-full blur-3xl",
+                        `bg-${themeColors.secondary}-300/20 dark:bg-${themeColors.secondary}-600/10`
+                    )}></div>
 
                     {/* Theme toggle positioned absolutely for easy access */}
                     <div className="absolute top-4 right-4 z-10 flex items-center gap-2">

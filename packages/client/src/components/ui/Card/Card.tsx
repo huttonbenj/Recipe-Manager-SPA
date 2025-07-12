@@ -1,5 +1,7 @@
 import { forwardRef, ElementType, HTMLAttributes } from 'react';
 import { cn } from '../../../utils/cn';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getThemeColors, getThemeGradient } from '../../../utils/theme';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
     as?: ElementType;
@@ -26,14 +28,26 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         bordered = true,
         ...props
     }, ref) => {
+        const { theme } = useTheme();
+        const themeColors = getThemeColors(theme.color);
         const baseStyles = "transition-all duration-300";
 
-        const variants = {
-            default: "border bg-white dark:bg-surface-900",
-            elevated: "border bg-white dark:bg-surface-900 shadow-elevated hover:shadow-elevated-lg hover:-translate-y-1",
-            glass: "backdrop-blur-sm bg-white/80 dark:bg-surface-900/80 border-white/20 dark:border-surface-700/30 shadow-glass hover:shadow-glass-lg",
-            interactive: "border bg-white dark:bg-surface-900 cursor-pointer hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98]",
-            gradient: "bg-gradient-to-br from-white to-surface-50 dark:from-surface-900 dark:to-surface-950 border-surface-200 dark:border-surface-800",
+        // Dynamic theme-based variants
+        const getVariantStyles = () => {
+            switch (variant) {
+                case 'default':
+                    return "border bg-white dark:bg-surface-900";
+                case 'elevated':
+                    return `border bg-white dark:bg-surface-900 shadow-elevated hover:shadow-elevated-lg hover:-translate-y-1 hover:shadow-${themeColors.primary}/10 dark:hover:shadow-${themeColors.primaryDark}/10`;
+                case 'glass':
+                    return "backdrop-blur-sm bg-white/80 dark:bg-surface-900/80 border-white/20 dark:border-surface-700/30 shadow-glass hover:shadow-glass-lg";
+                case 'interactive':
+                    return `border bg-white dark:bg-surface-900 cursor-pointer hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] hover:shadow-${themeColors.primary}/15 dark:hover:shadow-${themeColors.primaryDark}/15`;
+                case 'gradient':
+                    return `${getThemeGradient(theme.color, 'full')} border-surface-200 dark:border-surface-800`;
+                default:
+                    return "border bg-white dark:bg-surface-900";
+            }
         };
 
         const paddingStyles = {
@@ -59,19 +73,29 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
             xl: "shadow-xl",
         };
 
-        const borderStyles = bordered ? "border-surface-200 dark:border-surface-800" : "border-transparent";
+        // Dynamic border styles based on theme
+        const getBorderStyles = () => {
+            if (!bordered) return "border-transparent";
+            return `border-surface-200 dark:border-surface-800 ${variant === 'interactive' ? `hover:${themeColors.border}` : ''}`;
+        };
+
+        // Dynamic hover effect based on theme
+        const getHoverStyles = () => {
+            if (!hover) return "";
+            return `hover:shadow-md hover:-translate-y-1 hover:shadow-${themeColors.primary}/15 dark:hover:shadow-${themeColors.primaryDark}/15`;
+        };
 
         return (
             <Component
                 ref={ref}
                 className={cn(
                     baseStyles,
-                    variants[variant],
+                    getVariantStyles(),
                     paddingStyles[padding],
                     roundedStyles[rounded],
                     shadowStyles[shadow],
-                    borderStyles,
-                    hover && "hover:shadow-md hover:-translate-y-1",
+                    getBorderStyles(),
+                    getHoverStyles(),
                     loading && "loading animate-pulse",
                     className
                 )}
@@ -89,6 +113,9 @@ export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
 
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
     ({ className, padding = 'md', bordered = false, ...props }, ref) => {
+        const { theme } = useTheme();
+        const themeColors = getThemeColors(theme.color);
+
         const paddingStyles = {
             none: "",
             sm: "p-4",
@@ -102,7 +129,7 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
                 className={cn(
                     "flex flex-col space-y-1.5",
                     paddingStyles[padding],
-                    bordered && "border-b border-surface-200 dark:border-surface-800",
+                    bordered && `border-b border-surface-200 dark:border-surface-800 ${themeColors.border}`,
                     className
                 )}
                 {...props}
@@ -120,6 +147,8 @@ export interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {
 
 export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
     ({ className, as = 'h3', size = 'md', gradient = false, ...props }, ref) => {
+        const { theme } = useTheme();
+        const themeColors = getThemeColors(theme.color);
         const Component = as;
 
         const sizeStyles = {
@@ -135,7 +164,7 @@ export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
                 className={cn(
                     "font-display leading-tight tracking-tight text-surface-900 dark:text-surface-50",
                     sizeStyles[size],
-                    gradient && "gradient-text-brand",
+                    gradient && `bg-gradient-to-r from-${themeColors.primary} to-${themeColors.secondary} dark:from-${themeColors.primaryDark} dark:to-${themeColors.secondaryDark} bg-clip-text text-transparent`,
                     className
                 )}
                 {...props}
@@ -217,7 +246,10 @@ export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
-    ({ className, padding = 'md', bordered = false, justify = 'start', ...props }, ref) => {
+    ({ className, padding = 'md', bordered = false, justify = 'between', ...props }, ref) => {
+        const { theme } = useTheme();
+        const themeColors = getThemeColors(theme.color);
+
         const paddingStyles = {
             none: "",
             sm: "p-4 pt-0",
@@ -239,7 +271,7 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
                     "flex items-center",
                     paddingStyles[padding],
                     justifyStyles[justify],
-                    bordered && "border-t border-surface-200 dark:border-surface-800 mt-4 pt-4",
+                    bordered && `border-t border-surface-200 dark:border-surface-800 ${themeColors.border}`,
                     className
                 )}
                 {...props}
@@ -248,7 +280,6 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
     }
 );
 
-// New component for card actions
 export interface CardActionsProps extends HTMLAttributes<HTMLDivElement> {
     className?: string;
     spacing?: 'sm' | 'md' | 'lg';
@@ -256,24 +287,24 @@ export interface CardActionsProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const CardActions = forwardRef<HTMLDivElement, CardActionsProps>(
-    ({ className, spacing = 'md', align = 'end', ...props }, ref) => {
+    ({ className, spacing = 'md', align = 'center', ...props }, ref) => {
         const spacingStyles = {
-            sm: "gap-2",
-            md: "gap-3",
-            lg: "gap-4",
+            sm: "space-x-2",
+            md: "space-x-3",
+            lg: "space-x-4",
         };
 
         const alignStyles = {
-            start: "justify-start",
-            center: "justify-center",
-            end: "justify-end",
+            start: "items-start",
+            center: "items-center",
+            end: "items-end",
         };
 
         return (
             <div
                 ref={ref}
                 className={cn(
-                    "flex items-center",
+                    "flex",
                     spacingStyles[spacing],
                     alignStyles[align],
                     className
@@ -284,7 +315,6 @@ export const CardActions = forwardRef<HTMLDivElement, CardActionsProps>(
     }
 );
 
-// New component for card image
 export interface CardImageProps extends HTMLAttributes<HTMLDivElement> {
     className?: string;
     src: string;
@@ -295,19 +325,11 @@ export interface CardImageProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const CardImage = forwardRef<HTMLDivElement, CardImageProps>(
-    ({
-        className,
-        src,
-        alt,
-        aspectRatio = 'video',
-        objectFit = 'cover',
-        loading = 'lazy',
-        ...props
-    }, ref) => {
+    ({ className, src, alt, aspectRatio = 'video', objectFit = 'cover', loading = 'lazy', ...props }, ref) => {
         const aspectRatioStyles = {
             square: "aspect-square",
             video: "aspect-video",
-            wide: "aspect-[3/1]",
+            wide: "aspect-[16/9]",
             tall: "aspect-[3/4]",
         };
 
@@ -321,7 +343,7 @@ export const CardImage = forwardRef<HTMLDivElement, CardImageProps>(
             <div
                 ref={ref}
                 className={cn(
-                    "relative overflow-hidden",
+                    "overflow-hidden",
                     aspectRatioStyles[aspectRatio],
                     className
                 )}
@@ -332,9 +354,8 @@ export const CardImage = forwardRef<HTMLDivElement, CardImageProps>(
                     alt={alt}
                     loading={loading}
                     className={cn(
-                        "h-full w-full transition-all duration-300",
-                        objectFitStyles[objectFit],
-                        "hover:scale-105"
+                        "w-full h-full",
+                        objectFitStyles[objectFit]
                     )}
                 />
             </div>

@@ -7,11 +7,9 @@ import { Layout } from './Layout';
 import { LoginForm } from '../features/auth/login';
 import { RegisterForm } from '../features/auth/register';
 import { LandingPage } from '../features/landing/LandingPage';
-import { Dashboard } from '../features/dashboard';
-import { RecipeList } from '../features/recipes/RecipeList';
+import { ModernApp } from '../features/app/ModernApp';
 import { RecipeDetail } from '../features/recipes/RecipeDetail';
 import { RecipeForm } from '../features/recipes/RecipeForm';
-import { UserProfile } from '../features/user-profile';
 
 export const AppRoutes = () => {
     return (
@@ -44,38 +42,21 @@ export const AppRoutes = () => {
 
             {/* Protected Routes */}
             <Route
-                path="/dashboard"
+                path="/app"
                 element={
                     <ProtectedRoute>
-                        <Layout>
-                            <Dashboard />
-                        </Layout>
+                        <ModernApp />
                     </ProtectedRoute>
                 }
             />
 
-            <Route
-                path="/recipes"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <RecipeList />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
+            {/* Legacy redirects */}
+            <Route path="/dashboard" element={<Navigate to="/app?tab=browse" replace />} />
+            <Route path="/recipes" element={<Navigate to="/app?tab=browse" replace />} />
+            <Route path="/recipes/new" element={<Navigate to="/app?tab=create" replace />} />
+            <Route path="/profile" element={<Navigate to="/app?tab=profile" replace />} />
 
-            <Route
-                path="/recipes/new"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <RecipeForm />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-
+            {/* Recipe detail and edit still use separate pages for better UX */}
             <Route
                 path="/recipes/:id"
                 element={
@@ -98,19 +79,8 @@ export const AppRoutes = () => {
                 }
             />
 
-            <Route
-                path="/profile"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <UserProfile />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-
             {/* Fallback Route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/app" replace />} />
         </Routes>
     );
 }; 

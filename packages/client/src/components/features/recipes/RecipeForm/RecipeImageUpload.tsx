@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { X, Image, Upload, Camera, Sparkles } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 import { cn } from '../../../../utils/cn';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../utils/theme';
 
 interface RecipeImageUploadProps {
     imagePreview: string | null;
@@ -17,6 +19,8 @@ export const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({
     error,
 }) => {
     const [isDragOver, setIsDragOver] = useState(false);
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
@@ -52,10 +56,10 @@ export const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({
                     "group relative flex justify-center items-center w-full h-80 rounded-2xl transition-all duration-300 overflow-hidden",
                     "border-2 border-dashed",
                     isDragOver
-                        ? "border-brand-500 bg-brand-50 dark:bg-brand-950/20 scale-105"
+                        ? `border-${themeColors.primary.split('-')[1]}-500 ${themeColors.primary.replace('600', '50')} dark:${themeColors.primary.replace('600', '950/20')} scale-105`
                         : imagePreview
                             ? "border-transparent bg-surface-100 dark:bg-surface-800"
-                            : "border-surface-300 dark:border-surface-700 bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 hover:border-brand-400 hover:bg-brand-50/50 dark:hover:bg-brand-950/10",
+                            : `border-surface-300 dark:border-surface-700 bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 hover:border-${themeColors.primary.split('-')[1]}-400 hover:${themeColors.primary.replace('600', '50/50')} dark:hover:${themeColors.primary.replace('600', '950/10')}`,
                     error && "border-error-500 bg-error-50 dark:bg-error-950/20"
                 )}
                 onDragOver={handleDragOver}
@@ -105,10 +109,19 @@ export const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({
                 ) : (
                     <div className="text-center p-8">
                         <div className="relative mx-auto mb-6">
-                            <div className="flex justify-center items-center w-20 h-20 bg-gradient-to-br from-brand-100 to-accent-100 dark:from-brand-900/30 dark:to-accent-900/30 rounded-2xl mx-auto shadow-lg">
-                                <Upload className="h-8 w-8 text-brand-600 dark:text-brand-400" />
+                            <div className={cn(
+                                "flex justify-center items-center w-20 h-20 rounded-2xl mx-auto shadow-lg",
+                                `bg-gradient-to-br ${themeColors.primary.replace('600', '100')} ${themeColors.secondary.replace('600', '100')} dark:${themeColors.primary.replace('600', '900/30')} dark:${themeColors.secondary.replace('600', '900/30')}`
+                            )}>
+                                <Upload className={cn(
+                                    "h-8 w-8",
+                                    `${themeColors.primary} dark:${themeColors.primary.replace('600', '400')}`
+                                )} />
                             </div>
-                            <div className="absolute -top-2 -right-2 p-1 bg-gradient-to-br from-accent-400 to-brand-500 rounded-full">
+                            <div className={cn(
+                                "absolute -top-2 -right-2 p-1 rounded-full",
+                                `bg-gradient-to-br ${themeColors.secondary.replace('600', '400')} ${themeColors.primary.replace('600', '500')}`
+                            )}>
                                 <Sparkles className="h-3 w-3 text-white" />
                             </div>
                         </div>
@@ -118,7 +131,10 @@ export const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({
                                 {isDragOver ? 'Drop your image here!' : 'Upload Recipe Image'}
                             </p>
                             <p className="text-surface-600 dark:text-surface-400">
-                                <span className="font-medium text-brand-600 dark:text-brand-400">Click to browse</span> or drag and drop
+                                <span className={cn(
+                                    "font-medium",
+                                    `${themeColors.primary} dark:${themeColors.primary.replace('600', '400')}`
+                                )}>Click to browse</span> or drag and drop
                             </p>
                             <p className="text-sm text-surface-500 dark:text-surface-500">
                                 PNG, JPG, GIF up to 10MB • Recommended: 1200x800px

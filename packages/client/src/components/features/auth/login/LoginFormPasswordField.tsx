@@ -1,5 +1,8 @@
 import React from 'react';
 import { Eye, EyeOff, Lock } from 'lucide-react';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../utils/theme';
+import { cn } from '../../../../utils/cn';
 
 interface LoginFormPasswordFieldProps {
     id: string;
@@ -26,25 +29,24 @@ export const LoginFormPasswordField = ({
     showPassword,
     onTogglePassword,
     autoComplete,
-    isFirst = false,
-    isLast = false,
     testId,
 }: LoginFormPasswordFieldProps) => {
-    const getRoundedClasses = () => {
-        if (isFirst && isLast) return 'rounded-md';
-        if (isFirst) return 'rounded-t-md';
-        if (isLast) return 'rounded-b-md';
-        return 'rounded-none';
-    };
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
 
     return (
-        <div>
-            <label htmlFor={id} className="sr-only">
+        <div className="space-y-2">
+            <label htmlFor={id} className="block text-sm font-medium text-surface-700 dark:text-surface-300">
                 {label}
             </label>
-            <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-surface-400" />
+            <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock className={cn(
+                        "h-5 w-5 transition-colors duration-200",
+                        error ? "text-error-500" : "text-surface-400"
+                    )}
+                        style={!error ? { color: `${themeColors.primary}80` } : {}}
+                    />
                 </div>
                 <input
                     id={id}
@@ -52,28 +54,62 @@ export const LoginFormPasswordField = ({
                     autoComplete={autoComplete}
                     value={value}
                     onChange={onChange}
-                    className={`appearance-none ${getRoundedClasses()} relative block w-full px-3 py-2 pl-10 pr-10 border ${error
-                        ? 'border-red-300 placeholder-red-400 focus:outline-none focus:ring-red-500 focus:border-red-500'
-                        : 'border-surface-300 placeholder-surface-500 focus:outline-none focus:ring-brand-500 focus:border-brand-500'
-                        } text-surface-900 dark:text-surface-50 focus:z-10 sm:text-sm`}
+                    className={cn(
+                        "w-full pl-12 pr-12 py-3 text-surface-900 dark:text-surface-50 rounded-xl border-2 transition-all duration-200",
+                        "bg-white/50 dark:bg-surface-900/50 backdrop-blur-sm",
+                        "placeholder:text-surface-400 dark:placeholder:text-surface-500",
+                        "focus:outline-none focus:ring-4 focus:ring-opacity-20",
+                        "hover:bg-white/70 dark:hover:bg-surface-900/70",
+                        error
+                            ? "border-error-300 focus:border-error-500 focus:ring-error-500/20"
+                            : "border-surface-200 dark:border-surface-700"
+                    )}
+                    style={!error ? {
+                        '--tw-ring-color': `${themeColors.primary}20`,
+                        '--tw-border-opacity': '1'
+                    } as React.CSSProperties : {}}
+                    onFocus={(e) => {
+                        if (!error) {
+                            e.target.style.borderColor = themeColors.primary;
+                            e.target.style.boxShadow = `0 0 0 4px ${themeColors.primary}20`;
+                        }
+                    }}
+                    onBlur={(e) => {
+                        if (!error) {
+                            e.target.style.borderColor = '';
+                            e.target.style.boxShadow = '';
+                        }
+                    }}
                     placeholder={placeholder}
                     data-testid={testId}
                 />
                 <button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center"
                     onClick={onTogglePassword}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                     {showPassword ? (
-                        <EyeOff className="h-5 w-5 text-surface-400" />
+                        <EyeOff className="h-5 w-5 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors" />
                     ) : (
-                        <Eye className="h-5 w-5 text-surface-400" />
+                        <Eye className="h-5 w-5 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors" />
                     )}
                 </button>
+
+                {/* Focus indicator */}
+                <div className={cn(
+                    "absolute inset-x-0 bottom-0 h-0.5 rounded-full",
+                    "opacity-0 group-focus-within:opacity-100 transition-opacity duration-200",
+                    error ? "bg-error-500" : ""
+                )}
+                    style={!error ? {
+                        background: `linear-gradient(to right, ${themeColors.primary}, ${themeColors.secondary})`
+                    } : {}}
+                />
             </div>
             {error && (
-                <p className="mt-1 text-sm text-red-600">{error}</p>
+                <p className="text-sm text-error-600 dark:text-error-400 mt-1">
+                    {error}
+                </p>
             )}
         </div>
     );

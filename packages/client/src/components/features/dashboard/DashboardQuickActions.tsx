@@ -1,54 +1,99 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { PlusCircle, BookOpen, Search, Filter, ArrowRight } from 'lucide-react';
+import { PlusCircle, BookOpen, ArrowRight, Heart, Star, Clock, Zap, ChefHat, User } from 'lucide-react';
 import { cn } from '../../../utils/cn';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../utils/theme';
 
 export const DashboardQuickActions: React.FC = () => {
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
+
     const quickActions = [
         {
             title: 'Create Recipe',
             description: 'Add a new recipe to your collection',
             icon: PlusCircle,
             to: '/recipes/new',
-            color: 'text-brand-600 dark:text-brand-400',
-            bgColor: 'bg-brand-500/10',
-            accentColor: 'bg-brand-500',
-            gradient: 'from-brand-500 to-brand-600'
+            color: `text-${themeColors.primary} dark:text-${themeColors.primaryDark}`,
+            bgColor: `bg-${themeColors.primary}/10`,
+            accentColor: `bg-${themeColors.primary}`,
+            gradient: `from-${themeColors.primary} to-${themeColors.primaryHover}`
         },
         {
             title: 'Browse Recipes',
             description: 'Explore recipes from other users',
             icon: BookOpen,
             to: '/recipes',
-            color: 'text-accent-600 dark:text-accent-400',
-            bgColor: 'bg-accent-500/10',
-            accentColor: 'bg-accent-500',
-            gradient: 'from-accent-500 to-accent-600'
+            color: `text-${themeColors.secondary} dark:text-${themeColors.secondaryDark}`,
+            bgColor: `bg-${themeColors.secondary}/10`,
+            accentColor: `bg-${themeColors.secondary}`,
+            gradient: `from-${themeColors.secondary} to-${themeColors.secondaryHover}`
         },
         {
-            title: 'Search Recipes',
-            description: 'Find recipes by ingredients or cuisine',
-            icon: Search,
-            to: '/recipes?view=search',
-            color: 'text-surface-600 dark:text-surface-400',
-            bgColor: 'bg-surface-500/10',
-            accentColor: 'bg-surface-500',
-            gradient: 'from-surface-500 to-surface-600'
+            title: 'My Recipes',
+            description: 'View and manage your recipes',
+            icon: User,
+            to: '/recipes?user_id=current',
+            color: 'text-purple-600 dark:text-purple-400',
+            bgColor: 'bg-purple-500/10',
+            accentColor: 'bg-purple-500',
+            gradient: 'from-purple-500 to-purple-600'
         },
         {
-            title: 'Filter Favorites',
-            description: 'View your favorite recipes',
-            icon: Filter,
-            to: '/recipes?filter=favorites',
-            color: 'text-error-600 dark:text-error-400',
-            bgColor: 'bg-error-500/10',
-            accentColor: 'bg-error-500',
-            gradient: 'from-error-500 to-error-600'
+            title: 'Favorites',
+            description: 'Your liked recipes',
+            icon: Heart,
+            to: '/recipes?liked=true',
+            color: 'text-red-600 dark:text-red-400',
+            bgColor: 'bg-red-500/10',
+            accentColor: 'bg-red-500',
+            gradient: 'from-red-500 to-red-600'
+        },
+        {
+            title: 'Saved Recipes',
+            description: 'Recipes you saved for later',
+            icon: Star,
+            to: '/recipes?saved=true',
+            color: 'text-yellow-600 dark:text-yellow-400',
+            bgColor: 'bg-yellow-500/10',
+            accentColor: 'bg-yellow-500',
+            gradient: 'from-yellow-500 to-yellow-600'
+        },
+        {
+            title: 'Quick & Easy',
+            description: 'Recipes under 30 minutes',
+            icon: Clock,
+            to: '/recipes?cookTime=30&quickFilter=quick',
+            color: 'text-blue-600 dark:text-blue-400',
+            bgColor: 'bg-blue-500/10',
+            accentColor: 'bg-blue-500',
+            gradient: 'from-blue-500 to-blue-600'
+        },
+        {
+            title: 'Easy Recipes',
+            description: 'Simple recipes for beginners',
+            icon: Zap,
+            to: '/recipes?difficulty=Easy&quickFilter=easy',
+            color: 'text-green-600 dark:text-green-400',
+            bgColor: 'bg-green-500/10',
+            accentColor: 'bg-green-500',
+            gradient: 'from-green-500 to-green-600'
+        },
+        {
+            title: 'Popular Now',
+            description: 'Most liked recipes',
+            icon: ChefHat,
+            to: '/recipes?sortBy=likes&sortOrder=desc&quickFilter=popular',
+            color: `text-${themeColors.secondary} dark:text-${themeColors.secondaryDark}`,
+            bgColor: `bg-${themeColors.secondary}/10`,
+            accentColor: `bg-${themeColors.secondary}`,
+            gradient: `from-${themeColors.secondary} to-${themeColors.secondaryHover}`
         },
     ];
 
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => {
                 const Icon = action.icon;
 

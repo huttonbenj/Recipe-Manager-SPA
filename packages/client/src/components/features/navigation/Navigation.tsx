@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, X, Tag, Filter, Clock, Star, Lightbulb, History, ChefHat, Utensils, Heart, Sparkles, TrendingUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { recipeService } from '../../../services';
+import { cn } from '../../../utils/cn';
+import { parseSearchQuery } from '../../../utils/searchParser';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getThemeColors, getThemeBadgeClasses } from '../../../utils/theme';
 import { useNavigation } from '../../../hooks/ui/useNavigation';
 import { useDebounce, useLocalStorage } from '../../../hooks';
-import { recipeService } from '../../../services';
 import { NavigationLogo } from './NavigationLogo';
 import { NavigationDesktop } from './NavigationDesktop';
 import { NavigationUserMenu } from './NavigationUserMenu';
 import { NavigationMobileButton } from './NavigationMobileButton';
 import { NavigationMobile } from './NavigationMobile';
-import {
-    Search, X, TrendingUp, Clock, ChefHat, Tag, Filter,
-    History, Star, Utensils, Sparkles, Zap, Heart, Lightbulb
-} from 'lucide-react';
-import { cn } from '../../../utils/cn';
-import { parseSearchQuery } from '../../../utils/searchParser';
 
 interface SearchSuggestion {
     id: string;
     title: string;
-    type: 'recipe' | 'ingredient' | 'category' | 'user';
+    type: 'recipe' | 'ingredient' | 'category' | 'user' | 'advanced';
     icon: React.ComponentType<any>;
     description?: string;
     metadata?: {
@@ -53,6 +52,9 @@ interface PopularRecipe {
 }
 
 export const Navigation: React.FC = () => {
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
+    const navigate = useNavigate();
     const {
         user,
         isMenuOpen,
@@ -63,8 +65,6 @@ export const Navigation: React.FC = () => {
         closeMenu,
         toggleUserMenu,
     } = useNavigation();
-
-    const navigate = useNavigate();
 
     const [isScrolled, setIsScrolled] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
@@ -145,8 +145,17 @@ export const Navigation: React.FC = () => {
         { id: 'ing-chocolate', title: 'Chocolate', type: 'ingredient' as const, icon: Utensils, description: 'Chocolate desserts' },
     ].filter(ing => ing.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())).slice(0, 2) : [];
 
+    // Add advanced search suggestion
+    const advancedSearchSuggestion: SearchSuggestion[] = searchQuery.length > 0 ? [{
+        id: 'advanced-search',
+        title: `Search "${searchQuery}" with filters`,
+        type: 'advanced' as const,
+        icon: Filter,
+        description: 'Open advanced search and filter options',
+    }] : [];
+
     // Combine all suggestions
-    const allSuggestions = [...recipeSuggestions, ...categorySuggestions, ...ingredientSuggestions];
+    const allSuggestions = [...recipeSuggestions, ...categorySuggestions, ...ingredientSuggestions, ...advancedSearchSuggestion];
 
     // Popular recipes for display
     const popularRecipes: PopularRecipe[] = popularRecipesData?.data?.map(recipe => ({
@@ -172,13 +181,24 @@ export const Navigation: React.FC = () => {
 
     // Quick filter suggestions
     const quickFilters = [
-        { label: 'Easy', type: 'difficulty', value: 'Easy', icon: Zap, color: 'green' },
+        { label: 'Easy', type: 'difficulty', value: 'Easy', icon: TrendingUp, color: 'green' },
         { label: 'Quick (≤30min)', type: 'cookTime', value: '30', icon: Clock, color: 'blue' },
         { label: 'Popular', type: 'sort', value: 'popular', icon: TrendingUp, color: 'purple' },
         { label: 'Recent', type: 'sort', value: 'recent', icon: Sparkles, color: 'orange' },
         { label: 'Favorites', type: 'favorites', value: 'true', icon: Heart, color: 'red' },
         { label: 'Saved', type: 'saved', value: 'true', icon: Star, color: 'yellow' },
     ];
+
+    const openSearch = () => {
+        setIsSearchOpen(true);
+    };
+
+    const closeSearch = () => {
+        setIsSearchOpen(false);
+        setSearchQuery('');
+        setSelectedSuggestionIndex(-1);
+        document.body.style.overflow = '';
+    };
 
     // Handle scroll effect for navigation
     useEffect(() => {
@@ -195,16 +215,22 @@ export const Navigation: React.FC = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Handle escape key to close search
+    // Handle global keyboard shortcuts
     useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Global search shortcut (⌘K or Ctrl+K)
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                openSearch();
+            }
+            // Escape to close search
             if (e.key === 'Escape' && isSearchOpen) {
                 closeSearch();
             }
         };
 
-        document.addEventListener('keydown', handleEscape);
-        return () => document.removeEventListener('keydown', handleEscape);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
     }, [isSearchOpen]);
 
     // Cleanup body overflow on unmount or when search state changes
@@ -271,6 +297,18 @@ export const Navigation: React.FC = () => {
         } else if (suggestion.type === 'ingredient') {
             // Navigate to recipes page with ingredient search
             navigate(`/recipes?search=${encodeURIComponent(suggestion.title)}`);
+        } else if (suggestion.type === 'advanced') {
+            // Navigate to recipes page with search query and focus on filters
+            const params = new URLSearchParams();
+            if (searchQuery.trim()) {
+                const parsed = parseSearchQuery(searchQuery.trim());
+                if (parsed.searchTerm) params.set('search', parsed.searchTerm);
+                if (parsed.category) params.set('category', parsed.category);
+                if (parsed.difficulty) params.set('difficulty', parsed.difficulty);
+                if (parsed.cookTime) params.set('cookTime', parsed.cookTime);
+            }
+            params.set('showFilters', 'true'); // Signal to show filters panel
+            navigate(`/recipes?${params.toString()}`);
         } else {
             // Navigate to recipes page with search query
             navigate(`/recipes?search=${encodeURIComponent(suggestion.title)}`);
@@ -351,15 +389,18 @@ export const Navigation: React.FC = () => {
         }
     };
 
-    const openSearch = () => {
-        setIsSearchOpen(true);
-    };
-
-    const closeSearch = () => {
-        setIsSearchOpen(false);
-        setSearchQuery('');
-        setSelectedSuggestionIndex(-1);
-        document.body.style.overflow = '';
+    // Helper function to get theme-aware badge colors
+    const getFilterBadgeColor = (type: string) => {
+        switch (type) {
+            case 'category':
+                return getThemeBadgeClasses(theme.color, 'primary');
+            case 'difficulty':
+                return `bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200 border border-green-200 dark:border-green-800`;
+            case 'cookTime':
+                return `bg-${themeColors.secondary}-100 text-${themeColors.secondary}-800 dark:bg-${themeColors.secondary}-900/30 dark:text-${themeColors.secondary}-200 border border-${themeColors.secondary}-200 dark:border-${themeColors.secondary}-800`;
+            default:
+                return getThemeBadgeClasses(theme.color, 'primary');
+        }
     };
 
     return (
@@ -376,8 +417,11 @@ export const Navigation: React.FC = () => {
             >
                 {/* Scroll progress bar */}
                 <div
-                    className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-brand-500 to-accent-500 transition-all duration-300"
-                    style={{ width: `${scrollProgress}%` }}
+                    className="absolute bottom-0 left-0 h-0.5 transition-all duration-300"
+                    style={{
+                        width: `${scrollProgress}%`,
+                        background: `linear-gradient(to right, ${themeColors.primary}, ${themeColors.secondary})`
+                    }}
                 />
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -387,20 +431,59 @@ export const Navigation: React.FC = () => {
                             <NavigationDesktop isActive={isActive} />
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            {/* Search button */}
+                        <div className="flex items-center gap-4">
+                            {/* Prominent Search Bar - Always Visible */}
+                            <div className="hidden md:block">
+                                <button
+                                    onClick={openSearch}
+                                    className={cn(
+                                        "relative flex items-center gap-3 px-4 py-2.5 min-w-[280px] max-w-[400px]",
+                                        "bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700",
+                                        "rounded-xl hover:border-brand-300 dark:hover:border-brand-600 transition-all duration-200",
+                                        "focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent",
+                                        "hover:shadow-md hover:scale-[1.02] active:scale-[0.98]",
+                                        "group cursor-pointer"
+                                    )}
+                                    aria-label="Open search"
+                                >
+                                    <Search
+                                        className="h-4 w-4 text-surface-400 dark:text-surface-500 transition-colors"
+                                        style={{ '--group-hover-color': themeColors.primary } as React.CSSProperties}
+                                    />
+                                    <span className="text-sm text-surface-500 dark:text-surface-400 group-hover:text-surface-700 dark:group-hover:text-surface-300 transition-colors flex-1 text-left">
+                                        Search recipes, ingredients...
+                                    </span>
+                                    <div className="flex items-center gap-1">
+                                        <kbd className="px-2 py-1 bg-surface-200 dark:bg-surface-700 rounded-md text-xs text-surface-600 dark:text-surface-400 font-mono">
+                                            ⌘K
+                                        </kbd>
+                                    </div>
+                                </button>
+                            </div>
+
+                            {/* Mobile Search Button - More Prominent */}
                             <button
                                 onClick={openSearch}
                                 className={cn(
-                                    "relative p-2 text-surface-600 hover:text-surface-900 dark:text-surface-400 dark:hover:text-surface-50",
-                                    "rounded-full transition-all duration-200 hover:bg-surface-100 dark:hover:bg-surface-800",
-                                    "focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2",
-                                    "hover:scale-105 active:scale-95"
+                                    "md:hidden relative flex items-center gap-2 px-3 py-2",
+                                    "text-white rounded-xl transition-all duration-200",
+                                    "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                                    "hover:scale-105 active:scale-95 shadow-lg"
                                 )}
+                                style={{
+                                    backgroundColor: themeColors.primary,
+                                    '--tw-ring-color': themeColors.primary
+                                } as React.CSSProperties}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = `${themeColors.primary}dd`;
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = themeColors.primary;
+                                }}
                                 aria-label="Search"
                             >
-                                <Search className="h-5 w-5" />
-                                <span className="sr-only">Search recipes</span>
+                                <Search className="h-4 w-4" />
+                                <span className="text-sm font-medium">Search</span>
                             </button>
 
                             <NavigationUserMenu
@@ -443,7 +526,12 @@ export const Navigation: React.FC = () => {
                             {/* Header */}
                             <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl shadow-lg">
+                                    <div
+                                        className="p-3 rounded-2xl shadow-lg"
+                                        style={{
+                                            background: `linear-gradient(to bottom right, ${themeColors.primary}, ${themeColors.secondary})`
+                                        }}
+                                    >
                                         <Search className="h-6 w-6 text-white" />
                                     </div>
                                     <div>
@@ -493,19 +581,19 @@ export const Navigation: React.FC = () => {
                                 {(parsedQuery.category || parsedQuery.difficulty || parsedQuery.cookTime) && (
                                     <div className="mt-4 flex flex-wrap gap-2">
                                         {parsedQuery.category && (
-                                            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200 border border-blue-200 dark:border-blue-800">
+                                            <span className={cn("inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium", getThemeBadgeClasses(theme.color, 'primary'))}>
                                                 <Tag className="h-3 w-3 mr-1.5" />
                                                 {parsedQuery.category}
                                             </span>
                                         )}
                                         {parsedQuery.difficulty && (
-                                            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200 border border-green-200 dark:border-green-800">
+                                            <span className={cn("inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium", getFilterBadgeColor('difficulty'))}>
                                                 <Filter className="h-3 w-3 mr-1.5" />
                                                 {parsedQuery.difficulty}
                                             </span>
                                         )}
                                         {parsedQuery.cookTime && (
-                                            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200 border border-purple-200 dark:border-purple-800">
+                                            <span className={cn("inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium", getFilterBadgeColor('cookTime'))}>
                                                 <Clock className="h-3 w-3 mr-1.5" />
                                                 ≤ {parsedQuery.cookTime}min
                                             </span>
@@ -518,10 +606,15 @@ export const Navigation: React.FC = () => {
                                     <div className="absolute top-full left-0 right-0 mt-3 z-30 animate-fade-in">
                                         <div className="glass-card shadow-2xl rounded-2xl border border-surface-200/60 dark:border-surface-700/60 backdrop-blur-xl bg-white/80 dark:bg-surface-900/80 relative overflow-hidden">
                                             {/* Accent bar */}
-                                            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-brand-500 to-accent-500 rounded-l-2xl" />
+                                            <div
+                                                className="absolute left-0 top-0 h-full w-1 rounded-l-2xl"
+                                                style={{
+                                                    background: `linear-gradient(to bottom, ${themeColors.primary}, ${themeColors.secondary})`
+                                                }}
+                                            />
                                             <div className="px-4 py-2 border-b border-transparent flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
-                                                    <Sparkles className="h-5 w-5 text-brand-500" />
+                                                    <Sparkles className="h-5 w-5" style={{ color: themeColors.primary }} />
                                                     <span className="text-base font-bold text-surface-800 dark:text-surface-100 tracking-tight">Suggestions</span>
                                                 </div>
                                                 <span className="text-xs text-surface-500 dark:text-surface-400 font-medium">↑↓ navigate • Enter select</span>
@@ -536,6 +629,7 @@ export const Navigation: React.FC = () => {
                                                         case 'category': pillColor = 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-200'; break;
                                                         case 'ingredient': pillColor = 'bg-success-100 text-success-700 dark:bg-success-900/40 dark:text-success-200'; break;
                                                         case 'user': pillColor = 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-200'; break;
+                                                        case 'advanced': pillColor = 'bg-info-100 text-info-700 dark:bg-info-900/40 dark:text-info-200'; break;
                                                         default: pillColor = 'bg-surface-200 text-surface-700 dark:bg-surface-700 dark:text-surface-200';
                                                     }
                                                     return (

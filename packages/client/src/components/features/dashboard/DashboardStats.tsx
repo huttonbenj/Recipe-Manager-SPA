@@ -1,6 +1,8 @@
 import React from 'react';
 import { BookOpen, Heart, Star, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '../../../utils/cn';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../utils/theme';
 
 interface DashboardStatsProps {
     stats: {
@@ -27,6 +29,9 @@ interface StatCard {
 }
 
 export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats, statsLoading }) => {
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
+
     // Generate mock trend data for demonstration
     const generateTrend = () => {
         const change = Math.floor(Math.random() * 20) - 10; // -10 to +10
@@ -42,9 +47,9 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats, statsLoad
             title: 'Your Recipes',
             value: stats.totalRecipes,
             icon: BookOpen,
-            color: 'text-brand-600 dark:text-brand-400',
-            bgColor: 'bg-brand-500/10',
-            accentColor: 'bg-brand-500',
+            color: `${themeColors.primary} dark:${themeColors.primary.replace('600', '400')}`,
+            bgColor: `${themeColors.primary.replace('600', '500/10')}`,
+            accentColor: `${themeColors.primary.replace('600', '500')}`,
             trend: generateTrend()
         },
         {
@@ -69,9 +74,9 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats, statsLoad
             title: 'Total Views',
             value: stats.totalViews,
             icon: TrendingUp,
-            color: 'text-accent-600 dark:text-accent-400',
-            bgColor: 'bg-accent-500/10',
-            accentColor: 'bg-accent-500',
+            color: `${themeColors.secondary} dark:${themeColors.secondary.replace('600', '400')}`,
+            bgColor: `${themeColors.secondary.replace('600', '500/10')}`,
+            accentColor: `${themeColors.secondary.replace('600', '500')}`,
             trend: generateTrend()
         },
     ];

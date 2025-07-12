@@ -1,6 +1,8 @@
 import React, { HTMLAttributes, forwardRef } from 'react';
 import { cn } from '../../../utils/cn';
 import { X } from 'lucide-react';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getThemeColors, getThemeBadgeClasses } from '../../../utils/theme';
 
 export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
     variant?: 'primary' | 'secondary' | 'outline' | 'accent' | 'success' | 'warning' | 'error' | 'gradient' | 'glass';
@@ -34,18 +36,35 @@ export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
         children,
         ...props
     }, ref) => {
-        const baseStyles = "inline-flex items-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-surface-950";
+        const { theme } = useTheme();
+        const themeColors = getThemeColors(theme.color);
 
-        const variants = {
-            primary: "border-transparent bg-brand-100 text-brand-900 dark:bg-brand-900 dark:text-brand-100 hover:bg-brand-200 dark:hover:bg-brand-800",
-            secondary: "border-transparent bg-surface-100 text-surface-900 dark:bg-surface-800 dark:text-surface-50 hover:bg-surface-200 dark:hover:bg-surface-700",
-            outline: "border border-surface-200 text-surface-900 dark:border-surface-700 dark:text-surface-50 hover:bg-surface-50 dark:hover:bg-surface-800",
-            accent: "border-transparent bg-accent-100 text-accent-900 dark:bg-accent-900 dark:text-accent-100 hover:bg-accent-200 dark:hover:bg-accent-800",
-            success: "border-transparent bg-success-100 text-success-900 dark:bg-success-900 dark:text-success-100 hover:bg-success-200 dark:hover:bg-success-800",
-            warning: "border-transparent bg-warning-100 text-warning-900 dark:bg-warning-900 dark:text-warning-100 hover:bg-warning-200 dark:hover:bg-warning-800",
-            error: "border-transparent bg-error-100 text-error-900 dark:bg-error-900 dark:text-error-100 hover:bg-error-200 dark:hover:bg-error-800",
-            gradient: "border-transparent bg-gradient-to-r from-brand-500 to-accent-500 text-white hover:from-brand-600 hover:to-accent-600",
-            glass: "border border-white/20 dark:border-surface-700/30 bg-white/10 dark:bg-surface-900/10 backdrop-blur-sm text-surface-900 dark:text-surface-50 hover:bg-white/20 dark:hover:bg-surface-900/20",
+        const baseStyles = "inline-flex items-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-surface-950";
+
+        // Dynamic theme-based variants
+        const getVariantStyles = () => {
+            switch (variant) {
+                case 'primary':
+                    return `bg-${themeColors.primary}-100 text-${themeColors.primary}-900 dark:bg-${themeColors.primary}-900/30 dark:text-${themeColors.primary}-200 hover:bg-${themeColors.primary}-200 dark:hover:bg-${themeColors.primary}-800/40`;
+                case 'secondary':
+                    return `bg-${themeColors.secondary}-100 text-${themeColors.secondary}-900 dark:bg-${themeColors.secondary}-900/30 dark:text-${themeColors.secondary}-200 hover:bg-${themeColors.secondary}-200 dark:hover:bg-${themeColors.secondary}-800/40`;
+                case 'outline':
+                    return `border border-${themeColors.primary}-200 text-${themeColors.primary}-700 dark:border-${themeColors.primary}-700 dark:text-${themeColors.primary}-300 hover:bg-${themeColors.primary}-50 dark:hover:bg-${themeColors.primary}-900/20`;
+                case 'accent':
+                    return `bg-${themeColors.secondary}-100 text-${themeColors.secondary}-900 dark:bg-${themeColors.secondary}-900/30 dark:text-${themeColors.secondary}-200 hover:bg-${themeColors.secondary}-200 dark:hover:bg-${themeColors.secondary}-800/40`;
+                case 'success':
+                    return "bg-success-100 text-success-900 dark:bg-success-900/30 dark:text-success-200 hover:bg-success-200 dark:hover:bg-success-800/40";
+                case 'warning':
+                    return "bg-warning-100 text-warning-900 dark:bg-warning-900/30 dark:text-warning-200 hover:bg-warning-200 dark:hover:bg-warning-800/40";
+                case 'error':
+                    return "bg-error-100 text-error-900 dark:bg-error-900/30 dark:text-error-200 hover:bg-error-200 dark:hover:bg-error-800/40";
+                case 'gradient':
+                    return `${themeColors.gradient} text-white hover:shadow-lg hover:shadow-${themeColors.primary}/25`;
+                case 'glass':
+                    return "border border-white/20 dark:border-surface-700/30 bg-white/10 dark:bg-surface-900/10 backdrop-blur-sm text-surface-900 dark:text-surface-50 hover:bg-white/20 dark:hover:bg-surface-900/20";
+                default:
+                    return getThemeBadgeClasses(theme.color, 'primary');
+            }
         };
 
         const sizes = {
@@ -102,7 +121,7 @@ export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
                 ref={ref}
                 className={cn(
                     baseStyles,
-                    variants[variant],
+                    getVariantStyles(),
                     sizes[size],
                     shapes[shape],
                     shadowStyles[shadow],

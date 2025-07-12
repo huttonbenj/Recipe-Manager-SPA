@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 import { useAuth } from '../../../../hooks';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../utils/theme';
 import { LoginFormHeader } from './LoginFormHeader';
 import { LoginFormField } from './LoginFormField';
 import { LoginFormPasswordField } from './LoginFormPasswordField';
@@ -17,6 +19,8 @@ interface LoginFormData {
 
 export const LoginForm = () => {
     const { login, isLoading, isAuthenticated } = useAuth();
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState<LoginFormData>({
         email: '',
@@ -70,13 +74,33 @@ export const LoginForm = () => {
         <PageTransitionScale>
             <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
                 {/* Modern background with gradients */}
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-accent-50 to-surface-50 dark:from-surface-950 dark:via-brand-950 dark:to-accent-950" />
+                <div
+                    className="absolute inset-0 bg-gradient-to-br dark:from-surface-950 dark:via-surface-950 dark:to-surface-950"
+                    style={{
+                        background: `linear-gradient(to bottom right, ${themeColors.primary}08, ${themeColors.secondary}08, rgb(var(--color-surface-50)))`
+                    }}
+                />
 
                 {/* Animated background elements */}
                 <div className="absolute inset-0">
-                    <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-brand-500/20 to-accent-500/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-gradient-to-br from-accent-500/20 to-brand-500/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-brand-500/10 to-accent-500/10 rounded-full blur-3xl animate-pulse" />
+                    <div
+                        className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full blur-3xl animate-pulse"
+                        style={{
+                            background: `linear-gradient(to bottom right, ${themeColors.primary}20, ${themeColors.secondary}20)`
+                        }}
+                    />
+                    <div
+                        className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full blur-3xl animate-pulse"
+                        style={{
+                            background: `linear-gradient(to bottom right, ${themeColors.secondary}20, ${themeColors.primary}20)`
+                        }}
+                    />
+                    <div
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl animate-pulse"
+                        style={{
+                            background: `linear-gradient(to bottom right, ${themeColors.primary}10, ${themeColors.secondary}10)`
+                        }}
+                    />
                 </div>
 
                 {/* Main content */}
@@ -127,8 +151,19 @@ export const LoginForm = () => {
                     </div>
 
                     {/* Decorative elements */}
-                    <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-brand-500 to-accent-500 rounded-full opacity-20 animate-bounce" />
-                    <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-gradient-to-br from-accent-500 to-brand-500 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '1s' }} />
+                    <div
+                        className="absolute -top-4 -right-4 w-8 h-8 rounded-full opacity-20 animate-bounce"
+                        style={{
+                            background: `linear-gradient(to bottom right, ${themeColors.primary}, ${themeColors.secondary})`
+                        }}
+                    />
+                    <div
+                        className="absolute -bottom-4 -left-4 w-6 h-6 rounded-full opacity-20 animate-bounce"
+                        style={{
+                            background: `linear-gradient(to bottom right, ${themeColors.secondary}, ${themeColors.primary})`,
+                            animationDelay: '1s'
+                        }}
+                    />
                 </div>
             </div>
         </PageTransitionScale>

@@ -1,49 +1,48 @@
 import React from 'react';
-import { UserPlus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../utils/theme';
+import { cn } from '../../../../utils/cn';
 
 interface RegisterFormSubmitButtonProps {
     isLoading: boolean;
 }
 
-export const RegisterFormSubmitButton: React.FC<RegisterFormSubmitButtonProps> = ({ isLoading }) => {
+export const RegisterFormSubmitButton = ({ isLoading }: RegisterFormSubmitButtonProps) => {
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
+
     return (
-        <div>
-            <button
-                type="submit"
-                disabled={isLoading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-brand-500 dark:hover:bg-brand-600 dark:focus:ring-brand-400"
-            >
-                {isLoading ? (
-                    <>
-                        <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                            ></circle>
-                            <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
-                        Creating account...
-                    </>
-                ) : (
-                    <>
-                        <UserPlus className="h-5 w-5 mr-2" />
-                        Create Account
-                    </>
-                )}
-            </button>
-        </div>
+        <button
+            type="submit"
+            disabled={isLoading}
+            className={cn(
+                "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white",
+                "focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+            style={{
+                backgroundColor: themeColors.primary,
+                '--tw-ring-color': themeColors.primary
+            } as React.CSSProperties}
+            onMouseEnter={(e) => {
+                if (!isLoading) {
+                    e.currentTarget.style.backgroundColor = `${themeColors.primary}dd`;
+                }
+            }}
+            onMouseLeave={(e) => {
+                if (!isLoading) {
+                    e.currentTarget.style.backgroundColor = themeColors.primary;
+                }
+            }}
+        >
+            {isLoading ? (
+                <>
+                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                    Creating account...
+                </>
+            ) : (
+                'Create account'
+            )}
+        </button>
     );
 }; 

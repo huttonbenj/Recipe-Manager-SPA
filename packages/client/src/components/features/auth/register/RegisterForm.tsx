@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../../hooks/useAuth';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../utils/theme';
 import { RegisterFormHeader } from './RegisterFormHeader';
 import { RegisterFormField } from './RegisterFormField';
 import { RegisterFormPasswordField } from './RegisterFormPasswordField';
@@ -9,6 +11,8 @@ import { User, Mail } from 'lucide-react';
 
 export const RegisterForm: React.FC = () => {
     const { register, isLoading } = useAuth();
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -48,7 +52,12 @@ export const RegisterForm: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-950 py-12 px-4 sm:px-6 lg:px-8">
+        <div
+            className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+            style={{
+                background: `linear-gradient(to bottom right, ${themeColors.primary}05, ${themeColors.secondary}05, rgb(var(--color-surface-50)))`
+            }}
+        >
             <div className="max-w-md w-full space-y-8">
                 <RegisterFormHeader />
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

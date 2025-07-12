@@ -1,38 +1,42 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useDashboard } from '../../../hooks/user/useDashboard';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Clock, User, Heart, Star, ChefHat, Sparkles, TrendingUp, Tag, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { useDashboard } from '../../../hooks/user/useDashboard';
+import { recipeService } from '../../../services';
+import { cn } from '../../../utils/cn';
+import { parseSearchQuery } from '../../../utils/searchParser';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../utils/theme';
+
+import { DashboardHeader } from './DashboardHeader';
+import { DashboardStats } from './DashboardStats';
+import { DashboardQuickActions } from './DashboardQuickActions';
+import { DashboardUserRecipes } from './DashboardUserRecipes';
 import { DashboardActivity } from './DashboardActivity';
 import { DashboardInsights } from './DashboardInsights';
-import {
-    ChefHat, BookOpen, Heart, Star, TrendingUp, PlusCircle, Search,
-    Utensils, Leaf, Clock, Award, ChevronRight, Sparkles, Zap, Coffee, Cake, Bookmark, Grid3X3
-} from 'lucide-react';
-
-// Memoized components for better performance
-const MemoizedDashboardInsights = React.memo(DashboardInsights);
-const MemoizedDashboardActivity = React.memo(DashboardActivity);
-
-// Extended Recipe type with analytics properties
-interface RecipeWithAnalytics {
-    id: string;
-    title: string;
-    likes_count?: number;
-    rating?: number;
-    views_count?: number;
-    image_url?: string;
-    cook_time?: number;
-    category?: string;
-}
 
 export const Dashboard: React.FC = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
+
     const {
         userRecipes,
         activities,
         isLoading,
         userStats
     } = useDashboard();
+
+    // Fetch trending searches/categories
+    const { data: categories } = useQuery({
+        queryKey: ['recipe-categories'],
+        queryFn: () => recipeService.getRecipeCategories(),
+        staleTime: 300000,
+    });
 
     // Use stats from API or fallback to calculated values
     const stats = React.useMemo(() => ({
@@ -42,410 +46,254 @@ export const Dashboard: React.FC = () => {
         totalCategories: userStats?.totalCategories || 0,
     }), [userStats, userRecipes.length]);
 
-    // Enhanced categories data with better icons and colors
-    const categories = React.useMemo(() => [
-        { name: 'Breakfast', icon: <Coffee className="h-5 w-5" />, color: 'from-warning-500 to-amber-500', bgColor: 'bg-warning-50 dark:bg-warning-950/20', count: 12 },
-        { name: 'Desserts', icon: <Cake className="h-5 w-5" />, color: 'from-error-500 to-pink-500', bgColor: 'bg-error-50 dark:bg-error-950/20', count: 24 },
-        { name: 'Healthy', icon: <Leaf className="h-5 w-5" />, color: 'from-success-500 to-emerald-500', bgColor: 'bg-success-50 dark:bg-success-950/20', count: 18 },
-        { name: 'Quick', icon: <Zap className="h-5 w-5" />, color: 'from-accent-500 to-blue-500', bgColor: 'bg-accent-50 dark:bg-accent-950/20', count: 9 }
-    ], []);
+    // Trending searches based on categories
+    const trendingSearches = categories?.slice(0, 6).map(category => ({
+        label: category,
+        query: category,
+        icon: Tag,
+        color: 'blue'
+    })) || [];
 
-    // Format current day
-    const formattedDate = React.useMemo(() => {
-        return new Intl.DateTimeFormat('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric'
-        }).format(new Date());
-    }, []);
+    // Quick filters for easy access
+    const quickFilters = [
+        {
+            label: 'Quick & Easy',
+            query: 'cookTime=30&quickFilter=quick',
+            icon: Clock,
+            color: 'green',
+            description: 'Under 30 minutes'
+        },
+        {
+            label: 'My Recipes',
+            query: 'user_id=current',
+            icon: User,
+            color: 'blue',
+            description: 'Your creations'
+        },
+        {
+            label: 'My Favorites',
+            query: 'liked=true',
+            icon: Heart,
+            color: 'red',
+            description: 'Your liked recipes'
+        },
+        {
+            label: 'Saved Recipes',
+            query: 'saved=true',
+            icon: Star,
+            color: 'yellow',
+            description: 'Your saved recipes'
+        },
+        {
+            label: 'Main Dishes',
+            query: 'category=Main Course',
+            icon: ChefHat,
+            color: 'orange',
+            description: 'Hearty main course recipes'
+        },
+    ];
 
-    // Get greeting based on time of day
-    const greeting = React.useMemo(() => {
-        const hour = new Date().getHours();
-        if (hour < 12) return 'Good morning';
-        if (hour < 18) return 'Good afternoon';
-        return 'Good evening';
-    }, []);
+    // Helper function to get theme-aware filter colors
+    const getFilterColor = (color: string) => {
+        switch (color) {
+            case 'green':
+                return `bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400`;
+            case 'blue':
+                return `bg-${themeColors.primary}-100 dark:bg-${themeColors.primary}-900/30 text-${themeColors.primary}-600 dark:text-${themeColors.primary}-400`;
+            case 'purple':
+                return `bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400`;
+            case 'red':
+                return `bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400`;
+            case 'yellow':
+                return `bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400`;
+            case 'orange':
+                return `bg-${themeColors.secondary}-100 dark:bg-${themeColors.secondary}-900/30 text-${themeColors.secondary}-600 dark:text-${themeColors.secondary}-400`;
+            default:
+                return `bg-${themeColors.primary}-100 dark:bg-${themeColors.primary}-900/30 text-${themeColors.primary}-600 dark:text-${themeColors.primary}-400`;
+        }
+    };
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-surface-100 dark:from-surface-950 dark:via-surface-900 dark:to-surface-800">
-            {/* Enhanced decorative background elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-brand-500/10 via-accent-500/10 to-transparent rounded-full blur-3xl animate-pulse-slow"></div>
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-accent-500/10 via-brand-500/10 to-transparent rounded-full blur-3xl animate-pulse-slow animation-delay-2000"></div>
-                <div className="absolute top-1/2 left-0 w-64 h-64 bg-gradient-to-br from-success-500/5 via-emerald-500/5 to-transparent rounded-full blur-3xl animate-pulse-slow animation-delay-4000"></div>
-            </div>
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            const parsed = parseSearchQuery(searchQuery.trim());
+            const params = new URLSearchParams();
 
-            {/* Main content container */}
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-                {/* Enhanced welcome header */}
-                <header className="text-center space-y-6 animate-fade-in-up">
-                    {/* Date indicator */}
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                        <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></div>
-                        <div className="px-4 py-2 bg-white/60 dark:bg-surface-900/60 backdrop-blur-sm rounded-full border border-surface-200/50 dark:border-surface-800/50">
-                            <p className="text-sm text-surface-600 dark:text-surface-400 font-medium tracking-wider">
-                                {formattedDate}
-                            </p>
+            if (parsed.searchTerm) params.set('search', parsed.searchTerm);
+            if (parsed.category) params.set('category', parsed.category);
+            if (parsed.difficulty) params.set('difficulty', parsed.difficulty);
+            if (parsed.cookTime) params.set('cookTime', parsed.cookTime);
+
+            navigate(`/recipes?${params.toString()}`);
+        }
+    };
+
+    const handleQuickFilterClick = (filter: any) => {
+        navigate(`/recipes?${filter.query}`);
+    };
+
+    const handleTrendingSearchClick = (search: any) => {
+        navigate(`/recipes?category=${encodeURIComponent(search.query)}`);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-900 dark:to-surface-950">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="animate-pulse space-y-8">
+                        <div className="h-8 bg-surface-200 dark:bg-surface-800 rounded-lg w-1/3"></div>
+                        <div className="h-32 bg-surface-200 dark:bg-surface-800 rounded-xl"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[...Array(6)].map((_, i) => (
+                                <div key={i} className="h-48 bg-surface-200 dark:bg-surface-800 rounded-xl"></div>
+                            ))}
                         </div>
-                        <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse animation-delay-300"></div>
-                    </div>
-
-                    {/* Main greeting */}
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-brand-500/10 via-accent-500/10 to-brand-500/10 rounded-3xl blur-2xl"></div>
-                        <div className="relative bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl border border-surface-200/50 dark:border-surface-800/50 shadow-2xl p-8">
-                            <div className="flex items-center justify-center gap-4 mb-6">
-                                <div className="relative">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-brand-500 to-accent-600 rounded-2xl blur-lg opacity-60"></div>
-                                    <div className="relative p-4 bg-gradient-to-br from-brand-500 to-accent-600 rounded-2xl shadow-xl">
-                                        <ChefHat className="h-8 w-8 text-white" />
-                                    </div>
-                                    <div className="absolute -top-2 -right-2 p-1 bg-gradient-to-br from-accent-400 to-brand-500 rounded-full">
-                                        <Sparkles className="h-4 w-4 text-white" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-surface-900 via-brand-600 to-surface-900 dark:from-white dark:via-brand-400 dark:to-surface-300 bg-clip-text text-transparent">
-                                {greeting}, {user?.name}! 👋
-                            </h1>
-
-                            <p className="text-xl text-surface-600 dark:text-surface-400 max-w-2xl mx-auto leading-relaxed mb-8">
-                                Ready to create something delicious? Your culinary journey continues here.
-                            </p>
-
-                            {/* Enhanced quick action buttons */}
-                            <div className="flex flex-wrap gap-4 justify-center">
-                                <Link
-                                    to="/recipes/new"
-                                    className="group relative overflow-hidden px-8 py-4 bg-gradient-to-r from-brand-500 to-accent-600 text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-brand-600 to-accent-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                    <div className="relative flex items-center gap-3">
-                                        <PlusCircle className="h-6 w-6" />
-                                        <span className="font-semibold">Create Recipe</span>
-                                        <Sparkles className="h-4 w-4 opacity-70" />
-                                    </div>
-                                </Link>
-
-                                <Link
-                                    to="/recipes"
-                                    className="group px-8 py-4 bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm text-surface-700 dark:text-surface-300 rounded-2xl border border-surface-200/50 dark:border-surface-800/50 hover:border-brand-300 dark:hover:border-brand-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <Search className="h-6 w-6" />
-                                        <span className="font-semibold">Explore Recipes</span>
-                                    </div>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Enhanced stats overview - now clickable navigation cards */}
-                <section className="animate-fade-in-up animation-delay-300">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                        {/* Your Recipes */}
-                        <Link
-                            to="/recipes?filter=my-recipes"
-                            className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-accent-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="p-3 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        <BookOpen className="h-6 w-6 text-white" />
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-3xl font-bold text-surface-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors duration-300">
-                                            {stats.totalRecipes}
-                                        </div>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Your Recipes</p>
-                                    </div>
-                                </div>
-                                <div className="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                    <div className="h-full bg-gradient-to-r from-brand-500 to-brand-600 rounded-full transform translate-x-0 group-hover:translate-x-2 transition-transform duration-500" style={{ width: '75%' }}></div>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* Your Favorites */}
-                        <Link
-                            to="/recipes?filter=favorites"
-                            className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-br from-error-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="p-3 rounded-xl bg-gradient-to-br from-error-500 to-pink-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        <Heart className="h-6 w-6 text-white" />
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-3xl font-bold text-surface-900 dark:text-white group-hover:text-error-600 dark:group-hover:text-error-400 transition-colors duration-300">
-                                            {isLoading ? (
-                                                <div className="h-8 w-16 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
-                                            ) : (
-                                                stats.totalFavorites
-                                            )}
-                                        </div>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Your Favs</p>
-                                    </div>
-                                </div>
-                                <div className="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                    <div className="h-full bg-gradient-to-r from-error-500 to-pink-600 rounded-full transform translate-x-0 group-hover:translate-x-2 transition-transform duration-500" style={{ width: '60%' }}></div>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* Your Saved */}
-                        <Link
-                            to="/recipes?filter=saved"
-                            className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-br from-warning-500/5 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="p-3 rounded-xl bg-gradient-to-br from-warning-500 to-amber-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        <Bookmark className="h-6 w-6 text-white" />
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-3xl font-bold text-surface-900 dark:text-white group-hover:text-warning-600 dark:group-hover:text-warning-400 transition-colors duration-300">
-                                            {isLoading ? (
-                                                <div className="h-8 w-16 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
-                                            ) : (
-                                                stats.totalSaved
-                                            )}
-                                        </div>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Your Saves</p>
-                                    </div>
-                                </div>
-                                <div className="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                    <div className="h-full bg-gradient-to-r from-warning-500 to-amber-600 rounded-full transform translate-x-0 group-hover:translate-x-2 transition-transform duration-500" style={{ width: '85%' }}></div>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* Your Categories */}
-                        <Link
-                            to="/recipes?filter=my-recipes&view=categories"
-                            className="group relative overflow-hidden bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-2xl p-6 border border-surface-200/50 dark:border-surface-800/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-br from-accent-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="p-3 rounded-xl bg-gradient-to-br from-accent-500 to-blue-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        <Grid3X3 className="h-6 w-6 text-white" />
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-3xl font-bold text-surface-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors duration-300">
-                                            {isLoading ? (
-                                                <div className="h-8 w-16 bg-surface-200 dark:bg-surface-700 rounded animate-pulse"></div>
-                                            ) : (
-                                                stats.totalCategories
-                                            )}
-                                        </div>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400 font-medium">Your Categories</p>
-                                    </div>
-                                </div>
-                                <div className="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                    <div className="h-full bg-gradient-to-r from-accent-500 to-blue-600 rounded-full transform translate-x-0 group-hover:translate-x-2 transition-transform duration-500" style={{ width: '90%' }}></div>
-                                </div>
-                            </div>
-                        </Link>
-                    </div>
-                </section>
-
-                {/* Main content grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Left column - Recipe collections */}
-                    <div className="lg:col-span-2 space-y-8">
-                        {/* Your recipes section */}
-                        <section className="relative animate-fade-in-up animation-delay-600">
-                            <div className="absolute inset-0 bg-gradient-to-r from-brand-500/5 via-accent-500/5 to-brand-500/5 rounded-3xl blur-xl"></div>
-                            <div className="relative bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl border border-surface-200/50 dark:border-surface-800/50 shadow-2xl p-8">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-3 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg">
-                                            <ChefHat className="h-6 w-6 text-white" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-2xl font-bold text-surface-900 dark:text-white">
-                                                Your Recipes
-                                            </h2>
-                                            <p className="text-surface-600 dark:text-surface-400">
-                                                Your culinary creations
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <Link
-                                        to="/recipes?filter=my-recipes"
-                                        className="flex items-center gap-2 px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-brand-100 dark:hover:bg-brand-900/30 text-surface-700 dark:text-surface-300 hover:text-brand-600 dark:hover:text-brand-400 rounded-xl transition-all duration-200 group"
-                                    >
-                                        <span className="font-medium">View All</span>
-                                        <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-                                    </Link>
-                                </div>
-
-                                {isLoading ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-                                        {[...Array(3)].map((_, i) => (
-                                            <div key={i} className="h-64 bg-surface-200/50 dark:bg-surface-800/50 rounded-2xl"></div>
-                                        ))}
-                                    </div>
-                                ) : userRecipes.length > 0 ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {userRecipes.slice(0, 3).map((recipe, index) => (
-                                            <Link
-                                                key={recipe.id}
-                                                to={`/recipes/${recipe.id}`}
-                                                className="group relative overflow-hidden rounded-2xl aspect-[4/3] shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105"
-                                                style={{ animationDelay: `${index * 150}ms` }}
-                                            >
-                                                <img
-                                                    src={recipe.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop&crop=center'}
-                                                    alt={recipe.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                                    loading="lazy"
-                                                />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                                                <div className="absolute inset-0 flex flex-col justify-end p-6">
-                                                    <h3 className="text-white font-bold text-lg mb-2 group-hover:text-brand-300 transition-colors duration-300">
-                                                        {recipe.title}
-                                                    </h3>
-                                                    <div className="flex items-center gap-4 text-white/80">
-                                                        <span className="flex items-center gap-1 text-sm">
-                                                            <Clock className="h-4 w-4" />
-                                                            {recipe.cook_time}min
-                                                        </span>
-                                                        <span className="flex items-center gap-1 text-sm">
-                                                            <Star className="h-4 w-4 text-amber-400" />
-                                                            {(recipe as unknown as RecipeWithAnalytics).rating?.toFixed(1) || '0.0'}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-12">
-                                        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-brand-100 to-accent-100 dark:from-brand-900/30 dark:to-accent-900/30 rounded-2xl flex items-center justify-center">
-                                            <ChefHat className="h-10 w-10 text-brand-600 dark:text-brand-400" />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-surface-900 dark:text-white mb-2">No recipes yet</h3>
-                                        <p className="text-surface-600 dark:text-surface-400 mb-6">Create your first recipe to get started on your culinary journey</p>
-                                        <Link
-                                            to="/recipes/new"
-                                            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-accent-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                                        >
-                                            <PlusCircle className="h-5 w-5" />
-                                            Create Your First Recipe
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-                        </section>
-
-                        {/* Recipe categories */}
-                        <section className="relative animate-fade-in-up animation-delay-900">
-                            <div className="absolute inset-0 bg-gradient-to-r from-success-500/5 via-emerald-500/5 to-success-500/5 rounded-3xl blur-xl"></div>
-                            <div className="relative bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl border border-surface-200/50 dark:border-surface-800/50 shadow-2xl p-8">
-                                <div className="flex items-center gap-4 mb-8">
-                                    <div className="p-3 rounded-xl bg-gradient-to-br from-success-500 to-emerald-600 shadow-lg">
-                                        <Utensils className="h-6 w-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-surface-900 dark:text-white">
-                                            Browse Categories
-                                        </h2>
-                                        <p className="text-surface-600 dark:text-surface-400">
-                                            Discover recipes by type
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {categories.map((category, index) => (
-                                        <Link
-                                            key={index}
-                                            to={`/recipes?category=${category.name}`}
-                                            className="group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                                            style={{ animationDelay: `${index * 150}ms` }}
-                                        >
-                                            <div className={`absolute inset-0 ${category.bgColor} opacity-80 group-hover:opacity-100 transition-opacity duration-300`}></div>
-                                            <div className="relative text-center">
-                                                <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                                                    <div className="text-white">
-                                                        {category.icon}
-                                                    </div>
-                                                </div>
-                                                <h3 className="font-bold text-surface-900 dark:text-white mb-1 group-hover:text-opacity-90 transition-all duration-300">
-                                                    {category.name}
-                                                </h3>
-                                                <p className="text-sm text-surface-600 dark:text-surface-400">
-                                                    {category.count} recipes
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-
-                    {/* Right column - Activity and insights */}
-                    <div className="lg:col-span-1 space-y-8">
-                        {/* Activity feed */}
-                        <section className="relative animate-fade-in-up animation-delay-300">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-indigo-500/5 to-purple-500/5 rounded-3xl blur-xl"></div>
-                            <div className="relative bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl border border-surface-200/50 dark:border-surface-800/50 shadow-2xl p-6">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg">
-                                        <TrendingUp className="h-5 w-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-                                            Recent Activity
-                                        </h2>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400">
-                                            What's happening
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <MemoizedDashboardActivity
-                                    activities={activities}
-                                    isLoading={isLoading}
-                                />
-                            </div>
-                        </section>
-
-                        {/* Insights */}
-                        <section className="relative animate-fade-in-up animation-delay-600">
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-emerald-500/5 rounded-3xl blur-xl"></div>
-                            <div className="relative bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl border border-surface-200/50 dark:border-surface-800/50 shadow-2xl p-6">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
-                                        <Award className="h-5 w-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-surface-900 dark:text-white">
-                                            Insights
-                                        </h2>
-                                        <p className="text-sm text-surface-600 dark:text-surface-400">
-                                            Your cooking journey
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <MemoizedDashboardInsights
-                                    recipeCount={userRecipes.length}
-                                    mostUsedCategory={userRecipes.length > 0 ? "Dinner" : undefined}
-                                />
-                            </div>
-                        </section>
                     </div>
                 </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-900 dark:to-surface-950">
+            <div className="container mx-auto px-4 py-8 space-y-8">
+                <DashboardHeader user={user} />
+
+                {/* Prominent Search Section */}
+                <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-lg border border-surface-200 dark:border-surface-800 p-8">
+                    <div className="text-center mb-8">
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                            <div
+                                className="p-3 rounded-2xl shadow-lg"
+                                style={{
+                                    background: `linear-gradient(to bottom right, ${themeColors.primary}, ${themeColors.secondary})`
+                                }}
+                            >
+                                <Search className="h-6 w-6 text-white" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-surface-900 dark:text-surface-50 font-display">
+                                Find Your Perfect Recipe
+                            </h2>
+                        </div>
+                        <p className="text-surface-600 dark:text-surface-400 text-lg">
+                            Search thousands of recipes or try our smart filters
+                        </p>
+                    </div>
+
+                    {/* Main Search Bar */}
+                    <form onSubmit={handleSearchSubmit} className="relative mb-8">
+                        <div className="relative">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-surface-400 dark:text-surface-500" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search for recipes, ingredients, or try 'easy chicken recipes'..."
+                                className="w-full pl-16 pr-32 py-4 bg-surface-50 dark:bg-surface-800 border-2 border-surface-200 dark:border-surface-700 rounded-2xl text-surface-900 dark:text-surface-50 placeholder-surface-500 dark:placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 text-lg font-medium shadow-sm"
+                                autoComplete="off"
+                            />
+                            <button
+                                type="submit"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 px-6 py-2 text-white rounded-xl transition-all duration-200 font-medium hover:scale-105 active:scale-95 shadow-lg"
+                                style={{
+                                    backgroundColor: themeColors.primary
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = `${themeColors.primary}dd`;
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = themeColors.primary;
+                                }}
+                            >
+                                Search
+                            </button>
+                        </div>
+                    </form>
+
+                    {/* Quick Filters */}
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
+                            <Sparkles className="h-5 w-5" style={{ color: themeColors.primary }} />
+                            Quick Filters
+                        </h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                            {quickFilters.map((filter) => {
+                                const Icon = filter.icon;
+                                return (
+                                    <button
+                                        key={filter.label}
+                                        onClick={() => handleQuickFilterClick(filter)}
+                                        className={cn(
+                                            "flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200",
+                                            "bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700",
+                                            "hover:border-brand-300 dark:hover:border-brand-600 hover:shadow-md",
+                                            "hover:scale-105 active:scale-95 group"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "p-3 rounded-xl transition-all duration-200",
+                                            getFilterColor(filter.color)
+                                        )}>
+                                            <Icon className="h-5 w-5" />
+                                        </div>
+                                        <div className="text-center">
+                                            <span className="text-sm font-medium text-surface-900 dark:text-surface-50 block">
+                                                {filter.label}
+                                            </span>
+                                            <span className="text-xs text-surface-500 dark:text-surface-400 mt-1 block">
+                                                {filter.description}
+                                            </span>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Trending Searches */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
+                            <TrendingUp className="h-5 w-5" style={{ color: themeColors.primary }} />
+                            Trending Categories
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                            {trendingSearches.map((search) => (
+                                <button
+                                    key={search.label}
+                                    onClick={() => handleTrendingSearchClick(search)}
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-brand-100 dark:hover:bg-brand-900/30 text-surface-700 dark:text-surface-300 hover:text-brand-700 dark:hover:text-brand-300 rounded-xl transition-all duration-200 border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-600 hover:scale-105 active:scale-95"
+                                >
+                                    <Tag className="h-4 w-4" />
+                                    <span className="text-sm font-medium">{search.label}</span>
+                                    <ArrowRight className="h-3 w-3" />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <DashboardStats
+                    stats={{
+                        totalRecipes: stats.totalRecipes,
+                        totalLikes: stats.totalFavorites,
+                        averageRating: 4.5, // Mock average rating
+                        totalViews: stats.totalSaved * 10, // Mock total views
+                    }}
+                    statsLoading={isLoading}
+                />
+                <DashboardQuickActions />
+                <DashboardUserRecipes
+                    userRecipes={userRecipes}
+                    isLoading={isLoading}
+                />
+                <DashboardActivity
+                    activities={activities}
+                    isLoading={isLoading}
+                />
+                <DashboardInsights
+                    recipeCount={userRecipes.length}
+                    mostUsedCategory={userRecipes.length > 0 ? "Dinner" : undefined}
+                />
             </div>
         </div>
     );

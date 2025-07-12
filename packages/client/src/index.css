@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Brand colors */
+    /* Brand colors - Default Theme (Emerald & Orange) */
     --color-brand-50: 236 253 245;  /* Mint/teal base */
     --color-brand-100: 209 250 229;
     --color-brand-200: 167 243 208;
@@ -57,6 +57,84 @@
     --color-royal-accent-800: 146 64 14;
     --color-royal-accent-900: 120 53 15;
     --color-royal-accent-950: 69 26 3;
+    
+    /* Ocean Blue Theme - Brand colors */
+    --color-ocean-brand-50: 240 249 255;
+    --color-ocean-brand-100: 224 242 254;
+    --color-ocean-brand-200: 186 230 253;
+    --color-ocean-brand-300: 125 211 252;
+    --color-ocean-brand-400: 56 189 248;
+    --color-ocean-brand-500: 14 165 233;
+    --color-ocean-brand-600: 2 132 199;
+    --color-ocean-brand-700: 3 105 161;
+    --color-ocean-brand-800: 7 89 133;
+    --color-ocean-brand-900: 12 74 110;
+    --color-ocean-brand-950: 8 47 73;
+    
+    /* Ocean Blue Theme - Accent colors (Cyan) */
+    --color-ocean-accent-50: 236 254 255;
+    --color-ocean-accent-100: 207 250 254;
+    --color-ocean-accent-200: 165 243 252;
+    --color-ocean-accent-300: 103 232 249;
+    --color-ocean-accent-400: 34 211 238;
+    --color-ocean-accent-500: 6 182 212;
+    --color-ocean-accent-600: 8 145 178;
+    --color-ocean-accent-700: 14 116 144;
+    --color-ocean-accent-800: 21 94 117;
+    --color-ocean-accent-900: 22 78 99;
+    --color-ocean-accent-950: 8 51 68;
+    
+    /* Forest Green Theme - Brand colors */
+    --color-forest-brand-50: 240 253 244;
+    --color-forest-brand-100: 220 252 231;
+    --color-forest-brand-200: 187 247 208;
+    --color-forest-brand-300: 134 239 172;
+    --color-forest-brand-400: 74 222 128;
+    --color-forest-brand-500: 34 197 94;
+    --color-forest-brand-600: 22 163 74;
+    --color-forest-brand-700: 21 128 61;
+    --color-forest-brand-800: 22 101 52;
+    --color-forest-brand-900: 20 83 45;
+    --color-forest-brand-950: 5 46 22;
+    
+    /* Forest Green Theme - Accent colors (Lime) */
+    --color-forest-accent-50: 247 254 231;
+    --color-forest-accent-100: 236 252 203;
+    --color-forest-accent-200: 217 249 157;
+    --color-forest-accent-300: 190 242 100;
+    --color-forest-accent-400: 163 230 53;
+    --color-forest-accent-500: 132 204 22;
+    --color-forest-accent-600: 101 163 13;
+    --color-forest-accent-700: 77 124 15;
+    --color-forest-accent-800: 63 98 18;
+    --color-forest-accent-900: 54 83 20;
+    --color-forest-accent-950: 26 46 5;
+    
+    /* Sunset Orange Theme - Brand colors */
+    --color-sunset-brand-50: 255 247 237;
+    --color-sunset-brand-100: 255 237 213;
+    --color-sunset-brand-200: 254 215 170;
+    --color-sunset-brand-300: 253 186 116;
+    --color-sunset-brand-400: 251 146 60;
+    --color-sunset-brand-500: 249 115 22;
+    --color-sunset-brand-600: 234 88 12;
+    --color-sunset-brand-700: 194 65 12;
+    --color-sunset-brand-800: 154 52 18;
+    --color-sunset-brand-900: 124 45 18;
+    --color-sunset-brand-950: 67 20 7;
+    
+    /* Sunset Orange Theme - Accent colors (Pink) */
+    --color-sunset-accent-50: 253 242 248;
+    --color-sunset-accent-100: 252 231 243;
+    --color-sunset-accent-200: 251 207 232;
+    --color-sunset-accent-300: 249 168 212;
+    --color-sunset-accent-400: 244 114 182;
+    --color-sunset-accent-500: 236 72 153;
+    --color-sunset-accent-600: 219 39 119;
+    --color-sunset-accent-700: 190 24 93;
+    --color-sunset-accent-800: 157 23 77;
+    --color-sunset-accent-900: 131 24 67;
+    --color-sunset-accent-950: 80 7 36;
     
     /* Light mode surface colors */
     --color-surface-50: 250 250 250;
@@ -186,6 +264,93 @@
     --color-accent-950: var(--color-royal-accent-950);
   }
   
+  /* Ocean Blue Theme Class */
+  .theme-ocean {
+    /* Override brand colors with ocean blue */
+    --color-brand-50: var(--color-ocean-brand-50);
+    --color-brand-100: var(--color-ocean-brand-100);
+    --color-brand-200: var(--color-ocean-brand-200);
+    --color-brand-300: var(--color-ocean-brand-300);
+    --color-brand-400: var(--color-ocean-brand-400);
+    --color-brand-500: var(--color-ocean-brand-500);
+    --color-brand-600: var(--color-ocean-brand-600);
+    --color-brand-700: var(--color-ocean-brand-700);
+    --color-brand-800: var(--color-ocean-brand-800);
+    --color-brand-900: var(--color-ocean-brand-900);
+    --color-brand-950: var(--color-ocean-brand-950);
+    
+    /* Override accent colors with cyan */
+    --color-accent-50: var(--color-ocean-accent-50);
+    --color-accent-100: var(--color-ocean-accent-100);
+    --color-accent-200: var(--color-ocean-accent-200);
+    --color-accent-300: var(--color-ocean-accent-300);
+    --color-accent-400: var(--color-ocean-accent-400);
+    --color-accent-500: var(--color-ocean-accent-500);
+    --color-accent-600: var(--color-ocean-accent-600);
+    --color-accent-700: var(--color-ocean-accent-700);
+    --color-accent-800: var(--color-ocean-accent-800);
+    --color-accent-900: var(--color-ocean-accent-900);
+    --color-accent-950: var(--color-ocean-accent-950);
+  }
+  
+  /* Forest Green Theme Class */
+  .theme-forest {
+    /* Override brand colors with forest green */
+    --color-brand-50: var(--color-forest-brand-50);
+    --color-brand-100: var(--color-forest-brand-100);
+    --color-brand-200: var(--color-forest-brand-200);
+    --color-brand-300: var(--color-forest-brand-300);
+    --color-brand-400: var(--color-forest-brand-400);
+    --color-brand-500: var(--color-forest-brand-500);
+    --color-brand-600: var(--color-forest-brand-600);
+    --color-brand-700: var(--color-forest-brand-700);
+    --color-brand-800: var(--color-forest-brand-800);
+    --color-brand-900: var(--color-forest-brand-900);
+    --color-brand-950: var(--color-forest-brand-950);
+    
+    /* Override accent colors with lime */
+    --color-accent-50: var(--color-forest-accent-50);
+    --color-accent-100: var(--color-forest-accent-100);
+    --color-accent-200: var(--color-forest-accent-200);
+    --color-accent-300: var(--color-forest-accent-300);
+    --color-accent-400: var(--color-forest-accent-400);
+    --color-accent-500: var(--color-forest-accent-500);
+    --color-accent-600: var(--color-forest-accent-600);
+    --color-accent-700: var(--color-forest-accent-700);
+    --color-accent-800: var(--color-forest-accent-800);
+    --color-accent-900: var(--color-forest-accent-900);
+    --color-accent-950: var(--color-forest-accent-950);
+  }
+  
+  /* Sunset Orange Theme Class */
+  .theme-sunset {
+    /* Override brand colors with sunset orange */
+    --color-brand-50: var(--color-sunset-brand-50);
+    --color-brand-100: var(--color-sunset-brand-100);
+    --color-brand-200: var(--color-sunset-brand-200);
+    --color-brand-300: var(--color-sunset-brand-300);
+    --color-brand-400: var(--color-sunset-brand-400);
+    --color-brand-500: var(--color-sunset-brand-500);
+    --color-brand-600: var(--color-sunset-brand-600);
+    --color-brand-700: var(--color-sunset-brand-700);
+    --color-brand-800: var(--color-sunset-brand-800);
+    --color-brand-900: var(--color-sunset-brand-900);
+    --color-brand-950: var(--color-sunset-brand-950);
+    
+    /* Override accent colors with pink */
+    --color-accent-50: var(--color-sunset-accent-50);
+    --color-accent-100: var(--color-sunset-accent-100);
+    --color-accent-200: var(--color-sunset-accent-200);
+    --color-accent-300: var(--color-sunset-accent-300);
+    --color-accent-400: var(--color-sunset-accent-400);
+    --color-accent-500: var(--color-sunset-accent-500);
+    --color-accent-600: var(--color-sunset-accent-600);
+    --color-accent-700: var(--color-sunset-accent-700);
+    --color-accent-800: var(--color-sunset-accent-800);
+    --color-accent-900: var(--color-sunset-accent-900);
+    --color-accent-950: var(--color-sunset-accent-950);
+  }
+  
   /* Default Theme Class - for backward compatibility */
   .theme-default {
     /* Default theme uses the root variables */
@@ -220,6 +385,36 @@
     
     --shadow-elevated: 0 4px 12px 0 rgba(139, 92, 246, 0.12), 0 2px 6px 0 rgba(139, 92, 246, 0.08);
     --shadow-elevated-lg: 0 8px 24px 0 rgba(139, 92, 246, 0.16), 0 4px 12px 0 rgba(139, 92, 246, 0.12);
+  }
+  
+  /* Dark mode for Ocean Blue theme */
+  .dark.theme-ocean {
+    /* Adjust shadows for dark ocean theme */
+    --shadow-glass: 0 8px 32px 0 rgba(14, 165, 233, 0.12), 0 2px 16px 0 rgba(14, 165, 233, 0.08);
+    --shadow-glass-lg: 0 16px 64px 0 rgba(14, 165, 233, 0.16), 0 4px 32px 0 rgba(14, 165, 233, 0.12);
+    
+    --shadow-elevated: 0 4px 12px 0 rgba(14, 165, 233, 0.12), 0 2px 6px 0 rgba(14, 165, 233, 0.08);
+    --shadow-elevated-lg: 0 8px 24px 0 rgba(14, 165, 233, 0.16), 0 4px 12px 0 rgba(14, 165, 233, 0.12);
+  }
+  
+  /* Dark mode for Forest Green theme */
+  .dark.theme-forest {
+    /* Adjust shadows for dark forest theme */
+    --shadow-glass: 0 8px 32px 0 rgba(34, 197, 94, 0.12), 0 2px 16px 0 rgba(34, 197, 94, 0.08);
+    --shadow-glass-lg: 0 16px 64px 0 rgba(34, 197, 94, 0.16), 0 4px 32px 0 rgba(34, 197, 94, 0.12);
+    
+    --shadow-elevated: 0 4px 12px 0 rgba(34, 197, 94, 0.12), 0 2px 6px 0 rgba(34, 197, 94, 0.08);
+    --shadow-elevated-lg: 0 8px 24px 0 rgba(34, 197, 94, 0.16), 0 4px 12px 0 rgba(34, 197, 94, 0.12);
+  }
+  
+  /* Dark mode for Sunset Orange theme */
+  .dark.theme-sunset {
+    /* Adjust shadows for dark sunset theme */
+    --shadow-glass: 0 8px 32px 0 rgba(249, 115, 22, 0.12), 0 2px 16px 0 rgba(249, 115, 22, 0.08);
+    --shadow-glass-lg: 0 16px 64px 0 rgba(249, 115, 22, 0.16), 0 4px 32px 0 rgba(249, 115, 22, 0.12);
+    
+    --shadow-elevated: 0 4px 12px 0 rgba(249, 115, 22, 0.12), 0 2px 6px 0 rgba(249, 115, 22, 0.08);
+    --shadow-elevated-lg: 0 8px 24px 0 rgba(249, 115, 22, 0.16), 0 4px 12px 0 rgba(249, 115, 22, 0.12);
   }
   
   html {

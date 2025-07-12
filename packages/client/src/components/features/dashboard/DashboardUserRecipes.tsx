@@ -21,7 +21,7 @@ export const DashboardUserRecipes: React.FC<DashboardUserRecipesProps> = ({ user
                     </h2>
                 </div>
                 <Link
-                    to="/recipes?filter=my-recipes"
+                    to="/recipes?user_id=current"
                     className="flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 transition-colors duration-200 hover:underline"
                     aria-label="View all your recipes"
                 >

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { STORAGE_KEYS } from '@recipe-manager/shared';
 
 type ThemeMode = 'light' | 'dark' | 'system';
-type ThemeColor = 'default' | 'royal';
+type ThemeColor = 'default' | 'royal' | 'ocean' | 'forest' | 'sunset';
 
 interface ThemeState {
     mode: ThemeMode;
@@ -60,8 +60,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     useEffect(() => {
         const root = window.document.documentElement;
 
+        // Add transition class for smooth theme changes
+        root.classList.add('transition-colors', 'duration-300');
+
         // Remove all theme classes first
-        root.classList.remove('light', 'dark', 'theme-default', 'theme-royal');
+        root.classList.remove('light', 'dark', 'theme-default', 'theme-royal', 'theme-ocean', 'theme-forest', 'theme-sunset');
 
         // Determine if dark mode should be active
         let isDark = false;
@@ -120,4 +123,7 @@ export const useTheme = (): ThemeContextType => {
         throw new Error('useTheme must be used within a ThemeProvider');
     }
     return context;
-}; 
+};
+
+// Export theme color type for use in other components
+export type { ThemeColor }; 

@@ -7,7 +7,7 @@ import { Server } from 'http';
 // Load environment variables
 dotenv.config();
 
-const PORT = process.env.PORT || 3001; // Reverted back to original port
+const PORT = process.env.PORT || 3000; // Backend server on port 3000
 
 let server: Server;
 

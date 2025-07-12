@@ -1,6 +1,8 @@
 import React, { ButtonHTMLAttributes, forwardRef } from 'react';
 import { cn } from '../../../utils/cn';
 import { Loader2 } from 'lucide-react';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../utils/theme';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'gradient' | 'glass';
@@ -37,16 +39,31 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         },
         ref
     ) => {
-        const baseStyles = "inline-flex items-center justify-center font-medium ring-offset-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-surface-950 relative overflow-hidden";
+        const { theme } = useTheme();
+        const themeColors = getThemeColors(theme.color);
 
-        const variants = {
-            primary: "bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-700 dark:hover:bg-brand-600",
-            secondary: "bg-surface-200 text-surface-900 hover:bg-surface-300 dark:bg-surface-800 dark:text-surface-50 dark:hover:bg-surface-700",
-            outline: "border border-surface-300 bg-transparent text-surface-900 hover:bg-surface-100 dark:border-surface-700 dark:text-surface-50 dark:hover:bg-surface-800",
-            ghost: "text-surface-600 hover:bg-surface-100 hover:text-surface-900 dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:text-surface-50",
-            danger: "bg-error-600 text-white hover:bg-error-700 dark:bg-error-700 dark:hover:bg-error-600",
-            gradient: "bg-gradient-to-r from-brand-600 to-brand-500 text-white hover:from-brand-700 hover:to-brand-600 shadow-brand-500/25",
-            glass: "bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10 text-surface-900 dark:text-surface-50 hover:bg-white/20 dark:hover:bg-white/10 hover:shadow-glass",
+        const baseStyles = "inline-flex items-center justify-center font-medium ring-offset-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-surface-950 relative overflow-hidden";
+
+        // Dynamic theme-based variants
+        const getVariantStyles = () => {
+            switch (variant) {
+                case 'primary':
+                    return `bg-${themeColors.primary} text-white hover:bg-${themeColors.primaryHover} dark:bg-${themeColors.primaryDark} dark:hover:bg-${themeColors.primaryDarkHover}`;
+                case 'secondary':
+                    return `bg-${themeColors.secondary} text-white hover:bg-${themeColors.secondaryHover} dark:bg-${themeColors.secondaryDark} dark:hover:bg-${themeColors.secondaryDarkHover}`;
+                case 'outline':
+                    return `border ${themeColors.border} bg-transparent ${themeColors.text} hover:bg-surface-100 dark:text-surface-50 dark:hover:bg-surface-800`;
+                case 'ghost':
+                    return `text-surface-600 hover:bg-surface-100 hover:text-surface-900 dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:text-surface-50`;
+                case 'danger':
+                    return "bg-error-600 text-white hover:bg-error-700 dark:bg-error-700 dark:hover:bg-error-600";
+                case 'gradient':
+                    return `${themeColors.gradient} text-white hover:shadow-lg hover:shadow-${themeColors.primary}/25 ${themeColors.gradientDark}`;
+                case 'glass':
+                    return "bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10 text-surface-900 dark:text-surface-50 hover:bg-white/20 dark:hover:bg-white/10 hover:shadow-glass";
+                default:
+                    return `bg-${themeColors.primary} text-white hover:bg-${themeColors.primaryHover} dark:bg-${themeColors.primaryDark} dark:hover:bg-${themeColors.primaryDarkHover}`;
+            }
         };
 
         const sizes = {
@@ -79,11 +96,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             lg: "shadow-lg",
         };
 
-        const animationStyles = {
-            none: "",
-            scale: "hover:scale-[1.02] active:scale-[0.98]",
-            lift: "hover:-translate-y-1 hover:shadow-lg",
-            glow: "hover:shadow-lg hover:shadow-brand-500/25",
+        // Dynamic theme-based animations
+        const getAnimationStyles = () => {
+            switch (animation) {
+                case 'none':
+                    return "";
+                case 'scale':
+                    return "hover:scale-[1.02] active:scale-[0.98]";
+                case 'lift':
+                    return "hover:-translate-y-1 hover:shadow-lg";
+                case 'glow':
+                    return `hover:shadow-lg hover:shadow-${themeColors.primary}/25 dark:hover:shadow-${themeColors.primaryDark}/25`;
+                default:
+                    return "hover:scale-[1.02] active:scale-[0.98]";
+            }
         };
 
         const iconSize = size === 'xs' ? 'h-3 w-3' :
@@ -96,15 +122,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 size === 'md' ? 'h-4 w-4' :
                     size === 'lg' ? 'h-5 w-5' : 'h-6 w-6';
 
+        // Dynamic focus ring based on theme with fallback
+        const focusRingStyles = `focus-visible:${themeColors?.focusRing || 'focus:ring-emerald-500'}`;
+
         return (
             <button
                 className={cn(
                     baseStyles,
-                    variants[variant],
+                    getVariantStyles(),
                     iconOnly ? iconSizes[size] : sizes[size],
                     roundedStyles[rounded],
                     shadowStyles[shadow],
-                    animationStyles[animation],
+                    getAnimationStyles(),
+                    focusRingStyles,
                     fullWidth && "w-full",
                     isLoading && "loading",
                     className

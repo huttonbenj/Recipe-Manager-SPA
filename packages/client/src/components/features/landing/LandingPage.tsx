@@ -26,7 +26,7 @@ export const LandingPage: React.FC = () => {
                         </div>
 
                         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-accent-600 dark:from-brand-400 dark:to-accent-400">
-                            Culinary Canvas
+                            Recipe Manager
                         </h1>
 
                         <h2 className="text-3xl md:text-5xl font-bold text-surface-900 dark:text-surface-50 leading-tight max-w-4xl mx-auto">

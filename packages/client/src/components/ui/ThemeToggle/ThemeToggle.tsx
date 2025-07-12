@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sun, Moon, Monitor, Check, ChevronDown, Palette } from 'lucide-react';
+import { Sun, Moon, Monitor, ChevronDown, Check, Palette } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { cn } from '../../../utils/cn';
+import { getThemeColors } from '../../../utils/theme';
 
 interface ThemeToggleProps {
     className?: string;
@@ -24,7 +25,8 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
     rounded = 'md',
     position = 'bottom',
 }) => {
-    const { theme, setThemeMode, setThemeColor, isDarkMode } = useTheme();
+    const { theme, setThemeMode, setThemeColor } = useTheme();
+    const themeColors = getThemeColors(theme.color);
     const [isOpen, setIsOpen] = useState(false);
     const [isColorOpen, setIsColorOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -78,7 +80,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         }
     };
 
-    const selectThemeColor = (newColor: 'default' | 'royal') => {
+    const selectThemeColor = (newColor: 'default' | 'royal' | 'ocean' | 'forest' | 'sunset') => {
         setIsAnimating(true);
         setThemeColor(newColor);
         setIsColorOpen(false);
@@ -94,18 +96,24 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
             case 'system':
                 return 'System';
             default:
-                return isDarkMode ? 'Dark' : 'Light';
+                return theme.mode === 'dark' ? 'Dark' : 'Light';
         }
     };
 
     const getColorThemeLabel = () => {
         switch (theme.color) {
             case 'default':
-                return 'Teal';
+                return 'Emerald';
             case 'royal':
-                return 'Royal Purple';
+                return 'Royal';
+            case 'ocean':
+                return 'Ocean';
+            case 'forest':
+                return 'Forest';
+            case 'sunset':
+                return 'Sunset';
             default:
-                return 'Teal';
+                return 'Emerald';
         }
     };
 
@@ -113,7 +121,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         if (theme.mode === 'system') {
             return <Monitor className="h-full w-full" />;
         }
-        return isDarkMode ? <Moon className="h-full w-full" /> : <Sun className="h-full w-full" />;
+        return theme.mode === 'dark' ? <Moon className="h-full w-full" /> : <Sun className="h-full w-full" />;
     };
 
     const getColorThemeIcon = () => {
@@ -166,8 +174,9 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                 <button
                     onClick={toggleColorTheme}
                     className={cn(
-                        "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+                        "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
                         "dark:border-surface-800 dark:bg-surface-900 dark:hover:bg-surface-800 dark:ring-offset-surface-950",
+                        themeColors.focusRing,
                         sizeStyles[size],
                         roundedStyles[rounded],
                         animationStyles[animation],
@@ -207,9 +216,9 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                             )}
                         >
                             <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-                                <span className="h-full w-full rounded-full bg-gradient-to-br from-brand-500 to-accent-500" />
+                                <span className="h-full w-full rounded-full bg-gradient-to-br from-emerald-500 to-orange-500" />
                             </span>
-                            <span>Teal & Orange</span>
+                            <span>Emerald & Orange</span>
                             {theme.color === 'default' && (
                                 <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
                                     <Check className="h-4 w-4" />
@@ -224,10 +233,61 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                             )}
                         >
                             <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-                                <span className="h-full w-full rounded-full bg-gradient-to-br from-brand-500 to-accent-500" />
+                                <span className="h-full w-full rounded-full bg-gradient-to-br from-purple-600 to-amber-500" />
                             </span>
                             <span>Royal Purple & Gold</span>
                             {theme.color === 'royal' && (
+                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-4 w-4" />
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => selectThemeColor('ocean')}
+                            className={cn(
+                                "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-surface-100 dark:hover:bg-surface-800",
+                                theme.color === 'ocean' && "bg-surface-100 dark:bg-surface-800"
+                            )}
+                        >
+                            <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                <span className="h-full w-full rounded-full bg-gradient-to-br from-blue-600 to-cyan-500" />
+                            </span>
+                            <span>Ocean Blue & Cyan</span>
+                            {theme.color === 'ocean' && (
+                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-4 w-4" />
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => selectThemeColor('forest')}
+                            className={cn(
+                                "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-surface-100 dark:hover:bg-surface-800",
+                                theme.color === 'forest' && "bg-surface-100 dark:bg-surface-800"
+                            )}
+                        >
+                            <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                <span className="h-full w-full rounded-full bg-gradient-to-br from-green-600 to-lime-500" />
+                            </span>
+                            <span>Forest Green & Lime</span>
+                            {theme.color === 'forest' && (
+                                <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+                                    <Check className="h-4 w-4" />
+                                </span>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => selectThemeColor('sunset')}
+                            className={cn(
+                                "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-surface-100 dark:hover:bg-surface-800",
+                                theme.color === 'sunset' && "bg-surface-100 dark:bg-surface-800"
+                            )}
+                        >
+                            <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                <span className="h-full w-full rounded-full bg-gradient-to-br from-orange-600 to-pink-500" />
+                            </span>
+                            <span>Sunset Orange & Pink</span>
+                            {theme.color === 'sunset' && (
                                 <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
                                     <Check className="h-4 w-4" />
                                 </span>
@@ -245,8 +305,9 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
             <button
                 onClick={toggleTheme}
                 className={cn(
-                    "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+                    "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
                     "dark:border-surface-800 dark:bg-surface-900 dark:hover:bg-surface-800 dark:ring-offset-surface-950",
+                    themeColors.focusRing,
                     sizeStyles[size],
                     roundedStyles[rounded],
                     animationStyles[animation],
@@ -268,11 +329,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                         <>
                             <Sun className={cn(
                                 "absolute transition-all duration-300",
-                                isDarkMode ? "rotate-90 scale-0" : "rotate-0 scale-100"
+                                theme.mode === 'dark' ? "rotate-90 scale-0" : "rotate-0 scale-100"
                             )} />
                             <Moon className={cn(
                                 "absolute transition-all duration-300",
-                                isDarkMode ? "rotate-0 scale-100" : "-rotate-90 scale-0"
+                                theme.mode === 'dark' ? "rotate-0 scale-100" : "-rotate-90 scale-0"
                             )} />
                             {theme.mode === 'system' && (
                                 <Monitor className={cn(
@@ -292,7 +353,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                 )}
 
                 {showSystemIndicator && theme.mode === 'system' && (
-                    <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
+                    <div className={cn(
+                        "absolute -top-1 -right-1 h-2 w-2 rounded-full animate-pulse",
+                        `bg-${themeColors.primary}`
+                    )} />
                 )}
             </button>
         );
@@ -310,20 +374,21 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                         id="theme-switch"
                         type="checkbox"
                         className="sr-only"
-                        checked={isDarkMode}
+                        checked={theme.mode === 'dark'}
                         onChange={toggleTheme}
                     />
                     <div className={cn(
-                        "relative h-6 w-11 rounded-full bg-surface-200 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:bg-surface-700",
-                        isDarkMode && "bg-brand-500 dark:bg-brand-600",
+                        "relative h-6 w-11 rounded-full bg-surface-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-surface-700",
+                        themeColors.focusRing,
+                        theme.mode === 'dark' && `bg-${themeColors.primary}`,
                         roundedStyles[rounded]
                     )}>
                         <div className={cn(
                             "absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out",
-                            isDarkMode && "translate-x-5"
+                            theme.mode === 'dark' && "translate-x-5"
                         )}>
                             <div className="flex h-full w-full items-center justify-center">
-                                {isDarkMode ? (
+                                {theme.mode === 'dark' ? (
                                     <Moon className="h-2.5 w-2.5 text-surface-600" />
                                 ) : (
                                     <Sun className="h-2.5 w-2.5 text-surface-600" />
@@ -340,7 +405,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                 )}
 
                 {showSystemIndicator && theme.mode === 'system' && (
-                    <div className="h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
+                    <div className={cn(
+                        "h-2 w-2 rounded-full animate-pulse",
+                        `bg-${themeColors.primary}`
+                    )} />
                 )}
             </div>
         );
@@ -353,8 +421,9 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                 <button
                     onClick={toggleTheme}
                     className={cn(
-                        "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+                        "relative flex items-center justify-center border border-surface-200 bg-white text-sm font-medium ring-offset-white transition-all hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
                         "dark:border-surface-800 dark:bg-surface-900 dark:hover:bg-surface-800 dark:ring-offset-surface-950",
+                        themeColors.focusRing,
                         sizeStyles[size],
                         roundedStyles[rounded],
                         animationStyles[animation],

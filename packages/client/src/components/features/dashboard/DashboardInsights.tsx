@@ -1,5 +1,8 @@
 import React from 'react';
 import { Sparkles, TrendingUp, Lightbulb, ChefHat, Target, Award, Zap } from 'lucide-react';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../utils/theme';
+import { cn } from '../../../utils/cn';
 
 interface DashboardInsightsProps {
     recipeCount: number;
@@ -10,6 +13,9 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
     recipeCount,
     mostUsedCategory
 }) => {
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
+
     // Enhanced cooking tips with categories
     const cookingTips = [
         { tip: "Always read the entire recipe before you start cooking.", category: "Preparation" },
@@ -27,8 +33,8 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
     // Get achievement level based on recipe count
     const getAchievementLevel = (count: number) => {
         if (count === 0) return { level: "Beginner", icon: ChefHat, color: "from-surface-500 to-surface-600" };
-        if (count < 5) return { level: "Home Cook", icon: ChefHat, color: "from-brand-500 to-brand-600" };
-        if (count < 10) return { level: "Recipe Creator", icon: Sparkles, color: "from-accent-500 to-blue-600" };
+        if (count < 5) return { level: "Home Cook", icon: ChefHat, color: `${themeColors.primary} ${themeColors.primaryHover}` };
+        if (count < 10) return { level: "Recipe Creator", icon: Sparkles, color: `${themeColors.secondary} ${themeColors.secondary.replace('600', '600')}` };
         if (count < 20) return { level: "Culinary Artist", icon: Award, color: "from-warning-500 to-amber-600" };
         return { level: "Master Chef", icon: Target, color: "from-error-500 to-pink-600" };
     };
@@ -62,7 +68,10 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
             {/* Achievement Level */}
             <div className="relative overflow-hidden rounded-2xl p-6 bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm border border-surface-200/50 dark:border-surface-800/50 shadow-lg">
                 <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl bg-gradient-to-br ${achievement.color} shadow-lg`}>
+                    <div className={cn(
+                        "p-3 rounded-2xl shadow-lg",
+                        `bg-gradient-to-br ${achievement.color}`
+                    )}>
                         <AchievementIcon className="h-6 w-6 text-white" />
                     </div>
                     <div className="flex-1">
@@ -70,7 +79,10 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
                             <h3 className="font-bold text-surface-900 dark:text-white">
                                 {achievement.level}
                             </h3>
-                            <Sparkles className="h-4 w-4 text-accent-500" />
+                            <Sparkles className={cn(
+                                "h-4 w-4",
+                                `${themeColors.secondary.replace('600', '500')}`
+                            )} />
                         </div>
                         <p className="text-sm text-surface-600 dark:text-surface-400">
                             {recipeCount} recipe{recipeCount !== 1 ? 's' : ''} created
@@ -94,7 +106,10 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
                     </div>
                     <div className="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                         <div
-                            className={`h-full bg-gradient-to-r ${achievement.color} rounded-full transition-all duration-500`}
+                            className={cn(
+                                "h-full rounded-full transition-all duration-500",
+                                `bg-gradient-to-r ${achievement.color}`
+                            )}
                             style={{ width: `${Math.min((recipeCount % 5) * 20, 100)}%` }}
                         ></div>
                     </div>
@@ -105,16 +120,28 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
             <div className="space-y-4">
                 {recipeCount > 0 ? (
                     <>
-                        <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-brand-50 to-accent-50 dark:from-brand-950/20 dark:to-accent-950/20 border border-brand-200/50 dark:border-brand-800/50">
+                        <div className={cn(
+                            "relative overflow-hidden rounded-2xl p-6 border",
+                            `bg-gradient-to-br ${themeColors.primary.replace('600', '50')} ${themeColors.secondary.replace('600', '50')} dark:${themeColors.primary.replace('600', '950/20')} dark:${themeColors.secondary.replace('600', '950/20')} border-${themeColors.primary.split('-')[1]}-200/50 dark:border-${themeColors.primary.split('-')[1]}-800/50`
+                        )}>
                             <div className="flex items-start gap-4">
-                                <div className="p-2 rounded-xl bg-gradient-to-br from-brand-500 to-accent-600 shadow-lg">
+                                <div className={cn(
+                                    "p-2 rounded-xl shadow-lg",
+                                    `bg-gradient-to-br ${themeColors.primary} ${themeColors.secondary}`
+                                )}>
                                     <TrendingUp className="h-5 w-5 text-white" />
                                 </div>
                                 <div className="flex-1">
-                                    <h4 className="font-bold text-brand-900 dark:text-brand-100 mb-2">
+                                    <h4 className={cn(
+                                        "font-bold mb-2",
+                                        `${themeColors.primary.replace('600', '900')} dark:${themeColors.primary.replace('600', '100')}`
+                                    )}>
                                         Your Cooking Journey
                                     </h4>
-                                    <p className="text-brand-800 dark:text-brand-200 leading-relaxed">
+                                    <p className={cn(
+                                        "leading-relaxed",
+                                        `${themeColors.primary.replace('600', '800')} dark:${themeColors.primary.replace('600', '200')}`
+                                    )}>
                                         {recipeCount < 3
                                             ? "You're just getting started! Create more recipes to unlock personalized insights and track your culinary progress."
                                             : `Amazing! You've created ${recipeCount} recipes. ${mostUsedCategory ? `Your favorite category is ${mostUsedCategory}, showing your passion for these flavors.` : 'Keep exploring different cuisines and techniques!'}`}
@@ -164,10 +191,19 @@ export const DashboardInsights: React.FC<DashboardInsightsProps> = ({
                     </>
                 ) : (
                     <div className="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 border border-surface-200/50 dark:border-surface-700/50 text-center">
-                        <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-accent-500/5"></div>
+                        <div className={cn(
+                            "absolute inset-0",
+                            `bg-gradient-to-br ${themeColors.primary.replace('600', '500/5')} ${themeColors.secondary.replace('600', '500/5')}`
+                        )}></div>
                         <div className="relative">
-                            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-brand-100 to-accent-100 dark:from-brand-900/30 dark:to-accent-900/30 rounded-2xl flex items-center justify-center">
-                                <ChefHat className="h-8 w-8 text-brand-600 dark:text-brand-400" />
+                            <div className={cn(
+                                "w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center",
+                                `bg-gradient-to-br ${themeColors.primary.replace('600', '100')} ${themeColors.secondary.replace('600', '100')} dark:${themeColors.primary.replace('600', '900/30')} dark:${themeColors.secondary.replace('600', '900/30')}`
+                            )}>
+                                <ChefHat className={cn(
+                                    "h-8 w-8",
+                                    `${themeColors.primary} dark:${themeColors.primary.replace('600', '400')}`
+                                )} />
                             </div>
                             <h4 className="font-bold text-surface-900 dark:text-white mb-2">
                                 Start Your Culinary Journey

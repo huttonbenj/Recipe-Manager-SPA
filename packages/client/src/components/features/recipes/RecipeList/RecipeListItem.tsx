@@ -3,6 +3,8 @@ import { Clock, Users, ImageOff, Heart, Bookmark, TrendingUp } from 'lucide-reac
 import { Recipe } from '@recipe-manager/shared';
 import { Card, Button } from '../../../ui';
 import { cn } from '../../../../utils/cn';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeBadgeClasses, getThemeColors } from '../../../../utils/theme';
 
 interface RecipeListItemProps {
     recipe: Recipe;
@@ -21,22 +23,12 @@ export const RecipeListItem: React.FC<RecipeListItemProps> = ({
 }) => {
     const [isImageLoading, setIsImageLoading] = useState(true);
     const [hasImageError, setHasImageError] = useState(false);
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
 
     const getCategoryColor = (category: string): string => {
-        switch (category.toLowerCase()) {
-            case 'breakfast':
-                return 'bg-accent-100 text-accent-800 dark:bg-accent-900/20 dark:text-accent-300';
-            case 'lunch':
-                return 'bg-brand-100 text-brand-800 dark:bg-brand-900/20 dark:text-brand-300';
-            case 'dinner':
-                return 'bg-success-100 text-success-800 dark:bg-success-900/20 dark:text-success-300';
-            case 'dessert':
-                return 'bg-warning-100 text-warning-800 dark:bg-warning-900/20 dark:text-warning-300';
-            case 'snack':
-                return 'bg-error-100 text-error-800 dark:bg-error-900/20 dark:text-error-300';
-            default:
-                return 'bg-surface-100 text-surface-800 dark:bg-surface-700 dark:text-surface-300';
-        }
+        // Use the theme utility function for badge colors
+        return getThemeBadgeClasses(theme.color, category.toLowerCase() === 'dessert' ? 'secondary' : 'primary');
     };
 
     const handleImageLoad = () => {
@@ -81,7 +73,10 @@ export const RecipeListItem: React.FC<RecipeListItemProps> = ({
 
             <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-lg font-bold text-surface-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                    <h3 className={cn(
+                        "text-lg font-bold text-surface-900 dark:text-white transition-colors",
+                        `group-hover:${themeColors.primary} dark:group-hover:${themeColors.primary.replace('600', '400')}`
+                    )}>
                         {recipe.title}
                     </h3>
                     <div className="flex items-center gap-1 flex-shrink-0">

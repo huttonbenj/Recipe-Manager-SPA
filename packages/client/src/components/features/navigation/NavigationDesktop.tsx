@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, ChefHat, PlusCircle, Bookmark } from 'lucide-react';
+import { Home, ChefHat, PlusCircle } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 
 interface NavigationDesktopProps {
@@ -12,7 +12,6 @@ export const NavigationDesktop: React.FC<NavigationDesktopProps> = ({ isActive }
         { to: '/dashboard', label: 'Home', icon: Home },
         { to: '/recipes', label: 'Recipes', icon: ChefHat },
         { to: '/recipes/new', label: 'Create', icon: PlusCircle },
-        { to: '/favorites', label: 'Favorites', icon: Bookmark },
     ];
 
     return (
@@ -44,11 +43,6 @@ export const NavigationDesktop: React.FC<NavigationDesktopProps> = ({ isActive }
                         {/* Active indicator with animation */}
                         {active && (
                             <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-4 rounded-full bg-gradient-to-r from-brand-500 to-accent-500 animate-pulse" />
-                        )}
-
-                        {/* Hover effect overlay */}
-                        {!active && (
-                            <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-brand-500/0 to-accent-500/0 group-hover:from-brand-500/5 group-hover:to-accent-500/5 transition-all duration-300" />
                         )}
                     </Link>
                 );

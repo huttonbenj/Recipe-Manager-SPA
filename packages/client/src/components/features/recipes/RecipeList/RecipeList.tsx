@@ -11,6 +11,9 @@ import { RecipeFilters } from './RecipeFilters';
 import { RecipeGrid } from './RecipeGrid';
 import { PageTransitionScale } from '../../../ui/PageTransition';
 import { useAuth } from '../../../../hooks';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../utils/theme';
+import { cn } from '../../../../lib/utils';
 
 export const RecipeList = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -21,11 +24,15 @@ export const RecipeList = () => {
     const [selectedCookTime, setSelectedCookTime] = useState(searchParams.get('cookTime') || '');
     const [isFavorites, setIsFavorites] = useState(searchParams.get('liked') === 'true');
     const [isSaved, setIsSaved] = useState(searchParams.get('saved') === 'true');
+    const [isMyRecipes, setIsMyRecipes] = useState(searchParams.get('user_id') === 'current');
     const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'created_at');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>((searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc');
     const [quickFilter, setQuickFilter] = useState(searchParams.get('quickFilter') || '');
     const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
+    const [showFilters, setShowFilters] = useState(searchParams.get('showFilters') === 'true');
     const { user } = useAuth();
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
 
     // Smart search parsing - handle complex queries from main navigation
     useEffect(() => {
@@ -35,10 +42,12 @@ export const RecipeList = () => {
         const urlCookTime = searchParams.get('cookTime') || '';
         const urlLiked = searchParams.get('liked') === 'true';
         const urlSaved = searchParams.get('saved') === 'true';
+        const urlMyRecipes = searchParams.get('user_id') === 'current';
         const urlSortBy = searchParams.get('sortBy') || 'created_at';
         const urlSortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
         const urlQuickFilter = searchParams.get('quickFilter') || '';
         const urlPage = parseInt(searchParams.get('page') || '1', 10);
+        const urlShowFilters = searchParams.get('showFilters') === 'true';
 
         // Parse the search query to extract smart filters
         const parsedQuery = parseSearchQuery(rawSearch);
@@ -50,10 +59,12 @@ export const RecipeList = () => {
         setSelectedCookTime(urlCookTime || parsedQuery.cookTime || '');
         setIsFavorites(urlLiked);
         setIsSaved(urlSaved);
+        setIsMyRecipes(urlMyRecipes);
         setSortBy(urlSortBy);
         setSortOrder(urlSortOrder);
         setQuickFilter(urlQuickFilter);
         setCurrentPage(urlPage);
+        setShowFilters(urlShowFilters);
 
         // If we parsed filters from search, update URL to reflect them
         if (parsedQuery.category || parsedQuery.difficulty || parsedQuery.cookTime) {
@@ -77,6 +88,66 @@ export const RecipeList = () => {
                 setSearchParams(newParams, { replace: true });
             }
         }
+
+        // Remove showFilters from URL after processing
+        if (urlShowFilters) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.delete('showFilters');
+            setSearchParams(newParams, { replace: true });
+        }
+    }, [searchParams, setSearchParams]);
+
+    // Listen for quick filter events from Discover tab
+    useEffect(() => {
+        const handleQuickFilter = (event: CustomEvent) => {
+            const filters = event.detail;
+            const newParams = new URLSearchParams(searchParams);
+
+            // Clear existing filters first
+            newParams.delete('search');
+            newParams.delete('category');
+            newParams.delete('difficulty');
+            newParams.delete('cookTime');
+            newParams.delete('liked');
+            newParams.delete('saved');
+            newParams.delete('sortBy');
+            newParams.delete('page');
+
+            // Apply new filters
+            if (filters.search) {
+                newParams.set('search', filters.search);
+                setSearchTerm(filters.search);
+            }
+            if (filters.difficulty) {
+                newParams.set('difficulty', filters.difficulty);
+                setSelectedDifficulty(filters.difficulty);
+            }
+            if (filters.cookingTime) {
+                newParams.set('cookTime', filters.cookingTime);
+                setSelectedCookTime(filters.cookingTime);
+            }
+            if (filters.liked) {
+                newParams.set('liked', 'true');
+                setIsFavorites(true);
+            }
+            if (filters.saved) {
+                newParams.set('saved', 'true');
+                setIsSaved(true);
+            }
+            if (filters.sortBy) {
+                newParams.set('sortBy', filters.sortBy);
+                setSortBy(filters.sortBy);
+            }
+
+            // Reset page to 1
+            setCurrentPage(1);
+
+            // Update URL
+            setSearchParams(newParams, { replace: true });
+        };
+
+        window.addEventListener('quickFilter', handleQuickFilter as any);
+        return () => window.removeEventListener('quickFilter', handleQuickFilter as any);
     }, [searchParams, setSearchParams]);
 
     // Debounced search term
@@ -91,10 +162,11 @@ export const RecipeList = () => {
             cookTime: selectedCookTime,
             liked: isFavorites,
             saved: isSaved,
+            myRecipes: isMyRecipes,
             sortBy,
             sortOrder,
             page: currentPage,
-            user_id: (isFavorites || isSaved) && user ? user.id : undefined,
+            user_id: (isFavorites || isSaved || isMyRecipes) && user ? user.id : undefined,
         }],
         queryFn: () => {
             const params: any = {
@@ -108,7 +180,7 @@ export const RecipeList = () => {
             if (selectedCookTime) params.cookTime = selectedCookTime;
             if (isFavorites) params.liked = true;
             if (isSaved) params.saved = true;
-            if ((isFavorites || isSaved) && user) params.user_id = user.id;
+            if ((isFavorites || isSaved || isMyRecipes) && user) params.user_id = user.id;
             if (sortBy) params.sortBy = sortBy;
             if (sortOrder) params.sortOrder = sortOrder;
 
@@ -118,7 +190,7 @@ export const RecipeList = () => {
 
     const recipes: Recipe[] = recipesData?.data || [];
     const totalRecipes = recipesData?.pagination?.totalCount || 0;
-    const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || isSaved;
+    const hasActiveFilters = searchTerm || selectedCategory || selectedDifficulty || selectedCookTime || isFavorites || isSaved || isMyRecipes;
 
     // Update URL params when filters change
     const updateUrlParams = () => {
@@ -130,6 +202,7 @@ export const RecipeList = () => {
         if (selectedCookTime) newParams.set('cookTime', selectedCookTime);
         if (isFavorites) newParams.set('liked', 'true');
         if (isSaved) newParams.set('saved', 'true');
+        if (isMyRecipes) newParams.set('user_id', 'current');
         if (sortBy !== 'created_at') newParams.set('sortBy', sortBy);
         if (sortOrder !== 'desc') newParams.set('sortOrder', sortOrder);
         if (quickFilter) newParams.set('quickFilter', quickFilter);
@@ -168,6 +241,21 @@ export const RecipeList = () => {
         setSearchParams(newParams);
     };
 
+    // Handle my recipes toggle
+    const handleMyRecipesToggle = (value: boolean) => {
+        setIsMyRecipes(value);
+        setCurrentPage(1);
+        // Update URL immediately
+        const newParams = new URLSearchParams(searchParams);
+        if (value) {
+            newParams.set('user_id', 'current');
+        } else {
+            newParams.delete('user_id');
+        }
+        newParams.delete('page');
+        setSearchParams(newParams);
+    };
+
     // Handle quick filter change
     const handleQuickFilterChange = (value: string) => {
         setQuickFilter(value);
@@ -196,6 +284,7 @@ export const RecipeList = () => {
         setSelectedCookTime('');
         setIsFavorites(false);
         setIsSaved(false);
+        setIsMyRecipes(false);
         setSortBy('created_at');
         setSortOrder('desc');
         setQuickFilter('');
@@ -222,15 +311,24 @@ export const RecipeList = () => {
                     {/* Enhanced Header */}
                     <div className="relative">
                         {/* Background decoration */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-brand-500/5 via-accent-500/5 to-brand-500/5 rounded-3xl blur-3xl"></div>
+                        <div className={cn(
+                            "absolute inset-0 rounded-3xl blur-3xl",
+                            `bg-gradient-to-r ${themeColors.primary.replace('600', '500/5')} ${themeColors.secondary.replace('600', '500/5')} ${themeColors.primary.replace('600', '500/5')}`
+                        )}></div>
 
                         <div className="relative bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl border border-surface-200/50 dark:border-surface-700/50 shadow-xl p-8">
                             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className="relative">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-brand-500 to-accent-500 rounded-2xl blur-lg opacity-20"></div>
-                                            <div className="relative p-4 bg-gradient-to-br from-brand-500 to-accent-500 rounded-2xl shadow-lg">
+                                            <div className={cn(
+                                                "absolute inset-0 rounded-2xl blur-lg opacity-20",
+                                                `bg-gradient-to-br ${themeColors.primary} ${themeColors.secondary}`
+                                            )}></div>
+                                            <div className={cn(
+                                                "relative p-4 rounded-2xl shadow-lg",
+                                                `bg-gradient-to-br ${themeColors.primary} ${themeColors.secondary}`
+                                            )}>
                                                 <SearchIcon className="h-8 w-8 text-white" />
                                             </div>
                                         </div>
@@ -241,16 +339,28 @@ export const RecipeList = () => {
                                             <p className="text-lg text-surface-600 dark:text-surface-300 mt-2">
                                                 {hasActiveFilters ? (
                                                     <span className="flex items-center gap-2">
-                                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-sm font-medium">
+                                                        <span className={cn(
+                                                            "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium",
+                                                            `${themeColors.primary.replace('600', '100')} dark:${themeColors.primary.replace('600', '900/30')} ${themeColors.primary.replace('600', '700')} dark:${themeColors.primary.replace('600', '300')}`
+                                                        )}>
                                                             <Filter className="h-3 w-3" />
                                                             Filtered
                                                         </span>
-                                                        Showing <span className="font-bold text-brand-600 dark:text-brand-400">{totalRecipes}</span> results
+                                                        Showing <span className={cn(
+                                                            "font-bold",
+                                                            `${themeColors.primary} dark:${themeColors.primary.replace('600', '400')}`
+                                                        )}>{totalRecipes}</span> results
                                                     </span>
                                                 ) : (
                                                     <span className="flex items-center gap-2">
-                                                        <Sparkles className="h-4 w-4 text-accent-500" />
-                                                        Discover amazing recipes from our community • <span className="font-semibold text-accent-600 dark:text-accent-400">{totalRecipes}</span> recipes
+                                                        <Sparkles className={cn(
+                                                            "h-4 w-4",
+                                                            `${themeColors.secondary.replace('600', '500')}`
+                                                        )} />
+                                                        Discover amazing recipes from our community • <span className={cn(
+                                                            "font-semibold",
+                                                            `${themeColors.secondary} dark:${themeColors.secondary.replace('600', '400')}`
+                                                        )}>{totalRecipes}</span> recipes
                                                     </span>
                                                 )}
                                             </p>
@@ -272,7 +382,10 @@ export const RecipeList = () => {
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 dark:bg-surface-800 rounded-full">
-                                            <Clock className="h-4 w-4 text-accent-500" />
+                                            <Clock className={cn(
+                                                "h-4 w-4",
+                                                `${themeColors.secondary.replace('600', '500')}`
+                                            )} />
                                             <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
                                                 Quick & Easy
                                             </span>
@@ -286,7 +399,10 @@ export const RecipeList = () => {
                                             variant="gradient"
                                             size="lg"
                                             leftIcon={<Plus className="h-5 w-5" />}
-                                            className="w-full sm:w-auto px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 group-hover:shadow-brand-500/25"
+                                            className={cn(
+                                                "w-full sm:w-auto px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105",
+                                                `group-hover:shadow-${themeColors.primary.split('-')[1]}-500/25`
+                                            )}
                                         >
                                             Create Recipe
                                             <Sparkles className="h-4 w-4 ml-2 group-hover:animate-pulse" />
@@ -300,10 +416,19 @@ export const RecipeList = () => {
                     {/* Enhanced Filters Card */}
                     <div className="relative">
                         {/* Background decoration */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-purple-500/5 rounded-3xl blur-3xl"></div>
+                        <div className={cn(
+                            "absolute inset-0 rounded-3xl blur-3xl",
+                            `bg-gradient-to-r ${themeColors.primary.replace('600', '500/5')} ${themeColors.secondary.replace('600', '500/5')} ${themeColors.primary.replace('600', '500/5')}`
+                        )}></div>
 
-                        <Card className="relative border-2 border-dashed border-surface-300/50 dark:border-surface-600/50 hover:border-brand-300/50 dark:hover:border-brand-600/50 transition-all duration-300 hover:shadow-2xl bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl overflow-hidden">
-                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-accent-500 to-purple-500"></div>
+                        <Card className={cn(
+                            "relative border-2 border-dashed border-surface-300/50 dark:border-surface-600/50 transition-all duration-300 hover:shadow-2xl bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm rounded-3xl overflow-hidden",
+                            `hover:border-${themeColors.primary.split('-')[1]}-300/50 dark:hover:border-${themeColors.primary.split('-')[1]}-600/50`
+                        )}>
+                            <div className={cn(
+                                "absolute top-0 left-0 right-0 h-1",
+                                `bg-gradient-to-r ${themeColors.primary} ${themeColors.secondary} ${themeColors.primary.replace('600', '500')}`
+                            )}></div>
                             <CardContent className="p-8">
                                 <RecipeFilters
                                     searchTerm={searchTerm}
@@ -312,15 +437,18 @@ export const RecipeList = () => {
                                     selectedCookTime={selectedCookTime}
                                     isFavorites={isFavorites}
                                     isSaved={isSaved}
+                                    isMyRecipes={isMyRecipes}
                                     sortBy={sortBy}
                                     sortOrder={sortOrder}
                                     quickFilter={quickFilter}
+                                    showFilters={showFilters}
                                     onSearchChange={setSearchTerm}
                                     onCategoryChange={setSelectedCategory}
                                     onDifficultyChange={setSelectedDifficulty}
                                     onCookTimeChange={setSelectedCookTime}
                                     onFavoritesToggle={handleFavoritesToggle}
                                     onSavedToggle={handleSavedToggle}
+                                    onMyRecipesToggle={handleMyRecipesToggle}
                                     onSortByChange={setSortBy}
                                     onSortOrderChange={setSortOrder}
                                     onQuickFilterChange={handleQuickFilterChange}

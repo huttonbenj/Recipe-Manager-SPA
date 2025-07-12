@@ -10,26 +10,39 @@ export interface ParsedSearchQuery {
 
 // Keywords for different filter types
 const DIFFICULTY_KEYWORDS = {
-  easy: ['easy', 'simple', 'beginner', 'quick'],
-  medium: ['medium', 'moderate', 'intermediate'],
-  hard: ['hard', 'difficult', 'advanced', 'complex', 'challenging']
+  easy: ['easy', 'simple', 'beginner', 'quick', 'basic', 'effortless', 'straightforward'],
+  medium: ['medium', 'moderate', 'intermediate', 'average', 'standard'],
+  hard: ['hard', 'difficult', 'advanced', 'complex', 'challenging', 'expert', 'professional']
 };
 
 const CATEGORY_KEYWORDS = {
-  'Main Course': ['main', 'dinner', 'entree', 'lunch', 'main course'],
-  'Dessert': ['dessert', 'sweet', 'cake', 'cookie', 'pie', 'candy'],
-  'Salad': ['salad', 'greens', 'fresh'],
-  'Breakfast': ['breakfast', 'morning', 'brunch'],
-  'Appetizer': ['appetizer', 'starter', 'snack', 'finger food'],
-  'Soup': ['soup', 'broth', 'stew', 'chowder'],
-  'Beverage': ['drink', 'beverage', 'smoothie', 'juice', 'cocktail']
+  'Main Course': ['main', 'dinner', 'entree', 'lunch', 'main course', 'main dish', 'entrée'],
+  'Dessert': ['dessert', 'sweet', 'cake', 'cookie', 'pie', 'candy', 'chocolate', 'ice cream', 'pudding', 'tart'],
+  'Salad': ['salad', 'greens', 'fresh', 'raw', 'lettuce', 'spinach'],
+  'Breakfast': ['breakfast', 'morning', 'brunch', 'cereal', 'pancake', 'waffle', 'toast', 'eggs'],
+  'Appetizer': ['appetizer', 'starter', 'snack', 'finger food', 'hors d\'oeuvre', 'canapé'],
+  'Soup': ['soup', 'broth', 'stew', 'chowder', 'bisque', 'consommé'],
+  'Beverage': ['drink', 'beverage', 'smoothie', 'juice', 'cocktail', 'tea', 'coffee', 'shake'],
+  'Healthy': ['healthy', 'diet', 'low-fat', 'keto', 'vegan', 'vegetarian', 'gluten-free', 'organic', 'clean eating']
 };
 
 const COOK_TIME_KEYWORDS = {
-  '15': ['quick', 'fast', '15 min', 'fifteen minutes'],
-  '30': ['30 min', 'thirty minutes', 'half hour'],
-  '60': ['1 hour', 'one hour', '60 min'],
-  '120': ['2 hours', 'two hours', '120 min']
+  '15': ['quick', 'fast', '15 min', 'fifteen minutes', 'super quick', 'instant', 'rapid'],
+  '30': ['30 min', 'thirty minutes', 'half hour', 'quick meal', 'weeknight'],
+  '45': ['45 min', 'forty-five minutes', 'under an hour'],
+  '60': ['1 hour', 'one hour', '60 min', 'hour'],
+  '90': ['1.5 hours', 'hour and half', '90 min'],
+  '120': ['2 hours', 'two hours', '120 min', 'slow cook', 'long cook']
+};
+
+// Additional ingredient-based category hints
+const INGREDIENT_CATEGORY_HINTS = {
+  'Main Course': ['chicken', 'beef', 'pork', 'fish', 'salmon', 'pasta', 'rice', 'steak', 'lamb'],
+  'Dessert': ['sugar', 'flour', 'butter', 'chocolate', 'vanilla', 'cream', 'frosting'],
+  'Salad': ['lettuce', 'tomato', 'cucumber', 'dressing', 'vinaigrette'],
+  'Breakfast': ['egg', 'milk', 'syrup', 'bacon', 'sausage', 'oats'],
+  'Soup': ['stock', 'broth', 'onion', 'carrot', 'celery'],
+  'Beverage': ['water', 'milk', 'fruit', 'ice', 'blend']
 };
 
 /**
@@ -129,6 +142,21 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
     if (result.cookTime) break;
   }
 
+  // If no explicit category found, try to infer from ingredients
+  if (!result.category) {
+    const remainingWords = words.filter((_, index) => !usedWords.has(index));
+    for (const [category, ingredients] of Object.entries(INGREDIENT_CATEGORY_HINTS)) {
+      for (const ingredient of ingredients) {
+        if (remainingWords.some(word => word.includes(ingredient) || ingredient.includes(word))) {
+          result.category = category;
+          result.filters.category = category;
+          break;
+        }
+      }
+      if (result.category) break;
+    }
+  }
+
   // Remaining words form the search term
   const remainingWords = words.filter((_, index) => !usedWords.has(index));
   result.searchTerm = remainingWords.join(' ').trim();
@@ -186,5 +214,30 @@ export function getSearchSuggestions(query: string): string[] {
     });
   });
   
-  return suggestions.slice(0, 5);
+  // Add cook time suggestions
+  Object.entries(COOK_TIME_KEYWORDS).forEach(([_time, keywords]) => {
+    keywords.forEach(keyword => {
+      if (keyword.includes(lowerQuery) && !suggestions.includes(`${keyword} recipes`)) {
+        suggestions.push(`${keyword} recipes`);
+      }
+    });
+  });
+  
+  return suggestions.slice(0, 8);
+}
+
+/**
+ * Generate smart search examples for UI
+ */
+export function getSearchExamples(): string[] {
+  return [
+    'easy chicken dinner',
+    'quick dessert recipes',
+    'healthy breakfast under 30 minutes',
+    'vegetarian main course',
+    'chocolate cake simple',
+    'pasta dishes intermediate',
+    'soup recipes winter',
+    'salad fresh summer'
+  ];
 } 

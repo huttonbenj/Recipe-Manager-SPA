@@ -4,12 +4,17 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, Badge } from '../../../ui';
 import { Recipe } from '@recipe-manager/shared';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../utils/theme';
+import { cn } from '../../../../utils/cn';
 
 interface RecipeDetailSidebarProps {
     recipe: Recipe;
 }
 
 export const RecipeDetailSidebar: React.FC<RecipeDetailSidebarProps> = ({ recipe }) => {
+    const { theme } = useTheme();
+    const themeColors = getThemeColors(theme.color);
 
     const formatDate = (dateString: string | Date) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -80,7 +85,10 @@ export const RecipeDetailSidebar: React.FC<RecipeDetailSidebarProps> = ({ recipe
                         <ul className="space-y-1">
                             {ingredients.map((ingredient, index) => (
                                 <li key={index} className="flex items-start p-1.5 rounded-md transition-colors hover:bg-surface-700/50">
-                                    <ChevronRight className="h-5 w-5 text-brand-400 flex-shrink-0 mt-0.5" />
+                                    <ChevronRight className={cn(
+                                        "h-5 w-5 flex-shrink-0 mt-0.5",
+                                        `${themeColors.primary.replace('600', '400')}`
+                                    )} />
                                     <span className="ml-2 text-surface-300">{ingredient}</span>
                                 </li>
                             ))}
