@@ -3,13 +3,13 @@
  * Main landing page with hero section, featured recipes, and quick actions
  */
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, Clock, TrendingUp, ChefHat, Heart, Bookmark, ArrowRight } from 'lucide-react'
+import { Plus, Search, Clock, TrendingUp, ChefHat, Heart, Bookmark, ArrowRight, Sparkles, Utensils, Users } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 
 // UI Components
-import { Card, Button } from '@/components/ui'
+import { Card, Button, ThemeSelector } from '@/components/ui'
 import { RecipeCard } from '@/components/recipe'
 
 // Services
@@ -17,6 +17,7 @@ import { recipesApi } from '@/services/api/recipes'
 
 // Hooks
 import { useAuth } from '@/hooks/useAuth'
+import { useTheme } from '@/hooks/useTheme'
 
 /**
  * Quick action items configuration
@@ -54,6 +55,16 @@ const quickActions = [
 
 const Home: React.FC = () => {
   const { user, isAuthenticated } = useAuth()
+  const { theme } = useTheme()
+  const [showThemeAnimation, setShowThemeAnimation] = useState(false)
+
+  // Fade in elements on load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowThemeAnimation(true)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Fetch featured recipes from API
   const { data: recipesData, isLoading: recipesLoading } = useQuery({
@@ -65,46 +76,69 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        {/* Background with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 to-primary-800 dark:from-primary-800 dark:to-primary-950"></div>
+      {/* Hero Section V3: Elegant Gradient Waves */}
+      <section className="relative h-screen flex items-center overflow-hidden">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-700 to-secondary-900 dark:from-primary-800 dark:via-primary-900 dark:to-secondary-950"></div>
 
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
+        {/* Floating Icons & Texture */}
+        <div className="absolute inset-0 z-0 opacity-10">
           <div className="absolute inset-0" style={{
-            backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-            backgroundSize: '30px 30px'
+            backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+            backgroundSize: '40px 40px',
+            animation: 'slow-pan 60s linear infinite'
           }}></div>
         </div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-1/4 left-[10%] animate-float-slow opacity-20 hidden sm:block">
+            <Utensils className="w-16 h-16 md:w-24 md:h-24 text-white" />
+          </div>
+          <div className="absolute top-1/3 right-[15%] animate-float-medium opacity-20 hidden sm:block">
+            <ChefHat className="w-12 h-12 md:w-16 md:h-16 text-white" />
+          </div>
+          <div className="absolute bottom-1/4 left-[20%] animate-float-fast opacity-20 hidden sm:block">
+            <Heart className="w-8 h-8 md:w-12 md:h-12 text-white" />
+          </div>
+          <div className="absolute top-[15%] right-[30%] animate-float-medium opacity-15 hidden md:block">
+            <Search className="w-14 h-14 lg:w-20 lg:h-20 text-white" />
+          </div>
+          <div className="absolute bottom-[30%] right-[25%] animate-float-slow opacity-15 hidden md:block">
+            <Bookmark className="w-10 h-10 lg:w-14 lg:h-14 text-white" />
+          </div>
+        </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 text-white drop-shadow-md">
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+          <div className="text-center md:text-left">
+            <div className="inline-flex items-center mb-4 sm:mb-6 bg-white/10 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-primary-50 animate-fade-in">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+              <span className="text-xs sm:text-sm font-medium">{isAuthenticated ? 'Welcome back to your kitchen' : 'Discover, Cook, Share'}</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 sm:mb-6 text-white drop-shadow-md animate-slide-up">
               {isAuthenticated ? (
                 <>Welcome back, {user?.name?.split(' ')[0] || 'Chef'}!</>
               ) : (
-                <>Discover Amazing Recipes</>
+                <>Craft Culinary<br />Masterpieces</>
               )}
             </h1>
-            <p className="text-xl md:text-2xl text-primary-50 mb-8 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary-100 mb-6 sm:mb-8 max-w-3xl animate-slide-up-delay">
               {isAuthenticated ? (
-                'Ready to create something delicious? Explore new recipes, share your favorites, and connect with fellow food enthusiasts.'
+                'Your personal cookbook is ready. Explore new recipes or add your own creations.'
               ) : (
-                'Join our community of food lovers. Create, discover, and share recipes that bring people together around great food.'
+                'Join a vibrant community of food lovers. Find inspiration for your next meal and share your favorite recipes.'
               )}
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start animate-slide-up-delay-2">
               {isAuthenticated ? (
                 <>
                   <Link to="/recipes/create">
                     <Button
                       size="lg"
-                      className="bg-white text-primary-700 hover:bg-primary-50 shadow-lg"
+                      className="w-full sm:w-auto bg-white text-primary-700 hover:bg-primary-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                     >
-                      <Plus className="mr-2 h-5 w-5" />
+                      <Plus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                       Create Recipe
                     </Button>
                   </Link>
@@ -112,9 +146,9 @@ const Home: React.FC = () => {
                     <Button
                       variant="outline"
                       size="lg"
-                      className="border-2 border-white text-white hover:bg-white/10"
+                      className="w-full sm:w-auto mt-2 sm:mt-0 border-2 border-white text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-105"
                     >
-                      <Search className="mr-2 h-5 w-5" />
+                      <Search className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                       Explore Recipes
                     </Button>
                   </Link>
@@ -124,16 +158,16 @@ const Home: React.FC = () => {
                   <Link to="/register">
                     <Button
                       size="lg"
-                      className="bg-white text-primary-700 hover:bg-primary-50 shadow-lg"
+                      className="w-full sm:w-auto bg-white text-primary-700 hover:bg-primary-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                     >
-                      Get Started Free
+                      Get Started For Free
                     </Button>
                   </Link>
                   <Link to="/login">
                     <Button
                       variant="outline"
                       size="lg"
-                      className="border-2 border-white text-white hover:bg-white/10"
+                      className="w-full sm:w-auto mt-2 sm:mt-0 border-2 border-white text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-105"
                     >
                       Sign In
                     </Button>
@@ -144,45 +178,56 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* Wave shape divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-auto fill-secondary-50 dark:fill-secondary-900">
-            <path d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,149.3C960,160,1056,160,1152,138.7C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        {/* Animated Wave Divider */}
+        <div className="absolute bottom-0 left-0 w-full h-48 sm:h-64 md:h-96 pointer-events-none">
+          <svg className="absolute bottom-0 left-0 w-full h-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="var(--color-secondary-50)" fillOpacity="0.2" d="M0,160L48,170.7C96,181,192,203,288,208C384,213,480,203,576,176C672,149,768,107,864,112C960,117,1056,171,1152,192C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+          </svg>
+          <svg className="absolute bottom-0 left-0 w-full h-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="var(--color-secondary-50)" fillOpacity="0.5" d="M0,224L48,208C96,192,192,160,288,165.3C384,171,480,213,576,240C672,267,768,277,864,256C960,235,1056,181,1152,160C1248,139,1344,149,1392,154.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+          </svg>
+          <svg className="absolute bottom-0 left-0 w-full h-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path className="fill-secondary-50 dark:fill-secondary-900" d="M0,288L48,272C96,256,192,224,288,218.7C384,213,480,235,576,245.3C672,256,768,256,864,240C960,224,1056,192,1152,186.7C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
           </svg>
         </div>
       </section>
 
       {/* Quick Actions Section - Only for authenticated users */}
       {isAuthenticated && (
-        <section className="py-16 bg-white dark:bg-secondary-800">
+        <section className="py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-4">
-                Quick Actions
-              </h2>
-              <p className="text-secondary-600 dark:text-secondary-400">
+            <div className="text-center mb-8 sm:mb-12">
+              <div className="inline-flex items-center justify-center mb-3 sm:mb-4 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full">
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+                <span className="text-xs sm:text-sm font-medium">Quick Access</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2 sm:mb-4">
                 What would you like to do today?
+              </h2>
+              <p className="text-sm sm:text-base text-secondary-600 dark:text-secondary-400 max-w-2xl mx-auto">
+                Jump right into your favorite activities with these quick shortcuts
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {quickActions.map((action) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {quickActions.map((action, index) => (
                 <Link
                   key={action.title}
                   to={action.href}
                   className="group"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <Card
-                    className="p-6 text-center h-full hover:shadow-lg border border-secondary-200 dark:border-secondary-700 hover:border-primary-200 dark:hover:border-primary-800 transition-all transform hover:translate-y-[-4px]"
+                    className="p-4 sm:p-6 text-center h-full hover:shadow-lg border border-secondary-200 dark:border-secondary-700 hover:border-primary-200 dark:hover:border-primary-800 transition-all transform hover:translate-y-[-8px] duration-300"
                     variant="default"
                   >
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br ${action.color} text-white mb-4 group-hover:scale-110 transition-transform shadow-md`}>
-                      <action.icon className="h-7 w-7" />
+                    <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br ${action.color} text-white mb-3 sm:mb-4 group-hover:scale-110 transition-transform shadow-md`}>
+                      <action.icon className="h-5 w-5 sm:h-7 sm:w-7" />
                     </div>
-                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-1 sm:mb-2">
                       {action.title}
                     </h3>
-                    <p className="text-secondary-600 dark:text-secondary-400 text-sm">
+                    <p className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">
                       {action.description}
                     </p>
                   </Card>
@@ -193,36 +238,94 @@ const Home: React.FC = () => {
         </section>
       )}
 
+      {/* Theme Showcase Section - Only for authenticated users */}
+      {isAuthenticated && (
+        <section className="py-10 sm:py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+              <div className="md:w-1/2 space-y-4 sm:space-y-6">
+                <div className="inline-flex items-center bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+                  <span className="text-xs sm:text-sm font-medium">Personalization</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100">
+                  Make the app your own
+                </h2>
+                <p className="text-sm sm:text-base text-secondary-600 dark:text-secondary-400">
+                  Customize your experience with different color themes that match your style and preferences.
+                </p>
+                <div className="pt-2 sm:pt-4">
+                  <ThemeSelector variant="grid" />
+                </div>
+              </div>
+
+              <div className="md:w-1/2 relative">
+                <div className={`
+                  transform transition-all duration-700 ease-in-out
+                  ${showThemeAnimation ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
+                `}>
+                  <div className="relative mx-auto max-w-xs sm:max-w-sm">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-primary-500/20 to-primary-300/20 dark:from-primary-500/10 dark:to-primary-700/10 rounded-2xl transform -rotate-6"></div>
+                    <Card className="relative p-4 sm:p-6 shadow-xl border-2 border-primary-200 dark:border-primary-800">
+                      <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <h3 className="font-semibold text-sm sm:text-base text-primary-700 dark:text-primary-300">Current Theme</h3>
+                        <div className="px-2 sm:px-3 py-0.5 sm:py-1 bg-primary-100 dark:bg-primary-900/30 rounded-full text-xs font-medium text-primary-700 dark:text-primary-300">
+                          {theme.colorTheme.charAt(0).toUpperCase() + theme.colorTheme.slice(1)}
+                        </div>
+                      </div>
+                      <div className="space-y-2 sm:space-y-4">
+                        <div className="h-3 sm:h-4 bg-primary-200 dark:bg-primary-700 rounded-full w-3/4"></div>
+                        <div className="h-3 sm:h-4 bg-primary-200 dark:bg-primary-700 rounded-full"></div>
+                        <div className="h-3 sm:h-4 bg-primary-200 dark:bg-primary-700 rounded-full w-5/6"></div>
+                      </div>
+                      <div className="mt-4 sm:mt-6 flex gap-2 sm:gap-3">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary-500"></div>
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-secondary-500"></div>
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-accent-500"></div>
+                      </div>
+                    </Card>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Featured Recipes Section */}
-      <section className="py-16 bg-secondary-50 dark:bg-secondary-900">
+      <section className="py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 sm:mb-12">
             <div className="text-center sm:text-left mb-4 sm:mb-0">
-              <h2 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
+              <div className="inline-flex items-center mb-3 sm:mb-4 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full">
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+                <span className="text-xs sm:text-sm font-medium">Featured</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
                 Featured Recipes
               </h2>
-              <p className="text-secondary-600 dark:text-secondary-400">
+              <p className="text-sm sm:text-base text-secondary-600 dark:text-secondary-400">
                 Discover popular recipes loved by our community
               </p>
             </div>
-            <Link to="/recipes" className="flex items-center justify-center sm:justify-start gap-1 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-medium">
+            <Link to="/recipes" className="group flex items-center justify-center sm:justify-start gap-1 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-medium text-sm sm:text-base">
               View all recipes
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
           {/* Loading State */}
           {recipesLoading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {[...Array(3)].map((_, index) => (
                 <Card key={index} className="overflow-hidden animate-pulse" variant="bordered" padding="none">
-                  <div className="h-48 bg-secondary-300 dark:bg-secondary-700"></div>
-                  <div className="p-6">
-                    <div className="h-6 bg-secondary-300 dark:bg-secondary-700 rounded mb-2"></div>
-                    <div className="h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-3/4 mb-4"></div>
+                  <div className="h-40 sm:h-48 bg-secondary-300 dark:bg-secondary-700"></div>
+                  <div className="p-4 sm:p-6">
+                    <div className="h-5 sm:h-6 bg-secondary-300 dark:bg-secondary-700 rounded mb-2"></div>
+                    <div className="h-3 sm:h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-3/4 mb-4"></div>
                     <div className="flex justify-between">
-                      <div className="h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-1/4"></div>
-                      <div className="h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-1/4"></div>
+                      <div className="h-3 sm:h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-1/4"></div>
+                      <div className="h-3 sm:h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-1/4"></div>
                     </div>
                   </div>
                 </Card>
@@ -232,28 +335,30 @@ const Home: React.FC = () => {
 
           {/* Featured Recipes */}
           {!recipesLoading && featuredRecipes.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredRecipes.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {featuredRecipes.map((recipe, index) => (
+                <div key={recipe.id} className="transform transition-all duration-500 hover:translate-y-[-8px]" style={{ animationDelay: `${index * 150}ms` }}>
+                  <RecipeCard recipe={recipe} />
+                </div>
               ))}
             </div>
           )}
 
           {/* No recipes state */}
           {!recipesLoading && featuredRecipes.length === 0 && (
-            <Card className="text-center p-8 max-w-lg mx-auto">
-              <div className="mb-4 text-primary-500 dark:text-primary-400">
-                <ChefHat className="h-16 w-16 mx-auto" />
+            <Card className="text-center p-6 sm:p-8 max-w-md mx-auto border border-secondary-200 dark:border-secondary-700 shadow-lg">
+              <div className="mb-4 sm:mb-6 text-primary-500 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 rounded-full p-3 sm:p-4 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mx-auto">
+                <ChefHat className="h-8 w-8 sm:h-10 sm:w-10" />
               </div>
-              <h3 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100 mb-2 sm:mb-3">
                 No recipes yet
               </h3>
-              <p className="text-secondary-600 dark:text-secondary-400 mb-6">
+              <p className="text-sm sm:text-base text-secondary-600 dark:text-secondary-400 mb-4 sm:mb-6">
                 Be the first to create and share a delicious recipe with our community!
               </p>
               <Link to="/recipes/create">
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
+                <Button className="shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
+                  <Plus className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                   Create Recipe
                 </Button>
               </Link>
@@ -263,77 +368,112 @@ const Home: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white dark:bg-secondary-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-4">
+      <section className="py-10 sm:py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary-100 dark:bg-primary-900/20 rounded-bl-full opacity-50"></div>
+        <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-primary-100 dark:bg-primary-900/20 rounded-tr-full opacity-50"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-10 sm:mb-16">
+            <div className="inline-flex items-center justify-center mb-3 sm:mb-4 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full">
+              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+              <span className="text-xs sm:text-sm font-medium">Features</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2 sm:mb-4">
               Why Use Recipe Manager
             </h2>
-            <p className="text-secondary-600 dark:text-secondary-400 max-w-3xl mx-auto">
+            <p className="text-sm sm:text-base text-secondary-600 dark:text-secondary-400 max-w-3xl mx-auto">
               Our platform makes it easy to discover, create, and share recipes with a community of food lovers
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="p-6 border border-secondary-200 dark:border-secondary-700">
-              <div className="bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <ChefHat className="h-6 w-6" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <Card className="p-6 sm:p-8 border border-secondary-200 dark:border-secondary-700 shadow-md hover:shadow-lg transition-all duration-300 hover:translate-y-[-4px]">
+              <div className="bg-gradient-to-br from-primary-400 to-primary-600 dark:from-primary-500 dark:to-primary-700 text-white rounded-xl w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mb-4 sm:mb-6 shadow-md">
+                <ChefHat className="h-6 w-6 sm:h-7 sm:w-7" />
               </div>
-              <h3 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100 mb-2 sm:mb-3">
                 Create & Share
               </h3>
-              <p className="text-secondary-600 dark:text-secondary-400">
+              <p className="text-sm sm:text-base text-secondary-600 dark:text-secondary-400">
                 Easily create and share your favorite recipes with detailed instructions and beautiful photos.
               </p>
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-secondary-200 dark:border-secondary-700">
+                <div className="flex items-center">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary-500 dark:text-primary-400 mr-2" />
+                  <span className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">Join a community of food enthusiasts</span>
+                </div>
+              </div>
             </Card>
 
-            <Card className="p-6 border border-secondary-200 dark:border-secondary-700">
-              <div className="bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <Heart className="h-6 w-6" />
+            <Card className="p-6 sm:p-8 border border-secondary-200 dark:border-secondary-700 shadow-md hover:shadow-lg transition-all duration-300 hover:translate-y-[-4px]">
+              <div className="bg-gradient-to-br from-primary-400 to-primary-600 dark:from-primary-500 dark:to-primary-700 text-white rounded-xl w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mb-4 sm:mb-6 shadow-md">
+                <Heart className="h-6 w-6 sm:h-7 sm:w-7" />
               </div>
-              <h3 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100 mb-2 sm:mb-3">
                 Save Favorites
               </h3>
-              <p className="text-secondary-600 dark:text-secondary-400">
+              <p className="text-sm sm:text-base text-secondary-600 dark:text-secondary-400">
                 Bookmark recipes you love and organize them for easy access whenever you need inspiration.
               </p>
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-secondary-200 dark:border-secondary-700">
+                <div className="flex items-center">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary-500 dark:text-primary-400 mr-2" />
+                  <span className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">Never lose track of recipes you love</span>
+                </div>
+              </div>
             </Card>
 
-            <Card className="p-6 border border-secondary-200 dark:border-secondary-700">
-              <div className="bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <Bookmark className="h-6 w-6" />
+            <Card className="p-6 sm:p-8 border border-secondary-200 dark:border-secondary-700 shadow-md hover:shadow-lg transition-all duration-300 hover:translate-y-[-4px]">
+              <div className="bg-gradient-to-br from-primary-400 to-primary-600 dark:from-primary-500 dark:to-primary-700 text-white rounded-xl w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mb-4 sm:mb-6 shadow-md">
+                <Bookmark className="h-6 w-6 sm:h-7 sm:w-7" />
               </div>
-              <h3 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100 mb-2 sm:mb-3">
                 Save for Later
               </h3>
-              <p className="text-secondary-600 dark:text-secondary-400">
+              <p className="text-sm sm:text-base text-secondary-600 dark:text-secondary-400">
                 Bookmark recipes to try later and build your personal collection of culinary adventures.
               </p>
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-secondary-200 dark:border-secondary-700">
+                <div className="flex items-center">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary-500 dark:text-primary-400 mr-2" />
+                  <span className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">Create your cooking bucket list</span>
+                </div>
+              </div>
             </Card>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-secondary-50 dark:bg-secondary-900">
+      <section className="py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-primary-600 to-primary-800 dark:from-primary-700 dark:to-primary-900 rounded-2xl shadow-xl overflow-hidden">
-            <div className="px-6 py-12 md:p-12 text-center">
-              <h2 className="text-3xl font-bold text-white mb-4">
+          <div className="bg-gradient-to-br from-primary-600 to-primary-800 dark:from-primary-700 dark:to-primary-900 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
+            <div className="relative px-5 py-8 sm:px-6 md:p-12 lg:p-16 text-center">
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-white/10 rounded-bl-full"></div>
+              <div className="absolute bottom-0 left-0 w-16 sm:w-24 h-16 sm:h-24 bg-white/10 rounded-tr-full"></div>
+
+              <div className="inline-flex items-center justify-center mb-4 sm:mb-6 bg-white/20 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-white" />
+                <span className="text-xs sm:text-sm font-medium text-white">{isAuthenticated ? 'Ready to cook?' : 'Join today'}</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">
                 {isAuthenticated ? 'Ready to cook something amazing?' : 'Join our community today!'}
               </h2>
-              <p className="text-primary-100 mb-8 max-w-2xl mx-auto">
+              <p className="text-sm sm:text-base text-primary-100 mb-6 sm:mb-8 max-w-2xl mx-auto">
                 {isAuthenticated
                   ? 'Explore our recipes or share your own culinary creations with the community.'
                   : 'Create an account to save recipes, share your own, and connect with other food enthusiasts.'}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 {isAuthenticated ? (
                   <>
                     <Link to="/recipes/create">
                       <Button
                         size="lg"
-                        className="bg-white text-primary-700 hover:bg-primary-50"
+                        className="w-full sm:w-auto bg-white text-primary-700 hover:bg-primary-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                       >
                         Create Recipe
                       </Button>
@@ -342,7 +482,7 @@ const Home: React.FC = () => {
                       <Button
                         variant="outline"
                         size="lg"
-                        className="border-2 border-white text-white hover:bg-white/10"
+                        className="w-full sm:w-auto mt-2 sm:mt-0 border-2 border-white text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
                       >
                         Browse Recipes
                       </Button>
@@ -353,7 +493,7 @@ const Home: React.FC = () => {
                     <Link to="/register">
                       <Button
                         size="lg"
-                        className="bg-white text-primary-700 hover:bg-primary-50"
+                        className="w-full sm:w-auto bg-white text-primary-700 hover:bg-primary-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                       >
                         Sign Up Free
                       </Button>
@@ -362,7 +502,7 @@ const Home: React.FC = () => {
                       <Button
                         variant="outline"
                         size="lg"
-                        className="border-2 border-white text-white hover:bg-white/10"
+                        className="w-full sm:w-auto mt-2 sm:mt-0 border-2 border-white text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
                       >
                         Browse Recipes
                       </Button>

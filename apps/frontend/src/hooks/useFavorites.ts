@@ -7,29 +7,33 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { favoritesApi } from '../services/api/favorites'
 import { UserFavorite, UserBookmark } from '../types/recipe'
 import { useToast } from '../context/ToastContext'
+import { useAuth } from './useAuth'
 
 export const useFavorites = () => {
   const queryClient = useQueryClient()
   const { success, error } = useToast()
+  const { isAuthenticated } = useAuth()
 
-  // Get user favorites
+  // Get user favorites - only when authenticated
   const {
     data: favorites = [],
     isLoading: favoritesLoading,
     error: favoritesError
   } = useQuery({
     queryKey: ['favorites'],
-    queryFn: favoritesApi.getUserFavorites
+    queryFn: favoritesApi.getUserFavorites,
+    enabled: isAuthenticated // Only run when user is authenticated
   })
 
-  // Get user bookmarks
+  // Get user bookmarks - only when authenticated
   const {
     data: bookmarks = [],
     isLoading: bookmarksLoading,
     error: bookmarksError
   } = useQuery({
     queryKey: ['bookmarks'],
-    queryFn: favoritesApi.getUserBookmarks
+    queryFn: favoritesApi.getUserBookmarks,
+    enabled: isAuthenticated // Only run when user is authenticated
   })
 
   // Add to favorites mutation
