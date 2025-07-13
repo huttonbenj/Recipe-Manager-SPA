@@ -1,0 +1,126 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useTheme } from '../../hooks/useTheme';
+import { ThemeProvider } from '../../context/ThemeContext';
+
+/**
+ * Test wrapper component that provides theme context
+ */
+const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <ThemeProvider>
+        {children}
+    </ThemeProvider>
+);
+
+describe('useTheme', () => {
+    beforeEach(() => {
+        // Clear localStorage before each test
+        localStorage.clear();
+
+        // Reset any applied classes
+        document.documentElement.classList.remove('dark');
+    });
+
+    it('provides default theme configuration', () => {
+        const { result } = renderHook(() => useTheme(), { wrapper });
+
+        expect(result.current.theme).toEqual({
+            colorTheme: 'default',
+            displayMode: 'system',
+            isDark: expect.any(Boolean),
+        });
+
+        expect(typeof result.current.setColorTheme).toBe('function');
+        expect(typeof result.current.setDisplayMode).toBe('function');
+        expect(typeof result.current.toggleDisplayMode).toBe('function');
+    });
+
+    it('throws error when used outside ThemeProvider', () => {
+        expect(() => {
+            renderHook(() => useTheme());
+        }).toThrow('useTheme must be used within a ThemeProvider');
+    });
+
+    it('allows changing color theme', () => {
+        const { result } = renderHook(() => useTheme(), { wrapper });
+
+        act(() => {
+            result.current.setColorTheme('emerald');
+        });
+
+        expect(result.current.theme.colorTheme).toBe('emerald');
+    });
+
+    it('allows changing display mode', () => {
+        const { result } = renderHook(() => useTheme(), { wrapper });
+
+        act(() => {
+            result.current.setDisplayMode('dark');
+        });
+
+        expect(result.current.theme.displayMode).toBe('dark');
+        expect(result.current.theme.isDark).toBe(true);
+    });
+
+    it('toggles display mode correctly', () => {
+        const { result } = renderHook(() => useTheme(), { wrapper });
+
+        // Start with system mode
+        expect(result.current.theme.displayMode).toBe('system');
+
+        // First toggle: system -> light
+        act(() => {
+            result.current.toggleDisplayMode();
+        });
+        expect(result.current.theme.displayMode).toBe('light');
+        expect(result.current.theme.isDark).toBe(false);
+
+        // Second toggle: light -> dark
+        act(() => {
+            result.current.toggleDisplayMode();
+        });
+        expect(result.current.theme.displayMode).toBe('dark');
+        expect(result.current.theme.isDark).toBe(true);
+
+        // Third toggle: dark -> system
+        act(() => {
+            result.current.toggleDisplayMode();
+        });
+        expect(result.current.theme.displayMode).toBe('system');
+    });
+
+    it('persists theme preferences to localStorage', () => {
+        const { result } = renderHook(() => useTheme(), { wrapper });
+
+        act(() => {
+            result.current.setColorTheme('purple');
+            result.current.setDisplayMode('dark');
+        });
+
+        expect(localStorage.getItem('color-theme')).toBe('purple');
+        expect(localStorage.getItem('display-mode')).toBe('dark');
+    });
+
+    it('loads theme preferences from localStorage', () => {
+        // Set up localStorage before rendering
+        localStorage.setItem('color-theme', 'rose');
+        localStorage.setItem('display-mode', 'light');
+
+        const { result } = renderHook(() => useTheme(), { wrapper });
+
+        expect(result.current.theme.colorTheme).toBe('rose');
+        expect(result.current.theme.displayMode).toBe('light');
+    });
+
+    it('handles invalid localStorage values gracefully', () => {
+        // Set invalid values in localStorage
+        localStorage.setItem('color-theme', 'invalid-theme');
+        localStorage.setItem('display-mode', 'invalid-mode');
+
+        const { result } = renderHook(() => useTheme(), { wrapper });
+
+        // Should fall back to defaults
+        expect(result.current.theme.colorTheme).toBe('default');
+        expect(result.current.theme.displayMode).toBe('system');
+    });
+}); 

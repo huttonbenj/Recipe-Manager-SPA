@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  avatar    String?
+  recipes   Recipe[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Recipe {
+  id           String      @id @default(cuid())
+  title        String
+  description  String?
+  ingredients  String[]
+  instructions String
+  imageUrl     String?
+  cookTime     Int?        // in minutes
+  prepTime     Int?        // in minutes
+  servings     Int?
+  difficulty   Difficulty?
+  tags         String[]
+  cuisine      String?
+  searchVector Unsupported("tsvector")?
+  authorId     String?
+  author       User?       @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([searchVector])
+  @@index([tags])
+  @@index([cuisine])
+  @@index([difficulty])
+  @@index([createdAt])
+  @@map("recipes")
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}

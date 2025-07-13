@@ -1,0 +1,128 @@
+/**
+ * Utility helper functions
+ */
+
+import { type ClassValue, clsx } from 'clsx'
+
+/**
+ * Combine class names with clsx
+ */
+export function cn(...inputs: ClassValue[]) {
+  return clsx(inputs)
+}
+
+/**
+ * Format cooking time from minutes to human readable format
+ */
+export function formatCookTime(minutes?: number): string {
+  if (!minutes) return 'Not specified'
+  
+  if (minutes < 60) {
+    return `${minutes} min`
+  }
+  
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  
+  if (remainingMinutes === 0) {
+    return `${hours}h`
+  }
+  
+  return `${hours}h ${remainingMinutes}m`
+}
+
+/**
+ * Format date to relative time (e.g., "2 hours ago")
+ */
+export function formatRelativeTime(date: string | Date): string {
+  const now = new Date()
+  const targetDate = new Date(date)
+  const diffInMs = now.getTime() - targetDate.getTime()
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60))
+  
+  if (diffInMinutes < 1) return 'Just now'
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`
+  
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (diffInHours < 24) return `${diffInHours}h ago`
+  
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays < 7) return `${diffInDays}d ago`
+  
+  const diffInWeeks = Math.floor(diffInDays / 7)
+  if (diffInWeeks < 4) return `${diffInWeeks}w ago`
+  
+  return targetDate.toLocaleDateString()
+}
+
+/**
+ * Truncate text to specified length with ellipsis
+ */
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text
+  return text.slice(0, maxLength).trim() + '...'
+}
+
+/**
+ * Generate slug from title
+ */
+export function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+/**
+ * Format file size to human readable format
+ */
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes'
+  
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+/**
+ * Check if a string is a valid URL
+ */
+export function isValidUrl(string: string): boolean {
+  try {
+    new URL(string)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Capitalize first letter of string
+ */
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+
+/**
+ * Deep merge two objects
+ */
+export function deepMerge<T extends Record<string, any>>(
+  target: T,
+  source: Partial<T>
+): T {
+  const result = { ...target }
+  
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      result[key] = deepMerge(result[key] || {}, source[key])
+    } else {
+      result[key] = source[key] as T[Extract<keyof T, string>]
+    }
+  }
+  
+  return result
+}

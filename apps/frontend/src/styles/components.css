@@ -1,0 +1,95 @@
+/**
+ * Component-specific styles
+ */
+
+/* Recipe Card Styles */
+.recipe-card {
+  @apply card overflow-hidden hover:shadow-md transition-shadow duration-200;
+}
+
+.recipe-card-image {
+  @apply w-full h-48 object-cover;
+}
+
+.recipe-card-content {
+  @apply p-4;
+}
+
+/* Recipe Form Styles */
+.recipe-form {
+  @apply space-y-6;
+}
+
+.form-section {
+  @apply space-y-4;
+}
+
+.form-section-title {
+  @apply text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2;
+}
+
+/* Image Upload Styles */
+.image-upload-area {
+  @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary-500 transition-colors;
+}
+
+.image-upload-area.active {
+  @apply border-primary-500 bg-primary-50;
+}
+
+/* Search and Filter Styles */
+.search-input {
+  @apply input pl-10;
+}
+
+.filter-pill {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer;
+}
+
+.filter-pill.active {
+  @apply bg-primary-100 text-primary-800;
+}
+
+/* Navigation Styles */
+.nav-link {
+  @apply flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors;
+}
+
+.nav-link.active {
+  @apply bg-primary-100 text-primary-700;
+}
+
+.nav-link:not(.active) {
+  @apply text-gray-600 hover:text-gray-900 hover:bg-gray-50;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-auto;
+}
+
+/* Responsive Grid */
+.recipe-grid {
+  @apply grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}
+
+/* Loading States */
+.skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+.skeleton-text {
+  @apply skeleton h-4;
+}
+
+.skeleton-title {
+  @apply skeleton h-6;
+}
+
+.skeleton-image {
+  @apply skeleton h-48;
+}
