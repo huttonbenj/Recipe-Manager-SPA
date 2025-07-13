@@ -267,14 +267,14 @@ const Recipes: React.FC = () => {
   const totalCount = recipesData?.pagination?.total || 0
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
             Discover Recipes
           </h1>
-          <p className="text-gray-600">
+          <p className="text-secondary-600 dark:text-secondary-400">
             Find your next favorite dish from our collection of {totalCount.toLocaleString()} recipes
           </p>
         </div>
@@ -283,7 +283,7 @@ const Recipes: React.FC = () => {
         <div className="mb-6">
           <form onSubmit={handleSearch} className="flex gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-secondary-400 dark:text-secondary-500" />
               <Input
                 type="text"
                 placeholder="Search recipes, ingredients, or cuisines..."
@@ -334,7 +334,7 @@ const Recipes: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Difficulty Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">
                   Difficulty
                 </label>
                 <Select
@@ -350,7 +350,7 @@ const Recipes: React.FC = () => {
 
               {/* Cook Time Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">
                   Cook Time
                 </label>
                 <Select
@@ -366,7 +366,7 @@ const Recipes: React.FC = () => {
 
               {/* Category Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">
                   Category
                 </label>
                 <Select
@@ -385,7 +385,7 @@ const Recipes: React.FC = () => {
 
         {/* View Controls and Results Count */}
         <div className="flex items-center justify-between mb-6">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-secondary-600 dark:text-secondary-400">
             {isLoading ? (
               'Loading recipes...'
             ) : (

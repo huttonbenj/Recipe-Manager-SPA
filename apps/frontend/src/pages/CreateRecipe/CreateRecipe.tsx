@@ -281,7 +281,7 @@ const CreateRecipe: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -294,7 +294,7 @@ const CreateRecipe: React.FC = () => {
               <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Create New Recipe</h1>
+            <h1 className="text-2xl font-bold text-secondary-900 dark:text-secondary-100">Create New Recipe</h1>
           </div>
 
           <div className="flex items-center gap-2">
@@ -386,7 +386,7 @@ const CreateRecipe: React.FC = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <div className="border-2 border-dashed border-secondary-300 dark:border-secondary-600 rounded-lg p-8 text-center">
                       <input
                         type="file"
                         accept="image/*"
@@ -403,9 +403,9 @@ const CreateRecipe: React.FC = () => {
                           <Loading variant="spinner" size="md" />
                         ) : (
                           <>
-                            <Camera className="w-12 h-12 text-gray-400" />
-                            <span className="text-gray-600">Click to upload recipe image</span>
-                            <span className="text-sm text-gray-500">PNG, JPG up to 5MB</span>
+                            <Camera className="w-12 h-12 text-secondary-400 dark:text-secondary-500" />
+                            <span className="text-secondary-600 dark:text-secondary-400">Click to upload recipe image</span>
+                            <span className="text-sm text-secondary-500 dark:text-secondary-500">PNG, JPG up to 5MB</span>
                           </>
                         )}
                       </label>
@@ -597,7 +597,7 @@ const CreateRecipe: React.FC = () => {
                   <h3 className="font-semibold">Tips for Great Recipes</h3>
                 </CardHeader>
                 <CardBody>
-                  <ul className="text-sm text-gray-600 space-y-2">
+                  <ul className="text-sm text-secondary-600 dark:text-secondary-400 space-y-2">
                     <li>• Use specific measurements and clear instructions</li>
                     <li>• Include prep and cook times</li>
                     <li>• Add helpful tips and variations</li>

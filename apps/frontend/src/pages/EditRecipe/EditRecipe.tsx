@@ -356,7 +356,7 @@ const EditRecipe: React.FC = () => {
             <AlertCircle className="w-16 h-16 mx-auto" />
           </div>
           <h2 className="text-xl font-semibold mb-2">Recipe Not Found</h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-secondary-600 dark:text-secondary-400 mb-4">
             The recipe you're trying to edit doesn't exist or you don't have permission to edit it.
           </p>
           <Button onClick={() => navigate('/recipes')}>
@@ -368,7 +368,7 @@ const EditRecipe: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -381,7 +381,7 @@ const EditRecipe: React.FC = () => {
               <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Edit Recipe</h1>
+            <h1 className="text-2xl font-bold text-secondary-900 dark:text-secondary-100">Edit Recipe</h1>
             {isFormDirty && (
               <Badge variant="secondary" className="text-orange-600">
                 Unsaved changes
@@ -478,7 +478,7 @@ const EditRecipe: React.FC = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <div className="border-2 border-dashed border-secondary-300 dark:border-secondary-600 rounded-lg p-8 text-center">
                       <input
                         type="file"
                         accept="image/*"
@@ -495,9 +495,9 @@ const EditRecipe: React.FC = () => {
                           <Loading variant="spinner" size="md" />
                         ) : (
                           <>
-                            <Camera className="w-12 h-12 text-gray-400" />
-                            <span className="text-gray-600">Click to upload recipe image</span>
-                            <span className="text-sm text-gray-500">PNG, JPG up to 5MB</span>
+                            <Camera className="w-12 h-12 text-secondary-400 dark:text-secondary-500" />
+                            <span className="text-secondary-600 dark:text-secondary-400">Click to upload recipe image</span>
+                            <span className="text-sm text-secondary-500 dark:text-secondary-500">PNG, JPG up to 5MB</span>
                           </>
                         )}
                       </label>
@@ -691,14 +691,14 @@ const EditRecipe: React.FC = () => {
                   <CardBody>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Created:</span>
+                        <span className="text-secondary-600 dark:text-secondary-400">Created:</span>
                         <span className="font-medium">
                           {new Date(recipe.createdAt).toLocaleDateString()}
                         </span>
                       </div>
                       {recipe.updatedAt !== recipe.createdAt && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Last Updated:</span>
+                          <span className="text-secondary-600 dark:text-secondary-400">Last Updated:</span>
                           <span className="font-medium">
                             {new Date(recipe.updatedAt).toLocaleDateString()}
                           </span>
