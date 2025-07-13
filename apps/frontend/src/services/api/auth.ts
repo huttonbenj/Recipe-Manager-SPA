@@ -11,7 +11,7 @@ export const authApi = {
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/login', credentials)
-    return response
+    return response.data
   },
 
   /**
@@ -19,7 +19,7 @@ export const authApi = {
    */
   async register(userData: RegisterData): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/register', userData)
-    return response
+    return response.data
   },
 
   /**
@@ -34,7 +34,7 @@ export const authApi = {
    */
   async refreshToken(): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/refresh')
-    return response
+    return response.data
   },
 
   /**
@@ -42,7 +42,7 @@ export const authApi = {
    */
   async getProfile(): Promise<User> {
     const response = await apiClient.get<User>('/auth/profile')
-    return response
+    return response.data
   },
 
   /**
@@ -50,6 +50,6 @@ export const authApi = {
    */
   async updateProfile(updates: Partial<User>): Promise<User> {
     const response = await apiClient.put<User>('/auth/profile', updates)
-    return response
+    return response.data
   },
 }

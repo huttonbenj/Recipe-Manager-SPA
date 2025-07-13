@@ -24,7 +24,7 @@ export function useRecipes(params?: RecipeSearchParams) {
   return useQuery({
     queryKey: recipeKeys.list(params),
     queryFn: () => recipesApi.getRecipes(params),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData, // keepPreviousData replacement in v5
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

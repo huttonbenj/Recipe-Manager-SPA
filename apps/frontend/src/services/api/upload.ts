@@ -18,7 +18,7 @@ export const uploadApi = {
       },
     })
     
-    return response
+    return response.data
   },
 
   /**
@@ -36,7 +36,7 @@ export const uploadApi = {
       },
     })
     
-    return response
+    return response.data
   },
 
   /**

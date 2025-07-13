@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -9,10 +9,9 @@ services:
       POSTGRES_PASSWORD: recipe_password
       POSTGRES_DB: recipe_manager
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./apps/backend/src/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U recipe_user -d recipe_manager"]
       interval: 10s

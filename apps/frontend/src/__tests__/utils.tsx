@@ -15,7 +15,7 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
     defaultOptions: {
       queries: {
         retry: false,
-        cacheTime: 0,
+        gcTime: 0, // was cacheTime in v4
         staleTime: 0,
       },
       mutations: {

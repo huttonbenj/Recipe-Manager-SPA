@@ -17,7 +17,7 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default('30d'),
   
   // Server
-  PORT: z.string().transform(Number).default('3001'),
+  PORT: z.string().transform(Number).default(3001),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   
   // CORS
@@ -25,20 +25,20 @@ const envSchema = z.object({
   ALLOWED_ORIGINS: z.string(),
   
   // Upload
-  MAX_FILE_SIZE: z.string().transform(Number).default('5242880'),
+  MAX_FILE_SIZE: z.string().transform(Number).default(5242880),
   UPLOAD_PATH: z.string().default('./uploads'),
   ALLOWED_FILE_TYPES: z.string().default('image/jpeg,image/png,image/webp'),
   
   // Rate Limiting
-  RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default('900000'),
-  RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
+  RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default(900000),
+  RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default(100),
   
   // Logging
   LOG_LEVEL: z.string().default('info'),
   LOG_FORMAT: z.string().default('combined'),
   
   // Security
-  BCRYPT_ROUNDS: z.string().transform(Number).default('12'),
+  BCRYPT_ROUNDS: z.string().transform(Number).default(12),
 })
 
 // Validate environment variables

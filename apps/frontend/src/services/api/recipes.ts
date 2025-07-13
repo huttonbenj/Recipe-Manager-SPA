@@ -26,7 +26,7 @@ export const recipesApi = {
     }
     
     const response = await apiClient.get<RecipeListResponse>(`/recipes?${searchParams}`)
-    return response
+    return response.data
   },
 
   /**
@@ -34,7 +34,7 @@ export const recipesApi = {
    */
   async getRecipe(id: string): Promise<Recipe> {
     const response = await apiClient.get<Recipe>(`/recipes/${id}`)
-    return response
+    return response.data
   },
 
   /**
@@ -42,7 +42,7 @@ export const recipesApi = {
    */
   async createRecipe(recipeData: CreateRecipeData): Promise<Recipe> {
     const response = await apiClient.post<Recipe>('/recipes', recipeData)
-    return response
+    return response.data
   },
 
   /**
@@ -50,7 +50,7 @@ export const recipesApi = {
    */
   async updateRecipe(id: string, updates: Partial<CreateRecipeData>): Promise<Recipe> {
     const response = await apiClient.put<Recipe>(`/recipes/${id}`, updates)
-    return response
+    return response.data
   },
 
   /**
@@ -76,7 +76,7 @@ export const recipesApi = {
     }
     
     const response = await apiClient.get<RecipeListResponse>(`/recipes?${searchParams}`)
-    return response
+    return response.data
   },
 
   /**
@@ -95,7 +95,7 @@ export const recipesApi = {
     }
     
     const response = await apiClient.get<RecipeListResponse>(`/recipes?${searchParams}`)
-    return response
+    return response.data
   },
 
   /**
@@ -103,7 +103,7 @@ export const recipesApi = {
    */
   async getPopularRecipes(limit: number = 6): Promise<Recipe[]> {
     const response = await apiClient.get<Recipe[]>(`/recipes/popular?limit=${limit}`)
-    return response
+    return response.data
   },
 
   /**
@@ -111,6 +111,6 @@ export const recipesApi = {
    */
   async getRecentRecipes(limit: number = 6): Promise<Recipe[]> {
     const response = await apiClient.get<Recipe[]>(`/recipes/recent?limit=${limit}`)
-    return response
+    return response.data
   },
 }
