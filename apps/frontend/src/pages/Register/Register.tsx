@@ -6,7 +6,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react'
+import { Mail, Lock, User, Loader2 } from 'lucide-react'
 
 // UI Components
 import Button from '@/components/ui/Button'
@@ -15,9 +15,6 @@ import Card from '@/components/ui/Card'
 
 // Hooks
 import { useAuth } from '@/hooks/useAuth'
-
-// Types
-import type { RegisterData } from '@/types'
 
 /**
  * Form validation schema
@@ -52,69 +49,60 @@ const Register: React.FC = () => {
     name: ''
   })
 
+  // UI state
   const [errors, setErrors] = useState<FormErrors>({})
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  // Register mutation
+  const registerMutation = useMutation({
+    mutationFn: register,
+    onSuccess: () => {
+      navigate('/')
+    },
+    onError: (error: any) => {
+      setErrors({
+        submit: error?.response?.data?.message || 'Registration failed. Please try again.'
+      })
+    }
+  })
 
   /**
-   * Form validation logic
+   * Validate form fields
    */
   const validateForm = (): FormErrors => {
-    const newErrors: FormErrors = {}
+    const errors: FormErrors = {}
 
     // Name validation
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
+      errors.name = 'Full name is required'
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters'
+      errors.name = 'Name must be at least 2 characters'
     }
 
     // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address'
+    if (!formData.email) {
+      errors.email = 'Email is required'
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)) {
+      errors.email = 'Please enter a valid email address'
     }
 
     // Password validation
     if (!formData.password) {
-      newErrors.password = 'Password is required'
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+      errors.password = 'Password is required'
+    } else if (formData.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters'
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+      errors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
     }
 
     // Confirm password validation
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password'
+      errors.confirmPassword = 'Please confirm your password'
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
+      errors.confirmPassword = 'Passwords do not match'
     }
 
-    return newErrors
+    return errors
   }
-
-  /**
-   * Register mutation with React Query
-   */
-  const registerMutation = useMutation({
-    mutationFn: async (data: RegisterData) => {
-      await register(data)
-      return data
-    },
-    onSuccess: () => {
-      // Navigate to home page after successful registration
-      navigate('/', { replace: true })
-    },
-    onError: (error: any) => {
-      const errorMessage = error.response?.data?.message ||
-        error.message ||
-        'Registration failed. Please try again.'
-
-      setErrors({ submit: errorMessage })
-    }
-  })
 
   /**
    * Handle form submission
@@ -152,20 +140,6 @@ const Register: React.FC = () => {
     }
   }
 
-  /**
-   * Toggle password visibility
-   */
-  const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev)
-  }
-
-  /**
-   * Toggle confirm password visibility
-   */
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(prev => !prev)
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -190,131 +164,67 @@ const Register: React.FC = () => {
             )}
 
             {/* Name Field */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <Input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleInputChange('name')}
-                  className={`pl-10 ${errors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
-                  placeholder="Enter your full name"
-                  autoComplete="name"
-                  disabled={registerMutation.isPending}
-                />
-              </div>
-              {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-              )}
-            </div>
+            <Input
+              id="name"
+              label="Full Name"
+              type="text"
+              value={formData.name}
+              onChange={handleInputChange('name')}
+              leftIcon={<User className="h-5 w-5" />}
+              placeholder="Enter your full name"
+              autoComplete="name"
+              disabled={registerMutation.isPending}
+              error={errors.name}
+              required
+            />
 
             {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange('email')}
-                  className={`pl-10 ${errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
-                  placeholder="Enter your email"
-                  autoComplete="email"
-                  disabled={registerMutation.isPending}
-                />
-              </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-              )}
-            </div>
+            <Input
+              id="email"
+              label="Email Address"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange('email')}
+              leftIcon={<Mail className="h-5 w-5" />}
+              placeholder="Enter your email"
+              autoComplete="email"
+              disabled={registerMutation.isPending}
+              error={errors.email}
+              required
+            />
 
             {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleInputChange('password')}
-                  className={`pl-10 pr-10 ${errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
-                  placeholder="Create a strong password"
-                  autoComplete="new-password"
-                  disabled={registerMutation.isPending}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={togglePasswordVisibility}
-                  disabled={registerMutation.isPending}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
-              <p className="mt-1 text-xs text-gray-500">
-                Must contain at least 6 characters with uppercase, lowercase, and number
-              </p>
-            </div>
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={handleInputChange('password')}
+              leftIcon={<Lock className="h-5 w-5" />}
+              placeholder="Enter your password"
+              autoComplete="new-password"
+              disabled={registerMutation.isPending}
+              error={errors.password}
+              showPasswordToggle
+              helperText="Must be at least 8 characters with uppercase, lowercase, and number"
+              required
+            />
 
             {/* Confirm Password Field */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange('confirmPassword')}
-                  className={`pl-10 pr-10 ${errors.confirmPassword ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
-                  placeholder="Confirm your password"
-                  autoComplete="new-password"
-                  disabled={registerMutation.isPending}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={toggleConfirmPasswordVisibility}
-                  disabled={registerMutation.isPending}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  )}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
-              )}
-            </div>
+            <Input
+              id="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleInputChange('confirmPassword')}
+              leftIcon={<Lock className="h-5 w-5" />}
+              placeholder="Confirm your password"
+              autoComplete="new-password"
+              disabled={registerMutation.isPending}
+              error={errors.confirmPassword}
+              showPasswordToggle
+              required
+            />
 
             {/* Submit Button */}
             <Button

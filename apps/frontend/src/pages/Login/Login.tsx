@@ -6,7 +6,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react'
+import { Mail, Lock, Loader2 } from 'lucide-react'
 
 // UI Components
 import Button from '@/components/ui/Button'
@@ -16,8 +16,7 @@ import Card from '@/components/ui/Card'
 // Services and hooks
 import { useAuth } from '@/hooks/useAuth'
 
-// Types
-import type { LoginCredentials } from '@/types'
+
 
 /**
  * Form validation schema
@@ -47,55 +46,47 @@ const Login: React.FC = () => {
     password: ''
   })
 
+  // UI state
   const [errors, setErrors] = useState<FormErrors>({})
-  const [showPassword, setShowPassword] = useState(false)
 
   // Get redirect path from location state
   const from = location.state?.from?.pathname || '/'
 
+  // Login mutation
+  const loginMutation = useMutation({
+    mutationFn: login,
+    onSuccess: () => {
+      navigate(from, { replace: true })
+    },
+    onError: (error: any) => {
+      setErrors({
+        submit: error?.response?.data?.message || 'Login failed. Please check your credentials.'
+      })
+    }
+  })
+
   /**
-   * Form validation logic
+   * Validate form fields
    */
   const validateForm = (): FormErrors => {
-    const newErrors: FormErrors = {}
+    const errors: FormErrors = {}
 
     // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address'
+    if (!formData.email) {
+      errors.email = 'Email is required'
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)) {
+      errors.email = 'Please enter a valid email address'
     }
 
     // Password validation
     if (!formData.password) {
-      newErrors.password = 'Password is required'
+      errors.password = 'Password is required'
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+      errors.password = 'Password must be at least 6 characters'
     }
 
-    return newErrors
+    return errors
   }
-
-  /**
-   * Login mutation with React Query
-   */
-  const loginMutation = useMutation({
-    mutationFn: async (data: LoginCredentials) => {
-      await login(data)
-      return data
-    },
-    onSuccess: () => {
-      // Navigate to intended destination or home
-      navigate(from, { replace: true })
-    },
-    onError: (error: any) => {
-      const errorMessage = error.response?.data?.message ||
-        error.message ||
-        'Login failed. Please try again.'
-
-      setErrors({ submit: errorMessage })
-    }
-  })
 
   /**
    * Handle form submission
@@ -132,13 +123,6 @@ const Login: React.FC = () => {
     }
   }
 
-  /**
-   * Toggle password visibility
-   */
-  const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev)
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -163,65 +147,44 @@ const Login: React.FC = () => {
             )}
 
             {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange('email')}
-                  className={`pl-10 ${errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
-                  placeholder="Enter your email"
-                  autoComplete="email"
-                  disabled={loginMutation.isPending}
-                />
-              </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-              )}
-            </div>
+            <Input
+              id="email"
+              label="Email Address"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange('email')}
+              leftIcon={<Mail className="h-5 w-5" />}
+              placeholder="Enter your email"
+              autoComplete="email"
+              disabled={loginMutation.isPending}
+              error={errors.email}
+              required
+            />
 
             {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleInputChange('password')}
-                  className={`pl-10 pr-10 ${errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                  disabled={loginMutation.isPending}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={togglePasswordVisibility}
-                  disabled={loginMutation.isPending}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={handleInputChange('password')}
+              leftIcon={<Lock className="h-5 w-5" />}
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              disabled={loginMutation.isPending}
+              error={errors.password}
+              showPasswordToggle
+              required
+            />
+
+            {/* Forgot Password Link */}
+            <div className="flex items-center justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary-600 hover:text-primary-500 transition-colors"
+              >
+                Forgot your password?
+              </Link>
             </div>
 
             {/* Submit Button */}
