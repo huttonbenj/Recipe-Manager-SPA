@@ -4,7 +4,7 @@
  */
 
 import { Request } from 'express'
-import { User, Recipe, Difficulty } from '@prisma/client'
+import { User, Recipe, Difficulty, UserFavorite, UserBookmark } from '@prisma/client'
 
 // JWT and Authentication Types
 export interface JWTPayload {
@@ -48,6 +48,22 @@ export interface UserWithoutPassword extends Omit<User, 'password'> {}
 
 export interface RecipeWithAuthor extends Recipe {
   author?: UserWithoutPassword | null
+}
+
+// Favorites and Bookmarks Types
+export interface UserFavoriteWithRecipe extends UserFavorite {
+  recipe: RecipeWithAuthor
+}
+
+export interface UserBookmarkWithRecipe extends UserBookmark {
+  recipe: RecipeWithAuthor
+}
+
+export interface RecipeWithInteractions extends RecipeWithAuthor {
+  isFavorited?: boolean
+  isBookmarked?: boolean
+  favoritesCount?: number
+  bookmarksCount?: number
 }
 
 // Service Input Types

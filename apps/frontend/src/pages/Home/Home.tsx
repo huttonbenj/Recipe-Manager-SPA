@@ -9,7 +9,7 @@ import { Plus, Search, Clock, Users, Star, TrendingUp } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 
 // UI Components
-import Card from '@/components/ui/Card'
+import { Card, Button } from '@/components/ui'
 
 // Services
 import { recipesApi } from '@/services/api/recipes'
@@ -52,7 +52,15 @@ const quickActions = [
 ]
 
 const Home: React.FC = () => {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading, token } = useAuth()
+
+  // Debug auth state
+  console.log('Home Auth State:', {
+    user,
+    isAuthenticated,
+    isLoading,
+    token: token ? 'present' : 'null'
+  })
 
   // Fetch featured recipes from API
   const { data: recipesData, isLoading: recipesLoading } = useQuery({
@@ -87,34 +95,44 @@ const Home: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {isAuthenticated ? (
                 <>
-                  <Link
-                    to="/recipes/create"
-                    className="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-lg bg-white text-primary-700 hover:bg-gray-100 shadow-lg transition-colors"
-                  >
-                    <Plus className="mr-2 h-5 w-5" />
-                    Create Recipe
+                  <Link to="/recipes/create">
+                    <Button
+                      size="lg"
+                      className="bg-white text-primary-700 hover:bg-gray-100 shadow-lg"
+                    >
+                      <Plus className="mr-2 h-5 w-5" />
+                      Create Recipe
+                    </Button>
                   </Link>
-                  <Link
-                    to="/recipes"
-                    className="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-lg border-2 border-white text-white hover:bg-white hover:text-primary-700 transition-colors"
-                  >
-                    <Search className="mr-2 h-5 w-5" />
-                    Explore Recipes
+                  <Link to="/recipes">
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className="border-2 border-white text-white hover:bg-white hover:text-primary-700"
+                    >
+                      <Search className="mr-2 h-5 w-5" />
+                      Explore Recipes
+                    </Button>
                   </Link>
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/register"
-                    className="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-lg bg-white text-primary-700 hover:bg-gray-100 shadow-lg transition-colors"
-                  >
-                    Get Started Free
+                  <Link to="/register">
+                    <Button
+                      size="lg"
+                      className="bg-white text-primary-700 hover:bg-gray-100 shadow-lg"
+                    >
+                      Get Started Free
+                    </Button>
                   </Link>
-                  <Link
-                    to="/login"
-                    className="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-lg border-2 border-white text-white hover:bg-white hover:text-primary-700 transition-colors"
-                  >
-                    Sign In
+                  <Link to="/login">
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className="border-2 border-white text-white hover:bg-white hover:text-primary-700"
+                    >
+                      Sign In
+                    </Button>
                   </Link>
                 </>
               )}
@@ -268,11 +286,10 @@ const Home: React.FC = () => {
 
           {/* View All Recipes Button */}
           <div className="text-center mt-12">
-            <Link
-              to="/recipes"
-              className="inline-flex items-center justify-center px-6 py-3 text-lg font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors shadow-lg"
-            >
-              View All Recipes
+            <Link to="/recipes">
+              <Button size="lg" className="shadow-lg">
+                View All Recipes
+              </Button>
             </Link>
           </div>
         </div>

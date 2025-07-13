@@ -5,22 +5,34 @@
 
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Search, Menu, X, Plus, User, LogOut, Settings } from 'lucide-react'
+import {
+  Menu, X, User, Settings, LogOut,
+  Heart, Bookmark, ChefHat
+} from 'lucide-react'
 import { useAuth } from '@/hooks'
 import { ThemeToggle } from '@/components/ui'
 
 const Header: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth()
+  const { isAuthenticated, user, logout, isLoading, token } = useAuth()
   const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
 
+  // Debug logging
+  console.log('Header Auth State:', {
+    isAuthenticated,
+    user,
+    isLoading,
+    token: token ? 'present' : 'absent'
+  })
+
   const handleLogout = async () => {
     try {
       await logout()
+      setIsUserMenuOpen(false)
       navigate('/')
     } catch (error) {
-      console.error('Logout failed:', error)
+      console.error('Logout error:', error)
     }
   }
 
@@ -33,9 +45,9 @@ const Header: React.FC = () => {
   }
 
   const navigationItems = [
-    { name: 'Recipes', href: '/recipes', icon: Search },
+    { name: 'Recipes', href: '/recipes', icon: ChefHat },
     ...(isAuthenticated ? [
-      { name: 'Create Recipe', href: '/recipes/create', icon: Plus },
+      { name: 'Create Recipe', href: '/recipes/create', icon: ChefHat },
     ] : []),
   ]
 
@@ -92,14 +104,30 @@ const Header: React.FC = () => {
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
-                      <Settings className="w-4 h-4 mr-3" />
-                      Profile Settings
+                      <Settings className="w-4 h-4 mr-2" />
+                      Profile
+                    </Link>
+                    <Link
+                      to="/favorites"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      <Heart className="w-4 h-4 mr-2" />
+                      Favorites
+                    </Link>
+                    <Link
+                      to="/bookmarks"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      <Bookmark className="w-4 h-4 mr-2" />
+                      Bookmarks
                     </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      <LogOut className="w-4 h-4 mr-3" />
+                      <LogOut className="w-4 h-4 mr-2" />
                       Logout
                     </button>
                   </div>
@@ -110,12 +138,18 @@ const Header: React.FC = () => {
                 <Link
                   to="/login"
                   className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
+                  onClick={() => {
+                    console.log('Login button clicked!')
+                  }}
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
                   className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors"
+                  onClick={() => {
+                    console.log('Register button clicked!')
+                  }}
                 >
                   Sign Up
                 </Link>
@@ -139,15 +173,15 @@ const Header: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
-            <nav className="space-y-2">
+          <div className="md:hidden py-4 border-t border-gray-200">
+            <nav className="flex flex-col space-y-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon
                 return (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
+                    className="flex items-center space-x-2 p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
                     onClick={closeMobileMenu}
                   >
                     <Icon className="w-4 h-4" />
@@ -157,30 +191,46 @@ const Header: React.FC = () => {
               })}
             </nav>
 
-            {/* Mobile Theme Toggle */}
-            <div className="flex items-center justify-between px-3 py-2 mt-4 border-t border-gray-200 pt-4">
-              <span className="text-sm text-gray-700">Theme</span>
-              <ThemeToggle variant="icon" />
-            </div>
+            {/* Mobile User Actions */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-medium text-gray-700">Theme</span>
+                <ThemeToggle variant="icon" />
+              </div>
 
-            {/* Mobile Auth */}
-            <div className="px-3 py-2 border-t border-gray-200 mt-4 pt-4">
               {isAuthenticated ? (
                 <div className="space-y-2">
-                  <div className="text-sm text-gray-700 mb-2">
-                    Hello, {user?.name || user?.email}
+                  <div className="flex items-center space-x-2 p-2 text-gray-700">
+                    <User className="w-4 h-4" />
+                    <span className="text-sm">{user?.name || user?.email}</span>
                   </div>
                   <Link
                     to="/profile"
-                    className="flex items-center space-x-2 py-2 text-gray-700 hover:text-primary-600 transition-colors"
+                    className="flex items-center space-x-2 p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
                     onClick={closeMobileMenu}
                   >
                     <Settings className="w-4 h-4" />
-                    <span>Profile Settings</span>
+                    <span>Profile</span>
+                  </Link>
+                  <Link
+                    to="/favorites"
+                    className="flex items-center space-x-2 p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
+                    onClick={closeMobileMenu}
+                  >
+                    <Heart className="w-4 h-4" />
+                    <span>Favorites</span>
+                  </Link>
+                  <Link
+                    to="/bookmarks"
+                    className="flex items-center space-x-2 p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
+                    onClick={closeMobileMenu}
+                  >
+                    <Bookmark className="w-4 h-4" />
+                    <span>Bookmarks</span>
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-2 py-2 text-gray-700 hover:text-primary-600 transition-colors"
+                    className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors text-left"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Logout</span>
@@ -190,15 +240,21 @@ const Header: React.FC = () => {
                 <div className="space-y-2">
                   <Link
                     to="/login"
-                    className="block w-full px-4 py-2 text-center text-gray-700 hover:text-primary-600 border border-gray-300 rounded-md transition-colors"
-                    onClick={closeMobileMenu}
+                    className="block w-full p-2 text-center text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
+                    onClick={() => {
+                      console.log('Mobile Login button clicked!')
+                      closeMobileMenu()
+                    }}
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className="block w-full px-4 py-2 text-center text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors"
-                    onClick={closeMobileMenu}
+                    className="block w-full p-2 text-center text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors"
+                    onClick={() => {
+                      console.log('Mobile Register button clicked!')
+                      closeMobileMenu()
+                    }}
                   >
                     Sign Up
                   </Link>
@@ -208,14 +264,6 @@ const Header: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Click outside to close user menu */}
-      {isUserMenuOpen && (
-        <div
-          className="fixed inset-0 z-30"
-          onClick={() => setIsUserMenuOpen(false)}
-        />
-      )}
     </header>
   )
 }

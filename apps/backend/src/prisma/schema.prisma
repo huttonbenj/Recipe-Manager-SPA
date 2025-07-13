@@ -17,6 +17,8 @@ model User {
   name      String?
   avatar    String?
   recipes   Recipe[]
+  favorites UserFavorite[]
+  bookmarks UserBookmark[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -39,6 +41,8 @@ model Recipe {
   searchVector Unsupported("tsvector")?
   authorId     String?
   author       User?       @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  favoritedBy  UserFavorite[]
+  bookmarkedBy UserBookmark[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -48,6 +52,30 @@ model Recipe {
   @@index([difficulty])
   @@index([createdAt])
   @@map("recipes")
+}
+
+model UserFavorite {
+  id       String @id @default(cuid())
+  userId   String
+  recipeId String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+  @@map("user_favorites")
+}
+
+model UserBookmark {
+  id       String @id @default(cuid())
+  userId   String
+  recipeId String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+  @@map("user_bookmarks")
 }
 
 enum Difficulty {

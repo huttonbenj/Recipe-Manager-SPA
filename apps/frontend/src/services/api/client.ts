@@ -15,12 +15,32 @@ export const apiClient = axios.create({
   },
 })
 
-// Request interceptor - add auth token
+// Request interceptor - add auth token to all requests
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem(TOKEN_STORAGE_KEY)
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    const tokenRaw = localStorage.getItem(TOKEN_STORAGE_KEY)
+    if (tokenRaw) {
+      let token = tokenRaw
+      
+      // Handle JSON-stored tokens (from useLocalStorage)
+      if (tokenRaw.startsWith('"') && tokenRaw.endsWith('"')) {
+        try {
+          token = JSON.parse(tokenRaw)
+        } catch (error) {
+          // If JSON parsing fails, use the raw value
+          token = tokenRaw
+        }
+      }
+      
+      // Only set authorization header if we have a valid token (not null/undefined)
+      if (token && token !== 'null' && token !== 'undefined') {
+        config.headers.Authorization = `Bearer ${token}`
+        console.log('[API Client] Sending request with token:', token.substring(0, 20) + '...')
+      } else {
+        console.log('[API Client] No valid token found, tokenRaw:', tokenRaw, 'parsed token:', token)
+      }
+    } else {
+      console.log('[API Client] No token in localStorage')
     }
     return config
   },

@@ -21,9 +21,10 @@ export interface RecipeListProps {
     onViewModeChange?: (mode: 'grid' | 'list') => void
     pagination?: PaginationInfo
     onPageChange?: (page: number) => void
-    onFavorite?: (recipeId: string) => void
-    onBookmark?: (recipeId: string) => void
     onShare?: (recipe: Recipe) => void
+    onEdit?: (recipeId: string) => void
+    onDelete?: (recipeId: string) => void
+    currentUserId?: string
     emptyMessage?: string
     emptyDescription?: string
     className?: string
@@ -37,9 +38,10 @@ const RecipeList: React.FC<RecipeListProps> = ({
     onViewModeChange,
     pagination,
     onPageChange,
-    onFavorite,
-    onBookmark,
     onShare,
+    onEdit,
+    onDelete,
+    currentUserId,
     emptyMessage = 'No recipes found',
     emptyDescription = 'Try adjusting your search or filters to find more recipes.',
     className = ''
@@ -202,9 +204,10 @@ const RecipeList: React.FC<RecipeListProps> = ({
                         key={recipe.id}
                         recipe={recipe}
                         viewMode={viewMode}
-                        onFavorite={onFavorite}
-                        onBookmark={onBookmark}
                         onShare={onShare}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        currentUserId={currentUserId}
                     />
                 ))}
             </div>

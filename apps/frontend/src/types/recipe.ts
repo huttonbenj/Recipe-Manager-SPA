@@ -29,6 +29,11 @@ export interface Recipe {
   }
   createdAt: string
   updatedAt: string
+  // Interaction data
+  isFavorited?: boolean
+  isBookmarked?: boolean
+  favoritesCount?: number
+  bookmarksCount?: number
 }
 
 export interface CreateRecipeData {
@@ -68,4 +73,26 @@ export interface RecipeSearchParams {
   page?: number
   sortBy?: 'createdAt' | 'title' | 'cookTime' | 'difficulty'
   sortOrder?: 'asc' | 'desc'
+}
+
+// Favorites and Bookmarks types
+export interface UserFavorite {
+  id: string
+  userId: string
+  recipeId: string
+  recipe: Recipe
+  createdAt: string
+}
+
+export interface UserBookmark {
+  id: string
+  userId: string
+  recipeId: string
+  recipe: Recipe
+  createdAt: string
+}
+
+export interface InteractionCounts {
+  favoritesCount: number
+  bookmarksCount: number
 }

@@ -5,10 +5,13 @@
 
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Clock, Users, Star, Heart, BookmarkPlus, Share2 } from 'lucide-react'
+import { Clock, Users, Star, Heart, BookmarkPlus, Share2, Edit3, Trash2 } from 'lucide-react'
 
 // UI Components
 import { Card, Badge, Button } from '@/components/ui'
+
+// Hooks
+import { useFavorites } from '@/hooks'
 
 // Utils
 import { formatCookTime, formatDifficulty } from '@/utils'
@@ -20,9 +23,10 @@ export interface RecipeCardProps {
     recipe: Recipe
     viewMode?: 'grid' | 'list'
     showActions?: boolean
-    onFavorite?: (recipeId: string) => void
-    onBookmark?: (recipeId: string) => void
     onShare?: (recipe: Recipe) => void
+    onEdit?: (recipeId: string) => void
+    onDelete?: (recipeId: string) => void
+    currentUserId?: string
     className?: string
 }
 
@@ -30,22 +34,29 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     recipe,
     viewMode = 'grid',
     showActions = true,
-    onFavorite,
-    onBookmark,
     onShare,
+    onEdit,
+    onDelete,
+    currentUserId,
     className = ''
 }) => {
-    const [isFavorited, setIsFavorited] = useState(false)
-    const [isBookmarked, setIsBookmarked] = useState(false)
     const [imageLoaded, setImageLoaded] = useState(false)
+
+    // Use favorites hook
+    const {
+        toggleFavorite,
+        toggleBookmark,
+        isFavorited,
+        isBookmarked
+    } = useFavorites()
 
     /**
      * Handle favorite toggle
      */
     const handleFavorite = (e: React.MouseEvent) => {
         e.preventDefault()
-        setIsFavorited(!isFavorited)
-        onFavorite?.(recipe.id)
+        e.stopPropagation()
+        toggleFavorite(recipe.id, isFavorited(recipe.id))
     }
 
     /**
@@ -53,8 +64,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
      */
     const handleBookmark = (e: React.MouseEvent) => {
         e.preventDefault()
-        setIsBookmarked(!isBookmarked)
-        onBookmark?.(recipe.id)
+        e.stopPropagation()
+        toggleBookmark(recipe.id, isBookmarked(recipe.id))
     }
 
     /**
@@ -64,6 +75,27 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         e.preventDefault()
         onShare?.(recipe)
     }
+
+    /**
+     * Handle edit
+     */
+    const handleEdit = (e: React.MouseEvent) => {
+        e.preventDefault()
+        onEdit?.(recipe.id)
+    }
+
+    /**
+     * Handle delete
+     */
+    const handleDelete = (e: React.MouseEvent) => {
+        e.preventDefault()
+        onDelete?.(recipe.id)
+    }
+
+    /**
+     * Check if current user owns this recipe
+     */
+    const isOwner = currentUserId && recipe.authorId && currentUserId === recipe.authorId
 
     /**
      * Get image URL with fallback
@@ -111,14 +143,40 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                             {/* Actions Overlay */}
                             {showActions && (
                                 <div className="absolute top-2 right-2 flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {/* Owner actions */}
+                                    {isOwner && (
+                                        <>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="p-1.5 bg-white/90 hover:bg-white"
+                                                onClick={handleEdit}
+                                                title="Edit recipe"
+                                            >
+                                                <Edit3 className="h-4 w-4 text-blue-600" />
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="p-1.5 bg-white/90 hover:bg-white"
+                                                onClick={handleDelete}
+                                                title="Delete recipe"
+                                            >
+                                                <Trash2 className="h-4 w-4 text-red-600" />
+                                            </Button>
+                                        </>
+                                    )}
+
+                                    {/* General actions */}
                                     <Button
                                         size="sm"
                                         variant="ghost"
                                         className="p-1.5 bg-white/90 hover:bg-white"
                                         onClick={handleFavorite}
+                                        title="Add to favorites"
                                     >
                                         <Heart
-                                            className={`h-4 w-4 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'
+                                            className={`h-4 w-4 ${isFavorited(recipe.id) ? 'text-red-500 fill-current' : 'text-gray-600'
                                                 }`}
                                         />
                                     </Button>
@@ -127,9 +185,10 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                         variant="ghost"
                                         className="p-1.5 bg-white/90 hover:bg-white"
                                         onClick={handleBookmark}
+                                        title="Bookmark recipe"
                                     >
                                         <BookmarkPlus
-                                            className={`h-4 w-4 ${isBookmarked ? 'text-primary-500 fill-current' : 'text-gray-600'
+                                            className={`h-4 w-4 ${isBookmarked(recipe.id) ? 'text-primary-500 fill-current' : 'text-gray-600'
                                                 }`}
                                         />
                                     </Button>
@@ -226,14 +285,40 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                     {/* Actions Overlay */}
                     {showActions && (
                         <div className="absolute top-3 right-3 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {/* Owner actions */}
+                            {isOwner && (
+                                <>
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="p-2 bg-white/90 hover:bg-white"
+                                        onClick={handleEdit}
+                                        title="Edit recipe"
+                                    >
+                                        <Edit3 className="h-4 w-4 text-blue-600" />
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="p-2 bg-white/90 hover:bg-white"
+                                        onClick={handleDelete}
+                                        title="Delete recipe"
+                                    >
+                                        <Trash2 className="h-4 w-4 text-red-600" />
+                                    </Button>
+                                </>
+                            )}
+
+                            {/* General actions */}
                             <Button
                                 size="sm"
                                 variant="ghost"
                                 className="p-2 bg-white/90 hover:bg-white"
                                 onClick={handleFavorite}
+                                title="Add to favorites"
                             >
                                 <Heart
-                                    className={`h-4 w-4 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'
+                                    className={`h-4 w-4 ${isFavorited(recipe.id) ? 'text-red-500 fill-current' : 'text-gray-600'
                                         }`}
                                 />
                             </Button>
@@ -242,9 +327,10 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                 variant="ghost"
                                 className="p-2 bg-white/90 hover:bg-white"
                                 onClick={handleBookmark}
+                                title="Bookmark recipe"
                             >
                                 <BookmarkPlus
-                                    className={`h-4 w-4 ${isBookmarked ? 'text-primary-500 fill-current' : 'text-gray-600'
+                                    className={`h-4 w-4 ${isBookmarked(recipe.id) ? 'text-primary-500 fill-current' : 'text-gray-600'
                                         }`}
                                 />
                             </Button>
@@ -254,6 +340,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                     variant="ghost"
                                     className="p-2 bg-white/90 hover:bg-white"
                                     onClick={handleShare}
+                                    title="Share recipe"
                                 >
                                     <Share2 className="h-4 w-4 text-gray-600" />
                                 </Button>

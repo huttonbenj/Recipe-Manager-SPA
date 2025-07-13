@@ -20,6 +20,7 @@ import {
 // Services and hooks
 import { recipesApi } from '@/services/api/recipes'
 import { useAuth } from '@/hooks/useAuth'
+import { useFavorites } from '@/hooks/useFavorites'
 import { useToast } from '@/context/ToastContext'
 import { formatCookTime, formatRelativeTime } from '@/utils'
 
@@ -29,6 +30,18 @@ const RecipeDetail: React.FC = () => {
   const queryClient = useQueryClient()
   const { user, isAuthenticated } = useAuth()
   const { success, error } = useToast()
+
+  // Favorites and bookmarks
+  const {
+    toggleFavorite,
+    toggleBookmark,
+    isFavorited,
+    isBookmarked,
+    isAddingToFavorites,
+    isRemovingFromFavorites,
+    isAddingToBookmarks,
+    isRemovingFromBookmarks
+  } = useFavorites()
 
   // UI state
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
@@ -163,21 +176,49 @@ const RecipeDetail: React.FC = () => {
             </Button>
 
             {isAuthenticated && (
-              <Button variant="ghost">
-                <Bookmark className="w-4 h-4" />
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => toggleFavorite(recipe.id, isFavorited(recipe.id))}
+                  disabled={isAddingToFavorites || isRemovingFromFavorites}
+                  className="flex items-center gap-2"
+                >
+                  <Heart
+                    className={`w-4 h-4 ${isFavorited(recipe.id) ? 'text-red-500 fill-current' : 'text-gray-600'}`}
+                  />
+                  {isFavorited(recipe.id) ? 'Favorited' : 'Favorite'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => toggleBookmark(recipe.id, isBookmarked(recipe.id))}
+                  disabled={isAddingToBookmarks || isRemovingFromBookmarks}
+                  className="flex items-center gap-2"
+                >
+                  <Bookmark
+                    className={`w-4 h-4 ${isBookmarked(recipe.id) ? 'text-blue-500 fill-current' : 'text-gray-600'}`}
+                  />
+                  {isBookmarked(recipe.id) ? 'Bookmarked' : 'Bookmark'}
+                </Button>
+              </>
             )}
 
             {isOwner && (
               <>
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   onClick={() => navigate(`/recipes/${id}/edit`)}
+                  className="flex items-center gap-2"
                 >
                   <Edit3 className="w-4 h-4" />
+                  Edit
                 </Button>
-                <Button variant="ghost" onClick={handleDelete}>
+                <Button
+                  variant="danger"
+                  onClick={handleDelete}
+                  className="flex items-center gap-2"
+                >
                   <Trash2 className="w-4 h-4" />
+                  Delete
                 </Button>
               </>
             )}

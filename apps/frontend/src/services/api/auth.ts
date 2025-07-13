@@ -10,16 +10,42 @@ export const authApi = {
    * Login user with email and password
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>('/auth/login', credentials)
-    return response.data.data
+    const response = await apiClient.post<{ 
+      success: boolean; 
+      data: { 
+        user: User; 
+        accessToken: string; 
+        refreshToken?: string; 
+      } 
+    }>('/auth/login', credentials)
+    
+    // Map backend response to frontend interface
+    return {
+      user: response.data.data.user,
+      token: response.data.data.accessToken,
+      refreshToken: response.data.data.refreshToken
+    }
   },
 
   /**
    * Register new user
    */
   async register(userData: RegisterData): Promise<AuthResponse> {
-    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>('/auth/register', userData)
-    return response.data.data
+    const response = await apiClient.post<{ 
+      success: boolean; 
+      data: { 
+        user: User; 
+        accessToken: string; 
+        refreshToken?: string; 
+      } 
+    }>('/auth/register', userData)
+    
+    // Map backend response to frontend interface
+    return {
+      user: response.data.data.user,
+      token: response.data.data.accessToken,
+      refreshToken: response.data.data.refreshToken
+    }
   },
 
   /**
@@ -33,8 +59,21 @@ export const authApi = {
    * Refresh authentication token
    */
   async refreshToken(): Promise<AuthResponse> {
-    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>('/auth/refresh')
-    return response.data.data
+    const response = await apiClient.post<{ 
+      success: boolean; 
+      data: { 
+        user: User; 
+        accessToken: string; 
+        refreshToken?: string; 
+      } 
+    }>('/auth/refresh')
+    
+    // Map backend response to frontend interface
+    return {
+      user: response.data.data.user,
+      token: response.data.data.accessToken,
+      refreshToken: response.data.data.refreshToken
+    }
   },
 
   /**

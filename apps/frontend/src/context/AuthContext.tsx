@@ -33,23 +33,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   useEffect(() => {
     const initializeAuth = async () => {
-      if (token) {
+      console.log('AuthContext: Initializing auth...', { token, user })
+
+      // Only validate token if we have one and haven't already validated
+      if (token && !user) {
+        console.log('AuthContext: Validating existing token...')
         try {
           // Verify token is still valid and get fresh user data
           const userData = await authApi.getProfile()
+          console.log('AuthContext: Token validation successful', userData)
           setUser(userData)
         } catch (error) {
           // Token is invalid, clear auth state
-          console.warn('Token validation failed:', error)
+          console.warn('AuthContext: Token validation failed:', error)
           setUser(null)
           setToken(null)
         }
+      } else {
+        console.log('AuthContext: No token to validate or user already set')
       }
+
+      console.log('AuthContext: Setting loading to false')
       setIsLoading(false)
     }
 
     initializeAuth()
-  }, [token, setUser, setToken])
+  }, [token]) // Only depend on token, not user or setters
 
   /**
    * Login user with credentials

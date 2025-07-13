@@ -17,6 +17,8 @@ import Recipes from '@/pages/Recipes'
 import RecipeDetail from '@/pages/RecipeDetail'
 import CreateRecipe from '@/pages/CreateRecipe'
 import EditRecipe from '@/pages/EditRecipe'
+import Favorites from '@/pages/Favorites'
+import Bookmarks from '@/pages/Bookmarks'
 import NotFound from '@/pages/NotFound'
 
 // Hooks
@@ -75,6 +77,11 @@ export const AppRoutes: React.FC = () => {
                 }
             />
 
+            {/* Public home page with layout */}
+            <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+            </Route>
+
             {/* Protected routes with layout */}
             <Route
                 path="/"
@@ -84,14 +91,13 @@ export const AppRoutes: React.FC = () => {
                     </ProtectedRoute>
                 }
             >
-                {/* Home/Dashboard */}
-                <Route index element={<Home />} />
-
                 {/* Recipe routes */}
                 <Route path="recipes" element={<Recipes />} />
                 <Route path="recipes/:id" element={<RecipeDetail />} />
                 <Route path="recipes/create" element={<CreateRecipe />} />
                 <Route path="recipes/:id/edit" element={<EditRecipe />} />
+                <Route path="favorites" element={<Favorites />} />
+                <Route path="bookmarks" element={<Bookmarks />} />
             </Route>
 
             {/* 404 Not Found */}

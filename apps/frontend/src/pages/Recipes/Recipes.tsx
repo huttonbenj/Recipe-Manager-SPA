@@ -4,17 +4,20 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { Search, Filter, Clock, Users, Star, Heart, ChefHat, Grid, List, TrendingUp } from 'lucide-react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Search, Filter, Clock, Heart, ChefHat, Grid, List, TrendingUp } from 'lucide-react'
 
 // UI Components
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
-import Card from '@/components/ui/Card'
+import { Button, Input, Card, Loading, Select } from '@/components/ui'
+import { RecipeList } from '@/components/recipe'
 
 // Services
 import { recipesApi } from '@/services/api/recipes'
+
+// Hooks
+import { useAuth } from '@/hooks/useAuth'
+import { useToast } from '@/context/ToastContext'
 
 // Types
 import type { Recipe, RecipeSearchParams } from '@/types'
@@ -62,6 +65,10 @@ const Recipes: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [showFilters, setShowFilters] = useState(false)
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const { success, error: showError } = useToast()
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
@@ -115,17 +122,29 @@ const Recipes: React.FC = () => {
     return params
   }
 
-  /**
-   * Fetch recipes with React Query
-   */
+  // Fetch recipes data
   const {
     data: recipesData,
     isLoading,
     isError,
-    error
+    error: queryError
   } = useQuery({
     queryKey: ['recipes', searchQuery, filters, currentPage],
     queryFn: () => recipesApi.getRecipes(buildSearchParams())
+  })
+
+  /**
+   * Delete recipe mutation
+   */
+  const deleteMutation = useMutation({
+    mutationFn: (recipeId: string) => recipesApi.deleteRecipe(recipeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      success('Recipe deleted successfully')
+    },
+    onError: () => {
+      showError('Failed to delete recipe. Please try again.')
+    }
   })
 
   /**
@@ -227,72 +246,51 @@ const Recipes: React.FC = () => {
   }
 
   /**
-   * Render recipe card
+   * Handle recipe edit
    */
-  const renderRecipeCard = (recipe: Recipe) => (
-    <Link key={recipe.id} to={`/recipes/${recipe.id}`} className="group">
-      <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
-        {/* Recipe Image */}
-        <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-          <img
-            src={recipe.imageUrl || '/api/placeholder/300/200'}
-            alt={recipe.title}
-            className="w-full h-48 object-cover"
-          />
-          {/* Favorite Button */}
-          <div className="absolute top-3 right-3">
-            <button className="p-2 bg-white/80 hover:bg-white rounded-full transition-colors">
-              <Heart className="h-4 w-4 text-gray-600 hover:text-red-500" />
-            </button>
-          </div>
-        </div>
+  const handleRecipeEdit = (recipeId: string) => {
+    navigate(`/recipes/${recipeId}/edit`)
+  }
 
-        {/* Recipe Details */}
-        <div className="p-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
-            {recipe.title}
-          </h3>
+  /**
+   * Handle recipe delete
+   */
+  const handleRecipeDelete = (recipeId: string) => {
+    if (window.confirm('Are you sure you want to delete this recipe? This action cannot be undone.')) {
+      deleteMutation.mutate(recipeId)
+    }
+  }
 
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-            {recipe.description}
-          </p>
-
-          {/* Recipe Meta */}
-          <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <Clock className="h-4 w-4 mr-1" />
-                {recipe.cookTime}m
-              </div>
-              <div className="flex items-center">
-                <Users className="h-4 w-4 mr-1" />
-                {recipe.servings}
-              </div>
-            </div>
-            <div className="text-xs bg-gray-100 px-2 py-1 rounded-full">
-              {recipe.difficulty}
-            </div>
-          </div>
-
-          {/* Rating */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-              <span className="text-sm font-medium text-gray-900">
-                New
-              </span>
-            </div>
-            <div className="text-xs text-gray-500">
-              by {recipe.author?.name || 'Chef'}
-            </div>
-          </div>
-        </div>
-      </Card>
-    </Link>
-  )
+  /**
+   * Handle recipe share
+   */
+  const handleRecipeShare = async (recipe: Recipe) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: recipe.title,
+          text: recipe.description,
+          url: `${window.location.origin}/recipes/${recipe.id}`,
+        })
+        success('Recipe shared successfully!')
+      } catch (shareError) {
+        // User cancelled sharing
+        if (shareError instanceof Error && shareError.name !== 'AbortError') {
+          showError('Failed to share recipe')
+        }
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(`${window.location.origin}/recipes/${recipe.id}`)
+        success('Recipe link copied to clipboard!')
+      } catch (clipboardError) {
+        showError('Failed to copy link to clipboard')
+      }
+    }
+  }
 
   const recipes = recipesData?.recipes || []
-  const totalPages = recipesData?.pagination?.totalPages || 1
   const totalCount = recipesData?.pagination?.total || 0
 
   return (
@@ -366,18 +364,15 @@ const Recipes: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Difficulty
                 </label>
-                <select
+                <Select
+                  options={[
+                    { value: '', label: 'Any difficulty' },
+                    ...filterOptions.difficulty
+                  ]}
                   value={filters.difficulty}
                   onChange={(e) => handleFilterChange('difficulty', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="">Any difficulty</option>
-                  {filterOptions.difficulty.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  className="w-full"
+                />
               </div>
 
               {/* Cook Time Filter */}
@@ -385,18 +380,15 @@ const Recipes: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Cook Time
                 </label>
-                <select
+                <Select
+                  options={[
+                    { value: '', label: 'Any time' },
+                    ...filterOptions.cookTime
+                  ]}
                   value={filters.cookTime}
                   onChange={(e) => handleFilterChange('cookTime', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="">Any time</option>
-                  {filterOptions.cookTime.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  className="w-full"
+                />
               </div>
 
               {/* Category Filter */}
@@ -404,18 +396,15 @@ const Recipes: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Category
                 </label>
-                <select
+                <Select
+                  options={[
+                    { value: '', label: 'Any category' },
+                    ...filterOptions.category
+                  ]}
                   value={filters.category}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="">Any category</option>
-                  {filterOptions.category.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  className="w-full"
+                />
               </div>
             </div>
           </Card>
@@ -451,17 +440,14 @@ const Recipes: React.FC = () => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-            <p className="mt-2 text-gray-600">Loading delicious recipes...</p>
-          </div>
+          <Loading />
         )}
 
         {/* Error State */}
         {isError && (
           <div className="text-center py-12">
             <p className="text-red-600 mb-4">
-              Failed to load recipes: {error?.message || 'Unknown error'}
+              Failed to load recipes: {queryError?.message || 'Unknown error'}
             </p>
             <Button onClick={() => window.location.reload()}>
               Try Again
@@ -469,69 +455,29 @@ const Recipes: React.FC = () => {
           </div>
         )}
 
-        {/* Recipes Grid */}
-        {!isLoading && !isError && (
-          <>
-            {recipes.length > 0 ? (
-              <div className={`grid gap-6 mb-8 ${viewMode === 'grid'
-                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                : 'grid-cols-1'
-                }`}>
-                {recipes.map(renderRecipeCard)}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <ChefHat className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No recipes found
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Try adjusting your search or filters to find more recipes.
-                </p>
-                <Button onClick={clearFilters}>
-                  Clear Filters
-                </Button>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center space-x-2">
-                <Button
-                  variant="ghost"
-                  disabled={currentPage <= 1}
-                  onClick={() => handlePageChange(currentPage - 1)}
-                >
-                  Previous
-                </Button>
-
-                {/* Page Numbers */}
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const page = currentPage <= 3 ? i + 1 : currentPage - 2 + i
-                  if (page > totalPages) return null
-
-                  return (
-                    <Button
-                      key={page}
-                      variant={page === currentPage ? 'primary' : 'ghost'}
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </Button>
-                  )
-                })}
-
-                <Button
-                  variant="ghost"
-                  disabled={currentPage >= totalPages}
-                  onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  Next
-                </Button>
-              </div>
-            )}
-          </>
-        )}
+        {/* Recipe List */}
+        <RecipeList
+          recipes={recipes}
+          loading={isLoading}
+          error={isError ? queryError?.message || 'Failed to load recipes' : null}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          pagination={recipesData?.pagination ? {
+            page: currentPage,
+            limit: pageSize,
+            total: recipesData.pagination.total,
+            totalPages: recipesData.pagination.totalPages,
+            hasNext: currentPage < recipesData.pagination.totalPages,
+            hasPrev: currentPage > 1
+          } : undefined}
+          onPageChange={handlePageChange}
+          onShare={handleRecipeShare}
+          onEdit={handleRecipeEdit}
+          onDelete={handleRecipeDelete}
+          currentUserId={user?.id}
+          emptyMessage="No recipes found"
+          emptyDescription="Try adjusting your search or filters to find more recipes."
+        />
       </div>
     </div>
   )

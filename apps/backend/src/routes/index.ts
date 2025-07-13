@@ -6,6 +6,7 @@ import { Router } from 'express'
 import authRoutes from './auth'
 import recipeRoutes from './recipes'
 import uploadRoutes from './upload'
+import favoritesRoutes from './favorites'
 
 const router = Router()
 
@@ -13,6 +14,7 @@ const router = Router()
 router.use('/auth', authRoutes)
 router.use('/recipes', recipeRoutes)
 router.use('/upload', uploadRoutes)
+router.use('/user', favoritesRoutes)
 
 // API info endpoint
 router.get('/', (req, res) => {
@@ -23,6 +25,8 @@ router.get('/', (req, res) => {
       auth: '/api/auth',
       recipes: '/api/recipes',
       upload: '/api/upload',
+      favorites: '/api/user/favorites',
+      bookmarks: '/api/user/bookmarks',
     },
   })
 })

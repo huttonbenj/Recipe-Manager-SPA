@@ -25,48 +25,53 @@ export const recipesApi = {
       })
     }
     
-    const response: any = await apiClient.get(`/recipes?${searchParams}`)
+    const response = await apiClient.get(`/recipes?${searchParams}`)
     
-    // Transform backend response to frontend format
-    // Note: apiClient interceptor already extracts data from { success, data, message } structure
+    // Extract data from the backend response structure
+    // Backend returns: { success: boolean, data: { recipes: Recipe[], total: number, ... }, message: string }
+    const data = response.data.data || response.data
+    
     return {
-      recipes: response.recipes,
+      recipes: data.recipes || [],
       pagination: {
-        total: response.total,
-        page: response.page,
-        limit: response.limit,
-        totalPages: response.totalPages,
-        hasNext: response.hasNext,
-        hasPrev: response.hasPrev
+        total: data.total || 0,
+        page: data.page || 1,
+        limit: data.limit || 20,
+        totalPages: data.totalPages || 1,
+        hasNext: data.hasNext || false,
+        hasPrev: data.hasPrev || false
       }
     }
   },
 
   /**
-   * Get single recipe by ID
+   * Get recipe by ID
    */
   async getRecipe(id: string): Promise<Recipe> {
-    const response: any = await apiClient.get(`/recipes/${id}`)
-    // Note: apiClient interceptor already extracts data from { success, data, message } structure
-    return response.recipe
+    const response = await apiClient.get(`/recipes/${id}`)
+    // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
+    const data = response.data.data || response.data
+    return data.recipe || data
   },
 
   /**
    * Create new recipe
    */
   async createRecipe(recipeData: CreateRecipeData): Promise<Recipe> {
-    const response: any = await apiClient.post('/recipes', recipeData)
-    // Note: apiClient interceptor already extracts data from { success, data, message } structure
-    return response.recipe
+    const response = await apiClient.post('/recipes', recipeData)
+    // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
+    const data = response.data.data || response.data
+    return data.recipe || data
   },
 
   /**
    * Update existing recipe
    */
   async updateRecipe(id: string, updates: Partial<CreateRecipeData>): Promise<Recipe> {
-    const response: any = await apiClient.put(`/recipes/${id}`, updates)
-    // Note: apiClient interceptor already extracts data from { success, data, message } structure
-    return response.recipe
+    const response = await apiClient.put(`/recipes/${id}`, updates)
+    // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
+    const data = response.data.data || response.data
+    return data.recipe || data
   },
 
   /**
@@ -91,17 +96,19 @@ export const recipesApi = {
       })
     }
     
-    const response: any = await apiClient.get(`/recipes?${searchParams}`)
-    // Note: apiClient interceptor already extracts data from { success, data, message } structure
+    const response = await apiClient.get(`/recipes?${searchParams}`)
+    // Backend returns: { success: boolean, data: { recipes: Recipe[], total: number, ... }, message: string }
+    const data = response.data.data || response.data
+    
     return {
-      recipes: response.recipes,
+      recipes: data.recipes || [],
       pagination: {
-        total: response.total,
-        page: response.page,
-        limit: response.limit,
-        totalPages: response.totalPages,
-        hasNext: response.hasNext,
-        hasPrev: response.hasPrev
+        total: data.total || 0,
+        page: data.page || 1,
+        limit: data.limit || 20,
+        totalPages: data.totalPages || 1,
+        hasNext: data.hasNext || false,
+        hasPrev: data.hasPrev || false
       }
     }
   },
@@ -121,17 +128,19 @@ export const recipesApi = {
       })
     }
     
-    const response: any = await apiClient.get(`/recipes?${searchParams}`)
-    // Note: apiClient interceptor already extracts data from { success, data, message } structure
+    const response = await apiClient.get(`/recipes?${searchParams}`)
+    // Backend returns: { success: boolean, data: { recipes: Recipe[], total: number, ... }, message: string }
+    const data = response.data.data || response.data
+    
     return {
-      recipes: response.recipes,
+      recipes: data.recipes || [],
       pagination: {
-        total: response.total,
-        page: response.page,
-        limit: response.limit,
-        totalPages: response.totalPages,
-        hasNext: response.hasNext,
-        hasPrev: response.hasPrev
+        total: data.total || 0,
+        page: data.page || 1,
+        limit: data.limit || 20,
+        totalPages: data.totalPages || 1,
+        hasNext: data.hasNext || false,
+        hasPrev: data.hasPrev || false
       }
     }
   },
@@ -140,17 +149,19 @@ export const recipesApi = {
    * Get popular recipes
    */
   async getPopularRecipes(limit: number = 6): Promise<Recipe[]> {
-    const response: any = await apiClient.get(`/recipes/popular?limit=${limit}`)
-    // Note: apiClient interceptor already extracts data from { success, data, message } structure
-    return response.recipes
+    const response = await apiClient.get(`/recipes/popular?limit=${limit}`)
+    // Backend returns: { success: boolean, data: { recipes: Recipe[] }, message: string }
+    const data = response.data.data || response.data
+    return data.recipes || []
   },
 
   /**
    * Get recent recipes (uses popular endpoint since it returns most recent)
    */
   async getRecentRecipes(limit: number = 6): Promise<Recipe[]> {
-    const response: any = await apiClient.get(`/recipes/popular?limit=${limit}`)
-    // Note: apiClient interceptor already extracts data from { success, data, message } structure
-    return response.recipes
+    const response = await apiClient.get(`/recipes/popular?limit=${limit}`)
+    // Backend returns: { success: boolean, data: { recipes: Recipe[] }, message: string }
+    const data = response.data.data || response.data
+    return data.recipes || []
   },
 }

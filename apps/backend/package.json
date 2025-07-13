@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Recipe Manager API Server",
   "main": "dist/server.js",
+  "prisma": {
+    "seed": "ts-node src/prisma/seed.ts"
+  },
   "scripts": {
     "dev": "nodemon -r dotenv/config -r tsconfig-paths/register src/server.ts",
     "build": "tsc",

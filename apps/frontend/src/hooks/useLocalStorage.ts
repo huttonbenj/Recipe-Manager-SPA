@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react'
 /**
  * Hook for managing localStorage state
  * Automatically syncs with localStorage and handles JSON serialization
- * Intelligently handles both strings and objects
  */
 export function useLocalStorage<T>(
   key: string,
@@ -19,16 +18,28 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key)
       if (!item) return defaultValue
       
-      // If the default value is a string, return the item as-is (commonly used for plain tokens)
+      // Handle null values
+      if (item === 'null') return null as T
+      
+      // For string defaults, try to return as string first
       if (typeof defaultValue === 'string') {
+        // If it's JSON-wrapped string, unwrap it
+        if (item.startsWith('"') && item.endsWith('"')) {
+          try {
+            return JSON.parse(item) as T
+          } catch {
+            return item as T
+          }
+        }
         return item as T
       }
 
-      // Attempt to parse JSON, but gracefully fall back to the raw string if parsing fails.
+      // For non-string defaults, try to parse as JSON
       try {
         return JSON.parse(item)
       } catch {
-        return item as unknown as T
+        // If JSON parsing fails, return as-is if it's a string, otherwise default
+        return typeof item === 'string' ? item as unknown as T : defaultValue
       }
     } catch (error) {
       console.warn(`Error reading localStorage key "${key}":`, error)
@@ -44,11 +55,17 @@ export function useLocalStorage<T>(
       
       setValue(valueToStore)
       
-      // If the value is a string, store it as-is (for tokens, etc.)
+      // Handle null/undefined values
+      if (valueToStore === null || valueToStore === undefined) {
+        window.localStorage.setItem(key, 'null')
+        return
+      }
+      
+      // For strings, store directly (tokens, etc.)
       if (typeof valueToStore === 'string') {
         window.localStorage.setItem(key, valueToStore)
       } else {
-        // Otherwise, stringify as JSON (for objects)
+        // For objects, stringify as JSON
         window.localStorage.setItem(key, JSON.stringify(valueToStore))
       }
     } catch (error) {
@@ -61,13 +78,19 @@ export function useLocalStorage<T>(
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key && e.newValue !== null) {
         try {
-          // If the default value is a string, use the new value as-is
+          // Handle null values
+          if (e.newValue === 'null') {
+            setValue(null as T)
+            return
+          }
+
+          // For string defaults, use the new value as-is
           if (typeof defaultValue === 'string') {
             setValue(e.newValue as T)
             return
           }
 
-          // Attempt to parse JSON, but fall back to raw string on failure
+          // For non-string defaults, try to parse as JSON
           try {
             setValue(JSON.parse(e.newValue))
           } catch {
