@@ -8,18 +8,20 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import {
   ArrowLeft, X, Plus, Minus, Clock, Users, ChefHat,
-  Save, Eye, Camera, AlertCircle
+  Save, Eye, Camera, AlertCircle, User, Heart, Bookmark, Info
 } from 'lucide-react'
 
 // UI Components
 import {
   Card, CardHeader, CardBody,
-  Button, Input, Textarea, Select, Badge, Loading
+  Button, Input, Textarea, Select, Badge, Loading, Modal, ImageBadge
 } from '@/components/ui'
 
 // Services and hooks
 import { recipesApi } from '@/services/api/recipes'
 import { uploadApi } from '@/services/api/upload'
+import { useAuth } from '@/hooks/useAuth'
+import { formatCookTime } from '@/utils'
 
 // Types
 import { Difficulty } from '@/types'
@@ -57,6 +59,7 @@ interface FormErrors {
 
 const CreateRecipe: React.FC = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   // Form state
   const [formData, setFormData] = useState<RecipeFormData>({
@@ -74,6 +77,7 @@ const CreateRecipe: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false)
   const [previewImage, setPreviewImage] = useState<string>('')
   const [newTag, setNewTag] = useState('')
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
 
   // Create recipe mutation
   const createMutation = useMutation({
@@ -280,6 +284,29 @@ const CreateRecipe: React.FC = () => {
     }
   }
 
+  /**
+   * Handle preview modal
+   */
+  const handlePreview = () => {
+    setIsPreviewModalOpen(true)
+  }
+
+  /**
+   * Get difficulty badge variant for preview
+   */
+  const getDifficultyVariant = (difficulty?: string) => {
+    switch (difficulty?.toLowerCase()) {
+      case 'easy':
+        return 'success'
+      case 'medium':
+        return 'warning'
+      case 'hard':
+        return 'danger'
+      default:
+        return 'default'
+    }
+  }
+
   return (
     <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -289,9 +316,8 @@ const CreateRecipe: React.FC = () => {
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2"
+              leftIcon={<ArrowLeft className="w-4 h-4" />}
             >
-              <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
             <h1 className="text-2xl font-bold text-secondary-900 dark:text-secondary-100">Create New Recipe</h1>
@@ -300,24 +326,18 @@ const CreateRecipe: React.FC = () => {
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"
-              onClick={() => navigate('/recipes')}
+              onClick={handlePreview}
+              leftIcon={<Eye className="w-4 h-4 mr-2" />}
             >
-              <Eye className="w-4 h-4 mr-2" />
               Preview
             </Button>
             <Button
               type="submit"
               form="recipe-form"
               disabled={createMutation.isPending}
+              leftIcon={createMutation.isPending ? <Loading variant="spinner" size="sm" /> : <Save className="w-4 h-4 mr-2" />}
             >
-              {createMutation.isPending ? (
-                <Loading variant="spinner" size="sm" />
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Create Recipe
-                </>
-              )}
+              Create Recipe
             </Button>
           </div>
         </div>
@@ -325,9 +345,9 @@ const CreateRecipe: React.FC = () => {
         <form id="recipe-form" onSubmit={handleSubmit} className="space-y-6">
           {/* Submit Error Display */}
           {errors.submit && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-red-500" />
-              <p className="text-sm text-red-600">{errors.submit}</p>
+            <div className="toast-error border rounded-md p-4 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 toast-icon-error" />
+              <p className="form-error">{errors.submit}</p>
             </div>
           )}
 
@@ -381,8 +401,9 @@ const CreateRecipe: React.FC = () => {
                         size="sm"
                         className="absolute top-2 right-2"
                         onClick={removeImage}
+                        leftIcon={<X className="w-4 h-4" />}
                       >
-                        <X className="w-4 h-4" />
+                        Remove Image
                       </Button>
                     </div>
                   ) : (
@@ -424,13 +445,13 @@ const CreateRecipe: React.FC = () => {
                       variant="secondary"
                       size="sm"
                       onClick={addIngredient}
+                      leftIcon={<Plus className="w-4 h-4 mr-2" />}
                     >
-                      <Plus className="w-4 h-4 mr-1" />
                       Add
                     </Button>
                   </div>
                   {errors.ingredients && (
-                    <p className="text-sm text-red-600">{errors.ingredients}</p>
+                    <p className="text-sm text-accent-600 dark:text-accent-400">{errors.ingredients}</p>
                   )}
                 </CardHeader>
                 <CardBody className="space-y-3">
@@ -448,8 +469,9 @@ const CreateRecipe: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => removeIngredient(index)}
+                          leftIcon={<Minus className="w-4 h-4" />}
                         >
-                          <Minus className="w-4 h-4" />
+                          Remove
                         </Button>
                       )}
                     </div>
@@ -563,8 +585,9 @@ const CreateRecipe: React.FC = () => {
                       type="button"
                       onClick={addTag}
                       disabled={!newTag.trim()}
+                      leftIcon={<Plus className="w-4 h-4" />}
                     >
-                      <Plus className="w-4 h-4" />
+                      Add Tag
                     </Button>
                   </div>
 
@@ -580,7 +603,7 @@ const CreateRecipe: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => removeTag(tag)}
-                            className="hover:text-red-600"
+                            className="hover:text-accent-600 dark:hover:text-accent-400"
                           >
                             <X className="w-3 h-3" />
                           </button>
@@ -610,6 +633,265 @@ const CreateRecipe: React.FC = () => {
           </div>
         </form>
       </div>
+
+      {/* Preview Modal */}
+      {isPreviewModalOpen && (
+        <Modal
+          isOpen={isPreviewModalOpen}
+          onClose={() => setIsPreviewModalOpen(false)}
+          title="Recipe Preview"
+          size="xl"
+        >
+          <div className="max-h-[80vh] overflow-y-auto p-6">
+            {/* Recipe Header */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
+                {formData.title || 'Recipe Title'}
+              </h1>
+              {formData.description && (
+                <p className="text-lg text-secondary-600 dark:text-secondary-400 mb-4">
+                  {formData.description}
+                </p>
+              )}
+
+              {/* Recipe meta info */}
+              <div className="flex flex-wrap gap-6 py-4 border-t border-secondary-200 dark:border-secondary-700">
+                {formData.cookTime && (
+                  <div className="flex items-center">
+                    <Clock className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
+                    <div>
+                      <p className="text-sm text-secondary-500 dark:text-secondary-400">Cook Time</p>
+                      <p className="font-medium text-secondary-900 dark:text-secondary-100">{formatCookTime(formData.cookTime)}</p>
+                    </div>
+                  </div>
+                )}
+
+                {formData.prepTime && (
+                  <div className="flex items-center">
+                    <Clock className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
+                    <div>
+                      <p className="text-sm text-secondary-500 dark:text-secondary-400">Prep Time</p>
+                      <p className="font-medium text-secondary-900 dark:text-secondary-100">{formatCookTime(formData.prepTime)}</p>
+                    </div>
+                  </div>
+                )}
+
+                {formData.servings && (
+                  <div className="flex items-center">
+                    <Users className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
+                    <div>
+                      <p className="text-sm text-secondary-500 dark:text-secondary-400">Servings</p>
+                      <p className="font-medium text-secondary-900 dark:text-secondary-100">{formData.servings}</p>
+                    </div>
+                  </div>
+                )}
+
+                {formData.cuisine && (
+                  <div className="flex items-center">
+                    <ChefHat className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
+                    <div>
+                      <p className="text-sm text-secondary-500 dark:text-secondary-400">Cuisine</p>
+                      <p className="font-medium text-secondary-900 dark:text-secondary-100">{formData.cuisine}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main Content */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Recipe Image */}
+                {(previewImage || formData.imageUrl) && (
+                  <div className="relative rounded-xl overflow-hidden shadow-md">
+                    <img
+                      src={previewImage || formData.imageUrl}
+                      alt="Recipe preview"
+                      className="w-full h-auto object-cover"
+                    />
+                    {/* Image badges */}
+                    <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+                      {formData.difficulty && (
+                        <ImageBadge
+                          variant={getDifficultyVariant(formData.difficulty) as 'success' | 'warning' | 'danger' | 'info' | 'default'}
+                        >
+                          {formData.difficulty}
+                        </ImageBadge>
+                      )}
+                      {formData.tags?.slice(0, 2).map((tag: string) => (
+                        <ImageBadge
+                          key={tag}
+                          variant="default"
+                        >
+                          {tag}
+                        </ImageBadge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Ingredients */}
+                <Card variant="bordered">
+                  <CardHeader>
+                    <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
+                      <span className="bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 p-1.5 rounded-md mr-2">
+                        <ChefHat className="w-5 h-5" />
+                      </span>
+                      Ingredients
+                    </h2>
+                  </CardHeader>
+                  <CardBody className="pt-0">
+                    <ul className="space-y-2">
+                      {formData.ingredients?.filter(ing => ing.trim()).map((ingredient: string, index: number) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <span className="w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 text-xs flex items-center justify-center mt-0.5 flex-shrink-0">
+                            {index + 1}
+                          </span>
+                          <span className="text-secondary-900 dark:text-secondary-100">
+                            {ingredient}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardBody>
+                </Card>
+
+                {/* Instructions */}
+                <Card variant="bordered">
+                  <CardHeader>
+                    <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
+                      <span className="bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 p-1.5 rounded-md mr-2">
+                        <ChefHat className="w-5 h-5" />
+                      </span>
+                      Instructions
+                    </h2>
+                  </CardHeader>
+                  <CardBody className="pt-0">
+                    <div className="space-y-4">
+                      {formData.instructions ? (
+                        formData.instructions.split('\n\n').filter(Boolean).map((step: string, index: number) => (
+                          <div key={index} className="flex gap-4">
+                            <div className="flex-shrink-0 mt-1">
+                              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 font-medium border border-primary-200 dark:border-primary-700 shadow-sm">
+                                {index + 1}
+                              </div>
+                            </div>
+                            <div className="text-secondary-900 dark:text-secondary-100">
+                              {step}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-secondary-500 dark:text-secondary-400 italic">
+                          No instructions added yet
+                        </p>
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-6">
+                {/* Author info */}
+                {user && (
+                  <Card variant="bordered">
+                    <CardBody>
+                      <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
+                        About the Author
+                      </h3>
+                      <div className="flex items-center mb-4">
+                        <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-800 flex items-center justify-center text-primary-700 dark:text-primary-100 mr-3">
+                          <User className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-secondary-900 dark:text-secondary-100">
+                            {user.name || user.email.split('@')[0]}
+                          </p>
+                          <p className="text-sm text-secondary-500 dark:text-secondary-400">
+                            Recipe Creator
+                          </p>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                )}
+
+                {/* Recipe Stats */}
+                <Card variant="bordered">
+                  <CardBody>
+                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
+                      Recipe Stats
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                          <Heart className="w-4 h-4 mr-2" />
+                          Favorites
+                        </span>
+                        <span className="font-medium text-secondary-900 dark:text-secondary-100">
+                          0
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                          <Bookmark className="w-4 h-4 mr-2" />
+                          Bookmarks
+                        </span>
+                        <span className="font-medium text-secondary-900 dark:text-secondary-100">
+                          0
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                          <Info className="w-4 h-4 mr-2" />
+                          Status
+                        </span>
+                        <span className="font-medium text-secondary-900 dark:text-secondary-100">
+                          Draft
+                        </span>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+
+                {/* Tags Preview */}
+                {formData.tags && formData.tags.length > 0 && (
+                  <Card variant="bordered">
+                    <CardBody>
+                      <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
+                        Tags
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.tags.map((tag) => (
+                          <Badge key={tag} variant="secondary">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardBody>
+                  </Card>
+                )}
+
+                {/* Tips */}
+                <Card variant="glass">
+                  <CardBody>
+                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-2 flex items-center">
+                      <Info className="w-4 h-4 mr-2 text-primary-500 dark:text-primary-400" />
+                      Preview Note
+                    </h3>
+                    <div className="text-secondary-600 dark:text-secondary-400 space-y-2">
+                      <p>
+                        This is how your recipe will look once published. You can continue editing and preview again before saving.
+                      </p>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

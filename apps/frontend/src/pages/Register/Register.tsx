@@ -190,8 +190,8 @@ const Register: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Submit Error Display */}
             {errors.submit && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.submit}</p>
+              <div className="bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800 rounded-md p-4">
+                <p className="text-sm text-accent-600 dark:text-accent-400">{errors.submit}</p>
               </div>
             )}
 

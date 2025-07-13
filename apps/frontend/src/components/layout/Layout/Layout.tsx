@@ -15,30 +15,19 @@ const Layout: React.FC = () => {
   const location = useLocation()
   useTheme()
   const [showScrollTop, setShowScrollTop] = useState(false)
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
 
-  // Handle scroll behavior for header visibility and scroll-to-top button
+  // Handle scroll behavior for scroll-to-top button
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
 
       // Show/hide scroll to top button
       setShowScrollTop(currentScrollY > 300)
-
-      // Auto-hide header on scroll down, show on scroll up
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsHeaderVisible(false)
-      } else {
-        setIsHeaderVisible(true)
-      }
-
-      setLastScrollY(currentScrollY)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+  }, [])
 
   // Reset scroll position on route change
   useEffect(() => {
@@ -63,9 +52,9 @@ const Layout: React.FC = () => {
         return `${baseClasses} pt-0` // Home page with hero section
       case '/login':
       case '/register':
-        return `${baseClasses} flex items-center justify-center min-h-[calc(100vh-4rem)]` // Auth pages
+        return `${baseClasses} flex items-center justify-center min-h-[calc(100vh-4rem)] pt-20` // Auth pages
       default:
-        return `${baseClasses} container mx-auto px-4 py-8 max-w-7xl` // Default pages
+        return `${baseClasses} container mx-auto px-4 py-8 max-w-7xl pt-20` // Default pages with header spacing
     }
   }
 
@@ -80,15 +69,7 @@ const Layout: React.FC = () => {
       </a>
 
       {/* Header with auto-hide functionality */}
-      <div
-        className={`
-          sticky top-0 z-40 
-          transition-transform duration-300 ease-in-out
-          ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}
-        `}
-      >
-        <Header />
-      </div>
+      <Header />
 
       {/* Main content area */}
       <main
@@ -112,7 +93,7 @@ const Layout: React.FC = () => {
             onClick={scrollToTop}
             variant="primary"
             size="sm"
-            className="rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+            className="rounded-full"
             aria-label="Scroll to top"
           >
             <ArrowUp className="h-5 w-5" />

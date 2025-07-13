@@ -50,37 +50,37 @@ const Loading: React.FC<LoadingProps> = ({
       case 'spinner':
         return (
           <Loader2
-            className={cn('animate-spin text-primary-600 dark:text-primary-400', sizeClasses[size])}
+            className={cn('loading-spinner', sizeClasses[size])}
           />
         )
 
       case 'dots':
         return (
-          <div className="flex space-x-1">
-            <div className={cn('bg-primary-600 dark:bg-primary-400 rounded-full animate-bounce', sizeClasses[size])} style={{ animationDelay: '0ms' }} />
-            <div className={cn('bg-primary-600 dark:bg-primary-400 rounded-full animate-bounce', sizeClasses[size])} style={{ animationDelay: '150ms' }} />
-            <div className={cn('bg-primary-600 dark:bg-primary-400 rounded-full animate-bounce', sizeClasses[size])} style={{ animationDelay: '300ms' }} />
+          <div className="loading-dots">
+            <div className={cn('loading-dot', sizeClasses[size])} style={{ animationDelay: '0ms' }} />
+            <div className={cn('loading-dot', sizeClasses[size])} style={{ animationDelay: '150ms' }} />
+            <div className={cn('loading-dot', sizeClasses[size])} style={{ animationDelay: '300ms' }} />
           </div>
         )
 
       case 'pulse':
         return (
-          <div className={cn('bg-primary-600 dark:bg-primary-400 rounded-full animate-pulse', sizeClasses[size])} />
+          <div className={cn('loading-pulse', sizeClasses[size])} />
         )
 
       case 'skeleton':
         return (
           <div className="space-y-3 w-full">
-            <div className="h-4 bg-secondary-200 dark:bg-secondary-700 rounded animate-pulse" />
-            <div className="h-4 bg-secondary-200 dark:bg-secondary-700 rounded animate-pulse w-3/4" />
-            <div className="h-4 bg-secondary-200 dark:bg-secondary-700 rounded animate-pulse w-1/2" />
+            <div className="skeleton-text" />
+            <div className="skeleton-text w-3/4" />
+            <div className="skeleton-text w-1/2" />
           </div>
         )
 
       default:
         return (
           <Loader2
-            className={cn('animate-spin text-primary-600 dark:text-primary-400', sizeClasses[size])}
+            className={cn('loading-spinner', sizeClasses[size])}
           />
         )
     }
@@ -105,7 +105,7 @@ const Loading: React.FC<LoadingProps> = ({
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-secondary-900 z-50">
+      <div className="loading-fullscreen">
         {loadingContent}
       </div>
     )
@@ -113,7 +113,7 @@ const Loading: React.FC<LoadingProps> = ({
 
   if (overlay) {
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-secondary-900 bg-opacity-75 dark:bg-opacity-75 z-10">
+      <div className="loading-overlay">
         {loadingContent}
       </div>
     )

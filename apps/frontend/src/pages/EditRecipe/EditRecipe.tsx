@@ -352,7 +352,7 @@ const EditRecipe: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="p-8 text-center max-w-md">
-          <div className="text-red-500 mb-4">
+          <div className="text-accent-500 dark:text-accent-400 mb-4">
             <AlertCircle className="w-16 h-16 mx-auto" />
           </div>
           <h2 className="text-xl font-semibold mb-2">Recipe Not Found</h2>
@@ -376,9 +376,8 @@ const EditRecipe: React.FC = () => {
             <Button
               variant="ghost"
               onClick={handleBackClick}
-              className="flex items-center gap-2"
+              leftIcon={<ArrowLeft className="w-4 h-4" />}
             >
-              <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
             <h1 className="text-2xl font-bold text-secondary-900 dark:text-secondary-100">Edit Recipe</h1>
@@ -393,23 +392,17 @@ const EditRecipe: React.FC = () => {
             <Button
               variant="secondary"
               onClick={() => navigate(`/recipes/${id}`)}
+              leftIcon={<Eye className="w-4 h-4 mr-2" />}
             >
-              <Eye className="w-4 h-4 mr-2" />
               View Recipe
             </Button>
             <Button
               type="submit"
               form="recipe-form"
               disabled={updateMutation.isPending || !isFormDirty}
+              leftIcon={<Save className="w-4 h-4 mr-2" />}
             >
-              {updateMutation.isPending ? (
-                <Loading variant="spinner" size="sm" />
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
-                </>
-              )}
+              Save Changes
             </Button>
           </div>
         </div>
@@ -417,9 +410,9 @@ const EditRecipe: React.FC = () => {
         <form id="recipe-form" onSubmit={handleSubmit} className="space-y-6">
           {/* Submit Error Display */}
           {errors.submit && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-red-500" />
-              <p className="text-sm text-red-600">{errors.submit}</p>
+            <div className="toast-error border rounded-md p-4 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 toast-icon-error" />
+              <p className="form-error">{errors.submit}</p>
             </div>
           )}
 
@@ -473,8 +466,9 @@ const EditRecipe: React.FC = () => {
                         size="sm"
                         className="absolute top-2 right-2"
                         onClick={removeImage}
+                        leftIcon={<X className="w-4 h-4" />}
                       >
-                        <X className="w-4 h-4" />
+                        Remove Image
                       </Button>
                     </div>
                   ) : (
@@ -516,13 +510,13 @@ const EditRecipe: React.FC = () => {
                       variant="secondary"
                       size="sm"
                       onClick={addIngredient}
+                      leftIcon={<Plus className="w-4 h-4 mr-2" />}
                     >
-                      <Plus className="w-4 h-4 mr-1" />
                       Add
                     </Button>
                   </div>
                   {errors.ingredients && (
-                    <p className="text-sm text-red-600">{errors.ingredients}</p>
+                    <p className="text-sm text-accent-600 dark:text-accent-400">{errors.ingredients}</p>
                   )}
                 </CardHeader>
                 <CardBody className="space-y-3">
@@ -540,8 +534,9 @@ const EditRecipe: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => removeIngredient(index)}
+                          leftIcon={<Minus className="w-4 h-4" />}
                         >
-                          <Minus className="w-4 h-4" />
+                          Remove
                         </Button>
                       )}
                     </div>
@@ -654,8 +649,9 @@ const EditRecipe: React.FC = () => {
                       type="button"
                       onClick={addTag}
                       disabled={!newTag.trim()}
+                      leftIcon={<Plus className="w-4 h-4" />}
                     >
-                      <Plus className="w-4 h-4" />
+                      Add Tag
                     </Button>
                   </div>
 
@@ -671,7 +667,7 @@ const EditRecipe: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => removeTag(tag)}
-                            className="hover:text-red-600"
+                            className="hover:text-accent-600 dark:hover:text-accent-400"
                           >
                             <X className="w-3 h-3" />
                           </button>

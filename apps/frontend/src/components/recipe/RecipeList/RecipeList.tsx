@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { Grid, List, ChevronLeft, ChevronRight, ChefHat } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChefHat } from 'lucide-react'
 
 // UI Components
 import { Button, Card } from '@/components/ui'
@@ -18,7 +18,6 @@ export interface RecipeListProps {
     loading?: boolean
     error?: string | null
     viewMode?: 'grid' | 'list'
-    onViewModeChange?: (mode: 'grid' | 'list') => void
     pagination?: PaginationInfo
     onPageChange?: (page: number) => void
     onEdit?: (recipeId: string) => void
@@ -34,7 +33,6 @@ const RecipeList: React.FC<RecipeListProps> = ({
     loading = false,
     error = null,
     viewMode = 'grid',
-    onViewModeChange,
     pagination,
     onPageChange,
     onEdit,
@@ -106,16 +104,14 @@ const RecipeList: React.FC<RecipeListProps> = ({
                     : 'grid-cols-1'
                     }`}>
                     {Array.from({ length: 8 }).map((_, index) => (
-                        <div key={index} className="animate-pulse">
-                            <div className="bg-secondary-200 dark:bg-secondary-700 rounded-lg overflow-hidden">
-                                <div className="h-48 bg-secondary-300 dark:bg-secondary-600"></div>
-                                <div className="p-4 space-y-3">
-                                    <div className="h-4 bg-secondary-300 dark:bg-secondary-600 rounded w-3/4"></div>
-                                    <div className="h-3 bg-secondary-300 dark:bg-secondary-600 rounded w-1/2"></div>
-                                    <div className="flex space-x-4">
-                                        <div className="h-3 bg-secondary-300 dark:bg-secondary-600 rounded w-16"></div>
-                                        <div className="h-3 bg-secondary-300 dark:bg-secondary-600 rounded w-16"></div>
-                                    </div>
+                        <div key={index} className="skeleton-card">
+                            <div className="skeleton-image"></div>
+                            <div className="space-y-3">
+                                <div className="skeleton-title w-3/4"></div>
+                                <div className="skeleton-text w-1/2"></div>
+                                <div className="flex space-x-4">
+                                    <div className="skeleton-text w-16"></div>
+                                    <div className="skeleton-text w-16"></div>
                                 </div>
                             </div>
                         </div>
@@ -162,63 +158,21 @@ const RecipeList: React.FC<RecipeListProps> = ({
 
     return (
         <div className={`space-y-6 ${className}`}>
-            {/* View Controls and Results Count */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="text-sm text-secondary-600 dark:text-secondary-400">
-                    {pagination ? (
-                        <>
-                            Showing {((pagination.page - 1) * pagination.limit) + 1}-
-                            {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                            {pagination.total.toLocaleString()} recipes
-                        </>
-                    ) : (
-                        `${recipes.length} recipe${recipes.length !== 1 ? 's' : ''}`
-                    )}
-                </div>
-
-                {onViewModeChange && (
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant={viewMode === 'grid' ? 'primary' : 'ghost'}
-                            size="sm"
-                            onClick={() => onViewModeChange('grid')}
-                            aria-label="Grid view"
-                            aria-pressed={viewMode === 'grid'}
-                        >
-                            <Grid className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant={viewMode === 'list' ? 'primary' : 'ghost'}
-                            size="sm"
-                            onClick={() => onViewModeChange('list')}
-                            aria-label="List view"
-                            aria-pressed={viewMode === 'list'}
-                        >
-                            <List className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-            </div>
-
             {/* Recipe Grid/List */}
-            <div
-                className={`grid gap-6 ${viewMode === 'grid'
-                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                    : 'grid-cols-1'
-                    }`}
-                role="list"
-                aria-label="Recipe list"
-            >
+            <div className={`grid gap-6 ${viewMode === 'grid'
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                : 'grid-cols-1 max-w-4xl mx-auto'
+                }`}>
                 {recipes.map((recipe) => (
-                    <div key={recipe.id} role="listitem">
-                        <RecipeCard
-                            recipe={recipe}
-                            viewMode={viewMode}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                            currentUserId={currentUserId}
-                        />
-                    </div>
+                    <RecipeCard
+                        key={recipe.id}
+                        recipe={recipe}
+                        viewMode={viewMode}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        currentUserId={currentUserId}
+                        showActions={true}
+                    />
                 ))}
             </div>
 
@@ -238,8 +192,7 @@ const RecipeList: React.FC<RecipeListProps> = ({
                                 disabled={!pagination.hasPrev}
                                 className="flex items-center"
                                 aria-label="Previous page"
-                            >
-                                <ChevronLeft className="h-4 w-4 mr-1" />
+                                leftIcon={<ChevronLeft className="h-4 w-4" />}>
                                 <span className="hidden sm:inline">Previous</span>
                             </Button>
                         </li>
@@ -273,9 +226,8 @@ const RecipeList: React.FC<RecipeListProps> = ({
                                 disabled={!pagination.hasNext}
                                 className="flex items-center"
                                 aria-label="Next page"
-                            >
+                                rightIcon={<ChevronRight className="h-4 w-4" />}>
                                 <span className="hidden sm:inline">Next</span>
-                                <ChevronRight className="h-4 w-4 ml-1" />
                             </Button>
                         </li>
                     </ul>

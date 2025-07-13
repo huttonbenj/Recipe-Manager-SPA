@@ -15,7 +15,7 @@ import {
 // UI Components
 import {
   Card, CardHeader, CardBody,
-  Button, Loading, Modal, Badge
+  Button, Loading, Modal, ImageBadge
 } from '@/components/ui'
 
 // Services and hooks
@@ -180,9 +180,8 @@ const RecipeDetail: React.FC = () => {
           <Button
             variant="outline"
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 w-fit"
-          >
-            <ArrowLeft className="w-4 h-4" />
+            className="w-fit"
+            leftIcon={<ArrowLeft className="w-4 h-4" />}>
             Back to Recipes
           </Button>
 
@@ -191,10 +190,8 @@ const RecipeDetail: React.FC = () => {
             <Button
               variant="outline"
               onClick={handleShare}
-              className="flex items-center gap-1.5"
               aria-label="Share recipe"
-            >
-              <Share2 className="w-4 h-4" />
+              leftIcon={<Share2 className="w-4 h-4" />}>
               <span className="hidden sm:inline">Share</span>
             </Button>
 
@@ -204,13 +201,9 @@ const RecipeDetail: React.FC = () => {
                   variant={isFavorited(recipe.id) ? "primary" : "outline"}
                   onClick={() => toggleFavorite(recipe.id, isFavorited(recipe.id))}
                   disabled={isAddingToFavorites || isRemovingFromFavorites}
-                  className="flex items-center gap-1.5"
                   aria-label={isFavorited(recipe.id) ? "Remove from favorites" : "Add to favorites"}
                   aria-pressed={isFavorited(recipe.id)}
-                >
-                  <Heart
-                    className={`w-4 h-4 ${isFavorited(recipe.id) ? 'fill-current' : ''}`}
-                  />
+                  leftIcon={<Heart className={`w-4 h-4 ${isFavorited(recipe.id) ? 'fill-current' : ''}`} />}>
                   <span className="hidden sm:inline">
                     {isFavorited(recipe.id) ? 'Favorited' : 'Favorite'}
                   </span>
@@ -219,13 +212,9 @@ const RecipeDetail: React.FC = () => {
                   variant={isBookmarked(recipe.id) ? "primary" : "outline"}
                   onClick={() => toggleBookmark(recipe.id, isBookmarked(recipe.id))}
                   disabled={isAddingToBookmarks || isRemovingFromBookmarks}
-                  className="flex items-center gap-1.5"
                   aria-label={isBookmarked(recipe.id) ? "Remove bookmark" : "Bookmark recipe"}
                   aria-pressed={isBookmarked(recipe.id)}
-                >
-                  <Bookmark
-                    className={`w-4 h-4 ${isBookmarked(recipe.id) ? 'fill-current' : ''}`}
-                  />
+                  leftIcon={<Bookmark className={`w-4 h-4 ${isBookmarked(recipe.id) ? 'fill-current' : ''}`} />}>
                   <span className="hidden sm:inline">
                     {isBookmarked(recipe.id) ? 'Bookmarked' : 'Bookmark'}
                   </span>
@@ -238,17 +227,13 @@ const RecipeDetail: React.FC = () => {
                 <Button
                   variant="secondary"
                   onClick={() => navigate(`/recipes/${id}/edit`)}
-                  className="flex items-center gap-1.5"
-                >
-                  <Edit3 className="w-4 h-4" />
+                  leftIcon={<Edit3 className="w-4 h-4" />}>
                   <span className="hidden sm:inline">Edit</span>
                 </Button>
                 <Button
                   variant="danger"
                   onClick={handleDelete}
-                  className="flex items-center gap-1.5"
-                >
-                  <Trash2 className="w-4 h-4" />
+                  leftIcon={<Trash2 className="w-4 h-4" />}>
                   <span className="hidden sm:inline">Delete</span>
                 </Button>
               </>
@@ -262,19 +247,6 @@ const RecipeDetail: React.FC = () => {
             {/* Recipe Header */}
             <Card variant="bordered">
               <CardHeader className="pb-0">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {recipe.tags?.map((tag: string) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                  {recipe.difficulty && (
-                    <Badge variant={getDifficultyVariant(recipe.difficulty)}>
-                      {recipe.difficulty}
-                    </Badge>
-                  )}
-                </div>
-
                 <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
                   {recipe.title}
                 </h1>
@@ -338,12 +310,30 @@ const RecipeDetail: React.FC = () => {
                   alt={recipe.title}
                   className="w-full h-auto object-cover"
                 />
+                {/* Image badges */}
+                <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+                  {recipe.difficulty && (
+                    <ImageBadge
+                      variant={getDifficultyVariant(recipe.difficulty) as 'success' | 'warning' | 'danger' | 'info' | 'default'}
+                    >
+                      {recipe.difficulty}
+                    </ImageBadge>
+                  )}
+                  {recipe.tags?.slice(0, 2).map((tag: string) => (
+                    <ImageBadge
+                      key={tag}
+                      variant="default"
+                    >
+                      {tag}
+                    </ImageBadge>
+                  ))}
+                </div>
                 <Button
                   variant="ghost"
-                  className="absolute bottom-4 right-4 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-secondary-700"
+                  className="absolute bottom-4 right-4 bg-white/90 dark:bg-secondary-800 backdrop-blur-sm hover:bg-white dark:hover:bg-secondary-700 text-secondary-900 dark:text-secondary-100"
                   onClick={() => setIsImageModalOpen(true)}
+                  leftIcon={<Camera className="w-4 h-4" />}
                 >
-                  <Camera className="w-4 h-4 mr-2" />
                   View Full Image
                 </Button>
               </div>
@@ -353,7 +343,7 @@ const RecipeDetail: React.FC = () => {
             <Card variant="bordered">
               <CardHeader>
                 <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
-                  <span className="bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-300 p-1.5 rounded-md mr-2">
+                  <span className="bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 p-1.5 rounded-md mr-2">
                     <ChefHat className="w-5 h-5" />
                   </span>
                   Ingredients
@@ -389,7 +379,7 @@ const RecipeDetail: React.FC = () => {
             <Card variant="bordered">
               <CardHeader>
                 <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
-                  <span className="bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-300 p-1.5 rounded-md mr-2">
+                  <span className="bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 p-1.5 rounded-md mr-2">
                     <ChevronRight className="w-5 h-5" />
                   </span>
                   Instructions
@@ -408,7 +398,7 @@ const RecipeDetail: React.FC = () => {
                           {checkedInstructions.has(index) ? (
                             <CheckCircle className="w-6 h-6 text-primary-500 dark:text-primary-400" />
                           ) : (
-                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-300 font-medium">
+                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 font-medium border border-primary-200 dark:border-primary-700 shadow-sm">
                               {index + 1}
                             </div>
                           )}
@@ -436,7 +426,7 @@ const RecipeDetail: React.FC = () => {
                     About the Author
                   </h3>
                   <div className="flex items-center mb-4">
-                    <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-700 dark:text-primary-300 mr-3">
+                    <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-800 flex items-center justify-center text-primary-700 dark:text-primary-100 mr-3">
                       <User className="w-5 h-5" />
                     </div>
                     <div>

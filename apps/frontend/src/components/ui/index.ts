@@ -40,6 +40,7 @@ export {
 } from './Loading/Loading'
 
 export { default as Badge } from './Badge'
+export { default as ImageBadge } from './ImageBadge'
 
 // Toast Notifications
 export { default as Toast } from './Toast'

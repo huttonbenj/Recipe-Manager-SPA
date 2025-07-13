@@ -73,35 +73,35 @@ const quickFilters = [
         key: 'popular',
         label: 'Trending',
         icon: TrendingUp,
-        color: 'from-purple-500 to-pink-500',
+        color: 'from-purple-500 to-purple-600',
         description: 'Most loved recipes'
     },
     {
         key: 'quick',
         label: 'Quick & Easy',
         icon: Clock,
-        color: 'from-green-500 to-teal-500',
+        color: 'from-emerald-500 to-emerald-600',
         description: 'Ready in 30 minutes'
     },
     {
         key: 'easy',
         label: 'Beginner Friendly',
         icon: ChefHat,
-        color: 'from-blue-500 to-cyan-500',
+        color: 'from-blue-500 to-blue-600',
         description: 'Perfect for new cooks'
     },
     {
         key: 'favorites',
         label: 'Community Favorites',
         icon: Heart,
-        color: 'from-red-500 to-pink-500',
+        color: 'from-red-500 to-red-600',
         description: 'Highly rated recipes'
     },
     {
         key: 'healthy',
         label: 'Healthy Options',
         icon: Utensils,
-        color: 'from-emerald-500 to-green-500',
+        color: 'from-emerald-500 to-emerald-600',
         description: 'Nutritious and delicious'
     }
 ]
@@ -269,38 +269,22 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                     const isActive = filters.quickFilter === filter.key
                     const Icon = filter.icon
                     return (
-                        <button
+                        <Button
                             key={filter.key}
                             onClick={() => handleQuickFilter(filter.key)}
-                            className={`
-                                relative overflow-hidden rounded-lg p-4 text-left transition-all duration-300
-                                ${isActive
-                                    ? `bg-gradient-to-r ${filter.color} text-white shadow-md transform scale-[1.02]`
-                                    : 'bg-white dark:bg-secondary-800 hover:bg-secondary-50 dark:hover:bg-secondary-700 border border-secondary-200 dark:border-secondary-700'
-                                }
-                            `}
+                            variant={isActive ? 'primary' : 'secondary'}
+                            size="md"
+                            className="relative overflow-hidden rounded-lg text-left transition-all duration-300"
                             aria-pressed={isActive}
                         >
-                            <div className="flex items-center gap-3">
-                                <div className={`
-                                    rounded-full p-2
-                                    ${isActive
-                                        ? 'bg-white/20'
-                                        : 'bg-gradient-to-r ' + filter.color + ' text-white'
-                                    }
-                                `}>
-                                    <Icon className="h-4 w-4" />
-                                </div>
-                                <div>
-                                    <div className={`font-medium ${isActive ? 'text-white' : 'text-secondary-900 dark:text-secondary-100'}`}>
-                                        {filter.label}
-                                    </div>
-                                    <div className={`text-xs ${isActive ? 'text-white/80' : 'text-secondary-500 dark:text-secondary-400'}`}>
-                                        {filter.description}
-                                    </div>
-                                </div>
-                            </div>
-                        </button>
+                            <span className={`rounded-full p-2 ${isActive ? 'bg-white/20' : ''}`}>
+                                <Icon className="h-4 w-4" />
+                            </span>
+                            <span className="ml-3">
+                                <div className={`font-medium ${isActive ? 'text-white' : 'text-secondary-900 dark:text-secondary-100'}`}>{filter.label}</div>
+                                <div className={`text-xs ${isActive ? 'text-white/80' : 'text-secondary-500 dark:text-secondary-400'}`}>{filter.description}</div>
+                            </span>
+                        </Button>
                     )
                 })}
             </div>

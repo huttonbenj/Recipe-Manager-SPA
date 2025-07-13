@@ -95,10 +95,7 @@ const Bookmarks: React.FC = () => {
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
                         <Link to="/recipes">
-                            <Button variant="ghost" className="flex items-center gap-2">
-                                <ArrowLeft className="w-4 h-4" />
-                                Back to Recipes
-                            </Button>
+                            <Button variant="ghost" leftIcon={<ArrowLeft className="w-4 h-4" />}>Back to Recipes</Button>
                         </Link>
                         <div>
                             <h1 className="text-3xl font-bold text-foreground dark:text-foreground-dark flex items-center gap-2">
@@ -118,15 +115,17 @@ const Bookmarks: React.FC = () => {
                                 variant={viewMode === 'grid' ? 'primary' : 'ghost'}
                                 onClick={() => setViewMode('grid')}
                                 className="p-2"
+                                leftIcon={<Grid className="w-4 h-4" />}
                             >
-                                <Grid className="w-4 h-4" />
+                                <span className="sr-only">Grid view</span>
                             </Button>
                             <Button
                                 variant={viewMode === 'list' ? 'primary' : 'ghost'}
                                 onClick={() => setViewMode('list')}
                                 className="p-2"
+                                leftIcon={<List className="w-4 h-4" />}
                             >
-                                <List className="w-4 h-4" />
+                                <span className="sr-only">List view</span>
                             </Button>
                         </div>
                     )}

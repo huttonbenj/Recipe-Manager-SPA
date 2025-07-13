@@ -226,7 +226,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
         <div className={`relative ${className}`}>
             <form onSubmit={handleSubmit} className="flex gap-3">
                 <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-secondary-400 dark:text-secondary-500 z-10" />
                     <Input
                         ref={searchInputRef}
                         type="text"
@@ -242,7 +242,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
                         <button
                             type="button"
                             onClick={clearSearch}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-secondary-400 dark:text-secondary-500 hover:text-secondary-600 dark:hover:text-secondary-300 z-10"
                         >
                             <X className="h-4 w-4" />
                         </button>
@@ -259,11 +259,11 @@ const SearchForm: React.FC<SearchFormProps> = ({
                     ref={dropdownRef}
                     className="absolute top-full left-0 right-0 mt-2 z-50"
                 >
-                    <Card className="py-2 shadow-lg border border-gray-200 bg-white">
+                    <Card className="py-2 shadow-lg border border-secondary-200 dark:border-secondary-700 bg-white dark:bg-secondary-800">
                         {/* Search History */}
                         {showHistory && relevantHistory.length > 0 && (
                             <div className="mb-2">
-                                <div className="flex items-center justify-between px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                <div className="flex items-center justify-between px-4 py-2 text-xs font-medium text-secondary-500 dark:text-secondary-400 uppercase tracking-wide">
                                     <div className="flex items-center">
                                         <Clock className="h-3 w-3 mr-1" />
                                         Recent Searches
@@ -271,7 +271,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
                                     {searchHistory.length > 0 && (
                                         <button
                                             onClick={clearHistory}
-                                            className="text-gray-400 hover:text-gray-600"
+                                            className="text-secondary-400 dark:text-secondary-500 hover:text-secondary-600 dark:hover:text-secondary-300"
                                         >
                                             Clear
                                         </button>
@@ -281,9 +281,9 @@ const SearchForm: React.FC<SearchFormProps> = ({
                                     <button
                                         key={`history-${index}`}
                                         onClick={() => handleSuggestionClick(item)}
-                                        className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center text-sm text-gray-700"
+                                        className="w-full text-left px-4 py-2 hover:bg-secondary-50 dark:hover:bg-secondary-700 flex items-center text-sm text-secondary-700 dark:text-secondary-200"
                                     >
-                                        <Clock className="h-4 w-4 mr-3 text-gray-400" />
+                                        <Clock className="h-4 w-4 mr-3 text-secondary-400 dark:text-secondary-500" />
                                         {item}
                                     </button>
                                 ))}
@@ -294,9 +294,9 @@ const SearchForm: React.FC<SearchFormProps> = ({
                         {showSuggestions && filteredSuggestions.length > 0 && (
                             <div>
                                 {relevantHistory.length > 0 && (
-                                    <div className="border-t border-gray-100 my-2" />
+                                    <div className="border-t border-secondary-100 dark:border-secondary-700 my-2" />
                                 )}
-                                <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                <div className="px-4 py-2 text-xs font-medium text-secondary-500 dark:text-secondary-400 uppercase tracking-wide">
                                     <div className="flex items-center">
                                         <TrendingUp className="h-3 w-3 mr-1" />
                                         {searchQuery.trim() ? 'Suggestions' : 'Popular Searches'}
@@ -306,9 +306,9 @@ const SearchForm: React.FC<SearchFormProps> = ({
                                     <button
                                         key={`suggestion-${index}`}
                                         onClick={() => handleSuggestionClick(suggestion)}
-                                        className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center text-sm text-gray-700"
+                                        className="w-full text-left px-4 py-2 hover:bg-secondary-50 dark:hover:bg-secondary-700 flex items-center text-sm text-secondary-700 dark:text-secondary-200"
                                     >
-                                        <Search className="h-4 w-4 mr-3 text-gray-400" />
+                                        <Search className="h-4 w-4 mr-3 text-secondary-400 dark:text-secondary-500" />
                                         {suggestion}
                                     </button>
                                 ))}
@@ -317,7 +317,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
 
                         {/* Empty State */}
                         {(!filteredSuggestions.length && !relevantHistory.length) && (
-                            <div className="px-4 py-6 text-center text-gray-500 text-sm">
+                            <div className="px-4 py-6 text-center text-secondary-500 dark:text-secondary-400 text-sm">
                                 No suggestions available
                             </div>
                         )}

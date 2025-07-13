@@ -33,12 +33,12 @@ const NotFound: React.FC = () => {
       description: 'Return to the main page',
       icon: Home,
       href: '/',
-      color: 'text-blue-600 dark:text-blue-400'
+      color: 'text-primary-600 dark:text-primary-400'
     }
   ]
 
   return (
-    <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center px-4">
+    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 flex items-center justify-center px-4">
       <div className="max-w-2xl mx-auto text-center">
         {/* 404 Illustration */}
         <div className="mb-8">
@@ -50,7 +50,7 @@ const NotFound: React.FC = () => {
 
         {/* Error Message */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-4">
+          <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-4">
             Oops! Page Not Found
           </h1>
           <p className="text-lg text-secondary-600 dark:text-secondary-400 mb-2">
@@ -95,7 +95,7 @@ const NotFound: React.FC = () => {
                 >
                   <div className="flex flex-col items-center text-center">
                     <Icon className={`w-12 h-12 mb-3 ${suggestion.color}`} />
-                    <h3 className="font-semibold text-foreground dark:text-foreground-dark mb-2">
+                    <h3 className="font-semibold text-secondary-900 dark:text-secondary-100 mb-2">
                       {suggestion.title}
                     </h3>
                     <p className="text-sm text-secondary-600 dark:text-secondary-400">

@@ -7,7 +7,7 @@ import React from 'react'
 import { cn } from '@/utils'
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'link';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'outline-white' | 'link';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   isFullWidth?: boolean;
@@ -40,7 +40,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       danger: 'btn-danger',
       ghost: 'btn-ghost',
       outline: 'btn-outline',
-      link: 'underline text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 p-0 bg-transparent hover:bg-transparent shadow-none transform-none'
+      'outline-white': 'btn-outline-white',
+      link: 'btn-link'
     };
 
     // Size classes

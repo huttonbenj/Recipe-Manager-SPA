@@ -3,9 +3,9 @@
  * Main landing page with hero section, featured recipes, and quick actions
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, Clock, TrendingUp, ChefHat, Heart, Bookmark, ArrowRight, Sparkles, Utensils, Users } from 'lucide-react'
+import { Plus, Search, Clock, TrendingUp, ChefHat, Heart, Bookmark, ArrowRight, Sparkles, Utensils, Users, User } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 
 // UI Components
@@ -35,21 +35,21 @@ const quickActions = [
     description: 'Explore new flavors',
     icon: Search,
     href: '/recipes',
-    color: 'from-emerald-500 to-green-600'
+    color: 'from-emerald-500 to-emerald-600'
   },
   {
     title: 'Quick Recipes',
     description: 'Ready in 30 minutes',
     icon: Clock,
     href: '/recipes?filter=quick',
-    color: 'from-amber-500 to-orange-600'
+    color: 'from-amber-500 to-amber-600'
   },
   {
     title: 'Popular',
     description: 'Community favorites',
     icon: TrendingUp,
     href: '/recipes?filter=popular',
-    color: 'from-purple-500 to-violet-600'
+    color: 'from-purple-500 to-purple-600'
   }
 ]
 
@@ -57,13 +57,54 @@ const Home: React.FC = () => {
   const { user, isAuthenticated } = useAuth()
   const { theme } = useTheme()
   const [showThemeAnimation, setShowThemeAnimation] = useState(false)
+  const [isPageLoaded, setIsPageLoaded] = useState(false)
+
+  // Refs for scroll animations
+  const quickActionsRef = useRef<HTMLDivElement>(null)
+  const themeShowcaseRef = useRef<HTMLDivElement>(null)
+  const featuredRecipesRef = useRef<HTMLDivElement>(null)
+  const featuresRef = useRef<HTMLDivElement>(null)
+  const ctaRef = useRef<HTMLDivElement>(null)
 
   // Fade in elements on load
   useEffect(() => {
+    const pageLoadTimer = setTimeout(() => {
+      setIsPageLoaded(true)
+    }, 100) // Small delay to prevent initial animation glitches
+
     const timer = setTimeout(() => {
       setShowThemeAnimation(true)
     }, 500)
-    return () => clearTimeout(timer)
+
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    const sections = [quickActionsRef, themeShowcaseRef, featuredRecipesRef, featuresRef, ctaRef]
+    sections.forEach((ref) => {
+      if (ref.current) {
+        observer.observe(ref.current)
+      }
+    })
+
+    return () => {
+      clearTimeout(pageLoadTimer)
+      clearTimeout(timer)
+      sections.forEach((ref) => {
+        if (ref.current) {
+          observer.unobserve(ref.current)
+        }
+      })
+    }
   }, [])
 
   // Fetch featured recipes from API
@@ -77,51 +118,50 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900">
       {/* Hero Section V3: Elegant Gradient Waves */}
-      <section className="relative h-screen flex items-center overflow-hidden">
+      <section className={`relative h-screen flex items-center overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-700 to-secondary-900 dark:from-primary-800 dark:via-primary-900 dark:to-secondary-950"></div>
 
         {/* Floating Icons & Texture */}
-        <div className="absolute inset-0 z-0 opacity-10">
-          <div className="absolute inset-0" style={{
+        <div className="absolute inset-0 z-10 opacity-10">
+          <div className={`absolute inset-0 ${isPageLoaded ? 'animate-slow-pan' : ''}`} style={{
             backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
             backgroundSize: '40px 40px',
-            animation: 'slow-pan 60s linear infinite'
           }}></div>
         </div>
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute top-1/4 left-[10%] animate-float-slow opacity-20 hidden sm:block">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
+          <div className={`absolute top-1/4 left-[10%] opacity-20 hidden sm:block ${isPageLoaded ? 'animate-float-slow' : ''}`}>
             <Utensils className="w-16 h-16 md:w-24 md:h-24 text-white" />
           </div>
-          <div className="absolute top-1/3 right-[15%] animate-float-medium opacity-20 hidden sm:block">
+          <div className={`absolute top-1/3 right-[15%] opacity-20 hidden sm:block ${isPageLoaded ? 'animate-float-medium' : ''}`}>
             <ChefHat className="w-12 h-12 md:w-16 md:h-16 text-white" />
           </div>
-          <div className="absolute bottom-1/4 left-[20%] animate-float-fast opacity-20 hidden sm:block">
+          <div className={`absolute bottom-1/4 left-[20%] opacity-20 hidden sm:block ${isPageLoaded ? 'animate-float-fast' : ''}`}>
             <Heart className="w-8 h-8 md:w-12 md:h-12 text-white" />
           </div>
-          <div className="absolute top-[15%] right-[30%] animate-float-medium opacity-15 hidden md:block">
+          <div className={`absolute top-[15%] right-[30%] opacity-15 hidden md:block ${isPageLoaded ? 'animate-float-medium' : ''}`}>
             <Search className="w-14 h-14 lg:w-20 lg:h-20 text-white" />
           </div>
-          <div className="absolute bottom-[30%] right-[25%] animate-float-slow opacity-15 hidden md:block">
+          <div className={`absolute bottom-[30%] right-[25%] opacity-15 hidden md:block ${isPageLoaded ? 'animate-float-slow' : ''}`}>
             <Bookmark className="w-10 h-10 lg:w-14 lg:h-14 text-white" />
           </div>
         </div>
 
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
           <div className="text-center md:text-left">
-            <div className="inline-flex items-center mb-4 sm:mb-6 bg-white/10 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-primary-50 animate-fade-in">
+            <div className={`inline-flex items-center mb-4 sm:mb-6 bg-white/10 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-primary-50 ${isPageLoaded ? 'animate-fade-in' : 'opacity-0'}`}>
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
               <span className="text-xs sm:text-sm font-medium">{isAuthenticated ? 'Welcome back to your kitchen' : 'Discover, Cook, Share'}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 sm:mb-6 text-white drop-shadow-md animate-slide-up">
+            <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 sm:mb-6 text-white drop-shadow-md ${isPageLoaded ? 'animate-slide-up' : 'opacity-0'}`}>
               {isAuthenticated ? (
                 <>Welcome back, {user?.name?.split(' ')[0] || 'Chef'}!</>
               ) : (
                 <>Craft Culinary<br />Masterpieces</>
               )}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary-100 mb-6 sm:mb-8 max-w-3xl animate-slide-up-delay">
+            <p className={`text-base sm:text-lg md:text-xl lg:text-2xl text-primary-100 mb-6 sm:mb-8 max-w-3xl ${isPageLoaded ? 'animate-slide-up-delay' : 'opacity-0'}`}>
               {isAuthenticated ? (
                 'Your personal cookbook is ready. Explore new recipes or add your own creations.'
               ) : (
@@ -130,25 +170,23 @@ const Home: React.FC = () => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start animate-slide-up-delay-2">
+            <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start ${isPageLoaded ? 'animate-slide-up-delay-2' : 'opacity-0'}`}>
               {isAuthenticated ? (
                 <>
                   <Link to="/recipes/create">
                     <Button
                       size="lg"
-                      className="w-full sm:w-auto bg-white text-primary-700 hover:bg-primary-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                    >
-                      <Plus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                      className="w-full sm:w-auto"
+                      leftIcon={<Plus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />}>
                       Create Recipe
                     </Button>
                   </Link>
                   <Link to="/recipes">
                     <Button
-                      variant="outline"
+                      variant="outline-white"
                       size="lg"
-                      className="w-full sm:w-auto mt-2 sm:mt-0 border-2 border-white text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-105"
-                    >
-                      <Search className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                      className="w-full sm:w-auto mt-2 sm:mt-0"
+                      leftIcon={<Search className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />}>
                       Explore Recipes
                     </Button>
                   </Link>
@@ -158,17 +196,17 @@ const Home: React.FC = () => {
                   <Link to="/register">
                     <Button
                       size="lg"
-                      className="w-full sm:w-auto bg-white text-primary-700 hover:bg-primary-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                    >
+                      className="w-full sm:w-auto"
+                      leftIcon={<User className="mr-2 h-4 w-4" />}>
                       Get Started For Free
                     </Button>
                   </Link>
                   <Link to="/login">
                     <Button
-                      variant="outline"
+                      variant="outline-white"
                       size="lg"
-                      className="w-full sm:w-auto mt-2 sm:mt-0 border-2 border-white text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-105"
-                    >
+                      className="w-full sm:w-auto mt-2 sm:mt-0"
+                      leftIcon={<Search className="mr-2 h-4 w-4" />}>
                       Sign In
                     </Button>
                   </Link>
@@ -194,12 +232,12 @@ const Home: React.FC = () => {
 
       {/* Quick Actions Section - Only for authenticated users */}
       {isAuthenticated && (
-        <section className="py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
+        <section ref={quickActionsRef} className="section-reveal py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12">
-              <div className="inline-flex items-center justify-center mb-3 sm:mb-4 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full">
+              <div className="inline-flex items-center justify-center mb-3 sm:mb-4 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border badge-theme-section">
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-                <span className="text-xs sm:text-sm font-medium">Quick Access</span>
+                <span className="text-xs sm:text-sm font-medium">Quick Actions</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2 sm:mb-4">
                 What would you like to do today?
@@ -240,11 +278,11 @@ const Home: React.FC = () => {
 
       {/* Theme Showcase Section - Only for authenticated users */}
       {isAuthenticated && (
-        <section className="py-10 sm:py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900 overflow-hidden">
+        <section ref={themeShowcaseRef} className="section-reveal py-10 sm:py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
               <div className="md:w-1/2 space-y-4 sm:space-y-6">
-                <div className="inline-flex items-center bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full">
+                <div className="inline-flex items-center backdrop-blur-sm px-3 py-1 rounded-full border badge-theme-section">
                   <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                   <span className="text-xs sm:text-sm font-medium">Personalization</span>
                 </div>
@@ -293,13 +331,13 @@ const Home: React.FC = () => {
       )}
 
       {/* Featured Recipes Section */}
-      <section className="py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
+      <section ref={featuredRecipesRef} className="section-reveal py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 sm:mb-12">
             <div className="text-center sm:text-left mb-4 sm:mb-0">
-              <div className="inline-flex items-center mb-3 sm:mb-4 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full">
+              <div className="inline-flex items-center mb-3 sm:mb-4 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border badge-theme-section">
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-                <span className="text-xs sm:text-sm font-medium">Featured</span>
+                <span className="text-xs sm:text-sm font-medium">Popular Recipes</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
                 Featured Recipes
@@ -319,13 +357,13 @@ const Home: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {[...Array(3)].map((_, index) => (
                 <Card key={index} className="overflow-hidden animate-pulse" variant="bordered" padding="none">
-                  <div className="h-40 sm:h-48 bg-secondary-300 dark:bg-secondary-700"></div>
+                  <div className="skeleton-image h-40 sm:h-48"></div>
                   <div className="p-4 sm:p-6">
-                    <div className="h-5 sm:h-6 bg-secondary-300 dark:bg-secondary-700 rounded mb-2"></div>
-                    <div className="h-3 sm:h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-3/4 mb-4"></div>
+                    <div className="skeleton-title mb-2"></div>
+                    <div className="skeleton-text w-3/4 mb-4"></div>
                     <div className="flex justify-between">
-                      <div className="h-3 sm:h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-1/4"></div>
-                      <div className="h-3 sm:h-4 bg-secondary-300 dark:bg-secondary-700 rounded w-1/4"></div>
+                      <div className="skeleton-text w-1/4"></div>
+                      <div className="skeleton-text w-1/4"></div>
                     </div>
                   </div>
                 </Card>
@@ -357,10 +395,7 @@ const Home: React.FC = () => {
                 Be the first to create and share a delicious recipe with our community!
               </p>
               <Link to="/recipes/create">
-                <Button className="shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                  <Plus className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                  Create Recipe
-                </Button>
+                <Button className="shadow-md" leftIcon={<Plus className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />}>Create Recipe</Button>
               </Link>
             </Card>
           )}
@@ -368,16 +403,16 @@ const Home: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-10 sm:py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900 relative overflow-hidden">
+      <section ref={featuresRef} className="section-reveal py-10 sm:py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary-100 dark:bg-primary-900/20 rounded-bl-full opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-primary-100 dark:bg-primary-900/20 rounded-tr-full opacity-50"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-10 sm:mb-16">
-            <div className="inline-flex items-center justify-center mb-3 sm:mb-4 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full">
+            <div className="inline-flex items-center justify-center mb-3 sm:mb-4 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border badge-theme-section">
               <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-              <span className="text-xs sm:text-sm font-medium">Features</span>
+              <span className="text-xs sm:text-sm font-medium">Why Choose Us</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2 sm:mb-4">
               Why Use Recipe Manager
@@ -446,7 +481,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
+      <section ref={ctaRef} className="section-reveal py-10 sm:py-12 md:py-16 bg-white dark:bg-secondary-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-br from-primary-600 to-primary-800 dark:from-primary-700 dark:to-primary-900 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
             <div className="relative px-5 py-8 sm:px-6 md:p-12 lg:p-16 text-center">
@@ -473,17 +508,17 @@ const Home: React.FC = () => {
                     <Link to="/recipes/create">
                       <Button
                         size="lg"
-                        className="w-full sm:w-auto bg-white text-primary-700 hover:bg-primary-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                      >
+                        className="w-full sm:w-auto"
+                        leftIcon={<Plus className="mr-2 h-4 w-4" />}>
                         Create Recipe
                       </Button>
                     </Link>
                     <Link to="/recipes">
                       <Button
-                        variant="outline"
+                        variant="outline-white"
                         size="lg"
-                        className="w-full sm:w-auto mt-2 sm:mt-0 border-2 border-white text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
-                      >
+                        className="w-full sm:w-auto mt-2 sm:mt-0"
+                        leftIcon={<Search className="mr-2 h-4 w-4" />}>
                         Browse Recipes
                       </Button>
                     </Link>
@@ -493,17 +528,17 @@ const Home: React.FC = () => {
                     <Link to="/register">
                       <Button
                         size="lg"
-                        className="w-full sm:w-auto bg-white text-primary-700 hover:bg-primary-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                      >
+                        className="w-full sm:w-auto"
+                        leftIcon={<User className="mr-2 h-4 w-4" />}>
                         Sign Up Free
                       </Button>
                     </Link>
                     <Link to="/recipes">
                       <Button
-                        variant="outline"
+                        variant="outline-white"
                         size="lg"
-                        className="w-full sm:w-auto mt-2 sm:mt-0 border-2 border-white text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
-                      >
+                        className="w-full sm:w-auto mt-2 sm:mt-0"
+                        leftIcon={<Search className="mr-2 h-4 w-4" />}>
                         Browse Recipes
                       </Button>
                     </Link>

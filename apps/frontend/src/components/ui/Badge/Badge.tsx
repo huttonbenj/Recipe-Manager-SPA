@@ -26,7 +26,7 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         ...props
     }, ref) => {
         // Base classes
-        const baseClasses = 'inline-flex items-center justify-center font-medium rounded-full transition-all';
+        const baseClasses = 'inline-flex items-center justify-center font-medium rounded-full transition-all duration-200 hover:scale-[1.02] hover:shadow-lg';
 
         // Size variants
         const sizeClasses = {
@@ -42,8 +42,8 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
             success: 'badge-success',
             warning: 'badge-warning',
             danger: 'badge-danger',
-            info: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300',
-            outline: 'border border-secondary-300 dark:border-secondary-600 text-secondary-700 dark:text-secondary-300 bg-transparent'
+            info: 'badge-primary',
+            outline: 'border border-secondary-200 dark:border-secondary-600 text-secondary-700 dark:text-secondary-300 bg-white/60 dark:bg-white/5 backdrop-blur-sm hover:bg-white/80 dark:hover:bg-white/10 hover:border-secondary-300 dark:hover:border-secondary-500'
         };
 
         return (

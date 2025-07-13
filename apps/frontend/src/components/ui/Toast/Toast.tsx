@@ -34,19 +34,19 @@ const toastStyles = {
         button: 'text-green-500 dark:text-green-300 hover:text-green-600 dark:hover:text-green-200',
     },
     error: {
-        container: 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
-        icon: 'text-red-400 dark:text-red-300',
-        button: 'text-red-500 dark:text-red-300 hover:text-red-600 dark:hover:text-red-200',
+        container: 'bg-accent-50 dark:bg-accent-900/30 border-accent-200 dark:border-accent-800 text-accent-800 dark:text-accent-200',
+        icon: 'text-accent-400 dark:text-accent-300',
+        button: 'text-accent-500 dark:text-accent-300 hover:text-accent-600 dark:hover:text-accent-200',
     },
     warning: {
-        container: 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200',
-        icon: 'text-yellow-400 dark:text-yellow-300',
-        button: 'text-yellow-500 dark:text-yellow-300 hover:text-yellow-600 dark:hover:text-yellow-200',
+        container: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200',
+        icon: 'text-amber-400 dark:text-amber-300',
+        button: 'text-amber-500 dark:text-amber-300 hover:text-amber-600 dark:hover:text-amber-200',
     },
     info: {
-        container: 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200',
-        icon: 'text-blue-400 dark:text-blue-300',
-        button: 'text-blue-500 dark:text-blue-300 hover:text-blue-600 dark:hover:text-blue-200',
+        container: 'bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-800 text-primary-800 dark:text-primary-200',
+        icon: 'text-primary-400 dark:text-primary-300',
+        button: 'text-primary-500 dark:text-primary-300 hover:text-primary-600 dark:hover:text-primary-200',
     },
 }
 
@@ -85,8 +85,8 @@ export const Toast: React.FC<ToastProps> = ({ toast, onRemove }) => {
     return (
         <div
             className={clsx(
-                'max-w-sm w-full shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 overflow-hidden transform transition-all duration-300 ease-in-out',
-                styles.container,
+                'toast',
+                `toast-${toast.type}`,
                 {
                     'translate-y-0 opacity-100 scale-100': isVisible && !isLeaving,
                     'translate-y-2 opacity-0 scale-95': !isVisible || isLeaving,
@@ -97,7 +97,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onRemove }) => {
                 <div className="flex items-start">
                     {/* Icon */}
                     <div className="flex-shrink-0">
-                        <Icon className={clsx('h-6 w-6', styles.icon)} />
+                        <Icon className={clsx('h-6 w-6', `toast-icon-${toast.type}`)} />
                     </div>
 
                     {/* Content */}
@@ -136,7 +136,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onRemove }) => {
                                 onClick={handleRemove}
                                 className={clsx(
                                     'inline-flex rounded-md p-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
-                                    styles.button,
+                                    `toast-close-${toast.type}`,
                                     'focus:ring-offset-white dark:focus:ring-offset-secondary-900 focus:ring-current'
                                 )}
                             >

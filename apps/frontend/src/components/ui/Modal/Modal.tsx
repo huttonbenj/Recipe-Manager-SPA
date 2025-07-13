@@ -7,6 +7,7 @@ import React, { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/utils'
+import Button from '@/components/ui/Button'
 
 export interface ModalProps {
   isOpen: boolean
@@ -198,11 +199,11 @@ export const ConfirmModal: React.FC<{
   cancelText = 'Cancel',
   variant = 'info',
 }) => {
-    const variantStyles = {
-      danger: 'bg-accent-600 hover:bg-accent-700 focus:ring-accent-500 dark:bg-accent-500 dark:hover:bg-accent-600',
-      warning: 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500 dark:bg-amber-500 dark:hover:bg-amber-600',
-      info: 'bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 dark:bg-primary-500 dark:hover:bg-primary-600',
-    }
+    const buttonVariantMap = {
+      danger: 'danger',
+      warning: 'secondary',
+      info: 'primary',
+    } as const;
 
     return (
       <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
@@ -211,26 +212,21 @@ export const ConfirmModal: React.FC<{
         </div>
 
         <ModalFooter>
-          <button
-            type="button"
-            className="px-4 py-2 text-sm font-medium text-secondary-700 dark:text-secondary-300 bg-white dark:bg-secondary-800 border border-secondary-300 dark:border-secondary-600 rounded-md hover:bg-secondary-50 dark:hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-primary-400 dark:focus:ring-offset-secondary-800"
+          <Button
+            variant="secondary"
             onClick={onClose}
           >
             {cancelText}
-          </button>
-          <button
-            type="button"
-            className={cn(
-              'px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-secondary-800',
-              variantStyles[variant]
-            )}
+          </Button>
+          <Button
+            variant={buttonVariantMap[variant]}
             onClick={() => {
               onConfirm()
               onClose()
             }}
           >
             {confirmText}
-          </button>
+          </Button>
         </ModalFooter>
       </Modal>
     )
