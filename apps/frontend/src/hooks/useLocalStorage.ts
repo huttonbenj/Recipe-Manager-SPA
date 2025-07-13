@@ -61,9 +61,9 @@ export function useLocalStorage<T>(
         return
       }
       
-      // For strings, store directly (tokens, etc.)
+      // For strings, store as JSON to maintain consistency
       if (typeof valueToStore === 'string') {
-        window.localStorage.setItem(key, valueToStore)
+        window.localStorage.setItem(key, JSON.stringify(valueToStore))
       } else {
         // For objects, stringify as JSON
         window.localStorage.setItem(key, JSON.stringify(valueToStore))

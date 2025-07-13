@@ -20,6 +20,9 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime in v4)
+      refetchOnWindowFocus: false, // Disable refetch on window focus
+      refetchOnMount: false, // Disable refetch on component mount
+      refetchOnReconnect: false, // Disable refetch on reconnect
       retry: (failureCount, error: any) => {
         // Don't retry on 4xx errors
         if (error?.response?.status >= 400 && error?.response?.status < 500) {

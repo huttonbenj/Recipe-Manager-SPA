@@ -58,7 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     initializeAuth()
-  }, [token]) // Only depend on token, not user or setters
+  }, []) // Only run once on mount
 
   /**
    * Login user with credentials

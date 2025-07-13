@@ -19,17 +19,15 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     const tokenRaw = localStorage.getItem(TOKEN_STORAGE_KEY)
-    if (tokenRaw) {
+    if (tokenRaw && tokenRaw !== 'null') {
       let token = tokenRaw
       
       // Handle JSON-stored tokens (from useLocalStorage)
-      if (tokenRaw.startsWith('"') && tokenRaw.endsWith('"')) {
-        try {
-          token = JSON.parse(tokenRaw)
-        } catch (error) {
-          // If JSON parsing fails, use the raw value
-          token = tokenRaw
-        }
+      try {
+        token = JSON.parse(tokenRaw)
+      } catch (error) {
+        // If JSON parsing fails, use the raw value
+        token = tokenRaw
       }
       
       // Only set authorization header if we have a valid token (not null/undefined)
