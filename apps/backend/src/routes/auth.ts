@@ -1,30 +1,27 @@
 /**
  * Authentication routes
- * TODO: Implement auth endpoints (login, register, logout, refresh)
+ * Handles user authentication endpoints
  */
 
 import { Router } from 'express'
+import authController from '../controllers/authController'
+import { authenticateToken } from '../middleware/auth'
 
 const router = Router()
 
-// POST /api/auth/login
-router.post('/login', (req, res) => {
-  res.json({ message: 'Login endpoint - TODO: implement' })
-})
+// POST /api/auth/register - Register new user
+router.post('/register', authController.register)
 
-// POST /api/auth/register
-router.post('/register', (req, res) => {
-  res.json({ message: 'Register endpoint - TODO: implement' })
-})
+// POST /api/auth/login - Login user
+router.post('/login', authController.login)
 
-// DELETE /api/auth/logout
-router.delete('/logout', (req, res) => {
-  res.json({ message: 'Logout endpoint - TODO: implement' })
-})
+// POST /api/auth/refresh - Refresh access token
+router.post('/refresh', authController.refreshToken)
 
-// POST /api/auth/refresh
-router.post('/refresh', (req, res) => {
-  res.json({ message: 'Refresh token endpoint - TODO: implement' })
-})
+// DELETE /api/auth/logout - Logout user
+router.delete('/logout', authController.logout)
+
+// GET /api/auth/me - Get current user profile (protected route)
+router.get('/me', authenticateToken, authController.getProfile)
 
 export default router

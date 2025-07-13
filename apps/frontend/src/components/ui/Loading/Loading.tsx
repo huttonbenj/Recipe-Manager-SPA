@@ -1,55 +1,142 @@
 /**
- * Loading component with different variants
+ * Loading component with various spinner types and sizes
+ * Provides flexible loading states for different use cases
  */
 
 import React from 'react'
+import { Loader2 } from 'lucide-react'
 import { cn } from '@/utils'
 
-interface LoadingProps {
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'spinner' | 'skeleton' | 'dots'
-  className?: string
+export interface LoadingProps {
+  variant?: 'spinner' | 'dots' | 'pulse' | 'skeleton'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   text?: string
+  className?: string
+  fullScreen?: boolean
+  overlay?: boolean
 }
 
-const Loading: React.FC<LoadingProps> = ({ 
-  size = 'md', 
-  variant = 'spinner', 
+const Loading: React.FC<LoadingProps> = ({
+  variant = 'spinner',
+  size = 'md',
+  text,
   className,
-  text 
+  fullScreen = false,
+  overlay = false,
 }) => {
-  if (variant === 'skeleton') {
-    return (
-      <div className={cn('animate-pulse space-y-4', className)}>
-        <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-        <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-        <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-      </div>
-    )
-  }
-
-  if (variant === 'dots') {
-    return (
-      <div className={cn('flex space-x-1 justify-center items-center', className)}>
-        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-      </div>
-    )
-  }
-
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12'
+    sm: 'w-4 h-4',
+    md: 'w-6 h-6',
+    lg: 'w-8 h-8',
+    xl: 'w-12 h-12',
   }
 
-  return (
-    <div className={cn('flex flex-col items-center justify-center space-y-2', className)}>
-      <div className={cn('animate-spin rounded-full border-2 border-gray-300 border-t-primary-600', sizeClasses[size])}></div>
-      {text && <p className="text-sm text-gray-600">{text}</p>}
+  const textSizeClasses = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg',
+    xl: 'text-xl',
+  }
+
+  const spinnerSizeClasses = {
+    sm: 'text-sm gap-2',
+    md: 'text-base gap-3',
+    lg: 'text-lg gap-4',
+    xl: 'text-xl gap-5',
+  }
+
+  const renderSpinner = () => {
+    switch (variant) {
+      case 'spinner':
+        return (
+          <Loader2
+            className={cn('animate-spin text-primary-600', sizeClasses[size])}
+          />
+        )
+
+      case 'dots':
+        return (
+          <div className="flex space-x-1">
+            <div className={cn('bg-primary-600 rounded-full animate-bounce', sizeClasses[size])} style={{ animationDelay: '0ms' }} />
+            <div className={cn('bg-primary-600 rounded-full animate-bounce', sizeClasses[size])} style={{ animationDelay: '150ms' }} />
+            <div className={cn('bg-primary-600 rounded-full animate-bounce', sizeClasses[size])} style={{ animationDelay: '300ms' }} />
+          </div>
+        )
+
+      case 'pulse':
+        return (
+          <div className={cn('bg-primary-600 rounded-full animate-pulse', sizeClasses[size])} />
+        )
+
+      case 'skeleton':
+        return (
+          <div className="space-y-3 w-full">
+            <div className="h-4 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" />
+          </div>
+        )
+
+      default:
+        return (
+          <Loader2
+            className={cn('animate-spin text-primary-600', sizeClasses[size])}
+          />
+        )
+    }
+  }
+
+  const loadingContent = (
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center',
+        spinnerSizeClasses[size],
+        className
+      )}
+    >
+      {renderSpinner()}
+      {text && (
+        <span className={cn('text-gray-600 font-medium', textSizeClasses[size])}>
+          {text}
+        </span>
+      )}
     </div>
   )
+
+  if (fullScreen) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+        {loadingContent}
+      </div>
+    )
+  }
+
+  if (overlay) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+        {loadingContent}
+      </div>
+    )
+  }
+
+  return loadingContent
 }
+
+// Preset loading components for common use cases
+export const PageLoading: React.FC<{ text?: string }> = ({ text = 'Loading...' }) => (
+  <Loading variant="spinner" size="lg" text={text} fullScreen />
+)
+
+export const ComponentLoading: React.FC<{ text?: string }> = ({ text }) => (
+  <Loading variant="spinner" size="md" text={text} className="py-8" />
+)
+
+export const ButtonLoading: React.FC = () => (
+  <Loading variant="spinner" size="sm" />
+)
+
+export const SkeletonLoading: React.FC<{ className?: string }> = ({ className }) => (
+  <Loading variant="skeleton" className={className} />
+)
 
 export default Loading

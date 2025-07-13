@@ -1,15 +1,31 @@
 /**
  * Upload routes
- * TODO: Implement file upload endpoints
+ * Handles file upload endpoints
  */
 
 import { Router } from 'express'
+import uploadController from '../controllers/uploadController'
+import uploadService from '../services/uploadService'
+import { authenticateToken, optionalAuth } from '../middleware/auth'
 
 const router = Router()
 
-// POST /api/upload/image
-router.post('/image', (req, res) => {
-  res.json({ message: 'Image upload endpoint - TODO: implement' })
-})
+// Configure Multer middleware
+const upload = uploadService.getMulterConfig()
+
+// POST /api/upload/image - Upload image (optional auth)
+router.post('/image', optionalAuth, upload.single('image'), uploadController.uploadImage)
+
+// DELETE /api/upload/image - Delete image (protected)
+router.delete('/image', authenticateToken, uploadController.deleteImage)
+
+// GET /api/upload/image/info - Get image info (public)
+router.get('/image/info', uploadController.getImageInfo)
+
+// GET /api/upload/stats - Get upload stats (protected)
+router.get('/stats', authenticateToken, uploadController.getUploadStats)
+
+// POST /api/upload/cleanup - Cleanup old images (protected)
+router.post('/cleanup', authenticateToken, uploadController.cleanupOldImages)
 
 export default router
