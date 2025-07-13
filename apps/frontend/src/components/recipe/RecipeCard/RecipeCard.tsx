@@ -39,6 +39,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     className = ''
 }) => {
     const [imageLoaded, setImageLoaded] = useState(false)
+    const [imageError, setImageError] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
 
     // Use favorites hook
@@ -94,7 +95,18 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
      * Get image URL with fallback
      */
     const getImageUrl = () => {
-        return recipe.imageUrl || '/api/placeholder/300/200'
+        if (imageError) {
+            return `https://images.unsplash.com/photo-1546548970-71785318a17b?w=400&h=300&fit=crop&crop=center`
+        }
+        return recipe.imageUrl || `https://images.unsplash.com/photo-1546548970-71785318a17b?w=400&h=300&fit=crop&crop=center`
+    }
+
+    /**
+     * Handle image error
+     */
+    const handleImageError = () => {
+        setImageError(true)
+        setImageLoaded(true) // Set to true to hide loading spinner
     }
 
     /**
@@ -136,6 +148,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                 className={`w-full h-full object-cover transition-all duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'
                                     } ${isHovered ? 'scale-105' : 'scale-100'}`}
                                 onLoad={() => setImageLoaded(true)}
+                                onError={handleImageError}
                             />
                             {!imageLoaded && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-secondary-200 dark:bg-secondary-700">
@@ -290,6 +303,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                         className={`w-full h-full object-cover transition-all duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'
                             } ${isHovered ? 'scale-105' : 'scale-100'}`}
                         onLoad={() => setImageLoaded(true)}
+                        onError={handleImageError}
                     />
                     {!imageLoaded && (
                         <div className="absolute inset-0 flex items-center justify-center bg-secondary-200 dark:bg-secondary-700">
