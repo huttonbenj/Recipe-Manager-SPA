@@ -250,108 +250,116 @@ interface ThemeProviderProps {
  * Persists theme preferences to localStorage
  */
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-    // Initialize theme from localStorage or defaults
-    const [colorTheme, setColorThemeState] = useState<ColorTheme>(() => {
-        const saved = localStorage.getItem('color-theme');
-        return (saved as ColorTheme) || 'default';
-    });
+    // Initialize theme state from localStorage or default
+    const [theme, setTheme] = useState<ThemeConfig>(() => {
+        const savedTheme = localStorage.getItem('theme');
+        const savedColorTheme = localStorage.getItem('colorTheme') as ColorTheme || 'default';
 
-    const [displayMode, setDisplayModeState] = useState<DisplayMode>(() => {
-        const saved = localStorage.getItem('display-mode');
-        return (saved as DisplayMode) || 'system';
-    });
-
-    // Determine if dark mode should be active
-    const [isDark, setIsDark] = useState<boolean>(() => {
-        if (displayMode === 'system') {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // Check for saved theme or use system preference
+        if (savedTheme) {
+            return {
+                displayMode: savedTheme as DisplayMode,
+                colorTheme: savedColorTheme,
+                isDark: savedTheme === 'dark' ||
+                    (savedTheme === 'system' &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches)
+            };
         }
-        return displayMode === 'dark';
+
+        // Default to system preference
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return {
+            displayMode: 'system',
+            colorTheme: savedColorTheme,
+            isDark: isDarkMode
+        };
     });
 
-    // Listen for system theme changes when in system mode
+    // Listen for system theme changes
     useEffect(() => {
-        if (displayMode !== 'system') return;
-
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
         const handleChange = (e: MediaQueryListEvent) => {
-            setIsDark(e.matches);
+            if (theme.displayMode === 'system') {
+                setTheme(prev => ({
+                    ...prev,
+                    isDark: e.matches
+                }));
+            }
         };
 
+        // Add event listener
         mediaQuery.addEventListener('change', handleChange);
+
+        // Cleanup
         return () => mediaQuery.removeEventListener('change', handleChange);
-    }, [displayMode]);
+    }, [theme.displayMode]);
 
-    // Update isDark when displayMode changes
+    // Apply theme changes to DOM
     useEffect(() => {
-        if (displayMode === 'system') {
-            setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+        // Add/remove dark class
+        if (theme.isDark) {
+            document.documentElement.classList.add('dark');
         } else {
-            setIsDark(displayMode === 'dark');
+            document.documentElement.classList.remove('dark');
         }
-    }, [displayMode]);
 
-    // Apply theme to document
-    useEffect(() => {
+        // Save preferences to localStorage
+        localStorage.setItem('theme', theme.displayMode);
+        localStorage.setItem('colorTheme', theme.colorTheme);
+
+        // Apply color theme CSS variables
         const root = document.documentElement;
 
-        // Apply color theme CSS custom properties
-        const colors = COLOR_THEMES[colorTheme];
-        Object.entries(colors).forEach(([property, value]) => {
+        // Add theme-switching class to disable transitions temporarily
+        root.classList.add('theme-switching');
+
+        // Apply the color theme variables
+        Object.entries(COLOR_THEMES[theme.colorTheme]).forEach(([property, value]) => {
             root.style.setProperty(property, value);
         });
 
-        // Apply dark mode class
-        if (isDark) {
-            root.classList.add('dark');
-        } else {
-            root.classList.remove('dark');
-        }
-    }, [colorTheme, isDark]);
+        // Re-enable transitions after a short delay
+        setTimeout(() => {
+            root.classList.remove('theme-switching');
+        }, 100);
+    }, [theme.isDark, theme.colorTheme, theme.displayMode]);
 
-    // Save preferences to localStorage
-    useEffect(() => {
-        localStorage.setItem('color-theme', colorTheme);
-    }, [colorTheme]);
-
-    useEffect(() => {
-        localStorage.setItem('display-mode', displayMode);
-    }, [displayMode]);
-
-    const setColorTheme = (theme: ColorTheme) => {
-        setColorThemeState(theme);
+    /**
+     * Set the color theme
+     */
+    const setColorTheme = (colorTheme: ColorTheme) => {
+        setTheme(prev => ({ ...prev, colorTheme }));
     };
 
-    const setDisplayMode = (mode: DisplayMode) => {
-        setDisplayModeState(mode);
+    /**
+     * Set the display mode (light/dark/system)
+     */
+    const setDisplayMode = (displayMode: DisplayMode) => {
+        const isDark = displayMode === 'dark' ||
+            (displayMode === 'system' &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        setTheme({ ...theme, displayMode, isDark });
     };
 
+    /**
+     * Toggle between light, dark, and system modes
+     */
     const toggleDisplayMode = () => {
-        if (displayMode === 'light') {
-            setDisplayMode('dark');
-        } else if (displayMode === 'dark') {
-            setDisplayMode('system');
-        } else {
-            setDisplayMode('light');
-        }
-    };
+        const modes: DisplayMode[] = ['light', 'dark', 'system'];
+        const currentIndex = modes.indexOf(theme.displayMode);
+        const nextIndex = (currentIndex + 1) % modes.length;
+        const nextMode = modes[nextIndex];
 
-    const theme: ThemeConfig = {
-        colorTheme,
-        displayMode,
-        isDark,
-    };
-
-    const value: ThemeContextValue = {
-        theme,
-        setColorTheme,
-        setDisplayMode,
-        toggleDisplayMode,
+        setDisplayMode(nextMode);
     };
 
     return (
-        <ThemeContext.Provider value={value}>
+        <ThemeContext.Provider value={{ theme, setColorTheme, setDisplayMode, toggleDisplayMode }}>
             {children}
         </ThemeContext.Provider>
     );
-}; 
+};
+
+export default ThemeContext; 

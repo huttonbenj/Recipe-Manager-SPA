@@ -261,36 +261,9 @@ const Recipes: React.FC = () => {
     }
   }
 
-  /**
-   * Handle recipe share
-   */
-  const handleRecipeShare = async (recipe: Recipe) => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: recipe.title,
-          text: recipe.description,
-          url: `${window.location.origin}/recipes/${recipe.id}`,
-        })
-        success('Recipe shared successfully!')
-      } catch (shareError) {
-        // User cancelled sharing
-        if (shareError instanceof Error && shareError.name !== 'AbortError') {
-          showError('Failed to share recipe')
-        }
-      }
-    } else {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(`${window.location.origin}/recipes/${recipe.id}`)
-        success('Recipe link copied to clipboard!')
-      } catch (clipboardError) {
-        showError('Failed to copy link to clipboard')
-      }
-    }
-  }
 
-  const recipes = recipesData?.recipes || []
+
+  const recipes: Recipe[] = recipesData?.recipes || []
   const totalCount = recipesData?.pagination?.total || 0
 
   return (
@@ -471,7 +444,6 @@ const Recipes: React.FC = () => {
             hasPrev: currentPage > 1
           } : undefined}
           onPageChange={handlePageChange}
-          onShare={handleRecipeShare}
           onEdit={handleRecipeEdit}
           onDelete={handleRecipeDelete}
           currentUserId={user?.id}

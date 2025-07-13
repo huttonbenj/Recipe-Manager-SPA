@@ -7,14 +7,16 @@ import React from 'react'
 import { cn } from '@/utils'
 
 export interface CardProps {
-  children: React.ReactNode
-  className?: string
-  variant?: 'default' | 'bordered' | 'elevated' | 'outlined'
-  padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-  hover?: boolean
-  clickable?: boolean
-  onClick?: () => void
-  as?: 'div' | 'article' | 'section'
+  children: React.ReactNode;
+  className?: string;
+  variant?: 'default' | 'bordered' | 'elevated' | 'outlined' | 'glass';
+  padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  hover?: boolean;
+  clickable?: boolean;
+  onClick?: () => void;
+  as?: 'div' | 'article' | 'section' | 'li';
+  radius?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  id?: string;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -26,47 +28,68 @@ const Card: React.FC<CardProps> = ({
   clickable = false,
   onClick,
   as: Component = 'div',
+  radius = 'lg',
+  id,
   ...props
 }) => {
+  // Base classes
+  const baseClasses = 'transition-all duration-300 ease-in-out overflow-hidden';
+
+  // Variant classes
+  const variantClasses = {
+    default: 'bg-white dark:bg-secondary-800 shadow-sm',
+    bordered: 'bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 shadow-sm',
+    elevated: 'bg-white dark:bg-secondary-800 shadow-md',
+    outlined: 'bg-transparent border-2 border-secondary-300 dark:border-secondary-600',
+    glass: 'glass-effect shadow-sm'
+  };
+
+  // Padding classes
+  const paddingClasses = {
+    none: 'p-0',
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-6',
+    xl: 'p-8'
+  };
+
+  // Radius classes
+  const radiusClasses = {
+    none: 'rounded-none',
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+    xl: 'rounded-xl'
+  };
+
+  // Interactive state classes
+  const interactiveClasses = {
+    hover: hover && !clickable ? 'hover:shadow-lg hover:translate-y-[-2px]' : '',
+    clickable: clickable ? 'cursor-pointer hover:shadow-lg hover:translate-y-[-2px] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2' : ''
+  };
+
   const cardClasses = cn(
-    // Base styles
-    'bg-white rounded-lg transition-all duration-200',
-    // Variant styles
-    {
-      'shadow-sm': variant === 'default',
-      'border border-gray-200 shadow-sm': variant === 'bordered',
-      'shadow-md': variant === 'elevated',
-      'border-2 border-gray-300': variant === 'outlined',
-    },
-    // Padding styles
-    {
-      'p-0': padding === 'none',
-      'p-3': padding === 'sm',
-      'p-4': padding === 'md',
-      'p-6': padding === 'lg',
-      'p-8': padding === 'xl',
-    },
-    // Interactive states
-    {
-      'hover:shadow-lg hover:-translate-y-0.5': hover && !clickable,
-      'cursor-pointer hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0': clickable,
-      'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2': clickable,
-    },
+    baseClasses,
+    variantClasses[variant],
+    paddingClasses[padding],
+    radiusClasses[radius],
+    interactiveClasses.hover,
+    interactiveClasses.clickable,
     className
-  )
+  );
 
   const handleClick = () => {
     if (clickable && onClick) {
-      onClick()
+      onClick();
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (clickable && onClick && (e.key === 'Enter' || e.key === ' ')) {
-      e.preventDefault()
-      onClick()
+      e.preventDefault();
+      onClick();
     }
-  }
+  };
 
   return (
     <Component
@@ -76,58 +99,87 @@ const Card: React.FC<CardProps> = ({
       tabIndex={clickable ? 0 : undefined}
       role={clickable ? 'button' : undefined}
       aria-pressed={clickable ? 'false' : undefined}
+      id={id}
       {...props}
     >
       {children}
     </Component>
-  )
-}
+  );
+};
 
 // Sub-components for better composition
-export const CardHeader: React.FC<{ children: React.ReactNode; className?: string }> = ({
+export const CardHeader: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  withBorder?: boolean;
+}> = ({
+  children,
+  className,
+  withBorder = false,
+}) => (
+    <div className={cn(
+      'mb-4',
+      withBorder && 'pb-4 border-b border-secondary-200 dark:border-secondary-700',
+      className
+    )}>
+      {children}
+    </div>
+  );
+
+export const CardBody: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+}> = ({
   children,
   className,
 }) => (
-  <div className={cn('mb-4', className)}>
-    {children}
-  </div>
-)
+    <div className={cn('', className)}>
+      {children}
+    </div>
+  );
 
-export const CardBody: React.FC<{ children: React.ReactNode; className?: string }> = ({
+export const CardFooter: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  withBorder?: boolean;
+}> = ({
   children,
   className,
+  withBorder = true,
 }) => (
-  <div className={cn('', className)}>
-    {children}
-  </div>
-)
+    <div className={cn(
+      'mt-4 pt-4',
+      withBorder && 'border-t border-secondary-200 dark:border-secondary-700',
+      className
+    )}>
+      {children}
+    </div>
+  );
 
-export const CardFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({
-  children,
-  className,
-}) => (
-  <div className={cn('mt-4 pt-4 border-t border-gray-100', className)}>
-    {children}
-  </div>
-)
-
-export const CardTitle: React.FC<{ children: React.ReactNode; className?: string; as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' }> = ({
+export const CardTitle: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+}> = ({
   children,
   className,
   as: Component = 'h3',
 }) => (
-  <Component className={cn('text-lg font-semibold text-gray-900', className)}>
-    {children}
-  </Component>
-)
+    <Component className={cn('text-lg font-semibold text-secondary-900 dark:text-secondary-100', className)}>
+      {children}
+    </Component>
+  );
 
-export const CardDescription: React.FC<{ children: React.ReactNode; className?: string }> = ({
+export const CardDescription: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+}> = ({
   children,
   className,
 }) => (
-  <p className={cn('text-sm text-gray-600', className)}>
-    {children}
-  </p>
-)
+    <p className={cn('text-sm text-secondary-600 dark:text-secondary-400', className)}>
+      {children}
+    </p>
+  );
 
-export default Card
+export default Card;

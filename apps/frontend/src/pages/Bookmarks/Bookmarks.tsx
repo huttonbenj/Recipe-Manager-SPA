@@ -30,14 +30,14 @@ const Bookmarks: React.FC = () => {
     // Redirect to login if not authenticated
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-background dark:bg-background-dark py-8">
                 <div className="container mx-auto px-4">
                     <div className="max-w-md mx-auto text-center">
-                        <Bookmark className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                        <Bookmark className="w-16 h-16 text-secondary-400 dark:text-secondary-500 mx-auto mb-4" />
+                        <h1 className="text-2xl font-bold text-foreground dark:text-foreground-dark mb-2">
                             Sign in to view bookmarks
                         </h1>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-secondary-600 dark:text-secondary-400 mb-6">
                             You need to be signed in to save and view your bookmarked recipes.
                         </p>
                         <Link to="/login">
@@ -54,7 +54,7 @@ const Bookmarks: React.FC = () => {
     // Loading state
     if (bookmarksLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-background dark:bg-background-dark py-8">
                 <div className="container mx-auto px-4">
                     <div className="flex justify-center items-center h-64">
                         <Loading />
@@ -67,13 +67,13 @@ const Bookmarks: React.FC = () => {
     // Error state
     if (bookmarksError) {
         return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-background dark:bg-background-dark py-8">
                 <div className="container mx-auto px-4">
                     <div className="max-w-md mx-auto text-center">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-2xl font-bold text-foreground dark:text-foreground-dark mb-2">
                             Error loading bookmarks
                         </h1>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-secondary-600 dark:text-secondary-400 mb-6">
                             {bookmarksError.message || 'Failed to load your bookmarked recipes'}
                         </p>
                         <Button onClick={() => window.location.reload()}>
@@ -89,7 +89,7 @@ const Bookmarks: React.FC = () => {
     const bookmarkedRecipes: Recipe[] = bookmarks.map(bookmark => bookmark.recipe)
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-background dark:bg-background-dark py-8">
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
@@ -101,11 +101,11 @@ const Bookmarks: React.FC = () => {
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                                <Bookmark className="w-8 h-8 text-blue-500" />
+                            <h1 className="text-3xl font-bold text-foreground dark:text-foreground-dark flex items-center gap-2">
+                                <Bookmark className="w-8 h-8 text-primary-500 dark:text-primary-400" />
                                 My Bookmarks
                             </h1>
-                            <p className="text-gray-600">
+                            <p className="text-secondary-600 dark:text-secondary-400">
                                 {bookmarks.length} bookmarked recipe{bookmarks.length !== 1 ? 's' : ''}
                             </p>
                         </div>
@@ -135,11 +135,11 @@ const Bookmarks: React.FC = () => {
                 {/* Content */}
                 {bookmarkedRecipes.length === 0 ? (
                     <div className="max-w-md mx-auto text-center py-12">
-                        <Bookmark className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                        <Bookmark className="w-16 h-16 text-secondary-400 dark:text-secondary-500 mx-auto mb-4" />
+                        <h2 className="text-xl font-semibold text-foreground dark:text-foreground-dark mb-2">
                             No bookmarks yet
                         </h2>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-secondary-600 dark:text-secondary-400 mb-6">
                             Start exploring recipes and click the bookmark icon to save them for later.
                         </p>
                         <Link to="/recipes">

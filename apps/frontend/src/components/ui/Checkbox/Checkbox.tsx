@@ -1,6 +1,7 @@
 /**
  * Reusable Checkbox component
  * Supports different sizes, states, and validation
+ * Fully compatible with theme system
  */
 
 import React from 'react'
@@ -42,8 +43,9 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
                                 type="checkbox"
                                 className={cn(
                                     // Base styles
-                                    'rounded border-gray-300 transition-colors duration-200 cursor-pointer',
+                                    'rounded border-secondary-300 dark:border-secondary-600 transition-colors duration-200 cursor-pointer',
                                     'focus:ring-primary-500 focus:ring-2 focus:ring-offset-2',
+                                    'focus:ring-offset-white dark:focus:ring-offset-secondary-900',
                                     'disabled:cursor-not-allowed disabled:opacity-50',
 
                                     // Size variants
@@ -56,7 +58,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
                                     // State styles
                                     {
                                         'text-primary-600 border-primary-600': checked || indeterminate,
-                                        'border-red-300 focus:ring-red-500': error,
+                                        'border-accent-300 focus:ring-accent-500': error,
                                     },
 
                                     // Hide default checkbox appearance
@@ -75,8 +77,8 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
                                 'rounded transition-colors duration-200',
                                 {
                                     'bg-primary-600 border-primary-600': checked || indeterminate,
-                                    'bg-white border-gray-300': !checked && !indeterminate,
-                                    'border-red-300': error,
+                                    'bg-white dark:bg-secondary-800 border-secondary-300 dark:border-secondary-600': !checked && !indeterminate,
+                                    'border-accent-300': error,
                                 },
                                 'border',
                                 {
@@ -117,7 +119,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
                                     htmlFor={checkboxId}
                                     className={cn(
                                         'font-medium cursor-pointer',
-                                        error ? 'text-red-600' : 'text-gray-900',
+                                        error ? 'text-accent-600' : 'text-secondary-900 dark:text-secondary-100',
                                         {
                                             'text-sm': size === 'sm',
                                             'text-base': size === 'md',
@@ -130,7 +132,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
                             )}
                             {description && (
                                 <p className={cn(
-                                    'text-gray-500',
+                                    'text-secondary-500 dark:text-secondary-400',
                                     {
                                         'text-xs': size === 'sm',
                                         'text-sm': size === 'md',
@@ -148,7 +150,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
                 {helperText && (
                     <p className={cn(
                         'mt-1 text-sm',
-                        error ? 'text-red-600' : 'text-gray-500'
+                        error ? 'text-accent-600' : 'text-secondary-500 dark:text-secondary-400'
                     )}>
                         {helperText}
                     </p>

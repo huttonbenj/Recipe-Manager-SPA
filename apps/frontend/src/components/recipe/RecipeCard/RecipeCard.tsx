@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Clock, Users, Star, Heart, BookmarkPlus, Share2, Edit3, Trash2 } from 'lucide-react'
+import { Clock, Users, Star, Heart, BookmarkPlus, Edit3, Trash2 } from 'lucide-react'
 
 // UI Components
 import { Card, Badge, Button } from '@/components/ui'
@@ -23,7 +23,6 @@ export interface RecipeCardProps {
     recipe: Recipe
     viewMode?: 'grid' | 'list'
     showActions?: boolean
-    onShare?: (recipe: Recipe) => void
     onEdit?: (recipeId: string) => void
     onDelete?: (recipeId: string) => void
     currentUserId?: string
@@ -34,13 +33,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     recipe,
     viewMode = 'grid',
     showActions = true,
-    onShare,
     onEdit,
     onDelete,
     currentUserId,
     className = ''
 }) => {
     const [imageLoaded, setImageLoaded] = useState(false)
+    const [isHovered, setIsHovered] = useState(false)
 
     // Use favorites hook
     const {
@@ -68,13 +67,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         toggleBookmark(recipe.id, isBookmarked(recipe.id))
     }
 
-    /**
-     * Handle share
-     */
-    const handleShare = (e: React.MouseEvent) => {
-        e.preventDefault()
-        onShare?.(recipe)
-    }
+
 
     /**
      * Handle edit
@@ -120,23 +113,33 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         }
     }
 
+    // List view
     if (viewMode === 'list') {
         return (
-            <Link to={`/recipes/${recipe.id}`} className={`group block ${className}`}>
-                <Card className="overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div className="flex">
+            <Link
+                to={`/recipes/${recipe.id}`}
+                className={`block ${className}`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <Card
+                    variant="bordered"
+                    padding="none"
+                    className="overflow-hidden hover:shadow-lg transition-all duration-300"
+                >
+                    <div className="flex flex-col sm:flex-row">
                         {/* Recipe Image */}
-                        <div className="relative w-48 h-32 bg-gray-200 flex-shrink-0">
+                        <div className="relative w-full sm:w-48 h-48 sm:h-32 bg-secondary-200 dark:bg-secondary-700 flex-shrink-0">
                             <img
                                 src={getImageUrl()}
                                 alt={recipe.title}
                                 className={`w-full h-full object-cover transition-all duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'
-                                    }`}
+                                    } ${isHovered ? 'scale-105' : 'scale-100'}`}
                                 onLoad={() => setImageLoaded(true)}
                             />
                             {!imageLoaded && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
-                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
+                                <div className="absolute inset-0 flex items-center justify-center bg-secondary-200 dark:bg-secondary-700">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600 dark:border-primary-400"></div>
                                 </div>
                             )}
 
@@ -149,20 +152,20 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="p-1.5 bg-white/90 hover:bg-white"
+                                                className="p-1.5 bg-white/90 dark:bg-secondary-800/90 hover:bg-white dark:hover:bg-secondary-700"
                                                 onClick={handleEdit}
                                                 title="Edit recipe"
                                             >
-                                                <Edit3 className="h-4 w-4 text-blue-600" />
+                                                <Edit3 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                             </Button>
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="p-1.5 bg-white/90 hover:bg-white"
+                                                className="p-1.5 bg-white/90 dark:bg-secondary-800/90 hover:bg-white dark:hover:bg-secondary-700"
                                                 onClick={handleDelete}
                                                 title="Delete recipe"
                                             >
-                                                <Trash2 className="h-4 w-4 text-red-600" />
+                                                <Trash2 className="h-4 w-4 text-accent-600 dark:text-accent-400" />
                                             </Button>
                                         </>
                                     )}
@@ -171,24 +174,24 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        className="p-1.5 bg-white/90 hover:bg-white"
+                                        className="p-1.5 bg-white/90 dark:bg-secondary-800/90 hover:bg-white dark:hover:bg-secondary-700"
                                         onClick={handleFavorite}
-                                        title="Add to favorites"
+                                        title={isFavorited(recipe.id) ? "Remove from favorites" : "Add to favorites"}
                                     >
                                         <Heart
-                                            className={`h-4 w-4 ${isFavorited(recipe.id) ? 'text-red-500 fill-current' : 'text-gray-600'
+                                            className={`h-4 w-4 ${isFavorited(recipe.id) ? 'text-accent-500 fill-current' : 'text-secondary-600 dark:text-secondary-400'
                                                 }`}
                                         />
                                     </Button>
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        className="p-1.5 bg-white/90 hover:bg-white"
+                                        className="p-1.5 bg-white/90 dark:bg-secondary-800/90 hover:bg-white dark:hover:bg-secondary-700"
                                         onClick={handleBookmark}
-                                        title="Bookmark recipe"
+                                        title={isBookmarked(recipe.id) ? "Remove bookmark" : "Bookmark recipe"}
                                     >
                                         <BookmarkPlus
-                                            className={`h-4 w-4 ${isBookmarked(recipe.id) ? 'text-primary-500 fill-current' : 'text-gray-600'
+                                            className={`h-4 w-4 ${isBookmarked(recipe.id) ? 'text-primary-500 fill-current' : 'text-secondary-600 dark:text-secondary-400'
                                                 }`}
                                         />
                                     </Button>
@@ -200,12 +203,12 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                         <div className="flex-1 p-4">
                             <div className="flex justify-between items-start mb-2">
                                 <div className="flex-1">
-                                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">
+                                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-1">
                                         {recipe.title}
                                     </h3>
 
                                     {recipe.description && (
-                                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                                        <p className="text-sm text-secondary-600 dark:text-secondary-400 mt-1 line-clamp-2">
                                             {recipe.description}
                                         </p>
                                     )}
@@ -235,7 +238,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                             )}
 
                             {/* Recipe Meta */}
-                            <div className="flex items-center justify-between text-sm text-gray-500">
+                            <div className="flex items-center justify-between text-sm text-secondary-500 dark:text-secondary-400">
                                 <div className="flex items-center space-x-4">
                                     {recipe.cookTime && (
                                         <div className="flex items-center">
@@ -251,10 +254,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                     )}
                                 </div>
 
-                                {/* Author */}
-                                <div className="text-xs text-gray-500">
-                                    by {recipe.author?.name || 'Chef'}
-                                </div>
+                                {/* Rating */}
+                                {recipe.rating !== undefined && (
+                                    <div className="flex items-center">
+                                        <Star className={`h-4 w-4 mr-1 ${recipe.rating >= 4 ? 'text-yellow-500 fill-current' : ''}`} />
+                                        <span>{recipe.rating.toFixed(1)}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -265,105 +271,102 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
 
     // Grid view (default)
     return (
-        <Link to={`/recipes/${recipe.id}`} className={`group block ${className}`}>
-            <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
+        <Link
+            to={`/recipes/${recipe.id}`}
+            className={`block ${className}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <Card
+                variant="bordered"
+                padding="none"
+                className="h-full overflow-hidden hover:shadow-lg transition-all duration-300"
+            >
                 {/* Recipe Image */}
-                <div className="relative aspect-w-16 aspect-h-9 bg-gray-200">
+                <div className="relative h-48 bg-secondary-200 dark:bg-secondary-700">
                     <img
                         src={getImageUrl()}
                         alt={recipe.title}
-                        className={`w-full h-48 object-cover transition-all duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'
-                            }`}
+                        className={`w-full h-full object-cover transition-all duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+                            } ${isHovered ? 'scale-105' : 'scale-100'}`}
                         onLoad={() => setImageLoaded(true)}
                     />
                     {!imageLoaded && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
+                        <div className="absolute inset-0 flex items-center justify-center bg-secondary-200 dark:bg-secondary-700">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600 dark:border-primary-400"></div>
                         </div>
                     )}
 
-                    {/* Actions Overlay */}
+                    {/* Difficulty Badge */}
+                    {recipe.difficulty && (
+                        <div className="absolute top-2 left-2">
+                            <Badge variant={getDifficultyVariant(recipe.difficulty)}>
+                                {formatDifficulty(recipe.difficulty)}
+                            </Badge>
+                        </div>
+                    )}
+
+                    {/* Actions */}
                     {showActions && (
-                        <div className="absolute top-3 right-3 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {/* Owner actions */}
+                        <div className={`absolute top-2 right-2 flex space-x-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
                             {isOwner && (
                                 <>
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        className="p-2 bg-white/90 hover:bg-white"
+                                        className="p-1.5 bg-white/90 dark:bg-secondary-800/90 hover:bg-white dark:hover:bg-secondary-700"
                                         onClick={handleEdit}
                                         title="Edit recipe"
                                     >
-                                        <Edit3 className="h-4 w-4 text-blue-600" />
+                                        <Edit3 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                     </Button>
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        className="p-2 bg-white/90 hover:bg-white"
+                                        className="p-1.5 bg-white/90 dark:bg-secondary-800/90 hover:bg-white dark:hover:bg-secondary-700"
                                         onClick={handleDelete}
                                         title="Delete recipe"
                                     >
-                                        <Trash2 className="h-4 w-4 text-red-600" />
+                                        <Trash2 className="h-4 w-4 text-accent-600 dark:text-accent-400" />
                                     </Button>
                                 </>
                             )}
-
-                            {/* General actions */}
                             <Button
                                 size="sm"
                                 variant="ghost"
-                                className="p-2 bg-white/90 hover:bg-white"
+                                className="p-1.5 bg-white/90 dark:bg-secondary-800/90 hover:bg-white dark:hover:bg-secondary-700"
                                 onClick={handleFavorite}
-                                title="Add to favorites"
+                                title={isFavorited(recipe.id) ? "Remove from favorites" : "Add to favorites"}
                             >
                                 <Heart
-                                    className={`h-4 w-4 ${isFavorited(recipe.id) ? 'text-red-500 fill-current' : 'text-gray-600'
+                                    className={`h-4 w-4 ${isFavorited(recipe.id) ? 'text-accent-500 fill-current' : 'text-secondary-600 dark:text-secondary-400'
                                         }`}
                                 />
                             </Button>
                             <Button
                                 size="sm"
                                 variant="ghost"
-                                className="p-2 bg-white/90 hover:bg-white"
+                                className="p-1.5 bg-white/90 dark:bg-secondary-800/90 hover:bg-white dark:hover:bg-secondary-700"
                                 onClick={handleBookmark}
-                                title="Bookmark recipe"
+                                title={isBookmarked(recipe.id) ? "Remove bookmark" : "Bookmark recipe"}
                             >
                                 <BookmarkPlus
-                                    className={`h-4 w-4 ${isBookmarked(recipe.id) ? 'text-primary-500 fill-current' : 'text-gray-600'
+                                    className={`h-4 w-4 ${isBookmarked(recipe.id) ? 'text-primary-500 fill-current' : 'text-secondary-600 dark:text-secondary-400'
                                         }`}
                                 />
                             </Button>
-                            {onShare && (
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="p-2 bg-white/90 hover:bg-white"
-                                    onClick={handleShare}
-                                    title="Share recipe"
-                                >
-                                    <Share2 className="h-4 w-4 text-gray-600" />
-                                </Button>
-                            )}
                         </div>
                     )}
                 </div>
 
                 {/* Recipe Details */}
                 <div className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 flex-1">
-                            {recipe.title}
-                        </h3>
-                        {recipe.difficulty && (
-                            <Badge variant={getDifficultyVariant(recipe.difficulty)} className="ml-2 flex-shrink-0">
-                                {formatDifficulty(recipe.difficulty)}
-                            </Badge>
-                        )}
-                    </div>
+                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-2 line-clamp-1 transition-colors">
+                        {recipe.title}
+                    </h3>
 
                     {recipe.description && (
-                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        <p className="text-sm text-secondary-600 dark:text-secondary-400 mb-3 line-clamp-2">
                             {recipe.description}
                         </p>
                     )}
@@ -385,8 +388,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                     )}
 
                     {/* Recipe Meta */}
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                        <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-between text-sm text-secondary-500 dark:text-secondary-400 mt-auto">
+                        <div className="flex items-center space-x-3">
                             {recipe.cookTime && (
                                 <div className="flex items-center">
                                     <Clock className="h-4 w-4 mr-1" />
@@ -400,19 +403,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                 </div>
                             )}
                         </div>
-                    </div>
 
-                    {/* Rating and Author */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                            <span className="text-sm font-medium text-gray-900">
-                                New
-                            </span>
-                        </div>
-                        <div className="text-xs text-gray-500">
-                            by {recipe.author?.name || 'Chef'}
-                        </div>
+                        {/* Rating */}
+                        {recipe.rating !== undefined && (
+                            <div className="flex items-center">
+                                <Star className={`h-4 w-4 mr-1 ${recipe.rating >= 4 ? 'text-yellow-500 fill-current' : ''}`} />
+                                <span>{recipe.rating.toFixed(1)}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </Card>

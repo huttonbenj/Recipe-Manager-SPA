@@ -55,9 +55,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       'w-full border transition-colors duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed',
       // Variant styles
       {
-        'bg-white border-gray-300 focus:border-primary-500 focus:ring-primary-200': variant === 'default',
-        'bg-gray-50 border-gray-200 focus:bg-white focus:border-primary-500 focus:ring-primary-200': variant === 'filled',
-        'bg-transparent border-2 border-gray-300 focus:border-primary-500 focus:ring-primary-200': variant === 'outlined',
+        'bg-white dark:bg-secondary-800 border-secondary-300 dark:border-secondary-600 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-200 dark:focus:ring-primary-800 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 dark:placeholder-secondary-500': variant === 'default',
+        'bg-secondary-50 dark:bg-secondary-900 border-secondary-200 dark:border-secondary-700 focus:bg-white dark:focus:bg-secondary-800 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-200 dark:focus:ring-primary-800 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 dark:placeholder-secondary-500': variant === 'filled',
+        'bg-transparent border-2 border-secondary-300 dark:border-secondary-600 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-200 dark:focus:ring-primary-800 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 dark:placeholder-secondary-500': variant === 'outlined',
       },
       // Size styles
       {
@@ -67,7 +67,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       },
       // Error state
       {
-        'border-red-500 focus:border-red-500 focus:ring-red-200': error,
+        'border-accent-500 dark:border-accent-400 focus:border-accent-500 dark:focus:border-accent-400 focus:ring-accent-200 dark:focus:ring-accent-800': error,
       },
       // Icon padding
       {
@@ -86,13 +86,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const labelClasses = cn(
       'block text-sm font-medium mb-1.5',
       {
-        'text-gray-700': !error,
-        'text-red-700': error,
+        'text-secondary-700 dark:text-secondary-300': !error,
+        'text-accent-700 dark:text-accent-300': error,
       }
     )
 
     const iconClasses = cn(
-      'absolute top-1/2 transform -translate-y-1/2 text-gray-400',
+      'absolute top-1/2 transform -translate-y-1/2 text-secondary-400 dark:text-secondary-500',
       {
         'w-4 h-4': size === 'sm',
         'w-5 h-5': size === 'md',
@@ -117,7 +117,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label className={labelClasses}>
             {label}
-            {props.required && <span className="text-red-500 ml-1">*</span>}
+            {props.required && <span className="text-accent-500 dark:text-accent-400 ml-1">*</span>}
           </label>
         )}
 
@@ -144,7 +144,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                  className="text-secondary-400 dark:text-secondary-500 hover:text-secondary-600 dark:hover:text-secondary-300 focus:outline-none"
                   tabIndex={-1}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -158,13 +158,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {error && (
-          <p id={`${props.id}-error`} className="mt-1.5 text-sm text-red-600">
+          <p id={`${props.id}-error`} className="mt-1.5 text-sm text-accent-600 dark:text-accent-400">
             {error}
           </p>
         )}
 
         {helperText && !error && (
-          <p id={`${props.id}-helper`} className="mt-1.5 text-sm text-gray-500">
+          <p id={`${props.id}-helper`} className="mt-1.5 text-sm text-secondary-500 dark:text-secondary-400">
             {helperText}
           </p>
         )}

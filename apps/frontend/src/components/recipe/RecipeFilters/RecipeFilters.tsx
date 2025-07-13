@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Search, Filter, X, TrendingUp, Clock, ChefHat, Heart, Utensils } from 'lucide-react'
+import { Search, Filter, X, TrendingUp, Clock, ChefHat, Heart, Utensils, ChevronDown } from 'lucide-react'
 
 // UI Components
 import { Button, Input, Card, Badge } from '@/components/ui'
@@ -33,9 +33,9 @@ export interface RecipeFiltersProps {
  */
 const filterOptions = {
     difficulty: [
-        { value: 'easy', label: 'Easy', color: 'green' },
-        { value: 'medium', label: 'Medium', color: 'yellow' },
-        { value: 'hard', label: 'Hard', color: 'red' }
+        { value: 'easy', label: 'Easy', color: 'success' as const },
+        { value: 'medium', label: 'Medium', color: 'warning' as const },
+        { value: 'hard', label: 'Hard', color: 'danger' as const }
     ],
     cookTime: [
         { value: '15', label: 'Under 15 min', icon: Clock },
@@ -73,35 +73,35 @@ const quickFilters = [
         key: 'popular',
         label: 'Trending',
         icon: TrendingUp,
-        color: 'bg-gradient-to-r from-purple-500 to-pink-500',
+        color: 'from-purple-500 to-pink-500',
         description: 'Most loved recipes'
     },
     {
         key: 'quick',
         label: 'Quick & Easy',
         icon: Clock,
-        color: 'bg-gradient-to-r from-green-500 to-teal-500',
+        color: 'from-green-500 to-teal-500',
         description: 'Ready in 30 minutes'
     },
     {
         key: 'easy',
         label: 'Beginner Friendly',
         icon: ChefHat,
-        color: 'bg-gradient-to-r from-blue-500 to-cyan-500',
+        color: 'from-blue-500 to-cyan-500',
         description: 'Perfect for new cooks'
     },
     {
         key: 'favorites',
         label: 'Community Favorites',
         icon: Heart,
-        color: 'bg-gradient-to-r from-red-500 to-pink-500',
+        color: 'from-red-500 to-pink-500',
         description: 'Highly rated recipes'
     },
     {
         key: 'healthy',
         label: 'Healthy Options',
         icon: Utensils,
-        color: 'bg-gradient-to-r from-emerald-500 to-green-500',
+        color: 'from-emerald-500 to-green-500',
         description: 'Nutritious and delicious'
     }
 ]
@@ -209,9 +209,9 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
     return (
         <div className={`space-y-6 ${className}`}>
             {/* Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="flex gap-3">
+            <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
                 <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-secondary-400 dark:text-secondary-500" />
                     <Input
                         type="text"
                         placeholder="Search recipes, ingredients, or cuisines..."
@@ -219,190 +219,273 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                         onChange={(e) => setLocalSearch(e.target.value)}
                         className="pl-10 pr-4"
                         disabled={loading}
+                        aria-label="Search recipes"
                     />
                     {localSearch && (
                         <button
                             type="button"
                             onClick={() => setLocalSearch('')}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-secondary-400 hover:text-secondary-600 dark:text-secondary-500 dark:hover:text-secondary-300 transition-colors"
+                            aria-label="Clear search"
                         >
                             <X className="h-4 w-4" />
                         </button>
                     )}
                 </div>
-                <Button type="submit" disabled={loading}>
-                    Search
-                </Button>
-                <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                    className="relative"
-                >
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filters
-                    {getActiveFilterCount() > 0 && (
-                        <Badge
-                            variant="primary"
-                            className="absolute -top-2 -right-2 min-w-[1.25rem] h-5 text-xs flex items-center justify-center"
-                        >
-                            {getActiveFilterCount()}
-                        </Badge>
-                    )}
-                </Button>
+                <div className="flex gap-2">
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        className="whitespace-nowrap"
+                    >
+                        Search
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                        className="relative whitespace-nowrap"
+                        aria-expanded={showAdvancedFilters}
+                        aria-controls="advanced-filters"
+                    >
+                        <Filter className="h-4 w-4 mr-2" />
+                        Filters
+                        <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${showAdvancedFilters ? 'rotate-180' : ''}`} />
+                        {getActiveFilterCount() > 0 && (
+                            <Badge
+                                variant="primary"
+                                className="absolute -top-2 -right-2 min-w-[1.25rem] h-5 text-xs flex items-center justify-center"
+                            >
+                                {getActiveFilterCount()}
+                            </Badge>
+                        )}
+                    </Button>
+                </div>
             </form>
 
             {/* Quick Filters */}
-            <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-700">Quick Filters</h3>
-                <div className="flex flex-wrap gap-3">
-                    {quickFilters.map((filter) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                {quickFilters.map((filter) => {
+                    const isActive = filters.quickFilter === filter.key
+                    const Icon = filter.icon
+                    return (
                         <button
                             key={filter.key}
                             onClick={() => handleQuickFilter(filter.key)}
-                            className={`group relative overflow-hidden rounded-xl p-4 text-white transition-all duration-300 hover:scale-105 hover:shadow-lg ${filters.quickFilter === filter.key
-                                    ? `${filter.color} shadow-lg scale-105`
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                            className={`
+                                relative overflow-hidden rounded-lg p-4 text-left transition-all duration-300
+                                ${isActive
+                                    ? `bg-gradient-to-r ${filter.color} text-white shadow-md transform scale-[1.02]`
+                                    : 'bg-white dark:bg-secondary-800 hover:bg-secondary-50 dark:hover:bg-secondary-700 border border-secondary-200 dark:border-secondary-700'
+                                }
+                            `}
+                            aria-pressed={isActive}
                         >
-                            <div className="flex items-center space-x-3">
-                                <filter.icon className={`h-5 w-5 ${filters.quickFilter === filter.key ? 'text-white' : 'text-gray-600'
-                                    }`} />
-                                <div className="text-left">
-                                    <div className={`font-medium text-sm ${filters.quickFilter === filter.key ? 'text-white' : 'text-gray-900'
-                                        }`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`
+                                    rounded-full p-2
+                                    ${isActive
+                                        ? 'bg-white/20'
+                                        : 'bg-gradient-to-r ' + filter.color + ' text-white'
+                                    }
+                                `}>
+                                    <Icon className="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <div className={`font-medium ${isActive ? 'text-white' : 'text-secondary-900 dark:text-secondary-100'}`}>
                                         {filter.label}
                                     </div>
-                                    <div className={`text-xs opacity-80 ${filters.quickFilter === filter.key ? 'text-white' : 'text-gray-600'
-                                        }`}>
+                                    <div className={`text-xs ${isActive ? 'text-white/80' : 'text-secondary-500 dark:text-secondary-400'}`}>
                                         {filter.description}
                                     </div>
                                 </div>
                             </div>
                         </button>
-                    ))}
-                </div>
+                    )
+                })}
             </div>
-
-            {/* Clear Filters */}
-            {hasActiveFilters() && (
-                <div className="flex items-center justify-between py-2">
-                    <span className="text-sm text-gray-600">
-                        {getActiveFilterCount()} filter{getActiveFilterCount() !== 1 ? 's' : ''} active
-                    </span>
-                    <Button variant="ghost" size="sm" onClick={clearAllFilters}>
-                        Clear All
-                    </Button>
-                </div>
-            )}
 
             {/* Advanced Filters */}
             {showAdvancedFilters && (
-                <Card className="p-6">
-                    <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                            Advanced Filters
-                        </h3>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {/* Difficulty Filter */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-3">
-                                    Difficulty Level
-                                </label>
-                                <div className="space-y-2">
-                                    {filterOptions.difficulty.map((option) => (
-                                        <button
-                                            key={option.value}
-                                            onClick={() => updateFilter('difficulty',
-                                                filters.difficulty === option.value ? '' : option.value
-                                            )}
-                                            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-colors ${filters.difficulty === option.value
-                                                    ? 'border-primary-500 bg-primary-50 text-primary-700'
-                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
-                                        >
-                                            <span>{option.label}</span>
-                                            <div className={`w-3 h-3 rounded-full ${option.color === 'green' ? 'bg-green-500' :
-                                                    option.color === 'yellow' ? 'bg-yellow-500' : 'bg-red-500'
-                                                }`} />
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Cook Time Filter */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-3">
-                                    Cooking Time
-                                </label>
-                                <div className="space-y-2">
-                                    {filterOptions.cookTime.map((option) => (
-                                        <button
-                                            key={option.value}
-                                            onClick={() => updateFilter('cookTime',
-                                                filters.cookTime === option.value ? '' : option.value
-                                            )}
-                                            className={`w-full flex items-center px-3 py-2 rounded-lg border transition-colors ${filters.cookTime === option.value
-                                                    ? 'border-primary-500 bg-primary-50 text-primary-700'
-                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
-                                        >
-                                            <option.icon className="h-4 w-4 mr-2" />
-                                            {option.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Cuisine Filter */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-3">
-                                    Cuisine Type
-                                </label>
-                                <div className="space-y-2 max-h-48 overflow-y-auto">
-                                    {filterOptions.cuisine.map((option) => (
-                                        <button
-                                            key={option.value}
-                                            onClick={() => updateFilter('cuisine',
-                                                filters.cuisine === option.value ? '' : option.value
-                                            )}
-                                            className={`w-full flex items-center px-3 py-2 rounded-lg border transition-colors ${filters.cuisine === option.value
-                                                    ? 'border-primary-500 bg-primary-50 text-primary-700'
-                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
-                                        >
-                                            <span className="mr-2">{option.flag}</span>
-                                            {option.label}
-                                        </button>
-                                    ))}
-                                </div>
+                <Card
+                    id="advanced-filters"
+                    className="animate-in fade-in slide-in-from-top-5 duration-300"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* Difficulty Filter */}
+                        <div>
+                            <h3 className="text-sm font-medium text-secondary-900 dark:text-secondary-100 mb-3">
+                                Difficulty
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {filterOptions.difficulty.map((option) => (
+                                    <Badge
+                                        key={option.value}
+                                        variant={filters.difficulty === option.value ? option.color : 'outline'}
+                                        className={`
+                                            cursor-pointer px-3 py-1 text-sm transition-all duration-200
+                                            ${filters.difficulty === option.value ? 'shadow-sm' : ''}
+                                        `}
+                                        onClick={() => updateFilter('difficulty', filters.difficulty === option.value ? '' : option.value)}
+                                    >
+                                        {option.label}
+                                    </Badge>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Meal Type Filter */}
+                        {/* Cook Time Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Meal Type
-                            </label>
+                            <h3 className="text-sm font-medium text-secondary-900 dark:text-secondary-100 mb-3">
+                                Cook Time
+                            </h3>
                             <div className="flex flex-wrap gap-2">
-                                {filterOptions.mealType.map((option) => (
-                                    <Button
+                                {filterOptions.cookTime.map((option) => {
+                                    const Icon = option.icon
+                                    return (
+                                        <Badge
+                                            key={option.value}
+                                            variant={filters.cookTime === option.value ? 'primary' : 'outline'}
+                                            className={`
+                                                cursor-pointer px-3 py-1 text-sm transition-all duration-200
+                                                ${filters.cookTime === option.value ? 'shadow-sm' : ''}
+                                            `}
+                                            onClick={() => updateFilter('cookTime', filters.cookTime === option.value ? '' : option.value)}
+                                        >
+                                            <Icon className="h-3 w-3 mr-1" />
+                                            {option.label}
+                                        </Badge>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Cuisine Filter */}
+                        <div>
+                            <h3 className="text-sm font-medium text-secondary-900 dark:text-secondary-100 mb-3">
+                                Cuisine
+                            </h3>
+                            <div className="grid grid-cols-2 gap-2">
+                                {filterOptions.cuisine.slice(0, 6).map((option) => (
+                                    <Badge
                                         key={option.value}
-                                        variant={filters.tags.includes(option.value) ? 'primary' : 'ghost'}
-                                        size="sm"
-                                        onClick={() => {
-                                            const newTags = filters.tags.includes(option.value)
-                                                ? filters.tags.filter(tag => tag !== option.value)
-                                                : [...filters.tags, option.value]
-                                            updateFilter('tags', newTags)
-                                        }}
-                                        className="flex items-center"
+                                        variant={filters.cuisine === option.value ? 'primary' : 'outline'}
+                                        className={`
+                                            cursor-pointer px-3 py-1 text-sm transition-all duration-200
+                                            ${filters.cuisine === option.value ? 'shadow-sm' : ''}
+                                        `}
+                                        onClick={() => updateFilter('cuisine', filters.cuisine === option.value ? '' : option.value)}
                                     >
-                                        <span className="mr-1">{option.icon}</span>
+                                        <span className="mr-1">{option.flag}</span>
                                         {option.label}
-                                    </Button>
+                                    </Badge>
                                 ))}
+                            </div>
+                        </div>
+
+                        {/* Active Filters & Clear All */}
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-sm font-medium text-secondary-900 dark:text-secondary-100">
+                                    Active Filters
+                                </h3>
+                                {hasActiveFilters() && (
+                                    <Button
+                                        variant="link"
+                                        size="sm"
+                                        onClick={clearAllFilters}
+                                        className="text-xs h-auto p-0"
+                                    >
+                                        Clear All
+                                    </Button>
+                                )}
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                {filters.search && (
+                                    <Badge variant="secondary" className="flex items-center gap-1">
+                                        <span>Search: {filters.search}</span>
+                                        <X
+                                            className="h-3 w-3 cursor-pointer"
+                                            onClick={() => {
+                                                setLocalSearch('')
+                                                updateFilter('search', '')
+                                            }}
+                                        />
+                                    </Badge>
+                                )}
+
+                                {filters.difficulty && (
+                                    <Badge
+                                        variant="secondary"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <span>Difficulty: {filterOptions.difficulty.find(d => d.value === filters.difficulty)?.label}</span>
+                                        <X
+                                            className="h-3 w-3 cursor-pointer"
+                                            onClick={() => updateFilter('difficulty', '')}
+                                        />
+                                    </Badge>
+                                )}
+
+                                {filters.cookTime && (
+                                    <Badge
+                                        variant="secondary"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <span>Time: {filterOptions.cookTime.find(t => t.value === filters.cookTime)?.label}</span>
+                                        <X
+                                            className="h-3 w-3 cursor-pointer"
+                                            onClick={() => updateFilter('cookTime', '')}
+                                        />
+                                    </Badge>
+                                )}
+
+                                {filters.cuisine && (
+                                    <Badge
+                                        variant="secondary"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <span>Cuisine: {filterOptions.cuisine.find(c => c.value === filters.cuisine)?.label}</span>
+                                        <X
+                                            className="h-3 w-3 cursor-pointer"
+                                            onClick={() => updateFilter('cuisine', '')}
+                                        />
+                                    </Badge>
+                                )}
+
+                                {filters.quickFilter && (
+                                    <Badge
+                                        variant="secondary"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <span>Filter: {quickFilters.find(f => f.key === filters.quickFilter)?.label}</span>
+                                        <X
+                                            className="h-3 w-3 cursor-pointer"
+                                            onClick={() => updateFilter('quickFilter', '')}
+                                        />
+                                    </Badge>
+                                )}
+
+                                {filters.tags.map(tag => (
+                                    <Badge
+                                        key={tag}
+                                        variant="secondary"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <span>Tag: {tag}</span>
+                                        <X
+                                            className="h-3 w-3 cursor-pointer"
+                                            onClick={() => updateFilter('tags', filters.tags.filter(t => t !== tag))}
+                                        />
+                                    </Badge>
+                                ))}
+
+                                {!hasActiveFilters() && (
+                                    <span className="text-sm text-secondary-500 dark:text-secondary-400">
+                                        No active filters
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>

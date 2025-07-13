@@ -19,44 +19,44 @@ const NotFound: React.FC = () => {
       description: 'Discover amazing recipes from our community',
       icon: ChefHat,
       href: '/recipes',
-      color: 'text-primary-600'
+      color: 'text-primary-600 dark:text-primary-400'
     },
     {
       title: 'Search Recipes',
       description: 'Find specific recipes or ingredients',
       icon: Search,
       href: '/recipes?search=',
-      color: 'text-green-600'
+      color: 'text-emerald-600 dark:text-emerald-400'
     },
     {
       title: 'Go Home',
       description: 'Return to the main page',
       icon: Home,
       href: '/',
-      color: 'text-blue-600'
+      color: 'text-blue-600 dark:text-blue-400'
     }
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center px-4">
       <div className="max-w-2xl mx-auto text-center">
         {/* 404 Illustration */}
         <div className="mb-8">
-          <div className="text-9xl font-bold text-gray-200 mb-4">404</div>
-          <div className="flex items-center justify-center text-gray-400 mb-4">
+          <div className="text-9xl font-bold text-secondary-200 dark:text-secondary-800 mb-4">404</div>
+          <div className="flex items-center justify-center text-secondary-400 dark:text-secondary-600 mb-4">
             <HelpCircle className="w-16 h-16" />
           </div>
         </div>
 
         {/* Error Message */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-4">
             Oops! Page Not Found
           </h1>
-          <p className="text-lg text-gray-600 mb-2">
+          <p className="text-lg text-secondary-600 dark:text-secondary-400 mb-2">
             The page you're looking for doesn't exist or may have been moved.
           </p>
-          <p className="text-gray-500">
+          <p className="text-secondary-500 dark:text-secondary-500">
             Don't worry, let's help you find what you're looking for!
           </p>
         </div>
@@ -95,10 +95,10 @@ const NotFound: React.FC = () => {
                 >
                   <div className="flex flex-col items-center text-center">
                     <Icon className={`w-12 h-12 mb-3 ${suggestion.color}`} />
-                    <h3 className="font-semibold text-gray-900 mb-2">
+                    <h3 className="font-semibold text-foreground dark:text-foreground-dark mb-2">
                       {suggestion.title}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-secondary-600 dark:text-secondary-400">
                       {suggestion.description}
                     </p>
                   </div>
@@ -109,12 +109,12 @@ const NotFound: React.FC = () => {
         </div>
 
         {/* Additional Help */}
-        <div className="text-center text-gray-500">
+        <div className="text-center text-secondary-500 dark:text-secondary-500">
           <p className="text-sm">
             Still can't find what you're looking for?{' '}
             <Link
               to="/contact"
-              className="text-primary-600 hover:text-primary-700 font-medium"
+              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
             >
               Contact us
             </Link>{' '}

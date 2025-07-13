@@ -7,14 +7,15 @@ import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  Clock, Users, ChefHat, Star, Heart, Share2, Edit3, Trash2,
-  ArrowLeft, Bookmark, MessageCircle, Camera, CheckCircle, Circle
+  Clock, Users, ChefHat, Heart, Share2, Edit3, Trash2,
+  ArrowLeft, Bookmark, Camera, CheckCircle, Circle,
+  ChevronRight, Info, User
 } from 'lucide-react'
 
 // UI Components
 import {
   Card, CardHeader, CardBody,
-  Button, Loading, Modal, ConfirmModal, Badge
+  Button, Loading, Modal, Badge
 } from '@/components/ui'
 
 // Services and hooks
@@ -22,7 +23,7 @@ import { recipesApi } from '@/services/api/recipes'
 import { useAuth } from '@/hooks/useAuth'
 import { useFavorites } from '@/hooks/useFavorites'
 import { useToast } from '@/context/ToastContext'
-import { formatCookTime, formatRelativeTime } from '@/utils'
+import { formatCookTime } from '@/utils'
 
 const RecipeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -78,17 +79,19 @@ const RecipeDetail: React.FC = () => {
   if (queryError || !recipe) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 text-center max-w-md">
-          <div className="text-red-500 mb-4">
-            <ChefHat className="w-16 h-16 mx-auto" />
-          </div>
-          <h2 className="text-xl font-semibold mb-2">Recipe Not Found</h2>
-          <p className="text-gray-600 mb-4">
-            The recipe you're looking for doesn't exist or may have been removed.
-          </p>
-          <Button onClick={() => navigate('/recipes')}>
-            Browse Recipes
-          </Button>
+        <Card className="max-w-md">
+          <CardBody className="p-8 text-center">
+            <div className="text-accent-500 dark:text-accent-400 mb-4">
+              <ChefHat className="w-16 h-16 mx-auto" />
+            </div>
+            <h2 className="text-xl font-semibold mb-2 text-secondary-900 dark:text-secondary-100">Recipe Not Found</h2>
+            <p className="text-secondary-600 dark:text-secondary-400 mb-4">
+              The recipe you're looking for doesn't exist or may have been removed.
+            </p>
+            <Button onClick={() => navigate('/recipes')} variant="primary">
+              Browse Recipes
+            </Button>
+          </CardBody>
         </Card>
       </div>
     )
@@ -155,49 +158,77 @@ const RecipeDetail: React.FC = () => {
     deleteMutation.mutate()
   }
 
+  // Get difficulty badge variant
+  const getDifficultyVariant = (difficulty?: string) => {
+    switch (difficulty?.toLowerCase()) {
+      case 'easy':
+        return 'success'
+      case 'medium':
+        return 'warning'
+      case 'hard':
+        return 'danger'
+      default:
+        return 'secondary'
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-fit"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            Back to Recipes
           </Button>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={handleShare}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={handleShare}
+              className="flex items-center gap-1.5"
+              aria-label="Share recipe"
+            >
               <Share2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Share</span>
             </Button>
 
             {isAuthenticated && (
               <>
                 <Button
-                  variant="ghost"
+                  variant={isFavorited(recipe.id) ? "primary" : "outline"}
                   onClick={() => toggleFavorite(recipe.id, isFavorited(recipe.id))}
                   disabled={isAddingToFavorites || isRemovingFromFavorites}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1.5"
+                  aria-label={isFavorited(recipe.id) ? "Remove from favorites" : "Add to favorites"}
+                  aria-pressed={isFavorited(recipe.id)}
                 >
                   <Heart
-                    className={`w-4 h-4 ${isFavorited(recipe.id) ? 'text-red-500 fill-current' : 'text-gray-600'}`}
+                    className={`w-4 h-4 ${isFavorited(recipe.id) ? 'fill-current' : ''}`}
                   />
-                  {isFavorited(recipe.id) ? 'Favorited' : 'Favorite'}
+                  <span className="hidden sm:inline">
+                    {isFavorited(recipe.id) ? 'Favorited' : 'Favorite'}
+                  </span>
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant={isBookmarked(recipe.id) ? "primary" : "outline"}
                   onClick={() => toggleBookmark(recipe.id, isBookmarked(recipe.id))}
                   disabled={isAddingToBookmarks || isRemovingFromBookmarks}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1.5"
+                  aria-label={isBookmarked(recipe.id) ? "Remove bookmark" : "Bookmark recipe"}
+                  aria-pressed={isBookmarked(recipe.id)}
                 >
                   <Bookmark
-                    className={`w-4 h-4 ${isBookmarked(recipe.id) ? 'text-blue-500 fill-current' : 'text-gray-600'}`}
+                    className={`w-4 h-4 ${isBookmarked(recipe.id) ? 'fill-current' : ''}`}
                   />
-                  {isBookmarked(recipe.id) ? 'Bookmarked' : 'Bookmark'}
+                  <span className="hidden sm:inline">
+                    {isBookmarked(recipe.id) ? 'Bookmarked' : 'Bookmark'}
+                  </span>
                 </Button>
               </>
             )}
@@ -207,18 +238,18 @@ const RecipeDetail: React.FC = () => {
                 <Button
                   variant="secondary"
                   onClick={() => navigate(`/recipes/${id}/edit`)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1.5"
                 >
                   <Edit3 className="w-4 h-4" />
-                  Edit
+                  <span className="hidden sm:inline">Edit</span>
                 </Button>
                 <Button
                   variant="danger"
                   onClick={handleDelete}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-1.5"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Delete
+                  <span className="hidden sm:inline">Delete</span>
                 </Button>
               </>
             )}
@@ -229,209 +260,250 @@ const RecipeDetail: React.FC = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Recipe Header */}
-            <Card>
-              <CardHeader>
+            <Card variant="bordered">
+              <CardHeader className="pb-0">
                 <div className="flex flex-wrap gap-2 mb-3">
                   {recipe.tags?.map((tag: string) => (
                     <Badge key={tag} variant="secondary">
                       {tag}
                     </Badge>
                   ))}
+                  {recipe.difficulty && (
+                    <Badge variant={getDifficultyVariant(recipe.difficulty)}>
+                      {recipe.difficulty}
+                    </Badge>
+                  )}
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
                   {recipe.title}
                 </h1>
 
                 {recipe.description && (
-                  <p className="text-lg text-gray-600 mb-4">
+                  <p className="text-lg text-secondary-600 dark:text-secondary-400 mb-4">
                     {recipe.description}
                   </p>
                 )}
 
-                {/* Meta information */}
-                <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
-                  {recipe.prepTime && (
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>Prep: {formatCookTime(recipe.prepTime)}</span>
+                {/* Recipe meta info */}
+                <div className="flex flex-wrap gap-6 py-4 border-t border-secondary-200 dark:border-secondary-700">
+                  {recipe.cookTime && (
+                    <div className="flex items-center">
+                      <Clock className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
+                      <div>
+                        <p className="text-sm text-secondary-500 dark:text-secondary-400">Cook Time</p>
+                        <p className="font-medium text-secondary-900 dark:text-secondary-100">{formatCookTime(recipe.cookTime)}</p>
+                      </div>
                     </div>
                   )}
 
-                  {recipe.cookTime && (
-                    <div className="flex items-center gap-1">
-                      <ChefHat className="w-4 h-4" />
-                      <span>Cook: {formatCookTime(recipe.cookTime)}</span>
+                  {recipe.prepTime && (
+                    <div className="flex items-center">
+                      <Clock className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
+                      <div>
+                        <p className="text-sm text-secondary-500 dark:text-secondary-400">Prep Time</p>
+                        <p className="font-medium text-secondary-900 dark:text-secondary-100">{formatCookTime(recipe.prepTime)}</p>
+                      </div>
                     </div>
                   )}
 
                   {recipe.servings && (
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      <span>{recipe.servings} servings</span>
+                    <div className="flex items-center">
+                      <Users className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
+                      <div>
+                        <p className="text-sm text-secondary-500 dark:text-secondary-400">Servings</p>
+                        <p className="font-medium text-secondary-900 dark:text-secondary-100">{recipe.servings}</p>
+                      </div>
                     </div>
                   )}
 
-                  {recipe.difficulty && (
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4" />
-                      <span className="capitalize">{recipe.difficulty}</span>
+                  {recipe.cuisine && (
+                    <div className="flex items-center">
+                      <ChefHat className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
+                      <div>
+                        <p className="text-sm text-secondary-500 dark:text-secondary-400">Cuisine</p>
+                        <p className="font-medium text-secondary-900 dark:text-secondary-100">{recipe.cuisine}</p>
+                      </div>
                     </div>
                   )}
-                </div>
-
-                {/* Author info */}
-                <div className="flex items-center justify-between pt-4 border-t">
-                  <div className="text-sm text-gray-500">
-                    By <span className="font-medium">{recipe.author?.name || 'Anonymous'}</span>
-                    {recipe.createdAt && (
-                      <span> • {formatRelativeTime(recipe.createdAt)}</span>
-                    )}
-                  </div>
                 </div>
               </CardHeader>
             </Card>
 
             {/* Recipe Image */}
             {recipe.imageUrl && (
-              <Card padding="none">
-                <div
-                  className="relative cursor-pointer"
+              <div className="relative rounded-xl overflow-hidden shadow-md">
+                <img
+                  src={recipe.imageUrl}
+                  alt={recipe.title}
+                  className="w-full h-auto object-cover"
+                />
+                <Button
+                  variant="ghost"
+                  className="absolute bottom-4 right-4 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-secondary-700"
                   onClick={() => setIsImageModalOpen(true)}
                 >
-                  <img
-                    src={recipe.imageUrl}
-                    alt={recipe.title}
-                    className="w-full h-96 object-cover rounded-lg"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
-                    <Camera className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity" />
-                  </div>
-                </div>
-              </Card>
+                  <Camera className="w-4 h-4 mr-2" />
+                  View Full Image
+                </Button>
+              </div>
             )}
 
             {/* Ingredients */}
-            <Card>
+            <Card variant="bordered">
               <CardHeader>
-                <h2 className="text-xl font-bold text-gray-900">Ingredients</h2>
-                <p className="text-sm text-gray-500">
-                  Check off ingredients as you gather them
-                </p>
+                <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
+                  <span className="bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-300 p-1.5 rounded-md mr-2">
+                    <ChefHat className="w-5 h-5" />
+                  </span>
+                  Ingredients
+                </h2>
               </CardHeader>
-              <CardBody>
-                <div className="space-y-3">
+              <CardBody className="pt-0">
+                <ul className="space-y-2">
                   {recipe.ingredients?.map((ingredient: string, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
-                      onClick={() => toggleIngredient(index)}
-                    >
-                      {checkedIngredients.has(index) ? (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-gray-400" />
-                      )}
-                      <span className={`flex-1 ${checkedIngredients.has(index) ? 'line-through text-gray-500' : ''}`}>
+                    <li key={index} className="flex items-start gap-3">
+                      <button
+                        onClick={() => toggleIngredient(index)}
+                        className="mt-0.5 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-full"
+                        aria-label={checkedIngredients.has(index) ? "Mark ingredient as not used" : "Mark ingredient as used"}
+                      >
+                        {checkedIngredients.has(index) ? (
+                          <CheckCircle className="w-5 h-5 text-primary-500 dark:text-primary-400" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-secondary-400 dark:text-secondary-500" />
+                        )}
+                      </button>
+                      <span className={`transition-all ${checkedIngredients.has(index)
+                        ? 'text-secondary-500 dark:text-secondary-400 line-through'
+                        : 'text-secondary-900 dark:text-secondary-100'}`}>
                         {ingredient}
                       </span>
-                    </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </CardBody>
             </Card>
 
             {/* Instructions */}
-            <Card>
+            <Card variant="bordered">
               <CardHeader>
-                <h2 className="text-xl font-bold text-gray-900">Instructions</h2>
-                <p className="text-sm text-gray-500">
-                  Check off steps as you complete them
-                </p>
+                <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
+                  <span className="bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-300 p-1.5 rounded-md mr-2">
+                    <ChevronRight className="w-5 h-5" />
+                  </span>
+                  Instructions
+                </h2>
               </CardHeader>
-              <CardBody>
-                <div className="space-y-4">
-                  {recipe.instructions?.split('\n').map((instruction: string, index: number) => (
-                    <div
-                      key={index}
-                      className="flex gap-4 p-3 rounded-md hover:bg-gray-50 cursor-pointer"
-                      onClick={() => toggleInstruction(index)}
-                    >
-                      <div className="flex-shrink-0 mt-0.5">
-                        {checkedInstructions.has(index) ? (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-medium flex items-center justify-center">
-                            {index + 1}
-                          </div>
-                        )}
+              <CardBody className="pt-0">
+                <ol className="space-y-6 list-none">
+                  {recipe.instructions?.split('\n\n').filter(Boolean).map((step: string, index: number) => (
+                    <li key={index} className="flex gap-4">
+                      <div className="flex-shrink-0 mt-1">
+                        <button
+                          onClick={() => toggleInstruction(index)}
+                          className="focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-full"
+                          aria-label={checkedInstructions.has(index) ? "Mark step as incomplete" : "Mark step as complete"}
+                        >
+                          {checkedInstructions.has(index) ? (
+                            <CheckCircle className="w-6 h-6 text-primary-500 dark:text-primary-400" />
+                          ) : (
+                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-300 font-medium">
+                              {index + 1}
+                            </div>
+                          )}
+                        </button>
                       </div>
-                      <p className={`flex-1 ${checkedInstructions.has(index) ? 'line-through text-gray-500' : ''}`}>
-                        {instruction.trim()}
-                      </p>
-                    </div>
+                      <div className={`transition-all ${checkedInstructions.has(index)
+                        ? 'text-secondary-500 dark:text-secondary-400'
+                        : 'text-secondary-900 dark:text-secondary-100'}`}>
+                        {step}
+                      </div>
+                    </li>
                   ))}
-                </div>
+                </ol>
               </CardBody>
             </Card>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <h3 className="font-semibold">Quick Actions</h3>
-              </CardHeader>
-              <CardBody className="space-y-3">
-                <Button variant="primary" className="w-full">
-                  <Heart className="w-4 h-4 mr-2" />
-                  Save Recipe
-                </Button>
-
-                <Button variant="secondary" className="w-full" onClick={handleShare}>
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share Recipe
-                </Button>
-
-                <Button variant="secondary" className="w-full">
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Leave Review
-                </Button>
-              </CardBody>
-            </Card>
-
-            {/* Nutrition Info */}
-            {recipe.cuisine && (
-              <Card>
-                <CardHeader>
-                  <h3 className="font-semibold">Recipe Info</h3>
-                </CardHeader>
+            {/* Author info */}
+            {recipe.author && (
+              <Card variant="bordered">
                 <CardBody>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Cuisine:</span>
-                      <span className="font-medium capitalize">{recipe.cuisine}</span>
+                  <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
+                    About the Author
+                  </h3>
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-700 dark:text-primary-300 mr-3">
+                      <User className="w-5 h-5" />
                     </div>
-                    {recipe.difficulty && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Difficulty:</span>
-                        <span className="font-medium capitalize">{recipe.difficulty}</span>
-                      </div>
-                    )}
+                    <div>
+                      <p className="font-medium text-secondary-900 dark:text-secondary-100">
+                        {recipe.author.name || recipe.author.email.split('@')[0]}
+                      </p>
+                      <p className="text-sm text-secondary-500 dark:text-secondary-400">
+                        Recipe Creator
+                      </p>
+                    </div>
                   </div>
                 </CardBody>
               </Card>
             )}
 
-            {/* Similar Recipes */}
-            <Card>
-              <CardHeader>
-                <h3 className="font-semibold">You Might Also Like</h3>
-              </CardHeader>
+            {/* Recipe Stats */}
+            <Card variant="bordered">
               <CardBody>
-                <div className="text-sm text-gray-500">
-                  Similar recipe suggestions coming soon...
+                <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
+                  Recipe Stats
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                      <Heart className="w-4 h-4 mr-2" />
+                      Favorites
+                    </span>
+                    <span className="font-medium text-secondary-900 dark:text-secondary-100">
+                      {recipe.favoritesCount || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                      <Bookmark className="w-4 h-4 mr-2" />
+                      Bookmarks
+                    </span>
+                    <span className="font-medium text-secondary-900 dark:text-secondary-100">
+                      {recipe.bookmarksCount || 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                      <Info className="w-4 h-4 mr-2" />
+                      Created
+                    </span>
+                    <span className="font-medium text-secondary-900 dark:text-secondary-100">
+                      {new Date(recipe.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Tips and Notes */}
+            <Card variant="glass">
+              <CardBody>
+                <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-2 flex items-center">
+                  <Info className="w-4 h-4 mr-2 text-primary-500 dark:text-primary-400" />
+                  Tips & Notes
+                </h3>
+                <div className="text-secondary-600 dark:text-secondary-400 space-y-2">
+                  <p>
+                    Check off ingredients and steps as you go. Your progress will be saved for this session.
+                  </p>
+                  <p>
+                    Adjust servings as needed for your group size. The ingredient quantities will update automatically.
+                  </p>
                 </div>
               </CardBody>
             </Card>
@@ -440,31 +512,51 @@ const RecipeDetail: React.FC = () => {
       </div>
 
       {/* Image Modal */}
-      {recipe.imageUrl && (
+      {isImageModalOpen && recipe.imageUrl && (
         <Modal
           isOpen={isImageModalOpen}
           onClose={() => setIsImageModalOpen(false)}
-          size="xl"
-          showCloseButton
+          title={recipe.title}
+          size="lg"
         >
           <img
             src={recipe.imageUrl}
             alt={recipe.title}
-            className="w-full h-auto max-h-screen object-contain"
+            className="w-full h-auto object-contain max-h-[80vh]"
           />
         </Modal>
       )}
 
       {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-        title="Delete Recipe"
-        message="Are you sure you want to delete this recipe? This action cannot be undone."
-        confirmText="Delete"
-        variant="danger"
-      />
+      {isDeleteModalOpen && (
+        <Modal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          title="Delete Recipe"
+          size="sm"
+        >
+          <div className="p-6">
+            <p className="text-secondary-600 dark:text-secondary-400 mb-6">
+              Are you sure you want to delete this recipe? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => setIsDeleteModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={confirmDelete}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? 'Deleting...' : 'Delete Recipe'}
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

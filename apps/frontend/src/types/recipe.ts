@@ -34,6 +34,7 @@ export interface Recipe {
   isBookmarked?: boolean
   favoritesCount?: number
   bookmarksCount?: number
+  rating?: number // Average user rating
 }
 
 export interface CreateRecipeData {

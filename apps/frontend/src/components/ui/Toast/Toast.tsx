@@ -1,6 +1,7 @@
 /**
  * Toast notification component
  * Displays individual toast notifications with animations and actions
+ * Fully compatible with theme system
  */
 
 import React, { useEffect, useState } from 'react'
@@ -24,28 +25,28 @@ const toastIcons = {
 }
 
 /**
- * Toast color classes
+ * Toast color classes with dark mode support
  */
 const toastStyles = {
     success: {
-        container: 'bg-green-50 border-green-200 text-green-800',
-        icon: 'text-green-400',
-        button: 'text-green-500 hover:text-green-600',
+        container: 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200',
+        icon: 'text-green-400 dark:text-green-300',
+        button: 'text-green-500 dark:text-green-300 hover:text-green-600 dark:hover:text-green-200',
     },
     error: {
-        container: 'bg-red-50 border-red-200 text-red-800',
-        icon: 'text-red-400',
-        button: 'text-red-500 hover:text-red-600',
+        container: 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
+        icon: 'text-red-400 dark:text-red-300',
+        button: 'text-red-500 dark:text-red-300 hover:text-red-600 dark:hover:text-red-200',
     },
     warning: {
-        container: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-        icon: 'text-yellow-400',
-        button: 'text-yellow-500 hover:text-yellow-600',
+        container: 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200',
+        icon: 'text-yellow-400 dark:text-yellow-300',
+        button: 'text-yellow-500 dark:text-yellow-300 hover:text-yellow-600 dark:hover:text-yellow-200',
     },
     info: {
-        container: 'bg-blue-50 border-blue-200 text-blue-800',
-        icon: 'text-blue-400',
-        button: 'text-blue-500 hover:text-blue-600',
+        container: 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200',
+        icon: 'text-blue-400 dark:text-blue-300',
+        button: 'text-blue-500 dark:text-blue-300 hover:text-blue-600 dark:hover:text-blue-200',
     },
 }
 
@@ -84,7 +85,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onRemove }) => {
     return (
         <div
             className={clsx(
-                'max-w-sm w-full shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden transform transition-all duration-300 ease-in-out',
+                'max-w-sm w-full shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 overflow-hidden transform transition-all duration-300 ease-in-out',
                 styles.container,
                 {
                     'translate-y-0 opacity-100 scale-100': isVisible && !isLeaving,
@@ -136,7 +137,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onRemove }) => {
                                 className={clsx(
                                     'inline-flex rounded-md p-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
                                     styles.button,
-                                    'focus:ring-offset-white focus:ring-current'
+                                    'focus:ring-offset-white dark:focus:ring-offset-secondary-900 focus:ring-current'
                                 )}
                             >
                                 <span className="sr-only">Dismiss</span>

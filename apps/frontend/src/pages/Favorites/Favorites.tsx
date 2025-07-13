@@ -30,14 +30,14 @@ const Favorites: React.FC = () => {
     // Redirect to login if not authenticated
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-background dark:bg-background-dark py-8">
                 <div className="container mx-auto px-4">
                     <div className="max-w-md mx-auto text-center">
-                        <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                        <Heart className="w-16 h-16 text-secondary-400 dark:text-secondary-500 mx-auto mb-4" />
+                        <h1 className="text-2xl font-bold text-foreground dark:text-foreground-dark mb-2">
                             Sign in to view favorites
                         </h1>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-secondary-600 dark:text-secondary-400 mb-6">
                             You need to be signed in to save and view your favorite recipes.
                         </p>
                         <Link to="/login">
@@ -54,7 +54,7 @@ const Favorites: React.FC = () => {
     // Loading state
     if (favoritesLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-background dark:bg-background-dark py-8">
                 <div className="container mx-auto px-4">
                     <div className="flex justify-center items-center h-64">
                         <Loading />
@@ -67,13 +67,13 @@ const Favorites: React.FC = () => {
     // Error state
     if (favoritesError) {
         return (
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-background dark:bg-background-dark py-8">
                 <div className="container mx-auto px-4">
                     <div className="max-w-md mx-auto text-center">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-2xl font-bold text-foreground dark:text-foreground-dark mb-2">
                             Error loading favorites
                         </h1>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-secondary-600 dark:text-secondary-400 mb-6">
                             {favoritesError.message || 'Failed to load your favorite recipes'}
                         </p>
                         <Button onClick={() => window.location.reload()}>
@@ -89,7 +89,7 @@ const Favorites: React.FC = () => {
     const favoriteRecipes: Recipe[] = favorites.map(fav => fav.recipe)
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-background dark:bg-background-dark py-8">
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
@@ -101,11 +101,11 @@ const Favorites: React.FC = () => {
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                                <Heart className="w-8 h-8 text-red-500" />
+                            <h1 className="text-3xl font-bold text-foreground dark:text-foreground-dark flex items-center gap-2">
+                                <Heart className="w-8 h-8 text-accent-500 dark:text-accent-400" />
                                 My Favorites
                             </h1>
-                            <p className="text-gray-600">
+                            <p className="text-secondary-600 dark:text-secondary-400">
                                 {favorites.length} favorite recipe{favorites.length !== 1 ? 's' : ''}
                             </p>
                         </div>
@@ -135,11 +135,11 @@ const Favorites: React.FC = () => {
                 {/* Content */}
                 {favoriteRecipes.length === 0 ? (
                     <div className="max-w-md mx-auto text-center py-12">
-                        <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                        <Heart className="w-16 h-16 text-secondary-400 dark:text-secondary-500 mx-auto mb-4" />
+                        <h2 className="text-xl font-semibold text-foreground dark:text-foreground-dark mb-2">
                             No favorites yet
                         </h2>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-secondary-600 dark:text-secondary-400 mb-6">
                             Start exploring recipes and click the heart icon to add them to your favorites.
                         </p>
                         <Link to="/recipes">

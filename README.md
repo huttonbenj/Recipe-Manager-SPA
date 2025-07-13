@@ -16,6 +16,11 @@ This Recipe Manager SPA showcases modern web development with enterprise-grade a
 - **User Authentication**: Secure login and registration
 - **Responsive Design**: Mobile-first, works on all devices
 - **Real-time Validation**: Client and server-side validation
+- **Favorites & Bookmarks**: Save recipes as favorites or bookmark them for later
+  - Heart icon to favorite recipes you love
+  - Bookmark icon to save recipes for future reference
+  - Dedicated pages for viewing favorites and bookmarks
+  - Intuitive UI with filled/unfilled icons to show status
 
 ### Bonus Features
 
@@ -101,12 +106,15 @@ This Recipe Manager SPA showcases modern web development with enterprise-grade a
 │   │   │   │   ├── RecipeDetail.tsx
 │   │   │   │   ├── CreateRecipe.tsx
 │   │   │   │   ├── EditRecipe.tsx
+│   │   │   │   ├── Favorites.tsx     # User's favorite recipes
+│   │   │   │   ├── Bookmarks.tsx     # User's bookmarked recipes
 │   │   │   │   ├── Login.tsx
 │   │   │   │   ├── Register.tsx
 │   │   │   │   └── NotFound.tsx
 │   │   │   ├── 📁 hooks/               # Custom React hooks
 │   │   │   │   ├── useAuth.ts         # Authentication hook
 │   │   │   │   ├── useRecipes.ts      # Recipe data fetching
+│   │   │   │   ├── useFavorites.ts    # Favorites and bookmarks management
 │   │   │   │   ├── useLocalStorage.ts # localStorage utility
 │   │   │   │   ├── useDebounce.ts     # Input debouncing
 │   │   │   │   └── useTheme.ts        # Theme management hook
@@ -118,6 +126,7 @@ This Recipe Manager SPA showcases modern web development with enterprise-grade a
 │   │   │   │   │   ├── client.ts      # Axios configuration
 │   │   │   │   │   ├── auth.ts        # Auth endpoints
 │   │   │   │   │   ├── recipes.ts     # Recipe endpoints
+│   │   │   │   │   ├── favorites.ts   # Favorites and bookmarks endpoints
 │   │   │   │   │   └── upload.ts      # Upload endpoints
 │   │   │   ├── 📁 types/               # TypeScript definitions
 │   │   │   │   ├── auth.ts
@@ -152,13 +161,27 @@ This Recipe Manager SPA showcases modern web development with enterprise-grade a
 │   └── 📁 backend/                     # Express API Server
 │       ├── 📁 src/
 │       │   ├── 📁 controllers/         # Route controllers
+│       │   │   ├── authController.ts
+│       │   │   ├── recipeController.ts
+│       │   │   ├── favoritesController.ts # Favorites and bookmarks controller
+│       │   │   └── uploadController.ts
 │       │   ├── 📁 middleware/          # Express middleware
 │       │   ├── 📁 routes/              # API routes
+│       │   │   ├── auth.ts
+│       │   │   ├── recipes.ts
+│       │   │   ├── favorites.ts       # Favorites and bookmarks routes
+│       │   │   └── upload.ts
 │       │   ├── 📁 services/            # Business logic
+│       │   │   ├── authService.ts
+│       │   │   ├── recipeService.ts
+│       │   │   ├── favoritesService.ts # Favorites and bookmarks service
+│       │   │   └── uploadService.ts
 │       │   ├── 📁 utils/               # Utilities
 │       │   ├── 📁 types/               # TypeScript definitions
 │       │   ├── 📁 config/              # Configuration
 │       │   ├── 📁 prisma/              # Database schema and migrations
+│       │   │   ├── schema.prisma       # Database schema with favorites and bookmarks models
+│       │   │   └── migrations/         # Database migrations
 │       │   ├── app.ts
 │       │   └── server.ts
 │       ├── 📁 tests/                   # Backend tests
@@ -174,7 +197,8 @@ This Recipe Manager SPA showcases modern web development with enterprise-grade a
 ├── 📁 docs/                           # Documentation
 │   ├── api-documentation.md
 │   ├── deployment-guide.md
-│   └── development-setup.md
+│   ├── development-setup.md
+│   └── favorites-bookmarks.md        # Favorites and bookmarks documentation
 │
 ├── README.md
 ├── PROJECT_PLAN.md                    # Detailed implementation plan

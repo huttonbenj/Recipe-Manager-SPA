@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTheme, type ColorTheme } from '../../hooks/useTheme';
+import { Check, ChevronDown } from 'lucide-react';
 
 /**
  * Props for ThemeSelector component
@@ -7,6 +8,7 @@ import { useTheme, type ColorTheme } from '../../hooks/useTheme';
 interface ThemeSelectorProps {
     className?: string;
     compact?: boolean;
+    variant?: 'dropdown' | 'grid';
 }
 
 /**
@@ -46,25 +48,47 @@ const THEME_INFO: Record<ColorTheme, { name: string; colors: string[] }> = {
 export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
     className = '',
     compact = false,
+    variant = 'dropdown',
 }) => {
     const { theme, setColorTheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const currentThemeInfo = THEME_INFO[theme.colorTheme];
 
-    if (compact) {
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
+
+    // Dropdown variant
+    if (variant === 'dropdown' || compact) {
         return (
-            <div className={`relative ${className}`}>
+            <div className={`relative ${className}`} ref={dropdownRef}>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="
-            flex items-center gap-2 px-3 py-2 rounded-lg
-            bg-secondary-100 hover:bg-secondary-200
-            dark:bg-secondary-800 dark:hover:bg-secondary-700
-            text-secondary-900 dark:text-secondary-100
-            transition-all duration-200
-          "
+                        flex items-center gap-2 px-3 py-2 rounded-lg
+                        bg-secondary-100 hover:bg-secondary-200
+                        dark:bg-secondary-800 dark:hover:bg-secondary-700
+                        text-secondary-900 dark:text-secondary-100
+                        transition-all duration-200 shadow-sm
+                    "
                     aria-label="Select color theme"
+                    aria-expanded={isOpen}
+                    aria-controls="theme-selector-dropdown"
                 >
                     <div className="flex gap-1">
                         {currentThemeInfo.colors.map((color, index) => (
@@ -72,27 +96,33 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                                 key={index}
                                 className="w-3 h-3 rounded-full border border-secondary-300 dark:border-secondary-600"
                                 style={{ backgroundColor: color }}
+                                aria-hidden="true"
                             />
                         ))}
                     </div>
-                    <svg
-                        className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    {!compact && (
+                        <span className="text-sm font-medium">
+                            {currentThemeInfo.name}
+                        </span>
+                    )}
+                    <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                    />
                 </button>
 
                 {isOpen && (
-                    <div className="
-            absolute top-full left-0 mt-2 z-50
-            bg-white dark:bg-secondary-800
-            border border-secondary-200 dark:border-secondary-700
-            rounded-lg shadow-lg
-            min-w-max
-          ">
+                    <div
+                        id="theme-selector-dropdown"
+                        className="
+                            absolute top-full left-0 mt-2 z-50
+                            bg-white dark:bg-secondary-800
+                            border border-secondary-200 dark:border-secondary-700
+                            rounded-lg shadow-lg
+                            min-w-max
+                            animate-in fade-in slide-in-from-top-2 duration-200
+                        "
+                        role="menu"
+                    >
                         {Object.entries(THEME_INFO).map(([themeKey, info]) => (
                             <button
                                 key={themeKey}
@@ -101,11 +131,12 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                                     setIsOpen(false);
                                 }}
                                 className={`
-                  flex items-center gap-3 w-full px-4 py-3 text-left
-                  hover:bg-secondary-100 dark:hover:bg-secondary-700
-                  transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg
-                  ${theme.colorTheme === themeKey ? 'bg-primary-50 dark:bg-primary-900/20' : ''}
-                `}
+                                    flex items-center gap-3 w-full px-4 py-3 text-left
+                                    hover:bg-secondary-100 dark:hover:bg-secondary-700
+                                    transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg
+                                    ${theme.colorTheme === themeKey ? 'bg-primary-50 dark:bg-primary-900/20' : ''}
+                                `}
+                                role="menuitem"
                             >
                                 <div className="flex gap-1">
                                     {info.colors.map((color, index) => (
@@ -120,25 +151,17 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                                     {info.name}
                                 </span>
                                 {theme.colorTheme === themeKey && (
-                                    <svg className="w-4 h-4 text-primary-500 ml-auto" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
+                                    <Check className="w-4 h-4 text-primary-500 ml-auto" />
                                 )}
                             </button>
                         ))}
                     </div>
                 )}
-
-                {isOpen && (
-                    <div
-                        className="fixed inset-0 z-40"
-                        onClick={() => setIsOpen(false)}
-                    />
-                )}
             </div>
         );
     }
 
+    // Grid variant
     return (
         <div className={`space-y-4 ${className}`}>
             <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100">
@@ -150,19 +173,21 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                         key={themeKey}
                         onClick={() => setColorTheme(themeKey as ColorTheme)}
                         className={`
-              group relative p-4 rounded-xl border-2 transition-all duration-200
-              ${theme.colorTheme === themeKey
-                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                                : 'border-secondary-200 dark:border-secondary-700 hover:border-secondary-300 dark:hover:border-secondary-600 bg-white dark:bg-secondary-800'
+                            group relative p-4 rounded-xl border-2 transition-all duration-300
+                            ${theme.colorTheme === themeKey
+                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 scale-[1.02]'
+                                : 'border-secondary-200 dark:border-secondary-700 hover:border-secondary-300 dark:hover:border-secondary-600 bg-white dark:bg-secondary-800 hover:scale-[1.02]'
                             }
-            `}
+                        `}
+                        aria-label={`Select ${info.name} theme`}
+                        aria-pressed={theme.colorTheme === themeKey}
                     >
                         <div className="space-y-3">
                             <div className="flex justify-center gap-1">
                                 {info.colors.map((color, index) => (
                                     <div
                                         key={index}
-                                        className="w-6 h-6 rounded-full border border-secondary-300 dark:border-secondary-600"
+                                        className="w-6 h-6 rounded-full border border-secondary-300 dark:border-secondary-600 transition-transform group-hover:scale-110"
                                         style={{ backgroundColor: color }}
                                     />
                                 ))}
@@ -175,9 +200,9 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                         </div>
                         {theme.colorTheme === themeKey && (
                             <div className="absolute top-2 right-2">
-                                <svg className="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
+                                <div className="bg-primary-500 rounded-full p-1">
+                                    <Check className="w-3 h-3 text-white" />
+                                </div>
                             </div>
                         )}
                     </button>

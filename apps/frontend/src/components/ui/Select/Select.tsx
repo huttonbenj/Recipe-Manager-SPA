@@ -1,6 +1,7 @@
 /**
  * Reusable Select component
  * Supports different sizes, states, and validation
+ * Fully compatible with theme system
  */
 
 import React from 'react'
@@ -45,10 +46,10 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                 {label && (
                     <label
                         htmlFor={selectId}
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2"
                     >
                         {label}
-                        {required && <span className="text-red-500 ml-1">*</span>}
+                        {required && <span className="text-accent-500 ml-1">*</span>}
                     </label>
                 )}
 
@@ -58,10 +59,10 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                         id={selectId}
                         className={cn(
                             // Base styles
-                            'block w-full rounded-md border-gray-300 shadow-sm transition-colors duration-200',
+                            'block w-full rounded-md border-secondary-300 dark:border-secondary-600 shadow-sm transition-colors duration-200',
                             'focus:border-primary-500 focus:ring-primary-500 focus:ring-1',
-                            'disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed',
-                            'bg-white appearance-none cursor-pointer',
+                            'disabled:bg-secondary-50 dark:disabled:bg-secondary-800 disabled:text-secondary-500 dark:disabled:text-secondary-400 disabled:cursor-not-allowed',
+                            'bg-white dark:bg-secondary-800 dark:text-secondary-100 appearance-none cursor-pointer',
 
                             // Size variants
                             {
@@ -72,7 +73,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
                             // Error state
                             {
-                                'border-red-300 focus:border-red-500 focus:ring-red-500': error,
+                                'border-accent-300 focus:border-accent-500 focus:ring-accent-500': error,
                             },
 
                             className
@@ -112,7 +113,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                         }
                     )}>
                         <ChevronDown className={cn(
-                            'text-gray-400',
+                            'text-secondary-400 dark:text-secondary-500',
                             {
                                 'h-4 w-4': size === 'sm',
                                 'h-5 w-5': size === 'md',
@@ -126,7 +127,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                 {helperText && (
                     <p className={cn(
                         'mt-1 text-sm',
-                        error ? 'text-red-600' : 'text-gray-500'
+                        error ? 'text-accent-600' : 'text-secondary-500 dark:text-secondary-400'
                     )}>
                         {helperText}
                     </p>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../../hooks/useTheme';
+import { Sun, Moon, Monitor } from 'lucide-react';
 
 /**
  * Props for ThemeToggle component
@@ -7,17 +8,19 @@ import { useTheme } from '../../hooks/useTheme';
 interface ThemeToggleProps {
     className?: string;
     size?: 'sm' | 'md' | 'lg';
-    variant?: 'button' | 'icon';
+    variant?: 'button' | 'icon' | 'minimal';
+    onClick?: () => void;
 }
 
 /**
  * Theme toggle component for switching between light/dark/system modes
- * Cycles through: light -> dark -> system -> light
+ * Enhanced with smooth transitions and animations
  */
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({
     className = '',
     size = 'md',
     variant = 'icon',
+    onClick,
 }) => {
     const { theme, toggleDisplayMode } = useTheme();
 
@@ -32,56 +35,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
     const getIcon = () => {
         switch (theme.displayMode) {
             case 'light':
-                return (
-                    <svg
-                        className="w-full h-full"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                        />
-                    </svg>
-                );
+                return <Sun className="w-full h-full" />;
             case 'dark':
-                return (
-                    <svg
-                        className="w-full h-full"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                        />
-                    </svg>
-                );
+                return <Moon className="w-full h-full" />;
             case 'system':
-                return (
-                    <svg
-                        className="w-full h-full"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                    </svg>
-                );
+                return <Monitor className="w-full h-full" />;
         }
     };
 
@@ -97,22 +55,29 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         }
     };
 
+    // Handle click with custom callback
+    const handleClick = () => {
+        toggleDisplayMode();
+        if (onClick) onClick();
+    };
+
+    // Button variant
     if (variant === 'button') {
         return (
             <button
-                onClick={toggleDisplayMode}
+                onClick={handleClick}
                 className={`
-          flex items-center gap-2 px-4 py-2 rounded-lg
-          bg-secondary-100 hover:bg-secondary-200
-          dark:bg-secondary-800 dark:hover:bg-secondary-700
-          text-secondary-900 dark:text-secondary-100
-          transition-all duration-200
-          ${className}
-        `}
+                    flex items-center gap-2 px-4 py-2 rounded-lg
+                    bg-secondary-100 hover:bg-secondary-200
+                    dark:bg-secondary-800 dark:hover:bg-secondary-700
+                    text-secondary-900 dark:text-secondary-100
+                    transition-all duration-200 shadow-sm
+                    ${className}
+                `}
                 title={getTooltipText()}
                 aria-label={`Current theme: ${theme.displayMode}. ${getTooltipText()}`}
             >
-                <span className={sizeClasses[size]}>
+                <span className={`flex-shrink-0 ${sizeClasses[size]} p-1`}>
                     {getIcon()}
                 </span>
                 <span className="capitalize font-medium">
@@ -122,19 +87,42 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         );
     }
 
+    // Minimal variant (just the icon with no background)
+    if (variant === 'minimal') {
+        return (
+            <button
+                onClick={handleClick}
+                className={`
+                    flex items-center justify-center rounded-lg
+                    text-secondary-700 hover:text-secondary-900
+                    dark:text-secondary-300 dark:hover:text-secondary-100
+                    transition-all duration-200 hover:scale-110
+                    ${sizeClasses[size]}
+                    ${className}
+                `}
+                title={getTooltipText()}
+                aria-label={`Current theme: ${theme.displayMode}. ${getTooltipText()}`}
+            >
+                {getIcon()}
+            </button>
+        );
+    }
+
+    // Default icon variant
     return (
         <button
-            onClick={toggleDisplayMode}
+            onClick={handleClick}
             className={`
-        flex items-center justify-center rounded-lg
-        bg-secondary-100 hover:bg-secondary-200
-        dark:bg-secondary-800 dark:hover:bg-secondary-700
-        text-secondary-700 hover:text-secondary-900
-        dark:text-secondary-300 dark:hover:text-secondary-100
-        transition-all duration-200
-        ${sizeClasses[size]}
-        ${className}
-      `}
+                flex items-center justify-center rounded-lg
+                bg-secondary-100 hover:bg-secondary-200
+                dark:bg-secondary-800 dark:hover:bg-secondary-700
+                text-secondary-700 hover:text-secondary-900
+                dark:text-secondary-300 dark:hover:text-secondary-100
+                transition-all duration-200 hover:scale-105
+                shadow-sm
+                ${sizeClasses[size]}
+                ${className}
+            `}
             title={getTooltipText()}
             aria-label={`Current theme: ${theme.displayMode}. ${getTooltipText()}`}
         >

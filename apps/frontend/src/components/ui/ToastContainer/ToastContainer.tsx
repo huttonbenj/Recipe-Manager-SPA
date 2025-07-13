@@ -1,6 +1,7 @@
 /**
  * Toast container component
  * Manages the display and positioning of multiple toast notifications
+ * Fully compatible with theme system
  */
 
 import React from 'react'
@@ -51,6 +52,8 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
         <div
             className={`fixed z-50 flex flex-col space-y-4 pointer-events-none ${positionClasses[position]}`}
             style={{ zIndex: 9999 }}
+            aria-live="polite"
+            aria-atomic="true"
         >
             {visibleToasts.map((toast) => (
                 <Toast
