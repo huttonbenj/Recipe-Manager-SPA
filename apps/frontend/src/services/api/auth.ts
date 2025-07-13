@@ -49,7 +49,7 @@ export const authApi = {
   },
 
   /**
-   * Logout user (invalidate token)
+   * Logout user
    */
   async logout(): Promise<void> {
     await apiClient.delete('/auth/logout')
@@ -58,19 +58,19 @@ export const authApi = {
   /**
    * Refresh authentication token
    */
-  async refreshToken(): Promise<AuthResponse> {
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
     const response = await apiClient.post<{ 
       success: boolean; 
       data: { 
-        user: User; 
+        user?: User; 
         accessToken: string; 
         refreshToken?: string; 
       } 
-    }>('/auth/refresh')
+    }>('/auth/refresh', { refreshToken })
     
     // Map backend response to frontend interface
     return {
-      user: response.data.data.user,
+      user: response.data.data.user, // May be undefined, handled in context
       token: response.data.data.accessToken,
       refreshToken: response.data.data.refreshToken
     }
@@ -80,7 +80,11 @@ export const authApi = {
    * Get current user profile
    */
   async getProfile(): Promise<User> {
-    const response = await apiClient.get<{ success: boolean; data: { user: User } }>('/auth/me')
+    const response = await apiClient.get<{ 
+      success: boolean; 
+      data: { user: User } 
+    }>('/auth/me')
+    
     return response.data.data.user
   },
 
@@ -88,7 +92,11 @@ export const authApi = {
    * Update user profile
    */
   async updateProfile(updates: Partial<User>): Promise<User> {
-    const response = await apiClient.put<User>('/auth/profile', updates)
-    return response.data
-  },
+    const response = await apiClient.put<{ 
+      success: boolean; 
+      data: { user: User } 
+    }>('/auth/profile', updates)
+    
+    return response.data.data.user
+  }
 }

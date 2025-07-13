@@ -3,10 +3,10 @@
  * Manages user authentication state across the application
  */
 
-import { createContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useState, useEffect, ReactNode, useCallback } from 'react'
 import { authApi } from '@/services'
 import { useLocalStorage } from '@/hooks'
-import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from '@/utils/constants'
+import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY, REFRESH_TOKEN_STORAGE_KEY } from '@/utils/constants'
 import type { User, LoginCredentials, RegisterData, AuthContextType } from '@/types'
 
 // Create context with default value
@@ -23,42 +23,99 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useLocalStorage<User | null>(USER_STORAGE_KEY, null)
   const [token, setToken] = useLocalStorage<string | null>(TOKEN_STORAGE_KEY, null)
+  const [refreshTokenStored, setRefreshTokenStored] = useLocalStorage<string | null>(REFRESH_TOKEN_STORAGE_KEY, null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isInitialized, setIsInitialized] = useState(false)
 
   // Computed values
   const isAuthenticated = !!user && !!token
+
+  /**
+   * Clear all auth data
+   */
+  const clearAuthData = useCallback(() => {
+    setUser(null)
+    setToken(null)
+    setRefreshTokenStored(null)
+  }, [setUser, setToken, setRefreshTokenStored])
+
+  /**
+   * Validate token and get user data
+   */
+  const validateToken = useCallback(async (authToken: string): Promise<User | null> => {
+    try {
+      console.log('[AuthContext] Validating token...')
+      const userData = await authApi.getProfile()
+      console.log('[AuthContext] Token validation successful', userData)
+      return userData
+    } catch (error: any) {
+      console.warn('[AuthContext] Token validation failed:', error)
+
+      // If it's a 401 error, the token is invalid/expired
+      if (error?.status === 401) {
+        clearAuthData()
+      }
+
+      return null
+    }
+  }, [clearAuthData])
 
   /**
    * Initialize auth state on app load
    */
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('AuthContext: Initializing auth...', { token, user })
+      console.log('[AuthContext] Initializing auth...', { token, user, refreshTokenStored, isInitialized })
 
-      // Only validate token if we have one and haven't already validated
-      if (token && !user) {
-        console.log('AuthContext: Validating existing token...')
-        try {
-          // Verify token is still valid and get fresh user data
-          const userData = await authApi.getProfile()
-          console.log('AuthContext: Token validation successful', userData)
-          setUser(userData)
-        } catch (error) {
-          // Token is invalid, clear auth state
-          console.warn('AuthContext: Token validation failed:', error)
-          setUser(null)
-          setToken(null)
-        }
-      } else {
-        console.log('AuthContext: No token to validate or user already set')
+      // Skip if already initialized
+      if (isInitialized) {
+        console.log('[AuthContext] Already initialized, skipping')
+        return
       }
 
-      console.log('AuthContext: Setting loading to false')
-      setIsLoading(false)
+      try {
+        // If we have a token but no user, validate the token
+        if (token && !user) {
+          console.log('[AuthContext] Token found, validating...')
+          const userData = await validateToken(token)
+
+          if (userData) {
+            setUser(userData)
+          } else {
+            // Token validation failed, clear everything
+            clearAuthData()
+          }
+        } else if (!token && user) {
+          // User data without token is invalid
+          console.log('[AuthContext] User data found without token, clearing...')
+          clearAuthData()
+        } else if (token && user) {
+          // Both token and user exist, verify token is still valid
+          console.log('[AuthContext] Both token and user found, verifying token...')
+          const userData = await validateToken(token)
+
+          if (!userData) {
+            // Token is invalid, clear everything
+            clearAuthData()
+          } else {
+            // Update user data in case it changed
+            setUser(userData)
+          }
+        } else {
+          console.log('[AuthContext] No auth data found')
+        }
+      } catch (error) {
+        console.error('[AuthContext] Auth initialization error:', error)
+        clearAuthData()
+      } finally {
+        setIsLoading(false)
+        setIsInitialized(true)
+        console.log('[AuthContext] Auth initialization complete')
+      }
     }
 
     initializeAuth()
-  }, []) // Only run once on mount
+  }, [token, user, refreshTokenStored, isInitialized, validateToken, clearAuthData, setUser])
 
   /**
    * Login user with credentials
@@ -66,13 +123,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (credentials: LoginCredentials): Promise<void> => {
     try {
       setIsLoading(true)
+      console.log('[AuthContext] Attempting login...')
+
       const response = await authApi.login(credentials)
 
+      console.log('[AuthContext] Login successful', response.user)
       setUser(response.user)
       setToken(response.token)
+
+      // Store refresh token if provided
+      if (response.refreshToken) {
+        setRefreshTokenStored(response.refreshToken)
+      }
     } catch (error) {
-      setUser(null)
-      setToken(null)
+      console.error('[AuthContext] Login failed:', error)
+      clearAuthData()
       throw error
     } finally {
       setIsLoading(false)
@@ -85,13 +150,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const register = async (userData: RegisterData): Promise<void> => {
     try {
       setIsLoading(true)
+      console.log('[AuthContext] Attempting registration...')
+
       const response = await authApi.register(userData)
 
+      console.log('[AuthContext] Registration successful', response.user)
       setUser(response.user)
       setToken(response.token)
+
+      // Store refresh token if provided
+      if (response.refreshToken) {
+        setRefreshTokenStored(response.refreshToken)
+      }
     } catch (error) {
-      setUser(null)
-      setToken(null)
+      console.error('[AuthContext] Registration failed:', error)
+      clearAuthData()
       throw error
     } finally {
       setIsLoading(false)
@@ -103,15 +176,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const logout = async (): Promise<void> => {
     try {
+      console.log('[AuthContext] Logging out...')
+
       // Call logout endpoint to invalidate server-side session
-      await authApi.logout()
+      if (token) {
+        await authApi.logout()
+      }
     } catch (error) {
       // Continue with logout even if server call fails
-      console.warn('Logout API call failed:', error)
+      console.warn('[AuthContext] Logout API call failed:', error)
     } finally {
       // Always clear local auth state
-      setUser(null)
-      setToken(null)
+      console.log('[AuthContext] Clearing auth data')
+      clearAuthData()
     }
   }
 
@@ -120,23 +197,84 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const refreshToken = async (): Promise<void> => {
     try {
-      const response = await authApi.refreshToken()
-      setUser(response.user)
+      console.log('[AuthContext] Refreshing token...')
+
+      if (!refreshTokenStored) {
+        throw new Error('No refresh token available')
+      }
+
+      const response = await authApi.refreshToken(refreshTokenStored)
+
+      console.log('[AuthContext] Token refresh successful')
+
+      // Use returned user data or keep current user
+      const userData = response.user || user
+      if (userData) {
+        setUser(userData)
+      }
+
       setToken(response.token)
+
+      // Update refresh token if provided
+      if (response.refreshToken) {
+        setRefreshTokenStored(response.refreshToken)
+      }
     } catch (error) {
+      console.error('[AuthContext] Token refresh failed:', error)
+
       // Refresh failed, logout user
-      setUser(null)
-      setToken(null)
+      clearAuthData()
       throw error
     }
   }
+
+  /**
+   * Check if user is still authenticated (for periodic checks)
+   */
+  const checkAuthStatus = useCallback(async (): Promise<boolean> => {
+    if (!token || !user) {
+      return false
+    }
+
+    try {
+      const userData = await validateToken(token)
+      if (userData) {
+        // Update user data if it changed
+        if (JSON.stringify(userData) !== JSON.stringify(user)) {
+          setUser(userData)
+        }
+        return true
+      } else {
+        clearAuthData()
+        return false
+      }
+    } catch (error) {
+      console.error('[AuthContext] Auth status check failed:', error)
+      clearAuthData()
+      return false
+    }
+  }, [token, user, validateToken, clearAuthData, setUser])
+
+  // Periodic auth status check (every 5 minutes)
+  useEffect(() => {
+    if (!isAuthenticated || !isInitialized) {
+      return
+    }
+
+    const interval = setInterval(() => {
+      console.log('[AuthContext] Performing periodic auth check...')
+      checkAuthStatus()
+    }, 5 * 60 * 1000) // 5 minutes
+
+    return () => clearInterval(interval)
+  }, [isAuthenticated, isInitialized, checkAuthStatus])
 
   // Context value
   const value: AuthContextType = {
     user,
     token,
     isAuthenticated,
-    isLoading,
+    isLoading: isLoading || !isInitialized,
     login,
     register,
     logout,

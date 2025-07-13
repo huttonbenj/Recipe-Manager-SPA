@@ -21,6 +21,9 @@ import Favorites from '@/pages/Favorites'
 import Bookmarks from '@/pages/Bookmarks'
 import NotFound from '@/pages/NotFound'
 
+// UI Components
+import { Loading } from '@/components/ui'
+
 // Hooks
 import { useAuth } from '@/hooks/useAuth'
 
@@ -33,9 +36,19 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const { user } = useAuth()
+    const { user, isLoading, isAuthenticated } = useAuth()
 
-    return user ? <>{children}</> : <Navigate to="/login" replace />
+    // Show loading spinner while auth is being determined
+    if (isLoading) {
+        return <Loading variant="spinner" size="lg" text="Checking authentication..." fullScreen />
+    }
+
+    // Redirect to login if not authenticated
+    if (!isAuthenticated || !user) {
+        return <Navigate to="/login" replace />
+    }
+
+    return <>{children}</>
 }
 
 /**
@@ -47,9 +60,19 @@ interface PublicRouteProps {
 }
 
 const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
-    const { user } = useAuth()
+    const { user, isLoading, isAuthenticated } = useAuth()
 
-    return !user ? <>{children}</> : <Navigate to="/" replace />
+    // Show loading spinner while auth is being determined
+    if (isLoading) {
+        return <Loading variant="spinner" size="lg" text="Loading..." fullScreen />
+    }
+
+    // Redirect to home if already authenticated
+    if (isAuthenticated && user) {
+        return <Navigate to="/" replace />
+    }
+
+    return <>{children}</>
 }
 
 /**
