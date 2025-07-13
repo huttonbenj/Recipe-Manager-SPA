@@ -8,7 +8,7 @@ import { API_BASE_URL } from '@/utils/constants'
 
 export const handlers = [
   // Auth endpoints
-  rest.post(`${API_BASE_URL}/auth/login`, (req, res, ctx) => {
+  rest.post(`${API_BASE_URL}/auth/login`, (_req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json({
@@ -27,7 +27,7 @@ export const handlers = [
     )
   }),
 
-  rest.post(`${API_BASE_URL}/auth/register`, (req, res, ctx) => {
+  rest.post(`${API_BASE_URL}/auth/register`, (_req, res, ctx) => {
     return res(
       ctx.status(201),
       ctx.json({
@@ -47,7 +47,7 @@ export const handlers = [
   }),
 
   // Recipe endpoints
-  rest.get(`${API_BASE_URL}/recipes`, (req, res, ctx) => {
+  rest.get(`${API_BASE_URL}/recipes`, (_req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json({
@@ -103,7 +103,7 @@ export const handlers = [
   }),
 
   // Upload endpoints
-  rest.post(`${API_BASE_URL}/upload/image`, (req, res, ctx) => {
+  rest.post(`${API_BASE_URL}/upload/image`, (_req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json({

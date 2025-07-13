@@ -3,8 +3,8 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { recipesApi } from '@/services'
-import type { Recipe, CreateRecipeData, RecipeSearchParams, QueryResult, MutationResult } from '@/types'
+import { recipesApi } from '@/services/api/recipes'
+import type { CreateRecipeData, RecipeSearchParams } from '@/types'
 
 // Query keys for React Query
 export const recipeKeys = {

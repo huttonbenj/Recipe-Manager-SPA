@@ -26,7 +26,7 @@ export const uploadApi = {
    */
   async uploadImages(files: File[]): Promise<UploadResponse[]> {
     const formData = new FormData()
-    files.forEach((file, index) => {
+    files.forEach((file, _index) => {
       formData.append(`images`, file)
     })
     

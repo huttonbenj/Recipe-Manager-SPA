@@ -3,7 +3,7 @@
  */
 
 import { apiClient } from './client'
-import type { Recipe, CreateRecipeData, UpdateRecipeData, RecipeSearchParams, ApiResponse, PaginationInfo } from '@/types'
+import type { Recipe, CreateRecipeData, RecipeSearchParams, PaginationInfo } from '@/types'
 
 export interface RecipeListResponse {
   recipes: Recipe[]

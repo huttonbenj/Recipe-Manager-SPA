@@ -1,9 +1,9 @@
 /**
- * Error Boundary component for handling React errors
- * TODO: Implement error boundary with error reporting
+ * Error boundary component
+ * Catches JavaScript errors anywhere in the component tree
  */
 
-import React, { Component, ErrorInfo, ReactNode } from 'react'
+import { Component, ErrorInfo, ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
@@ -35,7 +35,7 @@ class ErrorBoundary extends Component<Props, State> {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
             <p className="text-gray-600 mb-4">We're sorry, but something unexpected happened.</p>
-            <button 
+            <button
               onClick={() => this.setState({ hasError: false })}
               className="btn btn-primary"
             >

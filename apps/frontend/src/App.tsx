@@ -1,12 +1,14 @@
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { AppRoutes } from './components/layout/AppRoutes';
-import ErrorBoundary from './components/ui/ErrorBoundary';
-import './styles/globals.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter as Router } from 'react-router-dom'
+
+// Components
+import { AuthProvider } from '@/context/AuthContext'
+import { ThemeProvider } from '@/context/ThemeContext'
+import { AppRoutes } from '@/components/layout/AppRoutes'
+import ErrorBoundary from '@/components/ui/ErrorBoundary'
+
+// Styles
+import './index.css'
 
 /**
  * React Query client configuration
@@ -45,7 +47,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <Router>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <ThemeProvider>
@@ -53,11 +55,11 @@ function App() {
                 <AppRoutes />
               </div>
               {/* React Query DevTools - only shown in development */}
-              <ReactQueryDevtools initialIsOpen={false} />
+              {/* ReactQueryDevtools is removed as per the new_code, so this line is removed */}
             </ThemeProvider>
           </AuthProvider>
         </QueryClientProvider>
-      </BrowserRouter>
+      </Router>
     </ErrorBoundary>
   );
 }

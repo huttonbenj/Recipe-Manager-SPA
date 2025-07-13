@@ -1,9 +1,9 @@
 /**
  * Authentication context provider
- * Manages user authentication state and operations
+ * Manages user authentication state across the application
  */
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useState, useEffect, ReactNode } from 'react'
 import { authApi } from '@/services'
 import { useLocalStorage } from '@/hooks'
 import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY } from '@/utils/constants'
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true)
       const response = await authApi.login(credentials)
-      
+
       setUser(response.user)
       setToken(response.token)
     } catch (error) {
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true)
       const response = await authApi.register(userData)
-      
+
       setUser(response.user)
       setToken(response.token)
     } catch (error) {
