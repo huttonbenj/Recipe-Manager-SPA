@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import {
   ArrowLeft, X, Plus, Minus, Clock, Users, ChefHat,
-  Save, Eye, Camera, AlertCircle, User, Heart, Bookmark, Info
+  Save, Eye, Camera, AlertCircle, User, Heart, Bookmark, Info, ChevronRight, Tag
 } from 'lucide-react'
 
 // UI Components
@@ -308,26 +308,31 @@ const CreateRecipe: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-800 py-8">
+      <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
               leftIcon={<ArrowLeft className="w-4 h-4" />}
+              className="shrink-0"
             >
               Back
             </Button>
-            <h1 className="text-2xl font-bold text-secondary-900 dark:text-secondary-100">Create New Recipe</h1>
+            <div>
+              <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100">Create New Recipe</h1>
+              <p className="text-secondary-600 dark:text-secondary-400 mt-1">Share your culinary creation with the world</p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button
               variant="secondary"
               onClick={handlePreview}
-              leftIcon={<Eye className="w-4 h-4 mr-2" />}
+              leftIcon={<Eye className="w-4 h-4" />}
+              className="px-6"
             >
               Preview
             </Button>
@@ -335,79 +340,124 @@ const CreateRecipe: React.FC = () => {
               type="submit"
               form="recipe-form"
               disabled={createMutation.isPending}
-              leftIcon={createMutation.isPending ? <Loading variant="spinner" size="sm" /> : <Save className="w-4 h-4 mr-2" />}
+              leftIcon={createMutation.isPending ? <Loading variant="spinner" size="sm" /> : <Save className="w-4 h-4" />}
+              className="px-6 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
             >
-              Create Recipe
+              {createMutation.isPending ? 'Creating...' : 'Create Recipe'}
             </Button>
           </div>
         </div>
 
-        <form id="recipe-form" onSubmit={handleSubmit} className="space-y-6">
+        <form id="recipe-form" onSubmit={handleSubmit} className="space-y-8">
           {/* Submit Error Display */}
           {errors.submit && (
-            <div className="toast-error border rounded-md p-4 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 toast-icon-error" />
-              <p className="form-error">{errors.submit}</p>
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3">
+              <div className="p-1 bg-red-100 dark:bg-red-800 rounded-full">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <h4 className="font-medium text-red-800 dark:text-red-200">Error Creating Recipe</h4>
+                <p className="text-red-700 dark:text-red-300 text-sm mt-1">{errors.submit}</p>
+              </div>
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-8">
               {/* Basic Information */}
-              <Card>
-                <CardHeader>
-                  <h2 className="text-lg font-semibold">Basic Information</h2>
+              <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
+                      <ChefHat className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Basic Information</h2>
+                      <p className="text-sm text-secondary-600 dark:text-secondary-400">Give your recipe a name and description</p>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardBody className="space-y-4">
+                <CardBody className="space-y-6">
                   <Input
                     label="Recipe Title"
-                    placeholder="Enter a delicious recipe name"
+                    placeholder="Enter a delicious recipe name (e.g., Grandma's Chocolate Chip Cookies)"
                     value={formData.title}
                     onChange={handleInputChange('title')}
                     error={errors.title}
                     required
+                    className="text-lg"
                   />
 
                   <Textarea
                     label="Description"
-                    placeholder="Describe your recipe and what makes it special"
+                    placeholder="Describe your recipe and what makes it special. What inspired you to create it? What occasions is it perfect for?"
                     value={formData.description}
                     onChange={handleInputChange('description')}
                     error={!!errors.description}
-                    helperText={errors.description}
-                    rows={3}
+                    helperText={errors.description || "A good description helps others understand what makes your recipe unique"}
+                    rows={4}
                     required
                   />
                 </CardBody>
               </Card>
 
               {/* Image Upload */}
-              <Card>
-                <CardHeader>
-                  <h2 className="text-lg font-semibold">Recipe Image</h2>
+              <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
+                      <Camera className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Recipe Image</h2>
+                      <p className="text-sm text-secondary-600 dark:text-secondary-400">Add a mouth-watering photo of your dish</p>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardBody>
                   {previewImage || formData.imageUrl ? (
-                    <div className="relative">
+                    <div className="relative group">
                       <img
                         src={previewImage || formData.imageUrl}
                         alt="Recipe preview"
-                        className="w-full h-64 object-cover rounded-lg"
+                        className="w-full h-72 object-cover rounded-xl shadow-md"
                       />
-                      <Button
-                        type="button"
-                        variant="danger"
-                        size="sm"
-                        className="absolute top-2 right-2"
-                        onClick={removeImage}
-                        leftIcon={<X className="w-4 h-4" />}
-                      >
-                        Remove Image
-                      </Button>
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                        <div className="flex gap-3">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => document.getElementById('image-upload')?.click()}
+                            leftIcon={<Camera className="w-4 h-4" />}
+                            className="bg-white/90 text-secondary-900 hover:bg-white"
+                          >
+                            Change Image
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            onClick={removeImage}
+                            leftIcon={<X className="w-4 h-4" />}
+                            className="bg-red-500/90 hover:bg-red-600"
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="image-upload"
+                        disabled={isUploading}
+                      />
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-secondary-300 dark:border-secondary-600 rounded-lg p-8 text-center">
+                    <div className="border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-xl p-12 text-center bg-gradient-to-br from-primary-50/50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/20 hover:from-primary-100/70 hover:to-primary-200/70 dark:hover:from-primary-900/30 dark:hover:to-primary-800/30 transition-all duration-200">
                       <input
                         type="file"
                         accept="image/*"
@@ -418,15 +468,23 @@ const CreateRecipe: React.FC = () => {
                       />
                       <label
                         htmlFor="image-upload"
-                        className="cursor-pointer flex flex-col items-center gap-2"
+                        className="cursor-pointer flex flex-col items-center gap-4 group"
                       >
                         {isUploading ? (
-                          <Loading variant="spinner" size="md" />
+                          <div className="flex flex-col items-center gap-3">
+                            <Loading variant="spinner" size="lg" />
+                            <span className="text-primary-600 dark:text-primary-400 font-medium">Uploading image...</span>
+                          </div>
                         ) : (
                           <>
-                            <Camera className="w-12 h-12 text-secondary-400 dark:text-secondary-500" />
-                            <span className="text-secondary-600 dark:text-secondary-400">Click to upload recipe image</span>
-                            <span className="text-sm text-secondary-500 dark:text-secondary-500">PNG, JPG up to 5MB</span>
+                            <div className="p-4 bg-primary-100 dark:bg-primary-800 rounded-full group-hover:scale-110 transition-transform">
+                              <Camera className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+                            </div>
+                            <div className="space-y-2">
+                              <span className="text-lg font-medium text-secondary-700 dark:text-secondary-300">Add Recipe Photo</span>
+                              <p className="text-secondary-600 dark:text-secondary-400">Click to upload or drag and drop</p>
+                              <p className="text-sm text-secondary-500 dark:text-secondary-500">PNG, JPG, WebP up to 5MB</p>
+                            </div>
                           </>
                         )}
                       </label>
@@ -436,100 +494,172 @@ const CreateRecipe: React.FC = () => {
               </Card>
 
               {/* Ingredients */}
-              <Card>
-                <CardHeader>
+              <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
+                <CardHeader className="pb-6">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold">Ingredients</h2>
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
+                        <ChefHat className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Ingredients</h2>
+                        <p className="text-sm text-secondary-600 dark:text-secondary-400">List all ingredients with measurements</p>
+                      </div>
+                    </div>
                     <Button
                       type="button"
-                      variant="secondary"
+                      variant="primary"
                       size="sm"
                       onClick={addIngredient}
-                      leftIcon={<Plus className="w-4 h-4 mr-2" />}
+                      leftIcon={<Plus className="w-4 h-4" />}
+                      className="shrink-0"
                     >
-                      Add
+                      Add Ingredient
                     </Button>
                   </div>
                   {errors.ingredients && (
-                    <p className="text-sm text-accent-600 dark:text-accent-400">{errors.ingredients}</p>
+                    <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                      <p className="text-sm text-red-700 dark:text-red-300">{errors.ingredients}</p>
+                    </div>
                   )}
                 </CardHeader>
-                <CardBody className="space-y-3">
+                <CardBody className="space-y-4">
                   {formData.ingredients.map((ingredient, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <Input
-                        placeholder={`Ingredient ${index + 1}`}
-                        value={ingredient}
-                        onChange={(e) => updateIngredient(index, e.target.value)}
-                        className="flex-1"
-                      />
-                      {formData.ingredients.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeIngredient(index)}
-                          leftIcon={<Minus className="w-4 h-4" />}
-                        >
-                          Remove
-                        </Button>
-                      )}
+                    <div key={index} className="group">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 bg-primary-100 dark:bg-primary-800 text-primary-600 dark:text-primary-400 rounded-full text-sm font-medium shrink-0">
+                          {index + 1}
+                        </div>
+                        <Input
+                          placeholder={`e.g., 2 cups all-purpose flour, 1 tsp vanilla extract`}
+                          value={ingredient}
+                          onChange={(e) => updateIngredient(index, e.target.value)}
+                          className="flex-1"
+                        />
+                        {formData.ingredients.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeIngredient(index)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 shrink-0"
+                            leftIcon={<Minus className="w-4 h-4" />}
+                          >
+                            Remove
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   ))}
+                  {formData.ingredients.length < 20 && (
+                    <div className="mt-6 pt-4 border-t border-secondary-200 dark:border-secondary-700">
+                      <p className="text-sm text-secondary-600 dark:text-secondary-400 mb-3">
+                        💡 <strong>Tips:</strong> Include measurements (cups, tablespoons, etc.) and be specific about ingredient types
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addIngredient}
+                        leftIcon={<Plus className="w-4 h-4" />}
+                        className="w-full border-dashed"
+                      >
+                        Add Another Ingredient
+                      </Button>
+                    </div>
+                  )}
                 </CardBody>
               </Card>
 
               {/* Instructions */}
-              <Card>
-                <CardHeader>
-                  <h2 className="text-lg font-semibold">Cooking Instructions</h2>
+              <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
+                      <ChevronRight className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Cooking Instructions</h2>
+                      <p className="text-sm text-secondary-600 dark:text-secondary-400">Provide clear, step-by-step directions</p>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardBody>
-                  <Textarea
-                    label="Cooking Instructions"
-                    placeholder="Step 1: Preheat your oven to 350°F...&#10;Step 2: In a large bowl, mix..."
-                    value={formData.instructions}
-                    onChange={handleInputChange('instructions')}
-                    error={!!errors.instructions}
-                    helperText={errors.instructions || "Write step-by-step instructions. Put each step on a new line."}
-                    rows={8}
-                    required
-                  />
+                  <div className="space-y-4">
+                    <Textarea
+                      placeholder="Step 1: Preheat your oven to 350°F (175°C) and grease a 9x13 inch baking pan.
+
+Step 2: In a large mixing bowl, cream together the butter and sugar until light and fluffy, about 3-4 minutes.
+
+Step 3: Add eggs one at a time, beating well after each addition. Mix in vanilla extract.
+
+Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
+                      value={formData.instructions}
+                      onChange={handleInputChange('instructions')}
+                      error={!!errors.instructions}
+                      helperText={errors.instructions || "Write numbered steps separated by blank lines. Include temperatures, times, and visual cues."}
+                      rows={12}
+                      required
+                      className="min-h-[300px]"
+                    />
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                      <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">💡 Writing Great Instructions</h4>
+                      <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                        <li>• Start each step with "Step 1:", "Step 2:", etc.</li>
+                        <li>• Include specific temperatures, times, and measurements</li>
+                        <li>• Describe what to look for (e.g., "until golden brown")</li>
+                        <li>• Separate each step with a blank line</li>
+                        <li>• Be clear about equipment needed for each step</li>
+                      </ul>
+                    </div>
+                  </div>
                 </CardBody>
               </Card>
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-6">
+            <div className="space-y-8">
               {/* Recipe Details */}
-              <Card>
-                <CardHeader>
-                  <h3 className="font-semibold">Recipe Details</h3>
+              <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
+                      <Clock className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100">Recipe Details</h3>
+                      <p className="text-sm text-secondary-600 dark:text-secondary-400">Time, servings, and difficulty</p>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardBody className="space-y-4">
-                  <Input
-                    label="Prep Time (minutes)"
-                    type="number"
-                    placeholder="30"
-                    value={formData.prepTime || ''}
-                    onChange={handleInputChange('prepTime')}
-                    leftIcon={<Clock className="w-4 h-4" />}
-                    error={errors.prepTime}
-                    min="1"
-                    max="1440"
-                  />
+                <CardBody className="space-y-5">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      label="Prep Time"
+                      type="number"
+                      placeholder="30"
+                      value={formData.prepTime || ''}
+                      onChange={handleInputChange('prepTime')}
+                      leftIcon={<Clock className="w-4 h-4" />}
+                      error={errors.prepTime}
+                      helperText="minutes"
+                      min="1"
+                      max="1440"
+                    />
 
-                  <Input
-                    label="Cook Time (minutes)"
-                    type="number"
-                    placeholder="45"
-                    value={formData.cookTime || ''}
-                    onChange={handleInputChange('cookTime')}
-                    leftIcon={<ChefHat className="w-4 h-4" />}
-                    error={errors.cookTime}
-                    min="1"
-                    max="1440"
-                  />
+                    <Input
+                      label="Cook Time"
+                      type="number"
+                      placeholder="45"
+                      value={formData.cookTime || ''}
+                      onChange={handleInputChange('cookTime')}
+                      leftIcon={<ChefHat className="w-4 h-4" />}
+                      error={errors.cookTime}
+                      helperText="minutes"
+                      min="1"
+                      max="1440"
+                    />
+                  </div>
 
                   <Input
                     label="Servings"
@@ -539,6 +669,7 @@ const CreateRecipe: React.FC = () => {
                     onChange={handleInputChange('servings')}
                     leftIcon={<Users className="w-4 h-4" />}
                     error={errors.servings}
+                    helperText="number of people"
                     min="1"
                     max="50"
                   />
@@ -548,29 +679,39 @@ const CreateRecipe: React.FC = () => {
                     value={formData.difficulty || ''}
                     onChange={handleInputChange('difficulty')}
                   >
-                    <option value={Difficulty.EASY}>Easy</option>
-                    <option value={Difficulty.MEDIUM}>Medium</option>
-                    <option value={Difficulty.HARD}>Hard</option>
+                    <option value="">Select difficulty...</option>
+                    <option value={Difficulty.EASY}>🟢 Easy - Perfect for beginners</option>
+                    <option value={Difficulty.MEDIUM}>🟡 Medium - Some cooking experience helpful</option>
+                    <option value={Difficulty.HARD}>🔴 Hard - Advanced cooking skills required</option>
                   </Select>
 
                   <Input
                     label="Cuisine Type"
-                    placeholder="Italian, Mexican, Asian..."
+                    placeholder="e.g., Italian, Mexican, Asian, American..."
                     value={formData.cuisine || ''}
                     onChange={handleInputChange('cuisine')}
+                    leftIcon={<ChefHat className="w-4 h-4" />}
                   />
                 </CardBody>
               </Card>
 
               {/* Tags */}
-              <Card>
-                <CardHeader>
-                  <h3 className="font-semibold">Tags</h3>
+              <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
+                      <Tag className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100">Tags</h3>
+                      <p className="text-sm text-secondary-600 dark:text-secondary-400">Help others discover your recipe</p>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardBody className="space-y-3">
+                <CardBody className="space-y-4">
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Add a tag"
+                      placeholder="e.g., vegetarian, quick, comfort food..."
                       value={newTag}
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyDown={(e) => {
@@ -584,49 +725,136 @@ const CreateRecipe: React.FC = () => {
                     <Button
                       type="button"
                       onClick={addTag}
-                      disabled={!newTag.trim()}
+                      disabled={!newTag.trim() || formData.tags.length >= 10}
                       leftIcon={<Plus className="w-4 h-4" />}
+                      size="sm"
                     >
-                      Add Tag
+                      Add
                     </Button>
                   </div>
 
-                  {formData.tags.length > 0 && (
+                  {/* Popular Tags Suggestions */}
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-secondary-700 dark:text-secondary-300">Popular tags:</p>
                     <div className="flex flex-wrap gap-2">
-                      {formData.tags.map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="flex items-center gap-1"
-                        >
-                          {tag}
+                      {['vegetarian', 'quick', 'healthy', 'comfort food', 'dessert', 'breakfast', 'dinner', 'appetizer'].map((suggestedTag) => (
+                        !formData.tags.includes(suggestedTag) && (
                           <button
+                            key={suggestedTag}
                             type="button"
-                            onClick={() => removeTag(tag)}
-                            className="hover:text-accent-600 dark:hover:text-accent-400"
+                            onClick={() => {
+                              if (formData.tags.length < 10) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  tags: [...prev.tags, suggestedTag]
+                                }))
+                              }
+                            }}
+                            className="px-2 py-1 text-xs bg-secondary-100 dark:bg-secondary-700 text-secondary-700 dark:text-secondary-300 rounded-md hover:bg-primary-100 dark:hover:bg-primary-800 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
                           >
-                            <X className="w-3 h-3" />
+                            + {suggestedTag}
                           </button>
-                        </Badge>
+                        )
                       ))}
+                    </div>
+                  </div>
+
+                  {formData.tags.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-secondary-700 dark:text-secondary-300">
+                        Your tags ({formData.tags.length}/10):
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.tags.map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="primary"
+                            className="flex items-center gap-1.5 px-3 py-1"
+                          >
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => removeTag(tag)}
+                              className="hover:text-primary-200 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </CardBody>
               </Card>
 
-              {/* Tips */}
-              <Card>
-                <CardHeader>
-                  <h3 className="font-semibold">Tips for Great Recipes</h3>
+              {/* Form Progress & Tips */}
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-800">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 dark:bg-green-800 rounded-lg">
+                      <Info className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">Recipe Progress</h3>
+                      <p className="text-sm text-green-600 dark:text-green-400">Complete all sections for best results</p>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardBody>
-                  <ul className="text-sm text-secondary-600 dark:text-secondary-400 space-y-2">
-                    <li>• Use specific measurements and clear instructions</li>
-                    <li>• Include prep and cook times</li>
-                    <li>• Add helpful tips and variations</li>
-                    <li>• Use high-quality photos</li>
-                    <li>• Test your recipe before sharing</li>
-                  </ul>
+                <CardBody className="space-y-4">
+                  {/* Progress Checklist */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${formData.title ? 'bg-green-500' : 'bg-secondary-300 dark:bg-secondary-600'}`}>
+                        {formData.title && <span className="text-white text-xs">✓</span>}
+                      </div>
+                      <span className={`text-sm ${formData.title ? 'text-green-700 dark:text-green-300' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                        Recipe title
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${formData.description ? 'bg-green-500' : 'bg-secondary-300 dark:bg-secondary-600'}`}>
+                        {formData.description && <span className="text-white text-xs">✓</span>}
+                      </div>
+                      <span className={`text-sm ${formData.description ? 'text-green-700 dark:text-green-300' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                        Description
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${formData.ingredients.some(ing => ing.trim()) ? 'bg-green-500' : 'bg-secondary-300 dark:bg-secondary-600'}`}>
+                        {formData.ingredients.some(ing => ing.trim()) && <span className="text-white text-xs">✓</span>}
+                      </div>
+                      <span className={`text-sm ${formData.ingredients.some(ing => ing.trim()) ? 'text-green-700 dark:text-green-300' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                        Ingredients ({formData.ingredients.filter(ing => ing.trim()).length})
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${formData.instructions ? 'bg-green-500' : 'bg-secondary-300 dark:bg-secondary-600'}`}>
+                        {formData.instructions && <span className="text-white text-xs">✓</span>}
+                      </div>
+                      <span className={`text-sm ${formData.instructions ? 'text-green-700 dark:text-green-300' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                        Instructions
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${formData.imageUrl || previewImage ? 'bg-green-500' : 'bg-secondary-300 dark:bg-secondary-600'}`}>
+                        {(formData.imageUrl || previewImage) && <span className="text-white text-xs">✓</span>}
+                      </div>
+                      <span className={`text-sm ${formData.imageUrl || previewImage ? 'text-green-700 dark:text-green-300' : 'text-secondary-600 dark:text-secondary-400'}`}>
+                        Recipe photo (optional)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-green-200 dark:border-green-800">
+                    <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">💡 Tips for Success</h4>
+                    <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+                      <li>• Use specific measurements (cups, tablespoons, etc.)</li>
+                      <li>• Include cooking temperatures and times</li>
+                      <li>• Add visual cues ("until golden brown")</li>
+                      <li>• Test your recipe before sharing</li>
+                      <li>• High-quality photos increase engagement</li>
+                    </ul>
+                  </div>
                 </CardBody>
               </Card>
             </div>
