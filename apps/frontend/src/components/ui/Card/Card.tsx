@@ -6,7 +6,7 @@
 import React from 'react'
 import { cn } from '@/utils'
 
-interface CardProps {
+export interface CardProps {
   children: React.ReactNode
   className?: string
   hover?: boolean
