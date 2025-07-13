@@ -130,7 +130,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         return (
             <Link
                 to={`/recipes/${recipe.id}`}
-                className={`block ${className}`}
+                className={`block group ${className}`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
@@ -286,7 +286,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     return (
         <Link
             to={`/recipes/${recipe.id}`}
-            className={`block ${className}`}
+            className={`block group ${className}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -375,7 +375,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
 
                 {/* Recipe Details */}
                 <div className="p-4">
-                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-2 line-clamp-1 transition-colors">
+                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 mb-2 line-clamp-1 transition-colors">
                         {recipe.title}
                     </h3>
 
