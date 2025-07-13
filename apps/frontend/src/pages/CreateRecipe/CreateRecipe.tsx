@@ -655,44 +655,35 @@ const CreateRecipe: React.FC = () => {
               )}
 
               {/* Recipe meta info */}
-              <div className="flex flex-wrap gap-6 py-4 border-t border-secondary-200 dark:border-secondary-700">
-                {formData.cookTime && (
-                  <div className="flex items-center">
-                    <Clock className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
-                    <div>
-                      <p className="text-sm text-secondary-500 dark:text-secondary-400">Cook Time</p>
-                      <p className="font-medium text-secondary-900 dark:text-secondary-100">{formatCookTime(formData.cookTime)}</p>
-                    </div>
+              <div className="flex flex-wrap gap-4 py-3 border-t border-secondary-200 dark:border-secondary-700 text-sm">
+                {formData.prepTime && (
+                  <div className="flex items-center text-secondary-600 dark:text-secondary-400">
+                    <Clock className="w-4 h-4 mr-1.5" />
+                    <span className="font-medium">{formatCookTime(formData.prepTime)}</span>
+                    <span className="ml-1">prep</span>
                   </div>
                 )}
 
-                {formData.prepTime && (
-                  <div className="flex items-center">
-                    <Clock className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
-                    <div>
-                      <p className="text-sm text-secondary-500 dark:text-secondary-400">Prep Time</p>
-                      <p className="font-medium text-secondary-900 dark:text-secondary-100">{formatCookTime(formData.prepTime)}</p>
-                    </div>
+                {formData.cookTime && (
+                  <div className="flex items-center text-secondary-600 dark:text-secondary-400">
+                    <Clock className="w-4 h-4 mr-1.5" />
+                    <span className="font-medium">{formatCookTime(formData.cookTime)}</span>
+                    <span className="ml-1">cook</span>
                   </div>
                 )}
 
                 {formData.servings && (
-                  <div className="flex items-center">
-                    <Users className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
-                    <div>
-                      <p className="text-sm text-secondary-500 dark:text-secondary-400">Servings</p>
-                      <p className="font-medium text-secondary-900 dark:text-secondary-100">{formData.servings}</p>
-                    </div>
+                  <div className="flex items-center text-secondary-600 dark:text-secondary-400">
+                    <Users className="w-4 h-4 mr-1.5" />
+                    <span className="font-medium">{formData.servings}</span>
+                    <span className="ml-1">serving{formData.servings !== 1 ? 's' : ''}</span>
                   </div>
                 )}
 
                 {formData.cuisine && (
-                  <div className="flex items-center">
-                    <ChefHat className="w-5 h-5 text-primary-500 dark:text-primary-400 mr-2" />
-                    <div>
-                      <p className="text-sm text-secondary-500 dark:text-secondary-400">Cuisine</p>
-                      <p className="font-medium text-secondary-900 dark:text-secondary-100">{formData.cuisine}</p>
-                    </div>
+                  <div className="flex items-center text-secondary-600 dark:text-secondary-400">
+                    <ChefHat className="w-4 h-4 mr-1.5" />
+                    <span className="font-medium capitalize">{formData.cuisine}</span>
                   </div>
                 )}
               </div>
