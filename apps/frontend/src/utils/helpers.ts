@@ -52,7 +52,8 @@ export function formatRelativeTime(date: string | Date): string {
   const diffInWeeks = Math.floor(diffInDays / 7)
   if (diffInWeeks < 4) return `${diffInWeeks}w ago`
   
-  return targetDate.toLocaleDateString()
+  const diffInMonths = Math.floor(diffInDays / 30)
+  return `${diffInMonths}mo ago`
 }
 
 /**
@@ -64,40 +65,47 @@ export function truncateText(text: string, maxLength: number): string {
 }
 
 /**
- * Generate slug from title
+ * Generate URL-friendly slug from title
  */
 export function generateSlug(title: string): string {
   return title
     .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
 }
 
 /**
- * Format file size to human readable format
+ * Format file size in human readable format
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes'
   
   const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
 /**
- * Check if a string is a valid URL
+ * Check if string is a valid URL
  */
 export function isValidUrl(string: string): boolean {
   try {
     new URL(string)
     return true
-  } catch {
+  } catch (_) {
     return false
   }
+}
+
+/**
+ * Format difficulty level for display
+ */
+export function formatDifficulty(difficulty?: string): string {
+  if (!difficulty) return 'Not specified'
+  return capitalize(difficulty)
 }
 
 /**
