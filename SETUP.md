@@ -62,12 +62,14 @@ npm run db:seed
 ### 5. Start Applications
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd apps/backend
 npm run dev
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd apps/frontend
 npm run dev
@@ -75,13 +77,13 @@ npm run dev
 
 ### 6. Access Application
 
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:3001
-- **Health Check**: http://localhost:3001/health
+- **Frontend**: <http://localhost:5173>
+- **Backend API**: <http://localhost:3001>
+- **Health Check**: <http://localhost:3001/health>
 
 ## 🔑 Demo Credentials
 
-**Email**: demo@recipemanager.com  
+**Email**: <demo@recipemanager.com>  
 **Password**: password123
 
 ## 🛠 Development Commands
@@ -163,6 +165,7 @@ The application uses PostgreSQL with the following main tables:
 - **Enums** - Difficulty levels (EASY, MEDIUM, HARD)
 
 Key features:
+
 - UUID primary keys for security
 - Full-text search with tsvector
 - Optimized indexes for performance
@@ -171,11 +174,13 @@ Key features:
 ## 🌐 API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `POST /api/auth/refresh` - Refresh JWT token
 
 ### Recipes
+
 - `GET /api/recipes` - List recipes (with filtering/search)
 - `GET /api/recipes/:id` - Get single recipe
 - `POST /api/recipes` - Create new recipe (auth required)
@@ -183,9 +188,11 @@ Key features:
 - `DELETE /api/recipes/:id` - Delete recipe (auth required)
 
 ### File Upload
+
 - `POST /api/upload/image` - Upload recipe image
 
 ### Search Parameters
+
 - `?search=query` - Full-text search
 - `?tags=tag1,tag2` - Filter by tags
 - `?cuisine=italian` - Filter by cuisine
@@ -195,6 +202,7 @@ Key features:
 ## 🎨 Frontend Features
 
 ### Core Components
+
 - **RecipeCard** - Grid/list recipe display
 - **RecipeList** - Paginated recipe browsing
 - **RecipeFilters** - Advanced search and filtering
@@ -202,6 +210,7 @@ Key features:
 - **Theme System** - 6 color themes + light/dark mode
 
 ### Pages
+
 - **Home** - Landing page with featured recipes
 - **Recipes** - Main recipe browsing with filters
 - **Recipe Detail** - Interactive recipe viewing
@@ -214,6 +223,7 @@ Key features:
 ### Common Issues
 
 **Database Connection Failed:**
+
 ```bash
 # Ensure Docker is running
 docker ps
@@ -224,6 +234,7 @@ docker-compose up -d postgres
 ```
 
 **Port Already in Use:**
+
 ```bash
 # Kill processes on ports 3001 or 5173
 lsof -ti:3001 | xargs kill
@@ -231,6 +242,7 @@ lsof -ti:5173 | xargs kill
 ```
 
 **Environment Variables Not Loading:**
+
 ```bash
 # Verify .env files exist
 ls -la apps/backend/.env
@@ -242,6 +254,7 @@ cp apps/frontend/env.template apps/frontend/.env
 ```
 
 **Migration Errors:**
+
 ```bash
 # Reset and re-run migrations
 cd apps/backend
@@ -287,9 +300,9 @@ Recipe-Manager-SPA/
 
 After setup, verify everything works:
 
-1. **Backend Health**: Visit http://localhost:3001/health
-2. **Frontend Loading**: Visit http://localhost:5173
-3. **Login Test**: Use demo@recipemanager.com / password123
+1. **Backend Health**: Visit <http://localhost:3001/health>
+2. **Frontend Loading**: Visit <http://localhost:5173>
+3. **Login Test**: Use <demo@recipemanager.com> / password123
 4. **Recipe Browsing**: Browse the 12 sample recipes
 5. **Search Test**: Search for "chicken" or "pasta"
 6. **Create Test**: Try creating a new recipe
@@ -336,4 +349,4 @@ cd apps/frontend && npm run dev
 
 ---
 
-**Enjoy building with Recipe Manager! 🍳** 
+**Enjoy building with Recipe Manager! 🍳**

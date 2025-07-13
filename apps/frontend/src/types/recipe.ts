@@ -65,7 +65,7 @@ export interface RecipeSearchParams {
   cuisine?: string
   difficulty?: string
   limit?: number
-  offset?: number
+  page?: number
   sortBy?: 'createdAt' | 'title' | 'cookTime' | 'difficulty'
   sortOrder?: 'asc' | 'desc'
 }

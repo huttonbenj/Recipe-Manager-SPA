@@ -88,6 +88,7 @@ async function main() {
       tags: ['italian', 'vegetarian', 'pizza', 'comfort-food'],
       cuisine: 'italian',
       authorId: demoUser.id,
+      imageUrl: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Authentic Chicken Pad Thai',
@@ -131,6 +132,7 @@ async function main() {
       tags: ['thai', 'asian', 'stir-fry', 'noodles', 'chicken'],
       cuisine: 'thai',
       authorId: chefKenji.id,
+      imageUrl: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Creamy Mushroom Risotto',
@@ -176,6 +178,7 @@ async function main() {
       tags: ['italian', 'vegetarian', 'rice', 'mushrooms', 'creamy'],
       cuisine: 'italian',
       authorId: chefMaria.id,
+      imageUrl: 'https://images.unsplash.com/photo-1633478062482-790e3b5dd810?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'BBQ Pulled Pork Sandwiches',
@@ -219,6 +222,7 @@ async function main() {
       tags: ['american', 'bbq', 'pork', 'sandwich', 'slow-cooked'],
       cuisine: 'american',
       authorId: demoUser.id,
+      imageUrl: 'https://images.unsplash.com/photo-1628689469838-524a4a973b8e?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Fresh Caprese Salad',
@@ -257,6 +261,7 @@ async function main() {
       tags: ['italian', 'vegetarian', 'salad', 'fresh', 'no-cook'],
       cuisine: 'italian',
       authorId: chefMaria.id,
+      imageUrl: 'https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Beef and Broccoli Stir Fry',
@@ -301,6 +306,7 @@ async function main() {
       tags: ['chinese', 'beef', 'broccoli', 'stir-fry', 'quick'],
       cuisine: 'chinese',
       authorId: chefKenji.id,
+      imageUrl: 'https://images.unsplash.com/photo-1625937286074-9ca519d5d9df?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Chocolate Chip Cookies',
@@ -342,6 +348,7 @@ async function main() {
       tags: ['dessert', 'cookies', 'chocolate', 'baking', 'sweet'],
       cuisine: 'american',
       authorId: demoUser.id,
+      imageUrl: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Greek Lemon Chicken with Potatoes',
@@ -385,6 +392,7 @@ async function main() {
       tags: ['greek', 'chicken', 'potatoes', 'one-pan', 'lemon'],
       cuisine: 'greek',
       authorId: chefMaria.id,
+      imageUrl: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Vegetable Curry',
@@ -431,6 +439,7 @@ async function main() {
       tags: ['indian', 'vegetarian', 'curry', 'coconut', 'spicy'],
       cuisine: 'indian',
       authorId: chefKenji.id,
+      imageUrl: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'French Onion Soup',
@@ -475,6 +484,7 @@ async function main() {
       tags: ['french', 'soup', 'onions', 'cheese', 'comfort-food'],
       cuisine: 'french',
       authorId: chefMaria.id,
+      imageUrl: 'https://images.unsplash.com/photo-1610725663727-08695a1ac3ff?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Teriyaki Salmon',
@@ -519,6 +529,7 @@ async function main() {
       tags: ['japanese', 'salmon', 'teriyaki', 'healthy', 'quick'],
       cuisine: 'japanese',
       authorId: chefKenji.id,
+      imageUrl: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Caesar Salad',
@@ -562,6 +573,7 @@ async function main() {
       tags: ['salad', 'roman', 'anchovy', 'parmesan', 'classic'],
       cuisine: 'italian',
       authorId: demoUser.id,
+      imageUrl: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800&auto=format&fit=crop&q=60',
     }
   ]
 
@@ -579,7 +591,24 @@ async function main() {
       })
       console.log(`   ✓ Created recipe: ${recipe.title}`)
     } else {
-      console.log(`   → Recipe already exists: ${recipe.title}`)
+      // Update existing recipe with new data, especially the imageUrl
+      await prisma.recipe.update({
+        where: { id: existingRecipe.id },
+        data: {
+          imageUrl: recipe.imageUrl,
+          // Also update other fields that might have changed
+          description: recipe.description,
+          ingredients: recipe.ingredients,
+          instructions: recipe.instructions,
+          cookTime: recipe.cookTime,
+          prepTime: recipe.prepTime,
+          servings: recipe.servings,
+          difficulty: recipe.difficulty,
+          tags: recipe.tags,
+          cuisine: recipe.cuisine
+        }
+      })
+      console.log(`   ✓ Updated recipe: ${recipe.title}`)
     }
   }
 

@@ -32,8 +32,9 @@ apiClient.interceptors.request.use(
 // Response interceptor - handle common responses and errors
 apiClient.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
-    // Return the data directly for successful responses
-    return response.data.data || response.data
+    // Return the response as-is for successful responses
+    // The individual API methods will handle extracting the data
+    return response
   },
   (error: AxiosError<ApiResponse>) => {
     // Handle different types of errors
@@ -43,9 +44,10 @@ apiClient.interceptors.response.use(
     }
 
     if (error.response?.data) {
-      // Server responded with error
-      apiError.message = error.response.data.error || error.response.data.message || apiError.message
-      apiError.details = error.response.data
+      // Server responded with error - extract the message properly
+      const errorData = error.response.data
+      apiError.message = errorData.message || errorData.error || 'An error occurred'
+      apiError.details = errorData
     } else if (error.request) {
       // Network error
       apiError.message = 'Network error - please check your connection'

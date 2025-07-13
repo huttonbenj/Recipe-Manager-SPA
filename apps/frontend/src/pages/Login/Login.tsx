@@ -17,7 +17,6 @@ import Card from '@/components/ui/Card'
 import { useAuth } from '@/hooks/useAuth'
 
 
-
 /**
  * Form validation schema
  */
@@ -59,8 +58,33 @@ const Login: React.FC = () => {
       navigate(from, { replace: true })
     },
     onError: (error: any) => {
+      console.error('Login error:', error) // Debug logging
+
+      let errorMessage = 'Login failed. Please check your credentials.'
+      let fieldErrors: FormErrors = {}
+
+      // Extract specific error message
+      if (error?.message) {
+        errorMessage = error.message
+      } else if (error?.details?.message) {
+        errorMessage = error.details.message
+      }
+
+      // Handle validation errors
+      if (error?.details?.issues) {
+        error.details.issues.forEach((issue: any) => {
+          if (issue.field === 'email') {
+            fieldErrors.email = issue.message
+          } else if (issue.field === 'password') {
+            fieldErrors.password = issue.message
+          }
+        })
+      }
+
+      // Set form errors
       setErrors({
-        submit: error?.response?.data?.message || 'Login failed. Please check your credentials.'
+        submit: errorMessage,
+        ...fieldErrors
       })
     }
   })

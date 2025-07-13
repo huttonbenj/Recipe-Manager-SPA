@@ -10,16 +10,16 @@ export const authApi = {
    * Login user with email and password
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/login', credentials)
-    return response.data
+    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>('/auth/login', credentials)
+    return response.data.data
   },
 
   /**
    * Register new user
    */
   async register(userData: RegisterData): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/register', userData)
-    return response.data
+    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>('/auth/register', userData)
+    return response.data.data
   },
 
   /**
@@ -33,16 +33,16 @@ export const authApi = {
    * Refresh authentication token
    */
   async refreshToken(): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/refresh')
-    return response.data
+    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>('/auth/refresh')
+    return response.data.data
   },
 
   /**
    * Get current user profile
    */
   async getProfile(): Promise<User> {
-    const response = await apiClient.get<User>('/auth/profile')
-    return response.data
+    const response = await apiClient.get<{ success: boolean; data: { user: User } }>('/auth/me')
+    return response.data.data.user
   },
 
   /**

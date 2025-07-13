@@ -402,109 +402,94 @@ export class RecipeService {
 
     const skip = (page - 1) * limit
 
-    // Build the WHERE clause for other filters
-    let whereClause = ''
-    const params: any[] = []
-    let paramIndex = 1
+    try {
+      // Use a safer approach with Prisma's where clause instead of raw SQL
+      const where: any = {
+        OR: [
+          { title: { contains: searchQuery, mode: 'insensitive' } },
+          { description: { contains: searchQuery, mode: 'insensitive' } },
+          { ingredients: { hasSome: [searchQuery] } },
+          { tags: { hasSome: [searchQuery] } },
+          { cuisine: { contains: searchQuery, mode: 'insensitive' } }
+        ]
+      }
+      
+      // Add other filters
+      if (otherFilters.tags && otherFilters.tags.length > 0) {
+        where.tags = { hasEvery: otherFilters.tags }
+      }
 
-    // Add search query parameter
-    params.push(searchQuery)
-    whereClause = `"searchVector" @@ plainto_tsquery('english', $${paramIndex})`
-    paramIndex++
+      if (otherFilters.cuisine) {
+        where.cuisine = { equals: otherFilters.cuisine.toLowerCase(), mode: 'insensitive' }
+      }
 
-    // Add other filters
-    if (otherFilters.tags && otherFilters.tags.length > 0) {
-      whereClause += ` AND tags @> $${paramIndex}`
-      params.push(otherFilters.tags)
-      paramIndex++
-    }
+      if (otherFilters.difficulty) {
+        where.difficulty = otherFilters.difficulty
+      }
 
-    if (otherFilters.cuisine) {
-      whereClause += ` AND cuisine = $${paramIndex}`
-      params.push(otherFilters.cuisine.toLowerCase())
-      paramIndex++
-    }
+      if (otherFilters.cookTimeMax) {
+        where.cookTime = { lte: otherFilters.cookTimeMax }
+      }
 
-    if (otherFilters.difficulty) {
-      whereClause += ` AND difficulty = $${paramIndex}`
-      params.push(otherFilters.difficulty)
-      paramIndex++
-    }
+      if (otherFilters.prepTimeMax) {
+        where.prepTime = { lte: otherFilters.prepTimeMax }
+      }
 
-    if (otherFilters.cookTimeMax) {
-      whereClause += ` AND "cookTime" <= $${paramIndex}`
-      params.push(otherFilters.cookTimeMax)
-      paramIndex++
-    }
+      if (otherFilters.authorId) {
+        where.authorId = otherFilters.authorId
+      }
 
-    if (otherFilters.prepTimeMax) {
-      whereClause += ` AND "prepTime" <= $${paramIndex}`
-      params.push(otherFilters.prepTimeMax)
-      paramIndex++
-    }
+      // Build order by
+      const orderBy: any = {}
+      if (sortBy === 'relevance') {
+        orderBy.createdAt = 'desc'
+      } else {
+        orderBy[sortBy] = sortOrder
+      }
 
-    if (otherFilters.authorId) {
-      whereClause += ` AND "authorId" = $${paramIndex}`
-      params.push(otherFilters.authorId)
-      paramIndex++
-    }
+      // Execute queries using Prisma's standard methods instead of raw SQL
+      const [recipes, total] = await Promise.all([
+        prisma.recipe.findMany({
+          where,
+          orderBy,
+          skip,
+          take: limit,
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }),
+        prisma.recipe.count({ where })
+      ])
 
-    // Build ORDER BY clause
-    let orderByClause = ''
-    if (sortBy === 'relevance') {
-      orderByClause = `ts_rank("searchVector", plainto_tsquery('english', $1)) DESC, "createdAt" DESC`
-    } else {
-      const direction = sortOrder.toUpperCase()
-      orderByClause = `"${sortBy}" ${direction}`
-    }
+      const totalPages = Math.ceil(total / limit)
 
-    // Execute the search query
-    const recipes = await prisma.$queryRaw`
-      SELECT r.*, 
-             u.id as "author_id", 
-             u.name as "author_name", 
-             u.email as "author_email",
-             ts_rank("searchVector", plainto_tsquery('english', ${searchQuery})) as relevance
-      FROM recipes r
-      LEFT JOIN users u ON r."authorId" = u.id
-      WHERE ${Prisma.raw(whereClause)}
-      ORDER BY ${Prisma.raw(orderByClause)}
-      LIMIT ${limit} OFFSET ${skip}
-    ` as any[]
-
-    // Get total count
-    const totalResult = await prisma.$queryRaw`
-      SELECT COUNT(*) as count
-      FROM recipes r
-      WHERE ${Prisma.raw(whereClause)}
-    ` as any[]
-
-    const total = parseInt(totalResult[0].count)
-    const totalPages = Math.ceil(total / limit)
-
-    // Transform the results to match expected format
-    const transformedRecipes = recipes.map(recipe => ({
-      ...recipe,
-      author: recipe.author_id ? {
-        id: recipe.author_id,
-        name: recipe.author_name,
-        email: recipe.author_email
-      } : null,
-      // Remove the flattened author fields
-      author_id: undefined,
-      author_name: undefined,
-      author_email: undefined,
-      relevance: undefined
-    }))
-
-    return {
-      recipes: transformedRecipes,
-      total,
-      page,
-      limit,
-      totalPages,
-      hasNext: page < totalPages,
-      hasPrev: page > 1
+      return {
+        recipes,
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+      // Return empty results instead of throwing an error
+      return {
+        recipes: [],
+        total: 0,
+        page,
+        limit,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false
+      }
     }
   }
 

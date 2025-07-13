@@ -6,9 +6,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search, Clock, Users, Star, TrendingUp } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 
 // UI Components
 import Card from '@/components/ui/Card'
+
+// Services
+import { recipesApi } from '@/services/api/recipes'
 
 // Hooks
 import { useAuth } from '@/hooks/useAuth'
@@ -47,41 +51,16 @@ const quickActions = [
   }
 ]
 
-/**
- * Sample featured recipes (in real app, these would come from API)
- */
-const featuredRecipes = [
-  {
-    id: 1,
-    title: 'Classic Beef Tacos',
-    image: '/api/placeholder/300/200',
-    cookTime: '25 min',
-    difficulty: 'Easy',
-    rating: 4.8,
-    reviews: 156
-  },
-  {
-    id: 2,
-    title: 'Mediterranean Quinoa Bowl',
-    image: '/api/placeholder/300/200',
-    cookTime: '20 min',
-    difficulty: 'Easy',
-    rating: 4.6,
-    reviews: 89
-  },
-  {
-    id: 3,
-    title: 'Chocolate Chip Cookies',
-    image: '/api/placeholder/300/200',
-    cookTime: '15 min',
-    difficulty: 'Easy',
-    rating: 4.9,
-    reviews: 234
-  }
-]
-
 const Home: React.FC = () => {
   const { user, isAuthenticated } = useAuth()
+
+  // Fetch featured recipes from API
+  const { data: recipesData, isLoading: recipesLoading } = useQuery({
+    queryKey: ['featured-recipes'],
+    queryFn: () => recipesApi.getRecipes({ limit: 3, sortBy: 'createdAt', sortOrder: 'desc' }),
+  })
+
+  const featuredRecipes = recipesData?.recipes || []
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -194,58 +173,98 @@ const Home: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredRecipes.map((recipe) => (
-              <Link
-                key={recipe.id}
-                to={`/recipes/${recipe.id}`}
-                className="group"
-              >
-                <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  {/* Recipe Image */}
-                  <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-                    <img
-                      src={recipe.image}
-                      alt={recipe.title}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-
-                  {/* Recipe Details */}
+          {/* Loading State */}
+          {recipesLoading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(3)].map((_, index) => (
+                <Card key={index} className="overflow-hidden animate-pulse">
+                  <div className="h-48 bg-gray-300"></div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
-                      {recipe.title}
-                    </h3>
-
-                    {/* Recipe Meta */}
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {recipe.cookTime}
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        {recipe.difficulty}
-                      </div>
-                    </div>
-
-                    {/* Rating */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                        <span className="text-sm font-medium text-gray-900">
-                          {recipe.rating}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-1">
-                          ({recipe.reviews} reviews)
-                        </span>
-                      </div>
+                    <div className="h-6 bg-gray-300 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-3/4 mb-4"></div>
+                    <div className="flex justify-between">
+                      <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+                      <div className="h-4 bg-gray-300 rounded w-1/4"></div>
                     </div>
                   </div>
                 </Card>
-              </Link>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {/* Featured Recipes */}
+          {!recipesLoading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredRecipes.map((recipe) => (
+                <Link
+                  key={recipe.id}
+                  to={`/recipes/${recipe.id}`}
+                  className="group"
+                >
+                  <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    {/* Recipe Image */}
+                    <div className="aspect-w-16 aspect-h-9 bg-gray-200">
+                      <img
+                        src={recipe.imageUrl || '/api/placeholder/300/200'}
+                        alt={recipe.title}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+
+                    {/* Recipe Details */}
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                        {recipe.title}
+                      </h3>
+
+                      {/* Recipe Description */}
+                      {recipe.description && (
+                        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                          {recipe.description}
+                        </p>
+                      )}
+
+                      {/* Recipe Meta */}
+                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <div className="flex items-center space-x-4">
+                          {recipe.cookTime && (
+                            <div className="flex items-center">
+                              <Clock className="h-4 w-4 mr-1" />
+                              {recipe.cookTime}m
+                            </div>
+                          )}
+                          {recipe.servings && (
+                            <div className="flex items-center">
+                              <Users className="h-4 w-4 mr-1" />
+                              {recipe.servings}
+                            </div>
+                          )}
+                        </div>
+                        {recipe.difficulty && (
+                          <div className="text-xs bg-gray-100 px-2 py-1 rounded-full">
+                            {recipe.difficulty}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Author */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                          <span className="text-sm font-medium text-gray-900">
+                            New
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          by {recipe.author?.name || 'Chef'}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* View All Recipes Button */}
           <div className="text-center mt-12">

@@ -80,7 +80,7 @@ const Recipes: React.FC = () => {
    */
   const buildSearchParams = (): RecipeSearchParams => {
     const params: RecipeSearchParams = {
-      offset: (currentPage - 1) * pageSize,
+      page: currentPage,
       limit: pageSize
     }
 
@@ -89,7 +89,8 @@ const Recipes: React.FC = () => {
     }
 
     if (filters.difficulty) {
-      params.difficulty = filters.difficulty
+      // Convert difficulty to uppercase to match backend enum
+      params.difficulty = filters.difficulty.toUpperCase()
     }
 
     if (filters.quickFilter) {
@@ -102,7 +103,8 @@ const Recipes: React.FC = () => {
           // Will filter on frontend for now since API doesn't support maxCookTime
           break
         case 'easy':
-          params.difficulty = 'easy'
+          // Convert difficulty to uppercase to match backend enum
+          params.difficulty = 'EASY'
           break
         case 'favorites':
           // Will handle on frontend for now

@@ -59,8 +59,40 @@ const Register: React.FC = () => {
       navigate('/')
     },
     onError: (error: any) => {
+      console.error('Registration error:', error) // Debug logging
+
+      let errorMessage = 'Registration failed. Please try again.'
+      let fieldErrors: FormErrors = {}
+
+      // Extract specific error message
+      if (error?.message) {
+        errorMessage = error.message
+      } else if (error?.details?.message) {
+        errorMessage = error.details.message
+      }
+
+      // Handle validation errors
+      if (error?.details?.issues) {
+        error.details.issues.forEach((issue: any) => {
+          if (issue.field === 'email') {
+            fieldErrors.email = issue.message
+          } else if (issue.field === 'password') {
+            fieldErrors.password = issue.message
+          } else if (issue.field === 'name') {
+            fieldErrors.name = issue.message
+          }
+        })
+      }
+
+      // Handle specific error cases
+      if (errorMessage.includes('already exists')) {
+        fieldErrors.email = 'An account with this email already exists'
+      }
+
+      // Set form errors
       setErrors({
-        submit: error?.response?.data?.message || 'Registration failed. Please try again.'
+        submit: errorMessage,
+        ...fieldErrors
       })
     }
   })

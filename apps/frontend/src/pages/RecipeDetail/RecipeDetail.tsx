@@ -20,6 +20,7 @@ import {
 // Services and hooks
 import { recipesApi } from '@/services/api/recipes'
 import { useAuth } from '@/hooks/useAuth'
+import { useToast } from '@/context/ToastContext'
 import { formatCookTime, formatRelativeTime } from '@/utils'
 
 const RecipeDetail: React.FC = () => {
@@ -27,6 +28,7 @@ const RecipeDetail: React.FC = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { user, isAuthenticated } = useAuth()
+  const { success, error } = useToast()
 
   // UI state
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
@@ -35,7 +37,7 @@ const RecipeDetail: React.FC = () => {
   const [checkedInstructions, setCheckedInstructions] = useState<Set<number>>(new Set())
 
   // Fetch recipe data
-  const { data: recipe, isLoading, error } = useQuery({
+  const { data: recipe, isLoading, error: queryError } = useQuery({
     queryKey: ['recipe', id],
     queryFn: () => recipesApi.getRecipe(id!),
     enabled: !!id,
@@ -46,8 +48,12 @@ const RecipeDetail: React.FC = () => {
     mutationFn: () => recipesApi.deleteRecipe(id!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      success('Recipe deleted successfully')
       navigate('/recipes')
     },
+    onError: () => {
+      error('Failed to delete recipe. Please try again.')
+    }
   })
 
   // Loading state
@@ -56,7 +62,7 @@ const RecipeDetail: React.FC = () => {
   }
 
   // Error state
-  if (error || !recipe) {
+  if (queryError || !recipe) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="p-8 text-center max-w-md">
@@ -109,13 +115,21 @@ const RecipeDetail: React.FC = () => {
           text: recipe.description,
           url: window.location.href,
         })
-      } catch (error) {
+        success('Recipe shared successfully!')
+      } catch (shareError) {
         // User cancelled sharing
+        if (shareError instanceof Error && shareError.name !== 'AbortError') {
+          error('Failed to share recipe')
+        }
       }
     } else {
       // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(window.location.href)
-      // TODO: Show toast notification
+      try {
+        await navigator.clipboard.writeText(window.location.href)
+        success('Recipe link copied to clipboard!')
+      } catch (clipboardError) {
+        error('Failed to copy link to clipboard')
+      }
     }
   }
 
