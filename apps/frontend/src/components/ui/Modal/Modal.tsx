@@ -95,7 +95,7 @@ const Modal: React.FC<ModalProps> = ({
       <div
         className={cn(
           'relative w-full bg-white dark:bg-secondary-800 rounded-lg shadow-xl transform transition-all',
-          'animate-in fade-in-0 zoom-in-95 duration-200',
+          'animate-fade-in',
           sizeClasses[size],
           className
         )}

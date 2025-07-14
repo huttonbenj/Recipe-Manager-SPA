@@ -156,7 +156,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                             border border-secondary-200 dark:border-secondary-700
                             rounded-lg shadow-lg
                             min-w-max
-                            animate-in fade-in slide-in-from-top-2 duration-200
+                            animate-fade-in
                         "
                         role="menu"
                     >

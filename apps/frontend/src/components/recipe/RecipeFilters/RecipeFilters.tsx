@@ -301,7 +301,7 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
             {showAdvancedFilters && (
                 <Card
                     id="advanced-filters"
-                    className="animate-in fade-in slide-in-from-top-5 duration-300"
+                    className="animate-fade-in"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {/* Difficulty Filter */}

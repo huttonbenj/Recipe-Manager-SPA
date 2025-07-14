@@ -35,9 +35,9 @@ const Footer: React.FC = () => {
     <footer className="bg-white dark:bg-secondary-800 border-t border-secondary-200 dark:border-secondary-700 mt-auto">
       <div className="container mx-auto px-4 py-8 sm:py-12">
         {/* Main footer content */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {/* Brand section */}
-          <div className="col-span-2">
+          <div className="col-span-1 sm:col-span-2">
             <Link
               to="/"
               className="text-lg sm:text-xl font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
@@ -92,21 +92,43 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Theme and settings */}
-          <div className="col-span-1">
+          <div className="hidden sm:block col-span-1">
             <h3 className="text-xs sm:text-sm font-semibold text-secondary-900 dark:text-secondary-100 uppercase tracking-wider mb-2 sm:mb-3 lg:mb-4">
               Settings
             </h3>
-            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+            <div className="space-y-3 sm:space-y-3 lg:space-y-4">
               <div>
-                <p className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400 mb-1 sm:mb-2">Display Mode</p>
+                <p className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400 mb-2">Display Mode</p>
                 <ThemeToggle
                   variant="button"
-                  size="xxs"
-                  className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs gap-1 bg-secondary-100/60 hover:bg-secondary-100/80 dark:bg-white/10 dark:hover:bg-white/20"
+                  size="xs"
+                  className="w-full sm:w-auto px-3 py-2 text-xs gap-1.5 bg-secondary-100/60 hover:bg-secondary-100/80 dark:bg-white/10 dark:hover:bg-white/20 justify-center sm:justify-start"
                 />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400 mb-1 sm:mb-2">Color Theme</p>
+                <p className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400 mb-2">Color Theme</p>
+                <div className="flex justify-center sm:justify-start">
+                  <ThemeSelector compact />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile settings bar - better placement for mobile */}
+        <div className="sm:hidden mt-6 pt-6 border-t border-secondary-200 dark:border-secondary-700">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <p className="text-xs text-secondary-600 dark:text-secondary-400 mb-2">Display Mode</p>
+              <ThemeToggle
+                variant="button"
+                size="sm"
+                className="w-full px-3 py-2.5 text-xs gap-2 bg-secondary-100/60 hover:bg-secondary-100/80 dark:bg-white/10 dark:hover:bg-white/20 justify-center"
+              />
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-secondary-600 dark:text-secondary-400 mb-2">Color Theme</p>
+              <div className="flex justify-center">
                 <ThemeSelector compact />
               </div>
             </div>

@@ -319,7 +319,7 @@ const Home: React.FC = () => {
                         <Card className="relative p-4 sm:p-6 shadow-xl border-2 border-primary-200 dark:border-primary-800">
                           <div className="flex items-center justify-between mb-3 sm:mb-4">
                             <h3 className="font-semibold text-sm sm:text-base text-primary-700 dark:text-primary-300">Current Theme</h3>
-                            <div className="px-2 sm:px-3 py-0.5 sm:py-1 bg-primary-100 dark:bg-primary-900/30 rounded-full text-xs font-medium text-primary-700 dark:text-primary-300">
+                            <div className="px-2 sm:px-3 py-0.5 sm:py-1 bg-primary-100 dark:bg-primary-900/30 rounded-full text-xs font-medium text-primary-700 dark:text-primary-300 badge-theme-section">
                               {theme.colorTheme.charAt(0).toUpperCase() + theme.colorTheme.slice(1)}
                             </div>
                           </div>

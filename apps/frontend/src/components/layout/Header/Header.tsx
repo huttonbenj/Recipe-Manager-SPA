@@ -181,7 +181,7 @@ const Header: React.FC = () => {
                   </button>
                   {isThemeMenuOpen && (
                     <div
-                      className="absolute top-full right-0 mt-2 w-96 bg-white/95 dark:bg-secondary-900 backdrop-blur-xl border border-secondary-200 dark:border-secondary-700 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-2 duration-200 z-50 p-1"
+                      className="absolute top-full right-0 mt-2 w-96 bg-white/95 dark:bg-secondary-900 backdrop-blur-xl border border-secondary-200 dark:border-secondary-700 rounded-xl shadow-lg animate-fade-in z-50 p-1"
                     >
                       <div className="p-1">
                         <h4 className="text-sm font-semibold text-secondary-600 dark:text-secondary-400 px-2 mb-1">Display Mode</h4>
@@ -230,7 +230,7 @@ const Header: React.FC = () => {
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-secondary-800 backdrop-blur-xl rounded-2xl shadow-2xl py-2 z-50 border border-secondary-200/60 dark:border-secondary-700 animate-in fade-in slide-in-from-top-5 duration-300">
+                    <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-secondary-800 backdrop-blur-xl rounded-2xl shadow-2xl py-2 z-50 border border-secondary-200/60 dark:border-secondary-700 animate-fade-in">
                       <div className="px-4 py-3 border-b border-secondary-200/60 dark:border-secondary-700">
                         <p className="text-sm font-semibold text-secondary-900 dark:text-white">
                           {user?.name || 'User'}
@@ -292,18 +292,18 @@ const Header: React.FC = () => {
               <ThemeToggle
                 variant="minimal"
                 size="sm"
-                className={`p-2 rounded-lg transition-all duration-300 ${isScrolled
-                  ? 'text-secondary-900 dark:text-secondary-300 hover:bg-secondary-900/10 dark:hover:bg-secondary-700/80'
-                  : 'text-secondary-600 dark:text-secondary-300 hover:bg-white/90 dark:hover:bg-secondary-700'
+                className={`p-2 rounded-lg transition-all duration-300 backdrop-blur-sm ${isScrolled
+                  ? 'text-secondary-900 dark:text-secondary-300 bg-white/20 dark:bg-primary-500/10 border border-white/30 dark:border-primary-500/20 hover:bg-white/30 dark:hover:bg-primary-500/15'
+                  : 'text-secondary-600 dark:text-secondary-300 bg-white/30 dark:bg-primary-500/10 border border-white/40 dark:border-primary-500/20 hover:bg-white/40 dark:hover:bg-primary-500/15'
                   }`}
               />
               <button
                 onClick={toggleMobileMenu}
-                className={`p-2 rounded-lg transition-all duration-300 ${isMobileMenuOpen
-                  ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400'
+                className={`p-2 rounded-lg transition-all duration-300 backdrop-blur-sm ${isMobileMenuOpen
+                  ? 'bg-primary-500/20 dark:bg-primary-400/20 border border-primary-500/30 dark:border-primary-400/25 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10'
                   : isScrolled
-                    ? 'text-secondary-900 dark:text-secondary-300 hover:bg-secondary-900/10 dark:hover:bg-secondary-800/60'
-                    : 'text-secondary-700 dark:text-secondary-300 hover:bg-white/70 dark:hover:bg-secondary-800/60'
+                    ? 'text-secondary-900 dark:text-secondary-300 bg-white/20 dark:bg-primary-500/10 border border-white/30 dark:border-primary-500/20 hover:bg-white/30 dark:hover:bg-primary-500/15'
+                    : 'text-secondary-700 dark:text-secondary-300 bg-white/30 dark:bg-primary-500/10 border border-white/40 dark:border-primary-500/20 hover:bg-white/40 dark:hover:bg-primary-500/15'
                   }`}
                 aria-label="Toggle mobile menu"
               >
@@ -319,7 +319,7 @@ const Header: React.FC = () => {
 
         {/* Enhanced Mobile Menu Panel */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white dark:bg-secondary-900 backdrop-blur-xl border-t border-secondary-200/60 dark:border-secondary-700 shadow-2xl animate-in slide-in-from-top duration-400 max-h-[calc(100vh-5rem)] overflow-y-auto">
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white dark:bg-secondary-900 backdrop-blur-xl border-t border-secondary-200/60 dark:border-secondary-700 shadow-2xl animate-fade-in max-h-[calc(100vh-5rem)] overflow-y-auto">
             <div className="container mx-auto px-4 sm:px-6 py-6">
               {/* Mobile Navigation */}
               <nav className="space-y-1 mb-6">
@@ -328,12 +328,12 @@ const Header: React.FC = () => {
                     key={item.name}
                     to={item.href}
                     className={`flex items-center space-x-3 p-4 text-base font-medium rounded-xl transition-all duration-200 ${isActivePath(item.href)
-                      ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300'
-                      : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100 dark:hover:bg-secondary-800/80'
+                      ? 'bg-primary-500/15 dark:bg-primary-400/20 backdrop-blur-sm border border-primary-500/20 dark:border-primary-400/25 text-primary-700 dark:text-primary-300 shadow-lg shadow-primary-500/10'
+                      : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100/70 dark:hover:bg-secondary-800/80 hover:backdrop-blur-sm'
                       }`}
                     onClick={closeMobileMenu}
                   >
-                    <item.icon className={`w-5 h-5 ${isActivePath(item.href) ? 'text-primary-600 dark:text-primary-400' : 'text-primary-500'
+                    <item.icon className={`w-5 h-5 ${isActivePath(item.href) ? 'text-primary-600 dark:text-primary-400 drop-shadow-sm' : 'text-primary-500 opacity-70'
                       }`} />
                     <span>{item.name}</span>
                   </Link>
@@ -341,7 +341,7 @@ const Header: React.FC = () => {
               </nav>
 
               {/* Mobile Theme Section */}
-              <div className="mb-6 p-4 bg-secondary-50/80 dark:bg-secondary-800 rounded-xl backdrop-blur-sm border border-secondary-200/30 dark:border-secondary-700">
+              <div className="mb-6 p-4 bg-secondary-500/5 dark:bg-secondary-400/10 rounded-xl backdrop-blur-sm border border-secondary-500/15 dark:border-secondary-400/20 shadow-lg shadow-secondary-500/5">
                 <h3 className="text-sm font-semibold text-secondary-600 dark:text-secondary-300 mb-4">Theme Settings</h3>
                 <ThemeSelector variant="grid" />
               </div>
@@ -349,7 +349,7 @@ const Header: React.FC = () => {
               {/* Mobile Auth Section */}
               {isAuthenticated ? (
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-3 p-4 bg-primary-50/80 dark:bg-primary-900/40 rounded-xl border border-primary-200/30 dark:border-primary-700">
+                  <div className="flex items-center space-x-3 p-4 bg-primary-500/10 dark:bg-primary-400/15 backdrop-blur-sm rounded-xl border border-primary-500/20 dark:border-primary-400/25 shadow-lg shadow-primary-500/5">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
                       <User className="w-6 h-6 text-white" />
                     </div>
@@ -367,16 +367,19 @@ const Header: React.FC = () => {
                       <Link
                         key={item.name}
                         to={item.href}
-                        className="flex items-center space-x-3 p-4 text-base font-medium text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100 dark:hover:bg-secondary-800/80 rounded-xl transition-all duration-200"
+                        className={`flex items-center space-x-3 p-4 text-base font-medium rounded-xl transition-all duration-200 ${isActivePath(item.href)
+                          ? 'bg-primary-500/15 dark:bg-primary-400/20 backdrop-blur-sm border border-primary-500/20 dark:border-primary-400/25 text-primary-700 dark:text-primary-300 shadow-lg shadow-primary-500/10'
+                          : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100/70 dark:hover:bg-secondary-800/80 hover:backdrop-blur-sm'
+                          }`}
                         onClick={closeMobileMenu}
                       >
-                        <item.icon className="w-5 h-5 text-primary-500" />
+                        <item.icon className={`w-5 h-5 ${isActivePath(item.href) ? 'text-primary-600 dark:text-primary-400 drop-shadow-sm' : 'text-primary-500 opacity-70'}`} />
                         <span>{item.name}</span>
                       </Link>
                     ))}
                     <button
                       onClick={() => { handleLogout(); closeMobileMenu(); }}
-                      className="flex items-center w-full space-x-3 p-4 text-base font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-xl transition-all duration-200"
+                      className="flex items-center w-full space-x-3 p-4 text-base font-medium text-red-600 dark:text-red-400 hover:bg-red-500/15 dark:hover:bg-red-400/20 hover:backdrop-blur-sm hover:border hover:border-red-500/20 dark:hover:border-red-400/25 rounded-xl transition-all duration-200"
                     >
                       <LogOut className="w-5 h-5" />
                       <span>Logout</span>
