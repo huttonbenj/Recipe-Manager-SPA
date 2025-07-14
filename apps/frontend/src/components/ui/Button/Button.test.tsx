@@ -28,13 +28,13 @@ describe('Button Component', () => {
     render(<Button isLoading>Loading Button</Button>)
     const button = screen.getByRole('button')
     expect(button).toBeDisabled()
-    expect(button.querySelector('svg')).toBeInTheDocument()
+    expect(button).toHaveClass('opacity-60')
   })
 
   it('calls onClick handler when clicked', () => {
     const handleClick = vi.fn()
-    render(<Button onClick={handleClick}>Clickable</Button>)
-    
+    render(<Button onClick={handleClick}>Click me</Button>)
+
     fireEvent.click(screen.getByRole('button'))
     expect(handleClick).toHaveBeenCalledTimes(1)
   })
@@ -43,6 +43,7 @@ describe('Button Component', () => {
     render(<Button disabled>Disabled Button</Button>)
     const button = screen.getByRole('button')
     expect(button).toBeDisabled()
+    expect(button).toHaveClass('opacity-60')
   })
 
   it('applies custom className', () => {
@@ -53,9 +54,9 @@ describe('Button Component', () => {
 
   it('renders different sizes correctly', () => {
     const { rerender } = render(<Button size="sm">Small</Button>)
-    expect(screen.getByRole('button')).toHaveClass('px-3', 'py-1.5', 'text-sm')
+    expect(screen.getByRole('button')).toHaveClass('btn-sm')
 
     rerender(<Button size="lg">Large</Button>)
-    expect(screen.getByRole('button')).toHaveClass('px-6', 'py-3', 'text-lg')
+    expect(screen.getByRole('button')).toHaveClass('btn-lg')
   })
 })

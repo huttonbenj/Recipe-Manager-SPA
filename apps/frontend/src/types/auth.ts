@@ -30,7 +30,7 @@ export interface AuthContextType {
   errors: AuthErrors
   login: (credentials: LoginCredentials) => Promise<void>
   register: (data: RegisterData) => Promise<void>
-  logout: () => void
-  refreshToken: () => Promise<void>
+  logout: () => Promise<void>
   clearErrors: () => void
+  refreshToken: () => Promise<void>
 }
