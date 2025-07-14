@@ -25,6 +25,7 @@ import { formatCookTime } from '@/utils'
 
 // Types
 import { Difficulty } from '@/types'
+import { useToast } from '@/context/ToastContext'
 
 /**
  * Recipe form data interface
@@ -60,6 +61,7 @@ interface FormErrors {
 const CreateRecipe: React.FC = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { error: showError } = useToast()
 
   // Form state
   const [formData, setFormData] = useState<RecipeFormData>({
@@ -157,6 +159,11 @@ const CreateRecipe: React.FC = () => {
     const formErrors = validateForm()
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
+      // Show the first validation error in a toast for quick feedback
+      const firstError = Object.values(formErrors)[0]
+      if (firstError) {
+        showError(firstError as string)
+      }
       return
     }
 
@@ -308,31 +315,33 @@ const CreateRecipe: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-800 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-800 py-4 sm:py-8">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
               leftIcon={<ArrowLeft className="w-4 h-4" />}
               className="shrink-0"
+              size="sm"
             >
-              Back
+              <span className="hidden sm:inline">Back</span>
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100">Create New Recipe</h1>
-              <p className="text-secondary-600 dark:text-secondary-400 mt-1">Share your culinary creation with the world</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100">Create New Recipe</h1>
+              <p className="text-secondary-600 dark:text-secondary-400 mt-1 text-sm sm:text-base">Share your culinary creation with the world</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               variant="secondary"
               onClick={handlePreview}
               leftIcon={<Eye className="w-4 h-4" />}
-              className="px-6"
+              className="px-4 sm:px-6"
+              size="sm"
             >
               Preview
             </Button>
@@ -341,14 +350,16 @@ const CreateRecipe: React.FC = () => {
               form="recipe-form"
               disabled={createMutation.isPending}
               leftIcon={createMutation.isPending ? <Loading variant="spinner" size="sm" /> : <Save className="w-4 h-4" />}
-              className="px-6 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              className="px-4 sm:px-6 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              size="sm"
             >
-              {createMutation.isPending ? 'Creating...' : 'Create Recipe'}
+              <span className="hidden sm:inline">{createMutation.isPending ? 'Creating...' : 'Create Recipe'}</span>
+              <span className="sm:hidden">{createMutation.isPending ? 'Creating...' : 'Create'}</span>
             </Button>
           </div>
         </div>
 
-        <form id="recipe-form" onSubmit={handleSubmit} className="space-y-8">
+        <form id="recipe-form" onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
           {/* Submit Error Display */}
           {errors.submit && (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3">
@@ -362,23 +373,23 @@ const CreateRecipe: React.FC = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-6 sm:space-y-8">
               {/* Basic Information */}
               <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
-                <CardHeader className="pb-6">
+                <CardHeader className="pb-4 sm:pb-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
                       <ChefHat className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Basic Information</h2>
+                      <h2 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100">Basic Information</h2>
                       <p className="text-sm text-secondary-600 dark:text-secondary-400">Give your recipe a name and description</p>
                     </div>
                   </div>
                 </CardHeader>
-                <CardBody className="space-y-6">
+                <CardBody className="space-y-4 sm:space-y-6">
                   <Input
                     label="Recipe Title"
                     placeholder="Enter a delicious recipe name (e.g., Grandma's Chocolate Chip Cookies)"
@@ -386,7 +397,7 @@ const CreateRecipe: React.FC = () => {
                     onChange={handleInputChange('title')}
                     error={errors.title}
                     required
-                    className="text-lg"
+                    className="text-base sm:text-lg"
                   />
 
                   <Textarea
@@ -404,13 +415,13 @@ const CreateRecipe: React.FC = () => {
 
               {/* Image Upload */}
               <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
-                <CardHeader className="pb-6">
+                <CardHeader className="pb-4 sm:pb-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
                       <Camera className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Recipe Image</h2>
+                      <h2 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100">Recipe Image</h2>
                       <p className="text-sm text-secondary-600 dark:text-secondary-400">Add a mouth-watering photo of your dish</p>
                     </div>
                   </div>
@@ -421,19 +432,20 @@ const CreateRecipe: React.FC = () => {
                       <img
                         src={previewImage || formData.imageUrl}
                         alt="Recipe preview"
-                        className="w-full h-72 object-cover rounded-xl shadow-md"
+                        className="w-full h-48 sm:h-72 object-cover rounded-xl shadow-md"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 sm:gap-3">
                           <Button
                             type="button"
                             variant="secondary"
                             size="sm"
                             onClick={() => document.getElementById('image-upload')?.click()}
                             leftIcon={<Camera className="w-4 h-4" />}
-                            className="bg-white/90 text-secondary-900 hover:bg-white"
+                            className="bg-white/90 text-secondary-900 hover:bg-white text-xs sm:text-sm"
                           >
-                            Change Image
+                            <span className="hidden sm:inline">Change Image</span>
+                            <span className="sm:hidden">Change</span>
                           </Button>
                           <Button
                             type="button"
@@ -441,7 +453,7 @@ const CreateRecipe: React.FC = () => {
                             size="sm"
                             onClick={removeImage}
                             leftIcon={<X className="w-4 h-4" />}
-                            className="bg-red-500/90 hover:bg-red-600"
+                            className="bg-red-500/90 hover:bg-red-600 text-xs sm:text-sm"
                           >
                             Remove
                           </Button>
@@ -457,7 +469,7 @@ const CreateRecipe: React.FC = () => {
                       />
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-xl p-12 text-center bg-gradient-to-br from-primary-50/50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/20 hover:from-primary-100/70 hover:to-primary-200/70 dark:hover:from-primary-900/30 dark:hover:to-primary-800/30 transition-all duration-200">
+                    <div className="border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-xl p-6 sm:p-12 text-center bg-gradient-to-br from-primary-50/50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-800/20 hover:from-primary-100/70 hover:to-primary-200/70 dark:hover:from-primary-900/30 dark:hover:to-primary-800/30 transition-all duration-200">
                       <input
                         type="file"
                         accept="image/*"
@@ -468,22 +480,22 @@ const CreateRecipe: React.FC = () => {
                       />
                       <label
                         htmlFor="image-upload"
-                        className="cursor-pointer flex flex-col items-center gap-4 group"
+                        className="cursor-pointer flex flex-col items-center gap-3 sm:gap-4 group"
                       >
                         {isUploading ? (
                           <div className="flex flex-col items-center gap-3">
                             <Loading variant="spinner" size="lg" />
-                            <span className="text-primary-600 dark:text-primary-400 font-medium">Uploading image...</span>
+                            <span className="text-primary-600 dark:text-primary-400 font-medium text-sm sm:text-base">Uploading image...</span>
                           </div>
                         ) : (
                           <>
-                            <div className="p-4 bg-primary-100 dark:bg-primary-800 rounded-full group-hover:scale-110 transition-transform">
-                              <Camera className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+                            <div className="p-3 sm:p-4 bg-primary-100 dark:bg-primary-800 rounded-full group-hover:scale-110 transition-transform">
+                              <Camera className="w-6 sm:w-8 h-6 sm:h-8 text-primary-600 dark:text-primary-400" />
                             </div>
-                            <div className="space-y-2">
-                              <span className="text-lg font-medium text-secondary-700 dark:text-secondary-300">Add Recipe Photo</span>
-                              <p className="text-secondary-600 dark:text-secondary-400">Click to upload or drag and drop</p>
-                              <p className="text-sm text-secondary-500 dark:text-secondary-500">PNG, JPG, WebP up to 5MB</p>
+                            <div className="space-y-1 sm:space-y-2">
+                              <span className="text-base sm:text-lg font-medium text-secondary-700 dark:text-secondary-300">Add Recipe Photo</span>
+                              <p className="text-secondary-600 dark:text-secondary-400 text-sm sm:text-base">Click to upload or drag and drop</p>
+                              <p className="text-xs sm:text-sm text-secondary-500 dark:text-secondary-500">PNG, JPG, WebP up to 5MB</p>
                             </div>
                           </>
                         )}
@@ -495,14 +507,14 @@ const CreateRecipe: React.FC = () => {
 
               {/* Ingredients */}
               <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
-                <CardHeader className="pb-6">
+                <CardHeader className="pb-4 sm:pb-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
                         <ChefHat className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Ingredients</h2>
+                        <h2 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100">Ingredients</h2>
                         <p className="text-sm text-secondary-600 dark:text-secondary-400">List all ingredients with measurements</p>
                       </div>
                     </div>
@@ -514,7 +526,8 @@ const CreateRecipe: React.FC = () => {
                       leftIcon={<Plus className="w-4 h-4" />}
                       className="shrink-0"
                     >
-                      Add Ingredient
+                      <span className="hidden sm:inline">Add Ingredient</span>
+                      <span className="sm:hidden">Add</span>
                     </Button>
                   </div>
                   {errors.ingredients && (
@@ -542,10 +555,10 @@ const CreateRecipe: React.FC = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => removeIngredient(index)}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 shrink-0"
+                            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 shrink-0"
                             leftIcon={<Minus className="w-4 h-4" />}
                           >
-                            Remove
+                            <span className="hidden sm:inline">Remove</span>
                           </Button>
                         )}
                       </div>
@@ -573,13 +586,13 @@ const CreateRecipe: React.FC = () => {
 
               {/* Instructions */}
               <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
-                <CardHeader className="pb-6">
+                <CardHeader className="pb-4 sm:pb-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
                       <ChevronRight className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Cooking Instructions</h2>
+                      <h2 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100">Cooking Instructions</h2>
                       <p className="text-sm text-secondary-600 dark:text-secondary-400">Provide clear, step-by-step directions</p>
                     </div>
                   </div>
@@ -618,22 +631,22 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               {/* Recipe Details */}
               <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
-                <CardHeader className="pb-6">
+                <CardHeader className="pb-4 sm:pb-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
                       <Clock className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100">Recipe Details</h3>
+                      <h3 className="text-base sm:text-lg font-semibold text-secondary-900 dark:text-secondary-100">Recipe Details</h3>
                       <p className="text-sm text-secondary-600 dark:text-secondary-400">Time, servings, and difficulty</p>
                     </div>
                   </div>
                 </CardHeader>
-                <CardBody className="space-y-5">
-                  <div className="grid grid-cols-2 gap-4">
+                <CardBody className="space-y-4 sm:space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Input
                       label="Prep Time"
                       type="number"
@@ -697,19 +710,19 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
 
               {/* Tags */}
               <Card className="shadow-lg border-0 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm">
-                <CardHeader className="pb-6">
+                <CardHeader className="pb-4 sm:pb-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
                       <Tag className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100">Tags</h3>
+                      <h3 className="text-base sm:text-lg font-semibold text-secondary-900 dark:text-secondary-100">Tags</h3>
                       <p className="text-sm text-secondary-600 dark:text-secondary-400">Help others discover your recipe</p>
                     </div>
                   </div>
                 </CardHeader>
                 <CardBody className="space-y-4">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input
                       placeholder="e.g., vegetarian, quick, comfort food..."
                       value={newTag}
@@ -728,6 +741,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                       disabled={!newTag.trim() || formData.tags.length >= 10}
                       leftIcon={<Plus className="w-4 h-4" />}
                       size="sm"
+                      className="w-full sm:w-auto"
                     >
                       Add
                     </Button>
@@ -795,7 +809,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                       <Info className="w-5 h-5 text-green-600 dark:text-green-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">Recipe Progress</h3>
+                      <h3 className="text-base sm:text-lg font-semibold text-green-800 dark:text-green-200">Recipe Progress</h3>
                       <p className="text-sm text-green-600 dark:text-green-400">Complete all sections for best results</p>
                     </div>
                   </div>
@@ -868,22 +882,22 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
           isOpen={isPreviewModalOpen}
           onClose={() => setIsPreviewModalOpen(false)}
           title="Recipe Preview"
-          size="xl"
+          size="lg"
         >
-          <div className="max-h-[80vh] overflow-y-auto p-6">
+          <div className="max-h-[80vh] overflow-y-auto p-4 sm:p-6">
             {/* Recipe Header */}
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
                 {formData.title || 'Recipe Title'}
               </h1>
               {formData.description && (
-                <p className="text-lg text-secondary-600 dark:text-secondary-400 mb-4">
+                <p className="text-base sm:text-lg text-secondary-600 dark:text-secondary-400 mb-4">
                   {formData.description}
                 </p>
               )}
 
               {/* Recipe meta info */}
-              <div className="flex flex-wrap gap-4 py-3 border-t border-secondary-200 dark:border-secondary-700 text-sm">
+              <div className="flex flex-wrap gap-3 sm:gap-4 py-3 border-t border-secondary-200 dark:border-secondary-700 text-sm">
                 {formData.prepTime && (
                   <div className="flex items-center text-secondary-600 dark:text-secondary-400">
                     <Clock className="w-4 h-4 mr-1.5" />
@@ -917,9 +931,9 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Main Content */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                 {/* Recipe Image */}
                 {(previewImage || formData.imageUrl) && (
                   <div className="relative rounded-xl overflow-hidden shadow-md">
@@ -952,7 +966,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                 {/* Ingredients */}
                 <Card variant="bordered">
                   <CardHeader>
-                    <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
+                    <h2 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
                       <span className="bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 p-1.5 rounded-md mr-2">
                         <ChefHat className="w-5 h-5" />
                       </span>
@@ -966,7 +980,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                           <span className="w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 text-xs flex items-center justify-center mt-0.5 flex-shrink-0">
                             {index + 1}
                           </span>
-                          <span className="text-secondary-900 dark:text-secondary-100">
+                          <span className="text-secondary-900 dark:text-secondary-100 text-sm sm:text-base">
                             {ingredient}
                           </span>
                         </li>
@@ -978,7 +992,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                 {/* Instructions */}
                 <Card variant="bordered">
                   <CardHeader>
-                    <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
+                    <h2 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
                       <span className="bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 p-1.5 rounded-md mr-2">
                         <ChefHat className="w-5 h-5" />
                       </span>
@@ -989,13 +1003,13 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                     <div className="space-y-4">
                       {formData.instructions ? (
                         formData.instructions.split('\n\n').filter(Boolean).map((step: string, index: number) => (
-                          <div key={index} className="flex gap-4">
+                          <div key={index} className="flex gap-3 sm:gap-4">
                             <div className="flex-shrink-0 mt-1">
                               <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 font-medium border border-primary-200 dark:border-primary-700 shadow-sm">
                                 {index + 1}
                               </div>
                             </div>
-                            <div className="text-secondary-900 dark:text-secondary-100">
+                            <div className="text-secondary-900 dark:text-secondary-100 text-sm sm:text-base">
                               {step}
                             </div>
                           </div>
@@ -1011,12 +1025,12 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
               </div>
 
               {/* Sidebar */}
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {/* Author info */}
                 {user && (
                   <Card variant="bordered">
                     <CardBody>
-                      <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
+                      <h3 className="text-base sm:text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
                         About the Author
                       </h3>
                       <div className="flex items-center mb-4">
@@ -1024,10 +1038,10 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                           <User className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="font-medium text-secondary-900 dark:text-secondary-100">
+                          <p className="font-medium text-secondary-900 dark:text-secondary-100 text-sm sm:text-base">
                             {user.name || user.email.split('@')[0]}
                           </p>
-                          <p className="text-sm text-secondary-500 dark:text-secondary-400">
+                          <p className="text-xs sm:text-sm text-secondary-500 dark:text-secondary-400">
                             Recipe Creator
                           </p>
                         </div>
@@ -1039,12 +1053,12 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                 {/* Recipe Stats */}
                 <Card variant="bordered">
                   <CardBody>
-                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
+                    <h3 className="text-base sm:text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
                       Recipe Stats
                     </h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center text-sm">
                           <Heart className="w-4 h-4 mr-2" />
                           Favorites
                         </span>
@@ -1053,7 +1067,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center text-sm">
                           <Bookmark className="w-4 h-4 mr-2" />
                           Bookmarks
                         </span>
@@ -1062,7 +1076,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
+                        <span className="text-secondary-600 dark:text-secondary-400 flex items-center text-sm">
                           <Info className="w-4 h-4 mr-2" />
                           Status
                         </span>
@@ -1078,7 +1092,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                 {formData.tags && formData.tags.length > 0 && (
                   <Card variant="bordered">
                     <CardBody>
-                      <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
+                      <h3 className="text-base sm:text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-3">
                         Tags
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -1095,11 +1109,11 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                 {/* Tips */}
                 <Card variant="glass">
                   <CardBody>
-                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-2 flex items-center">
+                    <h3 className="text-base sm:text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-2 flex items-center">
                       <Info className="w-4 h-4 mr-2 text-primary-500 dark:text-primary-400" />
                       Preview Note
                     </h3>
-                    <div className="text-secondary-600 dark:text-secondary-400 space-y-2">
+                    <div className="text-secondary-600 dark:text-secondary-400 space-y-2 text-sm">
                       <p>
                         This is how your recipe will look once published. You can continue editing and preview again before saving.
                       </p>

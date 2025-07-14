@@ -16,7 +16,7 @@ export interface FilterState {
     cookTime: string
     cuisine: string
     tags: string[]
-    quickFilter: string
+    quickFilters: string[]
 }
 
 export interface RecipeFiltersProps {
@@ -151,8 +151,14 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
      * Handle quick filter selection
      */
     const handleQuickFilter = (filterKey: string) => {
-        const newQuickFilter = filters.quickFilter === filterKey ? '' : filterKey
-        updateFilter('quickFilter', newQuickFilter)
+        let newQuickFilters: string[]
+        if (filters.quickFilters.includes(filterKey)) {
+            // remove
+            newQuickFilters = filters.quickFilters.filter(f => f !== filterKey)
+        } else {
+            newQuickFilters = [...filters.quickFilters, filterKey]
+        }
+        updateFilter('quickFilters', newQuickFilters)
     }
 
     /**
@@ -174,7 +180,7 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
             cookTime: '',
             cuisine: '',
             tags: [],
-            quickFilter: ''
+            quickFilters: []
         })
     }
 
@@ -187,7 +193,7 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
             filters.difficulty ||
             filters.cookTime ||
             filters.cuisine ||
-            filters.quickFilter ||
+            filters.quickFilters.length > 0 ||
             filters.tags.length > 0
         )
     }
@@ -201,7 +207,7 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         if (filters.difficulty) count++
         if (filters.cookTime) count++
         if (filters.cuisine) count++
-        if (filters.quickFilter) count++
+        count += filters.quickFilters.length
         count += filters.tags.length
         return count
     }
@@ -264,9 +270,9 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
             </form>
 
             {/* Quick Filters */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 {quickFilters.map((filter) => {
-                    const isActive = filters.quickFilter === filter.key
+                    const isActive = filters.quickFilters.includes(filter.key)
                     const Icon = filter.icon
                     return (
                         <Button
@@ -274,16 +280,18 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                             onClick={() => handleQuickFilter(filter.key)}
                             variant={isActive ? 'primary' : 'secondary'}
                             size="md"
-                            className="relative overflow-hidden rounded-lg text-left transition-all duration-300"
+                            className="relative overflow-hidden rounded-lg text-left transition-all duration-300 h-auto p-3"
                             aria-pressed={isActive}
                         >
-                            <span className={`rounded-full p-2 ${isActive ? 'bg-white/20' : ''}`}>
-                                <Icon className="h-4 w-4" />
-                            </span>
-                            <span className="ml-3">
-                                <div className={`font-medium ${isActive ? 'text-white' : 'text-secondary-900 dark:text-secondary-100'}`}>{filter.label}</div>
-                                <div className={`text-xs ${isActive ? 'text-white/80' : 'text-secondary-500 dark:text-secondary-400'}`}>{filter.description}</div>
-                            </span>
+                            <div className="flex items-center">
+                                <span className={`rounded-full p-1.5 sm:p-2 ${isActive ? 'bg-white/20' : ''}`}>
+                                    <Icon className="h-4 w-4" />
+                                </span>
+                                <span className="ml-2 sm:ml-3 min-w-0 flex-1">
+                                    <div className={`font-medium text-sm sm:text-base truncate ${isActive ? 'text-white' : 'text-secondary-900 dark:text-secondary-100'}`}>{filter.label}</div>
+                                    <div className={`text-xs hidden sm:block ${isActive ? 'text-white/80' : 'text-secondary-500 dark:text-secondary-400'}`}>{filter.description}</div>
+                                </span>
+                            </div>
                         </Button>
                     )
                 })}
@@ -438,18 +446,20 @@ const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                                     </Badge>
                                 )}
 
-                                {filters.quickFilter && (
+                                {filters.quickFilters.map(qf => (
                                     <Badge
+                                        key={qf}
                                         variant="secondary"
                                         className="flex items-center gap-1"
                                     >
-                                        <span>Filter: {quickFilters.find(f => f.key === filters.quickFilter)?.label}</span>
+                                        <span>Filter: {quickFilters.find(f => f.key === qf)?.label}</span>
                                         <X
                                             className="h-3 w-3 cursor-pointer"
-                                            onClick={() => updateFilter('quickFilter', '')}
+                                            onClick={() => updateFilter('quickFilters', filters.quickFilters.filter(f => f !== qf))}
                                         />
                                     </Badge>
-                                )}
+                                ))}
+                                {filters.quickFilters.length === 0 && null}
 
                                 {filters.tags.map(tag => (
                                     <Badge

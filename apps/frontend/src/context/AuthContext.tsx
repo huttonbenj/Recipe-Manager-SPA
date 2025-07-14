@@ -3,7 +3,7 @@
  * Manages user authentication state across the application
  */
 
-import { createContext, useState, useEffect, ReactNode, useCallback } from 'react'
+import { createContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react'
 import { authApi } from '@/services'
 import { useLocalStorage } from '@/hooks'
 import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY, REFRESH_TOKEN_STORAGE_KEY } from '@/utils/constants'
@@ -25,7 +25,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [token, setToken] = useLocalStorage<string | null>(TOKEN_STORAGE_KEY, null)
   const [refreshTokenStored, setRefreshTokenStored] = useLocalStorage<string | null>(REFRESH_TOKEN_STORAGE_KEY, null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isInitialized, setIsInitialized] = useState(false)
+  const initializationRef = useRef(false)
 
   // Computed values
   const isAuthenticated = !!user && !!token
@@ -42,42 +42,46 @@ export function AuthProvider({ children }: AuthProviderProps) {
   /**
    * Validate token and get user data
    */
-  const validateToken = useCallback(async (authToken: string): Promise<User | null> => {
-    try {
-      console.log('[AuthContext] Validating token...')
-      const userData = await authApi.getProfile()
-      console.log('[AuthContext] Token validation successful', userData)
-      return userData
-    } catch (error: any) {
-      console.warn('[AuthContext] Token validation failed:', error)
-
-      // If it's a 401 error, the token is invalid/expired
-      if (error?.status === 401) {
-        clearAuthData()
-      }
-
+  const validateToken = useCallback(async (): Promise<User | null> => {
+    if (!token) {
       return null
     }
-  }, [clearAuthData])
+
+    try {
+      const userData = await authApi.getProfile()
+      return userData
+    } catch (error) {
+      console.error('Token validation failed:', error)
+      clearAuthData()
+      return null
+    }
+  }, [token, clearAuthData])
 
   /**
    * Initialize auth state on app load
    */
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('[AuthContext] Initializing auth...', { token, user, refreshTokenStored, isInitialized })
-
       // Skip if already initialized
-      if (isInitialized) {
+      if (initializationRef.current) {
         console.log('[AuthContext] Already initialized, skipping')
         return
       }
 
+      console.log('[AuthContext] Initializing auth...', {
+        hasToken: !!token,
+        hasUser: !!user
+      })
+
+      initializationRef.current = true
+
       try {
+        setIsLoading(true)
+
         // If we have a token but no user, validate the token
         if (token && !user) {
           console.log('[AuthContext] Token found, validating...')
-          const userData = await validateToken(token)
+          const userData = await validateToken()
 
           if (userData) {
             setUser(userData)
@@ -92,7 +96,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         } else if (token && user) {
           // Both token and user exist, verify token is still valid
           console.log('[AuthContext] Both token and user found, verifying token...')
-          const userData = await validateToken(token)
+          const userData = await validateToken()
 
           if (!userData) {
             // Token is invalid, clear everything
@@ -109,13 +113,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         clearAuthData()
       } finally {
         setIsLoading(false)
-        setIsInitialized(true)
         console.log('[AuthContext] Auth initialization complete')
       }
     }
 
     initializeAuth()
-  }, [token, user, refreshTokenStored, isInitialized, validateToken, clearAuthData, setUser])
+  }, [token, user, validateToken, clearAuthData, setUser])
 
   /**
    * Login user with credentials
@@ -128,7 +131,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await authApi.login(credentials)
 
       console.log('[AuthContext] Login successful', response.user)
-      setUser(response.user)
+      setUser(response.user || null)
       setToken(response.token)
 
       // Store refresh token if provided
@@ -155,7 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await authApi.register(userData)
 
       console.log('[AuthContext] Registration successful', response.user)
-      setUser(response.user)
+      setUser(response.user || null)
       setToken(response.token)
 
       // Store refresh token if provided
@@ -177,6 +180,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async (): Promise<void> => {
     try {
       console.log('[AuthContext] Logging out...')
+      setIsLoading(true)
 
       // Call logout endpoint to invalidate server-side session
       if (token) {
@@ -189,6 +193,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Always clear local auth state
       console.log('[AuthContext] Clearing auth data')
       clearAuthData()
+      setIsLoading(false)
     }
   }
 
@@ -237,7 +242,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
-      const userData = await validateToken(token)
+      const userData = await validateToken()
       if (userData) {
         // Update user data if it changed
         if (JSON.stringify(userData) !== JSON.stringify(user)) {
@@ -257,7 +262,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Periodic auth status check (every 5 minutes)
   useEffect(() => {
-    if (!isAuthenticated || !isInitialized) {
+    if (!isAuthenticated || !initializationRef.current) {
       return
     }
 
@@ -267,14 +272,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }, 5 * 60 * 1000) // 5 minutes
 
     return () => clearInterval(interval)
-  }, [isAuthenticated, isInitialized, checkAuthStatus])
+  }, [isAuthenticated, checkAuthStatus])
 
   // Context value
   const value: AuthContextType = {
     user,
     token,
     isAuthenticated,
-    isLoading: isLoading || !isInitialized,
+    isLoading: isLoading || !initializationRef.current,
     login,
     register,
     logout,

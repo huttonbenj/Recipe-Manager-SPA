@@ -8,7 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeft, X, Plus, Minus, Clock, Users, ChefHat,
-  Save, Eye, Camera, AlertCircle, Tag, Hash, User, Heart, Bookmark, Info, ChevronRight
+  Save, Eye, Camera, AlertCircle, Tag, Hash, User, Heart, Bookmark, Info
 } from 'lucide-react'
 
 // UI Components
@@ -25,6 +25,7 @@ import { formatCookTime } from '@/utils'
 
 // Types
 import { Difficulty } from '@/types'
+import { useToast } from '@/context/ToastContext'
 
 /**
  * Recipe form data interface
@@ -62,6 +63,7 @@ const EditRecipe: React.FC = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { user } = useAuth()
+  const { error: showError } = useToast()
 
   // Form state
   const [formData, setFormData] = useState<RecipeFormData>({
@@ -237,6 +239,8 @@ const EditRecipe: React.FC = () => {
     const validationErrors = validateForm()
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
+      const firstError = Object.values(validationErrors)[0]
+      if (firstError) showError(firstError as string)
       return
     }
 

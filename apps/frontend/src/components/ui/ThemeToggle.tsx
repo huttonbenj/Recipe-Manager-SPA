@@ -7,7 +7,7 @@ import { Sun, Moon, Monitor } from 'lucide-react';
  */
 interface ThemeToggleProps {
     className?: string;
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg';
     variant?: 'button' | 'icon' | 'minimal';
     onClick?: () => void;
 }
@@ -26,10 +26,12 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 
     // Size classes
     const sizeClasses = {
+        xxs: 'w-5 h-5 text-[10px]',
+        xs: 'w-6 h-6 text-xs',
         sm: 'w-8 h-8 text-sm',
         md: 'w-10 h-10 text-base',
         lg: 'w-12 h-12 text-lg',
-    };
+    } as const;
 
     // Get icon based on current mode
     const getIcon = () => {

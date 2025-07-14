@@ -112,7 +112,7 @@ const Recipes: React.FC = () => {
     cookTime: searchParams.get('cookTime') || '',
     category: searchParams.get('category') || '',
     cuisine: searchParams.get('cuisine') || '',
-    quickFilter: searchParams.get('filter') || ''
+    quickFilters: searchParams.get('filter') ? searchParams.get('filter')!.split(',').filter(Boolean) : [] as string[]
   })
 
   const currentPage = parseInt(searchParams.get('page') || '1')
@@ -127,7 +127,7 @@ const Recipes: React.FC = () => {
     if (filters.cookTime) params.set('cookTime', filters.cookTime)
     if (filters.category) params.set('category', filters.category)
     if (filters.cuisine) params.set('cuisine', filters.cuisine)
-    if (filters.quickFilter) params.set('filter', filters.quickFilter)
+    if (filters.quickFilters.length > 0) params.set('filter', filters.quickFilters.join(','))
     if (sortBy !== 'newest') params.set('sort', sortBy)
     if (currentPage > 1) params.set('page', currentPage.toString())
 
@@ -149,6 +149,16 @@ const Recipes: React.FC = () => {
 
     if (filters.difficulty) {
       params.difficulty = filters.difficulty.toUpperCase()
+    }
+
+    // Include maximum cook time filter
+    if (filters.cookTime) {
+      params.cookTimeMax = Number(filters.cookTime)
+    }
+
+    // Include cuisine filter
+    if (filters.cuisine) {
+      params.cuisine = filters.cuisine
     }
 
     // Handle sorting
@@ -175,22 +185,26 @@ const Recipes: React.FC = () => {
     }
 
     // Handle quick filters
-    if (filters.quickFilter) {
-      switch (filters.quickFilter) {
-        case 'quick':
-          // Will filter on frontend for now
-          break
-        case 'trending':
-          params.sortBy = 'createdAt'
-          params.sortOrder = 'desc'
-          break
-        case 'healthy':
-          // Add tags filter when available
-          break
-        case 'vegetarian':
-          // Add tags filter when available
-          break
-      }
+    if (filters.quickFilters.length > 0) {
+      // Currently, apply the first quick filter that has a mapping
+      filters.quickFilters.forEach(qf => {
+        switch (qf) {
+          case 'quick':
+            // quick => cookTimeMax 30
+            params.cookTimeMax = params.cookTimeMax ?? 30
+            break
+          case 'trending':
+            params.sortBy = 'createdAt'
+            params.sortOrder = 'desc'
+            break
+          case 'healthy':
+            // placeholder for tags filtering
+            break
+          case 'vegetarian':
+            // placeholder
+            break
+        }
+      })
     }
 
     return params
@@ -234,10 +248,13 @@ const Recipes: React.FC = () => {
    * Handle quick filter selection
    */
   const handleQuickFilter = (filterKey: string) => {
-    setFilters(prev => ({
-      ...prev,
-      quickFilter: prev.quickFilter === filterKey ? '' : filterKey
-    }))
+    setFilters(prev => {
+      const isSelected = prev.quickFilters.includes(filterKey)
+      const newQuickFilters = isSelected
+        ? prev.quickFilters.filter(f => f !== filterKey)
+        : [...prev.quickFilters, filterKey]
+      return { ...prev, quickFilters: newQuickFilters }
+    })
   }
 
   /**
@@ -250,7 +267,7 @@ const Recipes: React.FC = () => {
       cookTime: '',
       category: '',
       cuisine: '',
-      quickFilter: ''
+      quickFilters: []
     })
     setSortBy('newest')
     setSearchParams({})
@@ -285,8 +302,15 @@ const Recipes: React.FC = () => {
   // Computed values
   const recipes: Recipe[] = recipesData?.recipes || []
   const totalCount = recipesData?.pagination?.total || 0
-  const hasActiveFilters = debouncedSearch || Object.values(filters).some(Boolean) || sortBy !== 'newest'
-  const activeFilterCount = Object.values(filters).filter(Boolean).length + (debouncedSearch ? 1 : 0)
+  const hasActiveFilters = debouncedSearch || Object.values(filters).some(val => Array.isArray(val) ? val.length > 0 : Boolean(val)) || sortBy !== 'newest'
+  const activeFilterCount = (
+    (debouncedSearch ? 1 : 0) +
+    (filters.difficulty ? 1 : 0) +
+    (filters.cookTime ? 1 : 0) +
+    (filters.category ? 1 : 0) +
+    (filters.cuisine ? 1 : 0) +
+    filters.quickFilters.length
+  )
 
   return (
     <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900">
@@ -383,10 +407,10 @@ const Recipes: React.FC = () => {
               {quickFilters.map((filter) => (
                 <Button
                   key={filter.key}
-                  variant={filters.quickFilter === filter.key ? 'primary' : 'outline'}
+                  variant={filters.quickFilters.includes(filter.key) ? 'primary' : 'outline'}
                   size="sm"
                   onClick={() => handleQuickFilter(filter.key)}
-                  className={`relative overflow-hidden transition-all duration-200 ${filters.quickFilter === filter.key
+                  className={`relative overflow-hidden transition-all duration-200 ${filters.quickFilters.includes(filter.key)
                     ? `bg-gradient-to-r ${filter.color} text-white border-transparent shadow-lg scale-[1.02]`
                     : 'hover:scale-[1.02] hover:shadow-md'
                     }`}

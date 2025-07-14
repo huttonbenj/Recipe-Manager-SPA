@@ -141,13 +141,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                     padding="none"
                     className="overflow-hidden hover:shadow-lg transition-all duration-300"
                 >
-                    <div className="flex flex-col sm:flex-row">
+                    <div className="flex flex-col sm:flex-row items-stretch h-36">
                         {/* Recipe Image */}
                         <Link
                             to={`/recipes/${recipe.id}`}
                             className="block group"
                         >
-                            <div className="relative w-full sm:w-48 h-48 sm:h-32 bg-secondary-200 dark:bg-secondary-700 flex-shrink-0">
+                            <div className="relative w-full sm:w-48 h-full bg-secondary-200 dark:bg-secondary-700 flex-shrink-0">
                                 <img
                                     src={getImageUrl()}
                                     alt={recipe.title}
@@ -176,7 +176,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                         </Link>
 
                         {/* Recipe Details */}
-                        <div className="flex-1 p-4 flex flex-col">
+                        <div className="flex-1 p-4 flex flex-col justify-between">
                             {/* Header with title and actions */}
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex-1 mr-4">
@@ -268,29 +268,21 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                 </div>
                             )}
 
-                            {/* Recipe Meta */}
-                            <div className="flex items-center justify-between text-sm text-secondary-500 dark:text-secondary-400 mt-auto">
-                                <div className="flex items-center space-x-4">
-                                    {recipe.cookTime && (
-                                        <div className="flex items-center">
-                                            <Clock className="h-4 w-4 mr-2" />
-                                            {formatCookTime(recipe.cookTime)}
-                                        </div>
-                                    )}
-                                    {recipe.servings && (
-                                        <div className="flex items-center">
-                                            <Users className="h-4 w-4 mr-2" />
-                                            {recipe.servings} servings
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Rating */}
-                                {recipe.rating !== undefined && (
-                                    <div className="flex items-center">
-                                        <Star className={`h-4 w-4 mr-2 ${recipe.rating >= 4 ? 'text-yellow-500 fill-current' : ''}`} />
-                                        <span>{recipe.rating.toFixed(1)}</span>
-                                    </div>
+                            {/* Meta info */}
+                            <div className="flex items-center space-x-4 text-sm text-secondary-600 dark:text-secondary-400 mt-auto">
+                                <span className="flex items-center">
+                                    <Clock className="w-4 h-4 mr-1.5 text-secondary-400 dark:text-secondary-500" />
+                                    {formatCookTime(recipe.cookTime)}
+                                </span>
+                                <span className="flex items-center">
+                                    <Users className="w-4 h-4 mr-1.5 text-secondary-400 dark:text-secondary-500" />
+                                    {recipe.servings} serving{recipe.servings !== 1 ? 's' : ''}
+                                </span>
+                                {recipe.rating && recipe.rating > 0 && (
+                                    <span className="flex items-center">
+                                        <Star className="w-4 h-4 mr-1.5 text-yellow-500" />
+                                        {recipe.rating.toFixed(1)}
+                                    </span>
                                 )}
                             </div>
                         </div>

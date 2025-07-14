@@ -9,6 +9,7 @@ import { Bookmark, Grid, List, ArrowLeft } from 'lucide-react'
 
 // UI Components
 import { Button, Loading } from '@/components/ui'
+import LinkButton from '@/components/ui/LinkButton/LinkButton'
 import { RecipeCard } from '@/components/recipe'
 
 // Hooks
@@ -92,11 +93,16 @@ const Bookmarks: React.FC = () => {
         <div className="min-h-screen bg-background dark:bg-background-dark py-8">
             <div className="container mx-auto px-4">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                        <Link to="/recipes">
-                            <Button variant="ghost" leftIcon={<ArrowLeft className="w-4 h-4" />}>Back to Recipes</Button>
-                        </Link>
+                <div className="mb-6">
+                    <LinkButton
+                        to="/recipes"
+                        variant="ghost"
+                        leftIcon={<ArrowLeft className="w-4 h-4" />}
+                        className="mb-4"
+                    >
+                        Back to Recipes
+                    </LinkButton>
+                    <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-foreground dark:text-foreground-dark flex items-center gap-2">
                                 <Bookmark className="w-8 h-8 text-primary-500 dark:text-primary-400" />
@@ -106,29 +112,27 @@ const Bookmarks: React.FC = () => {
                                 {bookmarks.length} bookmarked recipe{bookmarks.length !== 1 ? 's' : ''}
                             </p>
                         </div>
-                    </div>
 
-                    {/* View mode toggle */}
-                    {bookmarkedRecipes.length > 0 && (
-                        <div className="flex items-center gap-2">
-                            <Button
-                                variant={viewMode === 'grid' ? 'primary' : 'ghost'}
-                                onClick={() => setViewMode('grid')}
-                                className="p-2"
-                                leftIcon={<Grid className="w-4 h-4" />}
-                            >
-                                <span className="sr-only">Grid view</span>
-                            </Button>
-                            <Button
-                                variant={viewMode === 'list' ? 'primary' : 'ghost'}
-                                onClick={() => setViewMode('list')}
-                                className="p-2"
-                                leftIcon={<List className="w-4 h-4" />}
-                            >
-                                <span className="sr-only">List view</span>
-                            </Button>
-                        </div>
-                    )}
+                        {/* View mode toggle */}
+                        {bookmarkedRecipes.length > 0 && (
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant={viewMode === 'grid' ? 'primary' : 'ghost'}
+                                    onClick={() => setViewMode('grid')}
+                                    className="p-2"
+                                >
+                                    <Grid className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    variant={viewMode === 'list' ? 'primary' : 'ghost'}
+                                    onClick={() => setViewMode('list')}
+                                    className="p-2"
+                                >
+                                    <List className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Content */}

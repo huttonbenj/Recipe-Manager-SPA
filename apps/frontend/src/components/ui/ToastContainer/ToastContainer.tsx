@@ -23,15 +23,15 @@ interface ToastContainerProps {
 }
 
 /**
- * Position class mapping
+ * Position class mapping with mobile-responsive spacing
  */
 const positionClasses = {
-    'top-right': 'top-4 right-4',
-    'top-left': 'top-4 left-4',
-    'top-center': 'top-4 left-1/2 transform -translate-x-1/2',
-    'bottom-right': 'bottom-4 right-4',
-    'bottom-left': 'bottom-4 left-4',
-    'bottom-center': 'bottom-4 left-1/2 transform -translate-x-1/2',
+    'top-right': 'top-4 right-0 sm:right-4',
+    'top-left': 'top-4 left-0 sm:left-4',
+    'top-center': 'top-4 left-0 right-0 sm:left-1/2 sm:right-auto sm:transform sm:-translate-x-1/2',
+    'bottom-right': 'bottom-4 right-0 sm:right-4',
+    'bottom-left': 'bottom-4 left-0 sm:left-4',
+    'bottom-center': 'bottom-4 left-0 right-0 sm:left-1/2 sm:right-auto sm:transform sm:-translate-x-1/2',
 }
 
 export const ToastContainer: React.FC<ToastContainerProps> = ({
@@ -50,7 +50,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 
     const containerContent = (
         <div
-            className={`fixed z-50 flex flex-col space-y-4 pointer-events-none ${positionClasses[position]}`}
+            className={`fixed z-50 flex flex-col space-y-3 sm:space-y-4 pointer-events-none ${positionClasses[position]}`}
             style={{ zIndex: 9999 }}
             aria-live="polite"
             aria-atomic="true"

@@ -74,6 +74,7 @@ export interface RecipeSearchParams {
   page?: number
   sortBy?: 'createdAt' | 'title' | 'cookTime' | 'difficulty'
   sortOrder?: 'asc' | 'desc'
+  cookTimeMax?: number
 }
 
 // Favorites and Bookmarks types

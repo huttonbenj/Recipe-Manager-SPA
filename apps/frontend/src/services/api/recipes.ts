@@ -19,9 +19,19 @@ export const recipesApi = {
     
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, String(value))
+        // Skip empty strings, undefined, null, or empty arrays
+        if (
+          value === undefined ||
+          value === null ||
+          (typeof value === 'string' && value.trim() === '') ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          return
         }
+
+        // If the value is an array, convert to comma-separated list expected by the backend
+        const formattedValue = Array.isArray(value) ? value.join(',') : String(value)
+        searchParams.append(key, formattedValue)
       })
     }
     
@@ -90,9 +100,19 @@ export const recipesApi = {
     
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, String(value))
+        // Skip empty strings, undefined, null, or empty arrays
+        if (
+          value === undefined ||
+          value === null ||
+          (typeof value === 'string' && value.trim() === '') ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          return
         }
+
+        // If the value is an array, convert to comma-separated list expected by the backend
+        const formattedValue = Array.isArray(value) ? value.join(',') : String(value)
+        searchParams.append(key, formattedValue)
       })
     }
     
@@ -122,9 +142,19 @@ export const recipesApi = {
     
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, String(value))
+        // Skip empty strings, undefined, null, or empty arrays
+        if (
+          value === undefined ||
+          value === null ||
+          (typeof value === 'string' && value.trim() === '') ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          return
         }
+
+        // If the value is an array, convert to comma-separated list expected by the backend
+        const formattedValue = Array.isArray(value) ? value.join(',') : String(value)
+        searchParams.append(key, formattedValue)
       })
     }
     

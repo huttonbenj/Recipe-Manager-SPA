@@ -20,6 +20,7 @@ import EditRecipe from '@/pages/EditRecipe'
 import Favorites from '@/pages/Favorites'
 import Bookmarks from '@/pages/Bookmarks'
 import NotFound from '@/pages/NotFound'
+import Profile from '@/pages/Profile'
 
 // UI Components
 import { Loading } from '@/components/ui'
@@ -80,6 +81,7 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
  * Defines all application routes with authentication guards
  */
 export const AppRoutes: React.FC = () => {
+    const { isAuthenticated } = useAuth();
     return (
         <Routes>
             {/* Public routes */}
@@ -102,7 +104,7 @@ export const AppRoutes: React.FC = () => {
 
             {/* Public home page with layout */}
             <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
+                <Route index element={<Home key={isAuthenticated ? 'auth' : 'guest'} />} />
             </Route>
 
             {/* Protected routes with layout */}
@@ -121,10 +123,11 @@ export const AppRoutes: React.FC = () => {
                 <Route path="recipes/:id/edit" element={<EditRecipe />} />
                 <Route path="favorites" element={<Favorites />} />
                 <Route path="bookmarks" element={<Bookmarks />} />
+                <Route path="profile" element={<Profile />} />
             </Route>
 
             {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
         </Routes>
-    )
-} 
+    );
+}; 

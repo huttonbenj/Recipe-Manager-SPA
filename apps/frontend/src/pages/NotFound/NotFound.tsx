@@ -67,15 +67,13 @@ const NotFound: React.FC = () => {
             <Button
               onClick={() => navigate(-1)}
               variant="secondary"
-              className="flex items-center gap-2"
+              leftIcon={<ArrowLeft className="w-4 h-4" />}
             >
-              <ArrowLeft className="w-4 h-4" />
               Go Back
             </Button>
 
             <Link to="/">
-              <Button className="flex items-center gap-2">
-                <Home className="w-4 h-4" />
+              <Button leftIcon={<Home className="w-4 h-4" />}>
                 Home Page
               </Button>
             </Link>

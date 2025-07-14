@@ -25,28 +25,32 @@ const toastIcons = {
 }
 
 /**
- * Toast color classes with dark mode support
+ * Toast color classes with dark mode support - optimized for mobile consistency
  */
 const toastStyles = {
     success: {
-        container: 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200',
-        icon: 'text-green-400 dark:text-green-300',
-        button: 'text-green-500 dark:text-green-300 hover:text-green-600 dark:hover:text-green-200',
+        container: 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-800 dark:text-green-100',
+        icon: 'text-green-500 dark:text-green-400',
+        button: 'text-green-600 dark:text-green-300 hover:text-green-700 dark:hover:text-green-200',
+        close: 'text-green-600 dark:text-green-300 hover:text-green-700 dark:hover:text-green-200',
     },
     error: {
-        container: 'bg-accent-50 dark:bg-accent-900/30 border-accent-200 dark:border-accent-800 text-accent-800 dark:text-accent-200',
-        icon: 'text-accent-400 dark:text-accent-300',
-        button: 'text-accent-500 dark:text-accent-300 hover:text-accent-600 dark:hover:text-accent-200',
+        container: 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 text-red-800 dark:text-red-100',
+        icon: 'text-red-500 dark:text-red-400',
+        button: 'text-red-600 dark:text-red-300 hover:text-red-700 dark:hover:text-red-200',
+        close: 'text-red-600 dark:text-red-300 hover:text-red-700 dark:hover:text-red-200',
     },
     warning: {
-        container: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200',
-        icon: 'text-amber-400 dark:text-amber-300',
-        button: 'text-amber-500 dark:text-amber-300 hover:text-amber-600 dark:hover:text-amber-200',
+        container: 'bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-100',
+        icon: 'text-amber-500 dark:text-amber-400',
+        button: 'text-amber-600 dark:text-amber-300 hover:text-amber-700 dark:hover:text-amber-200',
+        close: 'text-amber-600 dark:text-amber-300 hover:text-amber-700 dark:hover:text-amber-200',
     },
     info: {
-        container: 'bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-800 text-primary-800 dark:text-primary-200',
-        icon: 'text-primary-400 dark:text-primary-300',
-        button: 'text-primary-500 dark:text-primary-300 hover:text-primary-600 dark:hover:text-primary-200',
+        container: 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-100',
+        icon: 'text-blue-500 dark:text-blue-400',
+        button: 'text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200',
+        close: 'text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-200',
     },
 }
 
@@ -85,66 +89,50 @@ export const Toast: React.FC<ToastProps> = ({ toast, onRemove }) => {
     return (
         <div
             className={clsx(
-                'toast',
-                `toast-${toast.type}`,
+                'w-full rounded-lg border shadow-lg transition-all duration-300 md:max-w-2xl mx-3 sm:mx-0',
+                styles.container,
                 {
                     'translate-y-0 opacity-100 scale-100': isVisible && !isLeaving,
                     'translate-y-2 opacity-0 scale-95': !isVisible || isLeaving,
                 }
             )}
         >
-            <div className="p-4">
-                <div className="flex items-start">
-                    {/* Icon */}
-                    <div className="flex-shrink-0">
-                        <Icon className={clsx('h-6 w-6', `toast-icon-${toast.type}`)} />
-                    </div>
-
-                    {/* Content */}
-                    <div className="ml-3 w-0 flex-1">
-                        {toast.title && (
-                            <p className="text-sm font-medium">
-                                {toast.title}
+            <div className="px-3 py-3 sm:px-4 sm:py-3">
+                <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-2 sm:gap-3 min-w-0 flex-1">
+                        <Icon className={clsx('w-5 h-5 mt-0.5 flex-shrink-0', styles.icon)} />
+                        <div className="min-w-0 flex-1">
+                            {toast.title && (
+                                <h4 className="text-sm font-medium leading-5 mb-1">
+                                    {toast.title}
+                                </h4>
+                            )}
+                            <p className="text-sm leading-5 break-words">
+                                {toast.message}
                             </p>
-                        )}
-                        <p className={clsx('text-sm', toast.title && 'mt-1')}>
-                            {toast.message}
-                        </p>
-
-                        {/* Action button */}
-                        {toast.action && (
-                            <div className="mt-3">
+                            {toast.action && (
                                 <button
-                                    type="button"
                                     onClick={handleActionClick}
                                     className={clsx(
-                                        'text-sm font-medium underline hover:no-underline focus:outline-none focus:underline',
+                                        'text-sm font-medium underline mt-2 transition-colors',
                                         styles.button
                                     )}
                                 >
                                     {toast.action.label}
                                 </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Close button */}
-                    {toast.dismissible && (
-                        <div className="ml-4 flex-shrink-0 flex">
-                            <button
-                                type="button"
-                                onClick={handleRemove}
-                                className={clsx(
-                                    'inline-flex rounded-md p-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
-                                    `toast-close-${toast.type}`,
-                                    'focus:ring-offset-white dark:focus:ring-offset-secondary-900 focus:ring-current'
-                                )}
-                            >
-                                <span className="sr-only">Dismiss</span>
-                                <X className="h-5 w-5" />
-                            </button>
+                            )}
                         </div>
-                    )}
+                    </div>
+                    <button
+                        onClick={handleRemove}
+                        className={clsx(
+                            'flex-shrink-0 p-1 rounded-md transition-colors',
+                            styles.close
+                        )}
+                        aria-label="Close notification"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
                 </div>
             </div>
         </div>
