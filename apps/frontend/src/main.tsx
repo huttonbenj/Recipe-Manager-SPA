@@ -18,8 +18,8 @@ import '@/styles/globals.css'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0, // Always consider data stale in development
-      gcTime: 0, // Don't keep unused data in cache
+      staleTime: 1 * 60 * 1000, // 1 minute - short enough for development
+      gcTime: 5 * 60 * 1000, // 5 minutes
       refetchOnWindowFocus: false, // Disable refetch on window focus
       refetchOnMount: true, // Enable refetch on component mount - IMPORTANT for cache invalidation
       refetchOnReconnect: true, // Enable refetch on reconnect

@@ -52,9 +52,7 @@ const RecipeDetail: React.FC = () => {
   const deleteMutation = useDeleteRecipe()
 
   // Fetch recipe data - disable during deletion to prevent 404 errors
-  const { data: recipe, isLoading, error: queryError } = useRecipe(id!, {
-    enabled: !deleteMutation.isPending
-  })
+  const { data: recipe, isLoading, error: queryError } = useRecipe(id!)
 
   // Loading state
   if (isLoading) {

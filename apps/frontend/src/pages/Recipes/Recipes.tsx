@@ -257,9 +257,10 @@ const Recipes: React.FC = () => {
   } = useQuery({
     queryKey: recipeKeys.list(searchParamsForApi),
     queryFn: () => recipesApi.getRecipes(searchParamsForApi),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute - same as useRecipes hook
     refetchOnMount: true, // Ensure we refetch when component mounts
     refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnReconnect: true, // Refetch when reconnecting
   })
 
   // Computed values

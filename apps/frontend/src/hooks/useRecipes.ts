@@ -62,9 +62,10 @@ export function useRecipes(params?: RecipeSearchParams) {
   return useQuery({
     queryKey: recipeKeys.list(params),
     queryFn: () => recipesApi.getRecipes(params),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute - short enough for development
     refetchOnMount: true, // Ensure we refetch when component mounts
     refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnReconnect: true, // Refetch when reconnecting
   })
 }
 
@@ -109,14 +110,20 @@ export function useCreateRecipe() {
       // Debug cache state before clearing
       debugCache(queryClient, 'BEFORE create cache clear')
       
-      // Remove all recipe queries from cache to force fresh data
+      // Aggressively clear all recipe-related cache
       queryClient.removeQueries({ queryKey: recipeKeys.all })
+      
+      // Force refetch all recipe queries that might be active
+      queryClient.invalidateQueries({ 
+        queryKey: recipeKeys.all,
+        refetchType: 'all'
+      })
+      
+      // Set the new recipe in the detail cache immediately
+      queryClient.setQueryData(recipeKeys.detail(newRecipe.id), newRecipe)
       
       // Debug cache state after clearing
       debugCache(queryClient, 'AFTER create cache clear')
-      
-      // Set the new recipe in the detail cache
-      queryClient.setQueryData(recipeKeys.detail(newRecipe.id), newRecipe)
       
       showToast('Recipe created successfully!')
     },
@@ -145,14 +152,20 @@ export function useUpdateRecipe() {
       // Debug cache state before clearing
       debugCache(queryClient, 'BEFORE update cache clear')
       
-      // Remove all recipe queries from cache to force fresh data
+      // Aggressively clear all recipe-related cache
       queryClient.removeQueries({ queryKey: recipeKeys.all })
+      
+      // Force refetch all recipe queries that might be active
+      queryClient.invalidateQueries({ 
+        queryKey: recipeKeys.all,
+        refetchType: 'all'
+      })
+      
+      // Update the recipe in the detail cache immediately
+      queryClient.setQueryData(recipeKeys.detail(id), updatedRecipe)
       
       // Debug cache state after clearing
       debugCache(queryClient, 'AFTER update cache clear')
-      
-      // Update the recipe in the detail cache
-      queryClient.setQueryData(recipeKeys.detail(id), updatedRecipe)
       
       showToast('Recipe updated successfully!')
     },
@@ -181,11 +194,14 @@ export function useDeleteRecipe() {
       // Debug cache state before clearing
       debugCache(queryClient, 'BEFORE delete cache clear')
       
-      // Remove the recipe from the detail cache
-      queryClient.removeQueries({ queryKey: recipeKeys.detail(deletedId) })
-      
-      // Remove all recipe queries from cache to force fresh data
+      // Aggressively clear all recipe-related cache
       queryClient.removeQueries({ queryKey: recipeKeys.all })
+      
+      // Force refetch all recipe queries that might be active
+      queryClient.invalidateQueries({ 
+        queryKey: recipeKeys.all,
+        refetchType: 'all'
+      })
       
       // Debug cache state after clearing
       debugCache(queryClient, 'AFTER delete cache clear')
