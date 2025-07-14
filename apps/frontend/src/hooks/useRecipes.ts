@@ -29,54 +29,54 @@ export const recipeKeys = {
   lists: () => [...recipeKeys.all, 'list'],
   list: (params?: RecipeSearchParams) => {
     const normalizedParams = normalizeParams(params)
-    const key = [...recipeKeys.lists(), normalizedParams] as const
+    const key = [...recipeKeys.lists(), normalizedParams]
     console.log('[QUERY KEY] recipeKeys.list:', key)
     return key
   },
-  detail: (id: string) => {
-    const key = [...recipeKeys.all, 'detail', id] as const
-    console.log('[QUERY KEY] recipeKeys.detail:', key)
-    return key
-  },
-  popular: () => [...recipeKeys.all, 'popular'] as const,
-  recent: () => [...recipeKeys.all, 'recent'] as const,
+  details: () => [...recipeKeys.all, 'detail'],
+  detail: (id: string) => [...recipeKeys.details(), id],
+  recent: () => [...recipeKeys.all, 'recent'],
+}
+
+// Debug function to log cache state
+function debugCache(queryClient: any, action: string) {
+  const cache = queryClient.getQueryCache()
+  const allQueries = cache.getAll()
+  const recipeQueries = allQueries.filter((q: any) => q.queryKey[0] === 'recipes')
+  
+  console.log(`[CACHE DEBUG] ${action} - Recipe queries in cache:`, recipeQueries.length)
+  recipeQueries.forEach((q: any) => {
+    console.log(`  - ${JSON.stringify(q.queryKey)}: ${q.state.status} (${q.state.dataUpdatedAt})`)
+  })
 }
 
 /**
- * Hook to get recipes with filtering and pagination
+ * Hook to get recipes with search and pagination
  */
 export function useRecipes(params?: RecipeSearchParams) {
-  const key = recipeKeys.list(params)
-  console.log('[HOOK] useRecipes queryKey:', key)
+  const queryClient = useQueryClient()
+  
+  // Debug cache state before query
+  debugCache(queryClient, 'BEFORE useRecipes query')
+  
   return useQuery({
-    queryKey: key,
+    queryKey: recipeKeys.list(params),
     queryFn: () => recipesApi.getRecipes(params),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: true, // Ensure we refetch when component mounts
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   })
 }
 
 /**
  * Hook to get single recipe by ID
  */
-export function useRecipe(id: string, options?: { enabled?: boolean }) {
-  const key = recipeKeys.detail(id)
-  console.log('[HOOK] useRecipe queryKey:', key)
+export function useRecipe(id: string) {
   return useQuery({
-    queryKey: key,
+    queryKey: recipeKeys.detail(id),
     queryFn: () => recipesApi.getRecipe(id),
-    enabled: !!id && (options?.enabled !== false),
-    staleTime: 10 * 60 * 1000,
-  })
-}
-
-/**
- * Hook to get popular recipes
- */
-export function usePopularRecipes(limit?: number) {
-  return useQuery({
-    queryKey: recipeKeys.popular(),
-    queryFn: () => recipesApi.getPopularRecipes(limit),
-    staleTime: 15 * 60 * 1000, // 15 minutes
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 
@@ -106,11 +106,14 @@ export function useCreateRecipe() {
     onSuccess: async (newRecipe) => {
       console.log('✅ useCreateRecipe: Recipe created successfully:', newRecipe.id)
       
-      // Invalidate all recipe list queries to ensure fresh data
-      await queryClient.invalidateQueries({ 
-        queryKey: recipeKeys.all,
-        refetchType: 'active'
-      })
+      // Debug cache state before clearing
+      debugCache(queryClient, 'BEFORE create cache clear')
+      
+      // Remove all recipe queries from cache to force fresh data
+      queryClient.removeQueries({ queryKey: recipeKeys.all })
+      
+      // Debug cache state after clearing
+      debugCache(queryClient, 'AFTER create cache clear')
       
       // Set the new recipe in the detail cache
       queryClient.setQueryData(recipeKeys.detail(newRecipe.id), newRecipe)
@@ -139,11 +142,14 @@ export function useUpdateRecipe() {
     onSuccess: async (updatedRecipe, { id }) => {
       console.log('✅ useUpdateRecipe: Recipe updated successfully:', id)
       
-      // Invalidate all recipe list queries to ensure fresh data
-      await queryClient.invalidateQueries({ 
-        queryKey: recipeKeys.all,
-        refetchType: 'active'
-      })
+      // Debug cache state before clearing
+      debugCache(queryClient, 'BEFORE update cache clear')
+      
+      // Remove all recipe queries from cache to force fresh data
+      queryClient.removeQueries({ queryKey: recipeKeys.all })
+      
+      // Debug cache state after clearing
+      debugCache(queryClient, 'AFTER update cache clear')
       
       // Update the recipe in the detail cache
       queryClient.setQueryData(recipeKeys.detail(id), updatedRecipe)
@@ -172,14 +178,17 @@ export function useDeleteRecipe() {
     onSuccess: async (_, deletedId) => {
       console.log('✅ useDeleteRecipe: Recipe deleted successfully:', deletedId)
       
+      // Debug cache state before clearing
+      debugCache(queryClient, 'BEFORE delete cache clear')
+      
       // Remove the recipe from the detail cache
       queryClient.removeQueries({ queryKey: recipeKeys.detail(deletedId) })
       
-      // Invalidate all recipe list queries to ensure fresh data
-      await queryClient.invalidateQueries({ 
-        queryKey: recipeKeys.all,
-        refetchType: 'active'
-      })
+      // Remove all recipe queries from cache to force fresh data
+      queryClient.removeQueries({ queryKey: recipeKeys.all })
+      
+      // Debug cache state after clearing
+      debugCache(queryClient, 'AFTER delete cache clear')
       
       showToast('Recipe deleted successfully!')
     },
