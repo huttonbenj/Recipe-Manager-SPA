@@ -2,99 +2,17 @@
  * Recipe-related type definitions
  */
 
-export enum Difficulty {
-  EASY = 'EASY',
-  MEDIUM = 'MEDIUM',
-  HARD = 'HARD'
-}
+// Import shared types
+export type {
+  Recipe,
+  CreateRecipeData,
+  UpdateRecipeData,
+  RecipeFilters,
+  RecipeSearchParams,
+  UserFavorite,
+  UserBookmark,
+  InteractionCounts
+} from '@recipe-manager/shared-types'
 
-export interface Recipe {
-  id: string
-  title: string
-  description?: string
-  ingredients: string[]
-  instructions: string
-  imageUrl?: string
-  cookTime?: number // in minutes
-  prepTime?: number // in minutes
-  servings?: number
-  difficulty?: Difficulty
-  tags: string[]
-  cuisine?: string
-  authorId?: string
-  author?: {
-    id: string
-    name?: string
-    email: string
-  }
-  createdAt: string
-  updatedAt: string
-  // Interaction data
-  isFavorited?: boolean
-  isBookmarked?: boolean
-  favoritesCount?: number
-  bookmarksCount?: number
-  rating?: number // Average user rating
-}
-
-export interface CreateRecipeData {
-  title: string
-  description?: string
-  ingredients: string[]
-  instructions: string
-  imageUrl?: string
-  cookTime?: number
-  prepTime?: number
-  servings?: number
-  difficulty?: Difficulty
-  tags: string[]
-  cuisine?: string
-}
-
-export interface UpdateRecipeData extends Partial<CreateRecipeData> {
-  id: string
-}
-
-export interface RecipeFilters {
-  search?: string
-  tags?: string[]
-  cuisine?: string
-  difficulty?: Difficulty
-  maxCookTime?: number
-  minServings?: number
-  maxServings?: number
-}
-
-export interface RecipeSearchParams {
-  search?: string
-  tags?: string
-  cuisine?: string
-  difficulty?: string
-  limit?: number
-  page?: number
-  sortBy?: 'createdAt' | 'title' | 'cookTime' | 'difficulty'
-  sortOrder?: 'asc' | 'desc'
-  cookTimeMax?: number
-}
-
-// Favorites and Bookmarks types
-export interface UserFavorite {
-  id: string
-  userId: string
-  recipeId: string
-  recipe: Recipe
-  createdAt: string
-}
-
-export interface UserBookmark {
-  id: string
-  userId: string
-  recipeId: string
-  recipe: Recipe
-  createdAt: string
-}
-
-export interface InteractionCounts {
-  favoritesCount: number
-  bookmarksCount: number
-}
+// Import enum as value
+export { Difficulty } from '@recipe-manager/shared-types'

@@ -29,6 +29,10 @@ export class UploadService {
 
   constructor() {
     this.ensureUploadDirectory()
+    // Run cleanup on startup (remove files older than 30 days)
+    this.cleanupOldImages(30).catch(error => {
+      console.error('Failed to cleanup old images on startup:', error)
+    })
   }
 
   /**
@@ -113,11 +117,17 @@ export class UploadService {
           .toFile(webpPath)
       ])
 
-      // Generate URLs (relative paths for now, can be made absolute with domain)
-      const baseUrl = '/uploads'
-      const originalUrl = `${baseUrl}/${path.basename(originalPath)}`
-      const thumbnailUrl = `${baseUrl}/${path.basename(thumbnailPath)}`
-      const webpUrl = `${baseUrl}/${path.basename(webpPath)}`
+      // Generate URLs for frontend consumption
+      // Use environment-aware base URL construction
+      const protocol = config.server.nodeEnv === 'production' ? 'https' : 'http'
+      const hostname = config.server.nodeEnv === 'production' 
+        ? config.server.backendHost
+        : 'localhost'
+      const baseUrl = `${protocol}://${hostname}:${config.server.port}`
+      
+      const originalUrl = `${baseUrl}/uploads/${path.basename(originalPath)}`
+      const thumbnailUrl = `${baseUrl}/uploads/${path.basename(thumbnailPath)}`
+      const webpUrl = `${baseUrl}/uploads/${path.basename(webpPath)}`
 
       return {
         originalUrl,
@@ -131,8 +141,31 @@ export class UploadService {
         }
       }
     } catch (error) {
-      console.error('Image processing error:', error)
-      throw new Error('Failed to process image')
+      // Log detailed error information
+      console.error('Image processing error:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        fileInfo: {
+          originalName: file.originalname,
+          size: file.size,
+          mimeType: file.mimetype
+        }
+      })
+      
+      // Throw more specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes('Input buffer contains unsupported image format')) {
+          throw new Error('Unsupported image format. Please upload a valid JPEG, PNG, or WebP image.')
+        }
+        if (error.message.includes('ENOSPC')) {
+          throw new Error('Insufficient disk space for image processing.')
+        }
+        if (error.message.includes('ENOMEM')) {
+          throw new Error('Image too large to process. Please upload a smaller image.')
+        }
+      }
+      
+      throw new Error('Failed to process image. Please try again with a different image.')
     }
   }
 

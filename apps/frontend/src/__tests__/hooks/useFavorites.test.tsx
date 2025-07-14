@@ -31,6 +31,15 @@ vi.mock('@/context/ToastContext', () => ({
     ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }))
 
+// Mock the useAuth hook to return authenticated state
+vi.mock('@/hooks/useAuth', () => ({
+    useAuth: () => ({
+        isAuthenticated: true,
+        user: { id: 'user1', email: 'test@example.com' },
+        token: 'mock-token',
+    }),
+}))
+
 describe('useFavorites hook', () => {
     let queryClient: QueryClient
 

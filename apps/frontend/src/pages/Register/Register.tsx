@@ -37,7 +37,7 @@ interface RegisterFormData {
 
 const Register: React.FC = () => {
   const navigate = useNavigate()
-  const { register } = useAuth()
+  const { register, errors: authErrors, clearErrors } = useAuth()
 
   // Form state
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -48,28 +48,27 @@ const Register: React.FC = () => {
   })
 
   // UI state
-  const [errors, setErrors] = useState<FormErrors>({})
+  const [localErrors, setLocalErrors] = useState<FormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  // Combine local validation errors with auth errors
+  const errors: FormErrors = {
+    ...localErrors,
+    submit: authErrors.register
+  }
 
   // Register mutation
   const registerMutation = useMutation({
     mutationFn: register,
     onSuccess: () => {
+      // Clear any errors on successful registration
+      setLocalErrors({})
+      clearErrors()
       navigate('/')
     },
     onError: (error: any) => {
-      console.error('Registration error:', error)
-
-      let errorMessage = 'Registration failed. Please try again.'
       let fieldErrors: FormErrors = {}
-
-      // Extract specific error message
-      if (error?.message) {
-        errorMessage = error.message
-      } else if (error?.details?.message) {
-        errorMessage = error.details.message
-      }
 
       // Handle validation errors
       if (error?.details?.issues) {
@@ -85,15 +84,12 @@ const Register: React.FC = () => {
       }
 
       // Handle specific error cases
-      if (errorMessage.includes('already exists')) {
+      if (error?.message?.includes('already exists')) {
         fieldErrors.email = 'An account with this email already exists'
       }
 
-      // Set form errors
-      setErrors({
-        submit: errorMessage,
-        ...fieldErrors
-      })
+      // Set local validation errors (auth error is handled in context)
+      setLocalErrors(fieldErrors)
     }
   })
 
@@ -142,13 +138,10 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Clear previous errors
-    setErrors({})
-
     // Validate form
     const formErrors = validateForm()
     if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors)
+      setLocalErrors(formErrors)
       return
     }
 
@@ -167,8 +160,13 @@ const Register: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }))
 
     // Clear field error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }))
+    if (localErrors[field]) {
+      setLocalErrors(prev => ({ ...prev, [field]: undefined }))
+    }
+
+    // Clear auth error when user starts typing
+    if (authErrors.register) {
+      clearErrors()
     }
   }
 

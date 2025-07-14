@@ -34,7 +34,7 @@ interface LoginFormData {
 const Login: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { login } = useAuth()
+  const { login, errors: authErrors, clearErrors } = useAuth()
 
   // Form state
   const [formData, setFormData] = useState<LoginFormData>({
@@ -43,8 +43,14 @@ const Login: React.FC = () => {
   })
 
   // UI state
-  const [errors, setErrors] = useState<FormErrors>({})
+  const [localErrors, setLocalErrors] = useState<FormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
+
+  // Combine local validation errors with auth errors
+  const errors: FormErrors = {
+    ...localErrors,
+    submit: authErrors.login
+  }
 
   // Get redirect path from location state
   const from = location.state?.from?.pathname || '/'
@@ -53,20 +59,14 @@ const Login: React.FC = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: () => {
+      // Clear any errors on successful login
+      setLocalErrors({})
+      clearErrors()
       navigate(from, { replace: true })
     },
     onError: (error: any) => {
-      console.error('Login error:', error)
-
-      let errorMessage = 'Login failed. Please check your credentials.'
+      // Handle validation errors for form fields
       let fieldErrors: FormErrors = {}
-
-      // Extract specific error message
-      if (error?.message) {
-        errorMessage = error.message
-      } else if (error?.details?.message) {
-        errorMessage = error.details.message
-      }
 
       // Handle validation errors
       if (error?.details?.issues) {
@@ -79,11 +79,8 @@ const Login: React.FC = () => {
         })
       }
 
-      // Set form errors
-      setErrors({
-        submit: errorMessage,
-        ...fieldErrors
-      })
+      // Set local validation errors (auth error is handled in context)
+      setLocalErrors(fieldErrors)
     }
   })
 
@@ -116,13 +113,10 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Clear previous errors
-    setErrors({})
-
     // Validate form
     const formErrors = validateForm()
     if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors)
+      setLocalErrors(formErrors)
       return
     }
 
@@ -140,8 +134,13 @@ const Login: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }))
 
     // Clear field error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }))
+    if (localErrors[field]) {
+      setLocalErrors(prev => ({ ...prev, [field]: undefined }))
+    }
+
+    // Clear auth error when user starts typing
+    if (authErrors.login) {
+      clearErrors()
     }
   }
 

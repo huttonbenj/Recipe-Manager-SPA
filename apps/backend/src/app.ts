@@ -10,10 +10,10 @@ import morgan from 'morgan'
 import compression from 'compression'
 import rateLimit from 'express-rate-limit'
 
-import { config } from '@/config'
-import { logger } from '@/utils/logger'
-import { errorHandler } from '@/middleware/errorHandler'
-import routes from '@/routes'
+import { config } from './config'
+import { logger } from './utils/logger'
+import { errorHandler } from './middleware/errorHandler'
+import routes from './routes'
 
 const app = express()
 
@@ -21,7 +21,21 @@ const app = express()
 app.set('trust proxy', 1)
 
 // Security middleware
-app.use(helmet())
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'img-src': [
+        "'self'", 
+        'data:', 
+        ...(config.server.nodeEnv === 'development' 
+          ? ['http://localhost:3001', 'http://localhost:5173']
+          : [`https://${config.server.backendHost}`]
+        )
+      ],
+    },
+  },
+}))
 
 // CORS configuration
 app.use(cors({
@@ -53,8 +67,23 @@ app.use(morgan(config.logging.format, {
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-// Static file serving for uploads
-app.use('/uploads', express.static(config.upload.uploadPath))
+// Static file serving for uploads with proper CORS configuration
+app.use('/uploads', cors({
+  origin: config.cors.allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'HEAD', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  // Remove problematic security headers for static assets
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}), (req, res, next) => {
+  // Remove problematic security headers for images
+  res.removeHeader('Cross-Origin-Embedder-Policy');
+  res.removeHeader('Cross-Origin-Resource-Policy');
+  res.removeHeader('Cross-Origin-Opener-Policy');
+  
+  next();
+}, express.static(config.upload.uploadPath))
 
 // Health check endpoint
 app.get('/health', (req, res) => {

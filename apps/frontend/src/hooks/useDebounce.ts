@@ -2,7 +2,7 @@
  * Debounce hook for delaying state updates
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 /**
  * Hook that debounces a value
@@ -34,30 +34,37 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number
 ): T {
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const callbackRef = useRef<T>(callback)
 
-  const debouncedCallback = ((...args: Parameters<T>) => {
-    // Clear existing timeout
-    if (timeoutId) {
-      clearTimeout(timeoutId)
-    }
+  // Keep callback reference current
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
 
-    // Set new timeout
-    const newTimeoutId = setTimeout(() => {
-      callback(...args)
-    }, delay)
+  const debouncedCallback = useCallback(
+    ((...args: Parameters<T>) => {
+      // Clear existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
 
-    setTimeoutId(newTimeoutId)
-  }) as T
+      // Set new timeout
+      timeoutRef.current = setTimeout(() => {
+        callbackRef.current(...args)
+      }, delay)
+    }) as T,
+    [delay]
+  )
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
       }
     }
-  }, [timeoutId])
+  }, [])
 
   return debouncedCallback
 }

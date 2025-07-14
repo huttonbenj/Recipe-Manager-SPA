@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useTheme } from '../../hooks/useTheme';
 import { ThemeProvider } from '../../context/ThemeContext';
 
@@ -89,7 +89,7 @@ describe('useTheme', () => {
         expect(result.current.theme.displayMode).toBe('system');
     });
 
-    it('persists theme preferences to localStorage', () => {
+    it('persists theme preferences to localStorage', async () => {
         const { result } = renderHook(() => useTheme(), { wrapper });
 
         act(() => {
@@ -97,14 +97,21 @@ describe('useTheme', () => {
             result.current.setDisplayMode('dark');
         });
 
-        expect(localStorage.getItem('color-theme')).toBe('purple');
-        expect(localStorage.getItem('display-mode')).toBe('dark');
+        // Wait for effects to flush
+        await waitFor(() => {
+            expect(result.current.theme.colorTheme).toBe('purple');
+            expect(result.current.theme.displayMode).toBe('dark');
+        });
+
+        // Check localStorage persistence
+        expect(localStorage.getItem('colorTheme')).toBe('purple');
+        expect(localStorage.getItem('theme')).toBe('dark');
     });
 
     it('loads theme preferences from localStorage', () => {
         // Set up localStorage before rendering
-        localStorage.setItem('color-theme', 'rose');
-        localStorage.setItem('display-mode', 'light');
+        localStorage.setItem('colorTheme', 'rose');
+        localStorage.setItem('theme', 'light');
 
         const { result } = renderHook(() => useTheme(), { wrapper });
 
@@ -114,8 +121,8 @@ describe('useTheme', () => {
 
     it('handles invalid localStorage values gracefully', () => {
         // Set invalid values in localStorage
-        localStorage.setItem('color-theme', 'invalid-theme');
-        localStorage.setItem('display-mode', 'invalid-mode');
+        localStorage.setItem('colorTheme', 'invalid-theme');
+        localStorage.setItem('theme', 'invalid-mode');
 
         const { result } = renderHook(() => useTheme(), { wrapper });
 

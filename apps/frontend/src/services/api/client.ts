@@ -4,7 +4,7 @@
 
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { API_BASE_URL, TOKEN_STORAGE_KEY, REFRESH_TOKEN_STORAGE_KEY } from '@/utils/constants'
-import type { ApiResponse, ApiError } from '@/types'
+import type { ApiResponse } from '@/types'
 
 // Create axios instance with default configuration
 export const apiClient = axios.create({
@@ -107,18 +107,30 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as any
 
     // Handle different types of errors
-    const apiError: ApiError = {
-      message: 'An unexpected error occurred',
-      status: error.response?.status,
-    }
+    let errorMessage = 'An unexpected error occurred'
+    let details: any = undefined
 
     if (error.response?.data) {
       const errorData = error.response.data
-      apiError.message = errorData.message || errorData.error || 'An error occurred'
-      apiError.details = errorData
+      errorMessage = errorData.message || errorData.error || 'An error occurred'
+      details = errorData
     } else if (error.request) {
-      apiError.message = 'Network error - please check your connection'
+      errorMessage = 'Network error - please check your connection'
     }
+
+    // Create an actual Error object instead of a plain object
+    const apiError = new Error(errorMessage) as any
+    apiError.status = error.response?.status
+    apiError.details = details
+
+    console.log('[API Client] Creating error:', {
+      message: errorMessage,
+      status: error.response?.status,
+      details: details,
+      errorType: typeof apiError,
+      errorMessage: apiError.message,
+      errorKeys: Object.keys(apiError)
+    })
 
     // Handle 401 - unauthorized (token expired)
     if (error.response?.status === 401 && !originalRequest._retry) {

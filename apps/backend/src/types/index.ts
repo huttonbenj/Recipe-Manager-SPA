@@ -21,22 +21,15 @@ export interface RequestWithUser extends Request {
   }
 }
 
-// API Response Types
-export interface ApiResponse<T = any> {
-  success: boolean
-  data?: T
-  error?: string
-  message: string
-}
+// Import shared types
+export type {
+  ApiResponse,
+  PaginationInfo as PaginationMeta,
+  UploadResponse
+} from '@recipe-manager/shared-types'
 
-export interface PaginationMeta {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-  hasNext: boolean
-  hasPrev: boolean
-}
+// Import for use in interfaces below
+import type { PaginationInfo as PaginationMeta } from '@recipe-manager/shared-types'
 
 export interface PaginatedResponse<T> {
   items: T[]
@@ -66,6 +59,13 @@ export interface RecipeWithInteractions extends RecipeWithAuthor {
   bookmarksCount?: number
 }
 
+// Import shared recipe types
+export type {
+  CreateRecipeData as CreateRecipeInput,
+  UpdateRecipeData as UpdateRecipeInput,
+  RecipeSearchParams as RecipeSearchQuery
+} from '@recipe-manager/shared-types'
+
 // Service Input Types
 export interface CreateUserInput {
   email: string
@@ -77,38 +77,6 @@ export interface UpdateUserInput {
   email?: string
   name?: string
   avatar?: string
-}
-
-export interface CreateRecipeInput {
-  title: string
-  description?: string
-  ingredients: string[]
-  instructions: string
-  imageUrl?: string
-  cookTime?: number
-  prepTime?: number
-  servings?: number
-  difficulty?: Difficulty
-  tags: string[]
-  cuisine?: string
-  authorId?: string
-}
-
-export interface UpdateRecipeInput extends Partial<CreateRecipeInput> {
-  id: string
-}
-
-export interface RecipeSearchQuery {
-  search?: string
-  tags?: string[]
-  cuisine?: string
-  difficulty?: Difficulty
-  cookTimeMax?: number
-  prepTimeMax?: number
-  page?: number
-  limit?: number
-  sortBy?: 'title' | 'createdAt' | 'cookTime' | 'prepTime' | 'difficulty' | 'relevance'
-  sortOrder?: 'asc' | 'desc'
 }
 
 // Upload Types

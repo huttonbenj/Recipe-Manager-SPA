@@ -7,7 +7,7 @@ import { createContext, useState, useEffect, ReactNode, useCallback, useRef } fr
 import { authApi } from '@/services'
 import { useLocalStorage } from '@/hooks'
 import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY, REFRESH_TOKEN_STORAGE_KEY } from '@/utils/constants'
-import type { User, LoginCredentials, RegisterData, AuthContextType } from '@/types'
+import type { User, LoginCredentials, RegisterData, AuthContextType, AuthErrors } from '@/types'
 
 // Create context with default value
 export const AuthContext = createContext<AuthContextType | null>(null)
@@ -25,10 +25,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [token, setToken] = useLocalStorage<string | null>(TOKEN_STORAGE_KEY, null)
   const [refreshTokenStored, setRefreshTokenStored] = useLocalStorage<string | null>(REFRESH_TOKEN_STORAGE_KEY, null)
   const [isLoading, setIsLoading] = useState(true)
+  const [errors, setErrors] = useState<AuthErrors>({})
   const initializationRef = useRef(false)
 
   // Computed values
   const isAuthenticated = !!user && !!token
+
+  /**
+   * Clear all auth errors
+   */
+  const clearErrors = useCallback(() => {
+    setErrors({})
+  }, [])
 
   /**
    * Clear all auth data
@@ -126,6 +134,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (credentials: LoginCredentials): Promise<void> => {
     try {
       setIsLoading(true)
+      // Clear any previous errors
+      setErrors(prev => ({ ...prev, login: undefined }))
       console.log('[AuthContext] Attempting login...')
 
       const response = await authApi.login(credentials)
@@ -141,6 +151,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('[AuthContext] Login failed:', error)
       clearAuthData()
+
+      // Set error message
+      const errorMessage = error instanceof Error ? error.message : 'Login failed'
+      setErrors(prev => ({ ...prev, login: errorMessage }))
+
       throw error
     } finally {
       setIsLoading(false)
@@ -153,6 +168,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const register = async (userData: RegisterData): Promise<void> => {
     try {
       setIsLoading(true)
+      // Clear any previous errors
+      setErrors(prev => ({ ...prev, register: undefined }))
       console.log('[AuthContext] Attempting registration...')
 
       const response = await authApi.register(userData)
@@ -168,6 +185,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('[AuthContext] Registration failed:', error)
       clearAuthData()
+
+      // Set error message
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed'
+      setErrors(prev => ({ ...prev, register: errorMessage }))
+
       throw error
     } finally {
       setIsLoading(false)
@@ -175,24 +197,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   /**
-   * Logout user and clear auth state
+   * Logout user
    */
   const logout = async (): Promise<void> => {
     try {
-      console.log('[AuthContext] Logging out...')
       setIsLoading(true)
+      console.log('[AuthContext] Logging out...')
 
-      // Call logout endpoint to invalidate server-side session
-      if (token) {
-        await authApi.logout()
-      }
-    } catch (error) {
-      // Continue with logout even if server call fails
-      console.warn('[AuthContext] Logout API call failed:', error)
-    } finally {
-      // Always clear local auth state
-      console.log('[AuthContext] Clearing auth data')
+      await authApi.logout()
+
+      console.log('[AuthContext] Logout successful')
       clearAuthData()
+      clearErrors()
+    } catch (error) {
+      console.error('[AuthContext] Logout failed:', error)
+      // Clear data even if logout fails
+      clearAuthData()
+      clearErrors()
+    } finally {
       setIsLoading(false)
     }
   }
@@ -280,10 +302,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     token,
     isAuthenticated,
     isLoading: isLoading || !initializationRef.current,
+    errors,
     login,
     register,
     logout,
     refreshToken,
+    clearErrors,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -40,10 +40,18 @@ export class UploadController {
       // Process the image
       const processedImage = await uploadService.processImage(req.file, userId)
 
+      // Return response in the format expected by frontend
       res.status(200).json({
         success: true,
         data: {
-          image: processedImage
+          url: processedImage.webpUrl, // Use the optimized webp version
+          filename: processedImage.webpUrl.split('/').pop() || '',
+          size: processedImage.metadata.size,
+          mimetype: 'image/webp',
+          // Also include other versions for potential future use
+          originalUrl: processedImage.originalUrl,
+          thumbnailUrl: processedImage.thumbnailUrl,
+          webpUrl: processedImage.webpUrl
         },
         message: 'Image uploaded and processed successfully'
       })
@@ -80,10 +88,11 @@ export class UploadController {
         }
       }
 
+      // Generic error
       res.status(500).json({
         success: false,
         error: 'Internal server error',
-        message: 'Failed to upload image'
+        message: 'Failed to process image upload'
       })
     }
   }

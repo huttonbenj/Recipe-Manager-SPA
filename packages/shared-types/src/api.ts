@@ -25,3 +25,10 @@ export interface ApiError {
   code?: string
   details?: Record<string, any>
 }
+
+export interface UploadResponse {
+  url: string
+  filename: string
+  size: number
+  mimetype: string
+}

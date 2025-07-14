@@ -11,7 +11,7 @@ export default defineConfig({
     setupFiles: ['./src/__tests__/setup.ts'],
     css: true,
     coverage: {
-      provider: 'v8',
+      provider: 'c8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
@@ -19,8 +19,14 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         'dist/',
+        'build/',
+        'coverage/',
+        'src/main.tsx',
+        'src/vite-env.d.ts',
       ],
     },
+    include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
+    exclude: ['node_modules', 'dist', 'build'],
   },
   resolve: {
     alias: {

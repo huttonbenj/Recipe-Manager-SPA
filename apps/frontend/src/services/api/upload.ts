@@ -12,13 +12,15 @@ export const uploadApi = {
   async uploadImage(file: File): Promise<UploadResponse> {
     const formData = createFormData({ image: file })
     
-    const response = await apiClient.post<UploadResponse>('/upload/image', formData, {
+    const response = await apiClient.post('/upload/image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
     
-    return response.data
+    // The API returns { success: true, data: { url, filename, size, mimetype, ... } }
+    // We need to extract the data from the response
+    return response.data.data
   },
 
   /**
@@ -30,13 +32,14 @@ export const uploadApi = {
       formData.append(`images`, file)
     })
     
-    const response = await apiClient.post<UploadResponse[]>('/upload/images', formData, {
+    const response = await apiClient.post('/upload/images', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
     
-    return response.data
+    // The API returns { success: true, data: [...] }
+    return response.data.data
   },
 
   /**

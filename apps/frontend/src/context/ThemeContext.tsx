@@ -481,24 +481,32 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     // Initialize theme state from localStorage or default
     const [theme, setTheme] = useState<ThemeConfig>(() => {
         const savedTheme = localStorage.getItem('theme');
-        const savedColorTheme = localStorage.getItem('colorTheme') as ColorTheme || 'default';
+        const savedColorTheme = localStorage.getItem('colorTheme') as ColorTheme;
+
+        // Validate saved colorTheme
+        const validColorTheme = savedColorTheme && COLOR_THEMES[savedColorTheme] ? savedColorTheme : 'default';
+
+        // Validate saved displayMode
+        const validDisplayModes: DisplayMode[] = ['light', 'dark', 'system'];
+        const validDisplayMode = savedTheme && validDisplayModes.includes(savedTheme as DisplayMode) ? savedTheme as DisplayMode : 'system';
 
         // Check for saved theme or use system preference
         if (savedTheme) {
             return {
-                displayMode: savedTheme as DisplayMode,
-                colorTheme: savedColorTheme,
-                isDark: savedTheme === 'dark' ||
-                    (savedTheme === 'system' &&
+                displayMode: validDisplayMode,
+                colorTheme: validColorTheme,
+                isDark: validDisplayMode === 'dark' ||
+                    (validDisplayMode === 'system' &&
                         window.matchMedia('(prefers-color-scheme: dark)').matches)
             };
         }
 
-        // No saved preference: default to dark mode for first-time visitors
+        // No saved preference: default to system mode for first-time visitors
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         return {
-            displayMode: 'dark',
-            colorTheme: savedColorTheme,
-            isDark: true
+            displayMode: 'system',
+            colorTheme: validColorTheme,
+            isDark: systemPrefersDark
         };
     });
 
@@ -542,7 +550,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         root.classList.add('theme-switching');
 
         // Apply the color theme variables
-        Object.entries(COLOR_THEMES[theme.colorTheme]).forEach(([property, value]) => {
+        const colorTheme = COLOR_THEMES[theme.colorTheme] || COLOR_THEMES['default'];
+        Object.entries(colorTheme).forEach(([property, value]) => {
             root.style.setProperty(property, value);
         });
 
@@ -567,7 +576,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
             (displayMode === 'system' &&
                 window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-        setTheme({ ...theme, displayMode, isDark });
+        setTheme(prev => ({ ...prev, displayMode, isDark }));
     };
 
     /**

@@ -38,7 +38,7 @@ describe('ThemeToggle', () => {
         expect(text).toBeInTheDocument();
     });
 
-    it('displays correct icon for light mode', () => {
+    it('displays correct icon for system mode', () => {
         render(
             <ThemeWrapper>
                 <ThemeToggle />
@@ -46,7 +46,7 @@ describe('ThemeToggle', () => {
         );
 
         const button = screen.getByRole('button');
-        expect(button).toHaveAttribute('title', expect.stringContaining('dark mode'));
+        expect(button).toHaveAttribute('title', expect.stringContaining('light mode'));
     });
 
     it('toggles theme mode when clicked', () => {
@@ -61,10 +61,10 @@ describe('ThemeToggle', () => {
         // Initial state should be system (default)
         expect(button).toHaveAttribute('title', expect.stringContaining('light mode'));
 
-        // Click to toggle
+        // Click to toggle (system -> light)
         fireEvent.click(button);
 
-        // Should now show light mode tooltip
+        // Should now show dark mode tooltip (because we're in light mode)
         expect(button).toHaveAttribute('title', expect.stringContaining('dark mode'));
     });
 

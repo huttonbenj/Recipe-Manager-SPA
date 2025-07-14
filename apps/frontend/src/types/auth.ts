@@ -2,30 +2,24 @@
  * Authentication-related type definitions
  */
 
-export interface User {
-  id: string
-  email: string
-  name?: string
-  avatar?: string
-  createdAt: string
-  updatedAt: string
-}
+// Import shared types
+export type {
+  User,
+  LoginCredentials,
+  RegisterData,
+  AuthResponse
+} from '@recipe-manager/shared-types'
 
-export interface LoginCredentials {
-  email: string
-  password: string
-}
+// Import for use in interfaces below
+import type {
+  User,
+  LoginCredentials,
+  RegisterData
+} from '@recipe-manager/shared-types'
 
-export interface RegisterData {
-  email: string
-  password: string
-  name?: string
-}
-
-export interface AuthResponse {
-  user?: User
-  token: string
-  refreshToken?: string
+export interface AuthErrors {
+  login?: string
+  register?: string
 }
 
 export interface AuthContextType {
@@ -33,8 +27,10 @@ export interface AuthContextType {
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
+  errors: AuthErrors
   login: (credentials: LoginCredentials) => Promise<void>
   register: (data: RegisterData) => Promise<void>
   logout: () => void
   refreshToken: () => Promise<void>
+  clearErrors: () => void
 }

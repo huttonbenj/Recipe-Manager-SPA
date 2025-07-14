@@ -10,20 +10,29 @@ export const authApi = {
    * Login user with email and password
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<{ 
-      success: boolean; 
-      data: { 
-        user: User; 
-        accessToken: string; 
-        refreshToken?: string; 
-      } 
-    }>('/auth/login', credentials)
+    console.log('🔵 Auth API login called with:', credentials)
     
-    // Map backend response to frontend interface
-    return {
-      user: response.data.data.user,
-      token: response.data.data.accessToken,
-      refreshToken: response.data.data.refreshToken
+    try {
+      const response = await apiClient.post<{ 
+        success: boolean; 
+        data: { 
+          user: User; 
+          accessToken: string; 
+          refreshToken?: string; 
+        } 
+      }>('/auth/login', credentials)
+      
+      console.log('✅ Auth API login successful:', response.data)
+      
+      // Map backend response to frontend interface
+      return {
+        user: response.data.data.user,
+        token: response.data.data.accessToken,
+        refreshToken: response.data.data.refreshToken
+      }
+    } catch (error) {
+      console.log('❌ Auth API login error:', error)
+      throw error
     }
   },
 

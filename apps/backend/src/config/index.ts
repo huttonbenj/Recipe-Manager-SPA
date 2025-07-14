@@ -19,6 +19,7 @@ const envSchema = z.object({
   // Server
   PORT: z.string().transform(Number).default(3001),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  BACKEND_HOST: z.string().default('localhost'),
   
   // CORS
   FRONTEND_URL: z.string().url(),
@@ -58,6 +59,7 @@ export const config = {
   server: {
     port: env.PORT,
     nodeEnv: env.NODE_ENV,
+    backendHost: env.BACKEND_HOST,
   },
   cors: {
     frontendUrl: env.FRONTEND_URL,

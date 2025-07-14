@@ -2,36 +2,16 @@
  * API-related type definitions
  */
 
-export interface ApiResponse<T = any> {
-  success: boolean
-  data?: T
-  error?: string
-  message?: string
-  pagination?: PaginationInfo
-}
+// Import shared types
+export type {
+  ApiResponse,
+  PaginationInfo,
+  ApiError,
+  UploadResponse
+} from '@recipe-manager/shared-types'
 
-export interface PaginationInfo {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-  hasNext: boolean
-  hasPrev: boolean
-}
-
-export interface ApiError {
-  message: string
-  status?: number
-  code?: string
-  details?: Record<string, any>
-}
-
-export interface UploadResponse {
-  url: string
-  filename: string
-  size: number
-  mimetype: string
-}
+// Import for use in interfaces below
+import type { ApiError } from '@recipe-manager/shared-types'
 
 // Generic hook return types
 export interface QueryResult<T> {

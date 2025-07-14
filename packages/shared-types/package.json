@@ -2,11 +2,22 @@
   "name": "@recipe-manager/shared-types",
   "version": "1.0.0",
   "description": "Shared TypeScript types for Recipe Manager",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "lint": "echo 'No linting needed for types-only package'",
+    "lint:fix": "echo 'No linting needed for types-only package'",
+    "test": "echo 'No tests for types-only package'",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "typescript": "^5.0.2"
