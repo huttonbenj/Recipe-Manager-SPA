@@ -94,7 +94,7 @@ describe('Auth API Client', () => {
 
   describe('logout', () => {
     it('makes correct API call for logout', async () => {
-      ;(apiClient.delete as any).mockResolvedValue({ data: {} })
+      (apiClient.delete as any).mockResolvedValue({ data: {} })
 
       await authApi.logout()
 

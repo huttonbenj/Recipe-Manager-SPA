@@ -66,7 +66,7 @@ const Login: React.FC = () => {
     },
     onError: (error: any) => {
       // Handle validation errors for form fields
-      let fieldErrors: FormErrors = {}
+      const fieldErrors: FormErrors = {}
 
       // Handle validation errors
       if (error?.details?.issues) {

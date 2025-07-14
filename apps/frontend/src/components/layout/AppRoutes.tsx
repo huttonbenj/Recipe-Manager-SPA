@@ -3,30 +3,36 @@
  * Defines all routes and navigation structure
  */
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 
 // Layout components
 import Layout from '@/components/layout/Layout'
 
-// Page components
-import Home from '@/pages/Home'
-import Login from '@/pages/Login'
-import Register from '@/pages/Register'
-import Recipes from '@/pages/Recipes'
-import RecipeDetail from '@/pages/RecipeDetail'
-import CreateRecipe from '@/pages/CreateRecipe'
-import EditRecipe from '@/pages/EditRecipe'
-import Favorites from '@/pages/Favorites'
-import Bookmarks from '@/pages/Bookmarks'
-import NotFound from '@/pages/NotFound'
-import Profile from '@/pages/Profile'
+// Lazy-loaded page components for code splitting
+const Login = React.lazy(() => import('@/pages/Login'))
+const Register = React.lazy(() => import('@/pages/Register'))
+const Recipes = React.lazy(() => import('@/pages/Recipes'))
+const RecipeDetail = React.lazy(() => import('@/pages/RecipeDetail'))
+const CreateRecipe = React.lazy(() => import('@/pages/CreateRecipe'))
+const EditRecipe = React.lazy(() => import('@/pages/EditRecipe'))
+const Favorites = React.lazy(() => import('@/pages/Favorites'))
+const Bookmarks = React.lazy(() => import('@/pages/Bookmarks'))
+const NotFound = React.lazy(() => import('@/pages/NotFound'))
+const Profile = React.lazy(() => import('@/pages/Profile'))
 
 // UI Components
 import { Loading } from '@/components/ui'
 
 // Hooks
 import { useAuth } from '@/hooks/useAuth'
+
+/**
+ * Loading fallback component for lazy-loaded routes
+ */
+const RouteLoadingFallback: React.FC = () => (
+    <Loading variant="spinner" size="lg" text="Loading page..." fullScreen />
+)
 
 /**
  * Protected Route wrapper component
@@ -53,8 +59,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 }
 
 /**
- * Public Route wrapper component  
- * Redirects to home if user is already authenticated
+ * Public Route wrapper component
+ * Redirects to recipes if user is already authenticated
  */
 interface PublicRouteProps {
     children: React.ReactNode
@@ -68,66 +74,63 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
         return <Loading variant="spinner" size="lg" text="Loading..." fullScreen />
     }
 
-    // Redirect to home if already authenticated
+    // Redirect to recipes if already authenticated
     if (isAuthenticated && user) {
-        return <Navigate to="/" replace />
+        return <Navigate to="/recipes" replace />
     }
 
     return <>{children}</>
 }
 
 /**
- * Main application routes component
- * Defines all application routes with authentication guards
+ * Main application routes
  */
-export const AppRoutes: React.FC = () => {
-    const { isAuthenticated } = useAuth();
+const AppRoutes: React.FC = () => {
     return (
-        <Routes>
-            {/* Public routes */}
-            <Route
-                path="/login"
-                element={
-                    <PublicRoute>
-                        <Login />
-                    </PublicRoute>
-                }
-            />
-            <Route
-                path="/register"
-                element={
-                    <PublicRoute>
-                        <Register />
-                    </PublicRoute>
-                }
-            />
+        <Suspense fallback={<RouteLoadingFallback />}>
+            <Routes>
+                {/* Public routes */}
+                <Route
+                    path="/login"
+                    element={
+                        <PublicRoute>
+                            <Login />
+                        </PublicRoute>
+                    }
+                />
+                <Route
+                    path="/register"
+                    element={
+                        <PublicRoute>
+                            <Register />
+                        </PublicRoute>
+                    }
+                />
 
-            {/* Public home page with layout */}
-            <Route path="/" element={<Layout />}>
-                <Route index element={<Home key={isAuthenticated ? 'auth' : 'guest'} />} />
-            </Route>
+                {/* Protected routes with layout */}
+                <Route
+                    path="/"
+                    element={
+                        <ProtectedRoute>
+                            <Layout />
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route index element={<Navigate to="/recipes" replace />} />
+                    <Route path="recipes" element={<Recipes />} />
+                    <Route path="recipes/:id" element={<RecipeDetail />} />
+                    <Route path="recipes/create" element={<CreateRecipe />} />
+                    <Route path="recipes/:id/edit" element={<EditRecipe />} />
+                    <Route path="favorites" element={<Favorites />} />
+                    <Route path="bookmarks" element={<Bookmarks />} />
+                    <Route path="profile" element={<Profile />} />
+                </Route>
 
-            {/* Protected routes with layout */}
-            <Route
-                path="/"
-                element={
-                    <ProtectedRoute>
-                        <Layout />
-                    </ProtectedRoute>
-                }
-            >
-                {/* Recipe routes */}
-                <Route path="recipes" element={<Recipes />} />
-                <Route path="recipes/:id" element={<RecipeDetail />} />
-                <Route path="recipes/create" element={<CreateRecipe />} />
-                <Route path="recipes/:id/edit" element={<EditRecipe />} />
-                <Route path="favorites" element={<Favorites />} />
-                <Route path="bookmarks" element={<Bookmarks />} />
-                <Route path="profile" element={<Profile />} />
-            </Route>
+                {/* 404 Not Found */}
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+        </Suspense>
+    )
+}
 
-            {/* 404 Not Found */}
-            <Route path="*" element={<NotFound />} />
-        </Routes>
-    );
-}; 
+export default AppRoutes 

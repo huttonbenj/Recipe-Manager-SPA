@@ -68,7 +68,7 @@ const Register: React.FC = () => {
       navigate('/')
     },
     onError: (error: any) => {
-      let fieldErrors: FormErrors = {}
+      const fieldErrors: FormErrors = {}
 
       // Handle validation errors
       if (error?.details?.issues) {

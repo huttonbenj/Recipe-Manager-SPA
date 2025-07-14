@@ -2,7 +2,7 @@
  * Main Application Component
  * Routes are already wrapped in providers via main.tsx
  */
-import { AppRoutes } from '@/components/layout/AppRoutes'
+import AppRoutes from '@/components/layout/AppRoutes'
 import ErrorBoundary from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import ToastContainer from '@/components/ui/ToastContainer'
 
