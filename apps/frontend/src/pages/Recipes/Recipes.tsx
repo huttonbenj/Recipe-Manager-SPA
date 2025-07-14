@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import {
   Search, Clock, Heart, ChefHat, TrendingUp,
   SlidersHorizontal, X, Plus, Sparkles, Star,
@@ -22,8 +22,8 @@ import { recipesApi } from '@/services/api/recipes'
 
 // Hooks
 import { useAuth } from '@/hooks/useAuth'
-import { useToast } from '@/context/ToastContext'
 import { useDebounce } from '@/hooks/useDebounce'
+import { recipeKeys, useDeleteRecipe } from '@/hooks/useRecipes'
 
 // Types
 import type { Recipe, RecipeSearchParams } from '@/types'
@@ -88,9 +88,9 @@ const quickFilters = [
   { key: 'trending', label: 'Trending', icon: TrendingUp, color: 'from-pink-500 to-red-500' },
   { key: 'quick', label: 'Quick & Easy', icon: Zap, color: 'from-yellow-500 to-orange-500' },
   { key: 'healthy', label: 'Healthy', icon: Heart, color: 'from-green-500 to-emerald-500' },
-  { key: 'comfort', label: 'Comfort Food', icon: Utensils, color: 'from-orange-500 to-red-500' },
   { key: 'vegetarian', label: 'Vegetarian', icon: '🥬', color: 'from-green-400 to-green-600' },
-  { key: 'desserts', label: 'Desserts', icon: '🍰', color: 'from-purple-500 to-pink-500' }
+  { key: 'desserts', label: 'Desserts', icon: '🍰', color: 'from-purple-500 to-pink-500' },
+  { key: 'comfort', label: 'Comfort Food', icon: Utensils, color: 'from-orange-500 to-red-500' }
 ]
 
 const Recipes: React.FC = () => {
@@ -99,9 +99,7 @@ const Recipes: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false)
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest')
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const { user, isAuthenticated } = useAuth()
-  const { success, error: showError } = useToast()
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
@@ -112,27 +110,37 @@ const Recipes: React.FC = () => {
     cookTime: searchParams.get('cookTime') || '',
     category: searchParams.get('category') || '',
     cuisine: searchParams.get('cuisine') || '',
+    myRecipes: searchParams.get('myRecipes') === 'true',
     quickFilters: searchParams.get('filter') ? searchParams.get('filter')!.split(',').filter(Boolean) : [] as string[]
   })
 
   const currentPage = parseInt(searchParams.get('page') || '1')
   const pageSize = 12
 
-  // Update URL when filters change
+  // Update URL when filters/search/sort change
   useEffect(() => {
     const params = new URLSearchParams()
-
     if (debouncedSearch) params.set('search', debouncedSearch)
     if (filters.difficulty) params.set('difficulty', filters.difficulty)
     if (filters.cookTime) params.set('cookTime', filters.cookTime)
     if (filters.category) params.set('category', filters.category)
     if (filters.cuisine) params.set('cuisine', filters.cuisine)
-    if (filters.quickFilters.length > 0) params.set('filter', filters.quickFilters.join(','))
-    if (sortBy !== 'newest') params.set('sort', sortBy)
-    if (currentPage > 1) params.set('page', currentPage.toString())
-
+    if (filters.myRecipes) params.set('myRecipes', '1')
+    params.set('page', '1') // Always reset to page 1 when filters/search/sort change
+    params.set('limit', pageSize.toString())
+    params.set('sortBy', sortBy)
+    params.set('sortOrder', sortBy === 'newest' ? 'desc' : 'asc') // Simplified sort order mapping
     setSearchParams(params)
-  }, [debouncedSearch, filters, sortBy, currentPage, setSearchParams])
+  }, [debouncedSearch, filters, pageSize, sortBy])
+
+  // Separate useEffect for page changes (when user clicks pagination)
+  useEffect(() => {
+    if (currentPage !== 1) {
+      const params = new URLSearchParams(searchParams)
+      params.set('page', currentPage.toString())
+      setSearchParams(params)
+    }
+  }, [currentPage])
 
   /**
    * Build search parameters for API
@@ -161,6 +169,16 @@ const Recipes: React.FC = () => {
       params.cuisine = filters.cuisine
     }
 
+    // Handle category filter as tags
+    if (filters.category) {
+      params.tags = filters.category
+    }
+
+    // Handle my recipes filter
+    if (filters.myRecipes && user?.id) {
+      params.authorId = user.id
+    }
+
     // Handle sorting
     switch (sortBy) {
       case 'newest':
@@ -184,64 +202,103 @@ const Recipes: React.FC = () => {
         params.sortOrder = 'desc'
     }
 
-    // Handle quick filters
+    // Handle quick filters with improved logic
     if (filters.quickFilters.length > 0) {
-      // Currently, apply the first quick filter that has a mapping
+      const quickFilterTags: string[] = []
+
       filters.quickFilters.forEach(qf => {
         switch (qf) {
           case 'quick':
-            // quick => cookTimeMax 30
-            params.cookTimeMax = params.cookTimeMax ?? 30
+            // Quick recipes: cookTimeMax 30 minutes
+            params.cookTimeMax = Math.min(params.cookTimeMax || 30, 30)
             break
           case 'trending':
+            // Trending: sort by newest
             params.sortBy = 'createdAt'
             params.sortOrder = 'desc'
             break
           case 'healthy':
-            // placeholder for tags filtering
+            // Healthy recipes: add healthy tag
+            quickFilterTags.push('healthy')
             break
           case 'vegetarian':
-            // placeholder
+            // Vegetarian recipes: add vegetarian tag
+            quickFilterTags.push('vegetarian')
+            break
+          case 'desserts':
+            // Dessert recipes: add dessert tag
+            quickFilterTags.push('dessert')
+            break
+          case 'comfort':
+            // Comfort food: add comfort-food tag
+            quickFilterTags.push('comfort-food')
             break
         }
       })
+
+      // Combine quick filter tags with category filter
+      if (quickFilterTags.length > 0) {
+        const existingTags = params.tags ? params.tags.split(',') : []
+        const combinedTags = [...new Set([...existingTags, ...quickFilterTags])]
+        params.tags = combinedTags.join(',')
+      }
     }
 
     return params
   }
 
   // Fetch recipes data
+  const searchParamsForApi = buildSearchParams()
+  console.log('[PAGE] Recipes: filter, search, pagination state:', searchParamsForApi)
   const {
     data: recipesData,
     isLoading,
     isError
   } = useQuery({
-    queryKey: ['recipes', debouncedSearch, filters, currentPage, sortBy],
-    queryFn: () => recipesApi.getRecipes(buildSearchParams())
+    queryKey: recipeKeys.list(searchParamsForApi),
+    queryFn: () => recipesApi.getRecipes(searchParamsForApi),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: true, // Ensure we refetch when component mounts
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+  })
+
+  // Computed values
+  const recipes: Recipe[] = recipesData?.recipes || []
+  const totalCount = recipesData?.pagination?.total || 0
+
+  console.log('[RENDER] Recipes component data:', {
+    searchParams: searchParamsForApi,
+    recipesCount: recipes.length,
+    recipeIds: recipes.map(r => ({ id: r.id, title: r.title })),
+    totalCount,
+    isLoading,
+    isError
   })
 
   /**
    * Delete recipe mutation
    */
-  const deleteMutation = useMutation({
-    mutationFn: (recipeId: string) => recipesApi.deleteRecipe(recipeId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recipes'] })
-      success('Recipe deleted successfully')
-    },
-    onError: () => {
-      showError('Failed to delete recipe. Please try again.')
-    }
-  })
+  const deleteMutation = useDeleteRecipe()
 
   /**
    * Handle filter changes
    */
   const handleFilterChange = (filterType: string, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: prev[filterType as keyof typeof prev] === value ? '' : value
-    }))
+    setFilters(prev => {
+      if (filterType === 'myRecipes') {
+        // Handle boolean filter
+        return {
+          ...prev,
+          myRecipes: value === 'true'
+        }
+      }
+
+      // Handle other filters
+      return {
+        ...prev,
+        [filterType]: prev[filterType as keyof typeof prev] === value ? '' : value
+      }
+    })
   }
 
   /**
@@ -267,6 +324,7 @@ const Recipes: React.FC = () => {
       cookTime: '',
       category: '',
       cuisine: '',
+      myRecipes: false,
       quickFilters: []
     })
     setSortBy('newest')
@@ -299,9 +357,7 @@ const Recipes: React.FC = () => {
     }
   }
 
-  // Computed values
-  const recipes: Recipe[] = recipesData?.recipes || []
-  const totalCount = recipesData?.pagination?.total || 0
+  // Computed values - moved to after useQuery
   const hasActiveFilters = debouncedSearch || Object.values(filters).some(val => Array.isArray(val) ? val.length > 0 : Boolean(val)) || sortBy !== 'newest'
   const activeFilterCount = (
     (debouncedSearch ? 1 : 0) +
@@ -309,8 +365,16 @@ const Recipes: React.FC = () => {
     (filters.cookTime ? 1 : 0) +
     (filters.category ? 1 : 0) +
     (filters.cuisine ? 1 : 0) +
+    (filters.myRecipes ? 1 : 0) +
     filters.quickFilters.length
   )
+
+  // After delete, if current page is empty and not page 1, go to previous page
+  useEffect(() => {
+    if (!isLoading && recipes.length === 0 && currentPage > 1) {
+      handlePageChange(currentPage - 1)
+    }
+  }, [recipes, isLoading, currentPage])
 
   return (
     <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900">
@@ -430,31 +494,45 @@ const Recipes: React.FC = () => {
 
           {/* Controls Row */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-3">
               <Button
-                variant="outline"
+                variant={showFilters ? 'primary' : 'outline'}
+                size="sm"
                 onClick={() => setShowFilters(!showFilters)}
+                className="shrink-0 transition-all duration-200"
                 leftIcon={<SlidersHorizontal className="h-4 w-4" />}
-                className="relative hover:scale-[1.02] transition-all duration-200"
               >
-                Advanced Filters
+                {showFilters ? 'Hide' : 'Show'} Advanced Filters
                 {activeFilterCount > 0 && (
-                  <Badge
-                    variant="primary"
-                    size="sm"
-                    className="absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center animate-pulse"
-                  >
+                  <Badge variant="primary" size="sm" className="ml-2">
                     {activeFilterCount}
                   </Badge>
                 )}
               </Button>
 
-              {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                  <X className="h-4 w-4 mr-1" />
-                  Clear All
+              {/* My Recipes Toggle */}
+              {isAuthenticated && (
+                <Button
+                  variant={filters.myRecipes ? 'primary' : 'outline'}
+                  size="sm"
+                  onClick={() => handleFilterChange('myRecipes', String(!filters.myRecipes))}
+                  className="shrink-0 transition-all duration-200"
+                  leftIcon={<Heart className="h-4 w-4" />}
+                >
+                  My Recipes
                 </Button>
               )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearFilters}
+                disabled={!hasActiveFilters}
+                className="shrink-0 transition-all duration-200"
+                leftIcon={<X className="h-4 w-4" />}
+              >
+                Clear All
+              </Button>
             </div>
 
             <div className="flex items-center gap-3">
@@ -611,6 +689,29 @@ const Recipes: React.FC = () => {
                   ))}
                 </div>
               </div>
+
+              {/* My Recipes Filter */}
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-3">
+                  <Heart className="h-4 w-4 inline mr-2" />
+                  My Recipes
+                </label>
+                <div className="space-y-2">
+                  <Button
+                    variant={filters.myRecipes ? 'primary' : 'outline'}
+                    size="sm"
+                    onClick={() => handleFilterChange('myRecipes', String(!filters.myRecipes))}
+                    className={`w-full justify-start transition-all duration-200 ${filters.myRecipes
+                      ? 'scale-[1.02] shadow-lg'
+                      : 'hover:scale-[1.01]'
+                      }`}
+                  >
+                    <Badge variant="success" size="sm" className="mr-2">
+                      {filters.myRecipes ? 'Only My Recipes' : 'All Recipes'}
+                    </Badge>
+                  </Button>
+                </div>
+              </div>
             </div>
           </Card>
         )}
@@ -670,26 +771,29 @@ const Recipes: React.FC = () => {
 
         {/* Recipe List */}
         {!isLoading && !isError && (
-          <RecipeList
-            recipes={recipes}
-            loading={isLoading}
-            error={isError ? 'Failed to load recipes' : null}
-            viewMode={viewMode}
-            pagination={recipesData?.pagination ? {
-              page: currentPage,
-              limit: pageSize,
-              total: recipesData.pagination.total,
-              totalPages: recipesData.pagination.totalPages,
-              hasNext: currentPage < recipesData.pagination.totalPages,
-              hasPrev: currentPage > 1
-            } : undefined}
-            onPageChange={handlePageChange}
-            onEdit={handleRecipeEdit}
-            onDelete={handleRecipeDelete}
-            currentUserId={user?.id}
-            emptyMessage={hasActiveFilters ? "No recipes match your filters" : "No recipes found"}
-            emptyDescription={hasActiveFilters ? "Try adjusting your search or filters to find more recipes." : "Be the first to share a delicious recipe with our community!"}
-          />
+          <>
+            {console.log('[RENDER] Recipes list data:', recipes)}
+            <RecipeList
+              recipes={recipes}
+              loading={isLoading}
+              error={isError ? 'Failed to load recipes' : null}
+              viewMode={viewMode}
+              pagination={recipesData?.pagination ? {
+                page: currentPage,
+                limit: pageSize,
+                total: recipesData.pagination.total,
+                totalPages: recipesData.pagination.totalPages,
+                hasNext: currentPage < recipesData.pagination.totalPages,
+                hasPrev: currentPage > 1
+              } : undefined}
+              onPageChange={handlePageChange}
+              onEdit={handleRecipeEdit}
+              onDelete={handleRecipeDelete}
+              currentUserId={user?.id}
+              emptyMessage={hasActiveFilters ? "No recipes match your filters" : "No recipes found"}
+              emptyDescription={hasActiveFilters ? "Try adjusting your search or filters to find more recipes." : "Be the first to share a delicious recipe with our community!"}
+            />
+          </>
         )}
       </div>
     </div>

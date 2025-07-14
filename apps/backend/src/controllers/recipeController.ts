@@ -53,6 +53,7 @@ const searchQuerySchema = Joi.object({
   difficulty: Joi.string().valid('EASY', 'MEDIUM', 'HARD').optional(),
   cookTimeMax: Joi.number().min(0).optional(),
   prepTimeMax: Joi.number().min(0).optional(),
+  authorId: Joi.string().optional(), // Filter by author ID
   page: Joi.number().min(1).optional(),
   limit: Joi.number().min(1).max(100).optional(),
   sortBy: Joi.string().valid('title', 'createdAt', 'cookTime', 'prepTime', 'difficulty', 'relevance').optional(),
@@ -136,6 +137,7 @@ export class RecipeController {
         difficulty,
         cookTimeMax,
         prepTimeMax,
+        authorId,
         page = 1,
         limit = 20,
         sortBy = 'createdAt',
@@ -152,7 +154,8 @@ export class RecipeController {
         cuisine,
         difficulty: difficulty as Difficulty,
         cookTimeMax: cookTimeMax ? Number(cookTimeMax) : undefined,
-        prepTimeMax: prepTimeMax ? Number(prepTimeMax) : undefined
+        prepTimeMax: prepTimeMax ? Number(prepTimeMax) : undefined,
+        authorId: authorId || undefined // Add authorId to filters
       }
 
       // Build pagination
@@ -166,6 +169,8 @@ export class RecipeController {
       // Search recipes
       const result = await recipeService.searchRecipes(filters, pagination)
 
+      // Log the recipes returned for debugging
+      console.log('[DEBUG] getRecipes response:', result.recipes.map(r => ({ id: r.id, title: r.title })))
       res.status(200).json({
         success: true,
         data: result,
@@ -314,7 +319,10 @@ export class RecipeController {
       const { id } = req.params
       const userId = req.user?.userId
 
+      console.log('🗑️ Controller: Delete recipe request for ID:', id, 'by user:', userId)
+
       if (!id) {
+        console.log('❌ Controller: Missing recipe ID')
         res.status(400).json({
           success: false,
           error: 'Validation error',
@@ -326,6 +334,7 @@ export class RecipeController {
       // Check if recipe exists and user owns it
       const existingRecipe = await recipeService.getRecipeById(id)
       if (!existingRecipe) {
+        console.log('❌ Controller: Recipe not found:', id)
         res.status(404).json({
           success: false,
           error: 'Not found',
@@ -335,6 +344,7 @@ export class RecipeController {
       }
 
       if (existingRecipe.authorId !== userId) {
+        console.log('❌ Controller: User does not own recipe. Owner:', existingRecipe.authorId, 'User:', userId)
         res.status(403).json({
           success: false,
           error: 'Forbidden',
@@ -344,9 +354,11 @@ export class RecipeController {
       }
 
       // Delete recipe
+      console.log('🗑️ Controller: Deleting recipe:', id)
       const success = await recipeService.deleteRecipe(id)
 
       if (!success) {
+        console.log('❌ Controller: Failed to delete recipe:', id)
         res.status(500).json({
           success: false,
           error: 'Internal server error',
@@ -355,13 +367,14 @@ export class RecipeController {
         return
       }
 
+      console.log('✅ Controller: Recipe deleted successfully:', id)
       res.status(200).json({
         success: true,
         data: null,
         message: 'Recipe deleted successfully'
       })
     } catch (error) {
-      console.error('Delete recipe error:', error)
+      console.error('❌ Controller: Delete recipe error:', error)
       
       res.status(500).json({
         success: false,

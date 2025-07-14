@@ -15,6 +15,7 @@ export const recipesApi = {
    * Get all recipes with optional filtering and pagination
    */
   async getRecipes(params?: RecipeSearchParams): Promise<RecipeListResponse> {
+    console.log('[API] getRecipes params:', params)
     const searchParams = new URLSearchParams()
     
     if (params) {
@@ -36,6 +37,7 @@ export const recipesApi = {
     }
     
     const response = await apiClient.get(`/recipes?${searchParams}`)
+    console.log('[API] getRecipes response:', response.data)
     
     // Extract data from the backend response structure
     // Backend returns: { success: boolean, data: { recipes: Recipe[], total: number, ... }, message: string }
@@ -58,7 +60,9 @@ export const recipesApi = {
    * Get recipe by ID
    */
   async getRecipe(id: string): Promise<Recipe> {
+    console.log('[API] getRecipe id:', id)
     const response = await apiClient.get(`/recipes/${id}`)
+    console.log('[API] getRecipe response:', response.data)
     // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
     const data = response.data.data || response.data
     return data.recipe || data
@@ -68,27 +72,41 @@ export const recipesApi = {
    * Create new recipe
    */
   async createRecipe(recipeData: CreateRecipeData): Promise<Recipe> {
+    console.log('[API] createRecipe data:', recipeData)
+    console.log('🌐 recipesApi.createRecipe: Sending request:', recipeData.title)
     const response = await apiClient.post('/recipes', recipeData)
+    console.log('🌐 recipesApi.createRecipe: Response received:', response.data)
     // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
     const data = response.data.data || response.data
-    return data.recipe || data
+    const recipe = data.recipe || data
+    console.log('🌐 recipesApi.createRecipe: Returning recipe:', recipe.id)
+    return recipe
   },
 
   /**
    * Update existing recipe
    */
   async updateRecipe(id: string, updates: Partial<CreateRecipeData>): Promise<Recipe> {
+    console.log('[API] updateRecipe id:', id, 'data:', updates)
+    console.log('🌐 recipesApi.updateRecipe: Sending request for ID:', id)
     const response = await apiClient.put(`/recipes/${id}`, updates)
+    console.log('🌐 recipesApi.updateRecipe: Response received:', response.data)
     // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
     const data = response.data.data || response.data
-    return data.recipe || data
+    const recipe = data.recipe || data
+    console.log('🌐 recipesApi.updateRecipe: Returning recipe:', recipe.id)
+    return recipe
   },
 
   /**
    * Delete recipe
    */
   async deleteRecipe(id: string): Promise<void> {
-    await apiClient.delete(`/recipes/${id}`)
+    console.log('[API] deleteRecipe id:', id)
+    console.log('🌐 recipesApi.deleteRecipe: Sending request for ID:', id)
+    const response = await apiClient.delete(`/recipes/${id}`)
+    console.log('🌐 recipesApi.deleteRecipe: Response received:', response.data)
+    console.log('🌐 recipesApi.deleteRecipe: Delete completed for ID:', id)
   },
 
   /**

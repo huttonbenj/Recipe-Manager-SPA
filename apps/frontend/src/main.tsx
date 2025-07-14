@@ -21,8 +21,8 @@ const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime in v4)
       refetchOnWindowFocus: false, // Disable refetch on window focus
-      refetchOnMount: false, // Disable refetch on component mount
-      refetchOnReconnect: false, // Disable refetch on reconnect
+      refetchOnMount: true, // Enable refetch on component mount - IMPORTANT for cache invalidation
+      refetchOnReconnect: true, // Enable refetch on reconnect
       retry: (failureCount, error: any) => {
         // Don't retry on 4xx errors
         if (error?.response?.status >= 400 && error?.response?.status < 500) {
@@ -30,6 +30,9 @@ const queryClient = new QueryClient({
         }
         return failureCount < 3
       },
+    },
+    mutations: {
+      retry: false, // Don't retry mutations by default
     },
   },
 })

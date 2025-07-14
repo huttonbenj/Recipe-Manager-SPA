@@ -5,7 +5,6 @@
 
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
 import {
   ArrowLeft, X, Plus, Minus, Clock, Users, ChefHat,
   Save, Eye, Camera, AlertCircle, User, Heart, Bookmark, Info, ChevronRight, Tag
@@ -18,9 +17,9 @@ import {
 } from '@/components/ui'
 
 // Services and hooks
-import { recipesApi } from '@/services/api/recipes'
 import { uploadApi } from '@/services/api/upload'
 import { useAuth } from '@/hooks/useAuth'
+import { useCreateRecipe } from '@/hooks/useRecipes'
 import { formatCookTime } from '@/utils'
 
 // Types
@@ -82,17 +81,7 @@ const CreateRecipe: React.FC = () => {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
 
   // Create recipe mutation
-  const createMutation = useMutation({
-    mutationFn: recipesApi.createRecipe,
-    onSuccess: (recipe) => {
-      navigate(`/recipes/${recipe.id}`)
-    },
-    onError: (error: any) => {
-      setErrors({
-        submit: error?.response?.data?.message || 'Failed to create recipe. Please try again.'
-      })
-    }
-  })
+  const createMutation = useCreateRecipe()
 
   /**
    * Validate form data
@@ -173,7 +162,17 @@ const CreateRecipe: React.FC = () => {
       ingredients: formData.ingredients.filter(ing => ing.trim()),
     }
 
-    createMutation.mutate(cleanedData)
+    createMutation.mutate(cleanedData, {
+      onSuccess: (newRecipe) => {
+        // Navigate to the new recipe detail page to show the created recipe
+        navigate(`/recipes/${newRecipe.id}`)
+      },
+      onError: (error: any) => {
+        setErrors({
+          submit: error?.response?.data?.message || 'Failed to create recipe. Please try again.'
+        })
+      }
+    })
   }
 
   /**
@@ -618,9 +617,9 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                       <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">💡 Writing Great Instructions</h4>
                       <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                        <li>• Start each step with "Step 1:", "Step 2:", etc.</li>
+                        <li>• Start each step with &quot;Step 1:&quot;, &quot;Step 2:&quot;, etc.</li>
                         <li>• Include specific temperatures, times, and measurements</li>
-                        <li>• Describe what to look for (e.g., "until golden brown")</li>
+                        <li>• Describe what to look for (e.g., &quot;until golden brown&quot;)</li>
                         <li>• Separate each step with a blank line</li>
                         <li>• Be clear about equipment needed for each step</li>
                       </ul>
@@ -864,7 +863,7 @@ Step 4: In a separate bowl, whisk together flour, baking powder, and salt..."
                     <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
                       <li>• Use specific measurements (cups, tablespoons, etc.)</li>
                       <li>• Include cooking temperatures and times</li>
-                      <li>• Add visual cues ("until golden brown")</li>
+                      <li>• Add visual cues (&quot;until golden brown&quot;)</li>
                       <li>• Test your recipe before sharing</li>
                       <li>• High-quality photos increase engagement</li>
                     </ul>

@@ -75,6 +75,7 @@ export interface RecipeSearchParams {
   sortBy?: 'createdAt' | 'title' | 'cookTime' | 'difficulty'
   sortOrder?: 'asc' | 'desc'
   cookTimeMax?: number
+  authorId?: string
 }
 
 export interface UserFavorite {

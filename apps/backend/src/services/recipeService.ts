@@ -147,11 +147,14 @@ export class RecipeService {
    */
   async deleteRecipe(id: string): Promise<boolean> {
     try {
+      console.log('🗑️ Service: Deleting recipe from database:', id)
       await prisma.recipe.delete({
         where: { id }
       })
+      console.log('✅ Service: Recipe deleted from database successfully:', id)
       return true
     } catch (error) {
+      console.error('❌ Service: Failed to delete recipe from database:', id, error)
       return false
     }
   }
@@ -202,7 +205,7 @@ export class RecipeService {
     // Tag filtering
     if (tags && tags.length > 0) {
       where.tags = {
-        hasAll: tags.map(tag => tag.toLowerCase())
+        hasSome: tags.map(tag => tag.toLowerCase())
       }
     }
 
@@ -415,7 +418,7 @@ export class RecipeService {
       
       // Add other filters
       if (otherFilters.tags && otherFilters.tags.length > 0) {
-        where.tags = { hasEvery: otherFilters.tags }
+        where.tags = { hasSome: otherFilters.tags.map((tag: string) => tag.toLowerCase()) }
       }
 
       if (otherFilters.cuisine) {

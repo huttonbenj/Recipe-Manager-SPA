@@ -41,7 +41,7 @@ export const useFavorites = () => {
     mutationFn: (recipeId: string) => favoritesApi.addToFavorites(recipeId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] })
-      queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      // Don't invalidate recipes queries here - favorites don't affect recipe data
       success('Recipe added to favorites!')
     },
     onError: (err: any) => {
@@ -54,7 +54,7 @@ export const useFavorites = () => {
     mutationFn: (recipeId: string) => favoritesApi.removeFromFavorites(recipeId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] })
-      queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      // Don't invalidate recipes queries here - favorites don't affect recipe data
       success('Recipe removed from favorites')
     },
     onError: (err: any) => {
@@ -67,7 +67,7 @@ export const useFavorites = () => {
     mutationFn: (recipeId: string) => favoritesApi.addToBookmarks(recipeId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
-      queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      // Don't invalidate recipes queries here - bookmarks don't affect recipe data
       success('Recipe bookmarked!')
     },
     onError: (err: any) => {
@@ -80,7 +80,7 @@ export const useFavorites = () => {
     mutationFn: (recipeId: string) => favoritesApi.removeFromBookmarks(recipeId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
-      queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      // Don't invalidate recipes queries here - bookmarks don't affect recipe data
       success('Recipe removed from bookmarks')
     },
     onError: (err: any) => {

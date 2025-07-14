@@ -5,11 +5,10 @@
 
 import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  Clock, Users, ChefHat, Heart, Share2, Edit3, Trash2,
+  Clock, Users, ChefHat, Heart, Share2, Edit, Trash2,
   ArrowLeft, Bookmark, Camera, CheckCircle, Circle,
-  ChevronRight, Info, User
+  ChevronRight, Info, User, PlayCircle, Calendar, Sparkles
 } from 'lucide-react'
 
 // UI Components
@@ -19,8 +18,8 @@ import {
 } from '@/components/ui'
 
 // Services and hooks
-import { recipesApi } from '@/services/api/recipes'
 import { useAuth } from '@/hooks/useAuth'
+import { useRecipe, useDeleteRecipe } from '@/hooks/useRecipes'
 import { useFavorites } from '@/hooks/useFavorites'
 import { useToast } from '@/context/ToastContext'
 import { formatCookTime } from '@/utils'
@@ -28,7 +27,6 @@ import { formatCookTime } from '@/utils'
 const RecipeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const { user, isAuthenticated } = useAuth()
   const { success, error } = useToast()
 
@@ -50,24 +48,12 @@ const RecipeDetail: React.FC = () => {
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set())
   const [checkedInstructions, setCheckedInstructions] = useState<Set<number>>(new Set())
 
-  // Fetch recipe data
-  const { data: recipe, isLoading, error: queryError } = useQuery({
-    queryKey: ['recipe', id],
-    queryFn: () => recipesApi.getRecipe(id!),
-    enabled: !!id,
-  })
-
   // Delete recipe mutation
-  const deleteMutation = useMutation({
-    mutationFn: () => recipesApi.deleteRecipe(id!),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recipes'] })
-      success('Recipe deleted successfully')
-      navigate('/recipes')
-    },
-    onError: () => {
-      error('Failed to delete recipe. Please try again.')
-    }
+  const deleteMutation = useDeleteRecipe()
+
+  // Fetch recipe data - disable during deletion to prevent 404 errors
+  const { data: recipe, isLoading, error: queryError } = useRecipe(id!, {
+    enabled: !deleteMutation.isPending
   })
 
   // Loading state
@@ -76,29 +62,17 @@ const RecipeDetail: React.FC = () => {
   }
 
   // Error state
-  if (queryError || !recipe) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardBody className="p-8 text-center">
-            <div className="text-accent-500 dark:text-accent-400 mb-4">
-              <ChefHat className="w-16 h-16 mx-auto" />
-            </div>
-            <h2 className="text-xl font-semibold mb-2 text-secondary-900 dark:text-secondary-100">Recipe Not Found</h2>
-            <p className="text-secondary-600 dark:text-secondary-400 mb-4">
-              The recipe you're looking for doesn't exist or may have been removed.
-            </p>
-            <Button onClick={() => navigate('/recipes')} variant="primary">
-              Browse Recipes
-            </Button>
-          </CardBody>
-        </Card>
-      </div>
-    )
+  if (queryError) {
+    return <div>Error loading recipe</div>
   }
 
-  // Check if user owns this recipe
-  const isOwner = user?.id === recipe.authorId
+  // Recipe not found
+  if (!recipe) {
+    return <div>Recipe not found</div>
+  }
+
+  // Check if user can edit/delete this recipe
+  const canEdit = user?.id === recipe.authorId
 
   // Handle ingredient checkbox toggle
   const toggleIngredient = (index: number) => {
@@ -149,13 +123,18 @@ const RecipeDetail: React.FC = () => {
     }
   }
 
-  // Handle recipe deletion
+  // Handle delete
   const handleDelete = () => {
     setIsDeleteModalOpen(true)
   }
 
   const confirmDelete = () => {
-    deleteMutation.mutate()
+    deleteMutation.mutate(id!, {
+      onSuccess: () => {
+        // Navigate back to recipes list after deletion
+        navigate('/recipes')
+      }
+    })
   }
 
   // Get difficulty badge variant
@@ -222,12 +201,12 @@ const RecipeDetail: React.FC = () => {
               </>
             )}
 
-            {isOwner && (
+            {canEdit && (
               <>
                 <Button
                   variant="secondary"
                   onClick={() => navigate(`/recipes/${id}/edit`)}
-                  leftIcon={<Edit3 className="w-4 h-4" />}>
+                  leftIcon={<Edit className="w-4 h-4" />}>
                   <span className="hidden sm:inline">Edit</span>
                 </Button>
                 <Button
@@ -338,6 +317,7 @@ const RecipeDetail: React.FC = () => {
                     <ChefHat className="w-5 h-5" />
                   </span>
                   Ingredients
+                  <Info className="w-4 h-4 ml-2 text-secondary-500 dark:text-secondary-400" />
                 </h2>
               </CardHeader>
               <CardBody className="pt-0">
@@ -346,11 +326,11 @@ const RecipeDetail: React.FC = () => {
                     <li key={index} className="flex items-start gap-3">
                       <button
                         onClick={() => toggleIngredient(index)}
-                        className="mt-0.5 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-full"
+                        className="flex-shrink-0 mt-0.5 cursor-pointer hover:scale-110 transition-transform"
                         aria-label={checkedIngredients.has(index) ? "Mark ingredient as not used" : "Mark ingredient as used"}
                       >
                         {checkedIngredients.has(index) ? (
-                          <CheckCircle className="w-5 h-5 text-primary-500 dark:text-primary-400" />
+                          <CheckCircle className="w-5 h-5 text-green-500" />
                         ) : (
                           <Circle className="w-5 h-5 text-secondary-400 dark:text-secondary-500" />
                         )}
@@ -371,34 +351,34 @@ const RecipeDetail: React.FC = () => {
               <CardHeader>
                 <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100 flex items-center">
                   <span className="bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 p-1.5 rounded-md mr-2">
-                    <ChevronRight className="w-5 h-5" />
+                    <PlayCircle className="w-5 h-5" />
                   </span>
                   Instructions
+                  <ChevronRight className="w-4 h-4 ml-2 text-secondary-500 dark:text-secondary-400" />
                 </h2>
               </CardHeader>
               <CardBody className="pt-0">
                 <ol className="space-y-6 list-none">
                   {recipe.instructions?.split('\n\n').filter(Boolean).map((step: string, index: number) => (
                     <li key={index} className="flex gap-4">
-                      <div className="flex-shrink-0 mt-1">
-                        <button
-                          onClick={() => toggleInstruction(index)}
-                          className="focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-full"
-                          aria-label={checkedInstructions.has(index) ? "Mark step as incomplete" : "Mark step as complete"}
-                        >
-                          {checkedInstructions.has(index) ? (
-                            <CheckCircle className="w-6 h-6 text-primary-500 dark:text-primary-400" />
-                          ) : (
-                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 font-medium border border-primary-200 dark:border-primary-700 shadow-sm">
-                              {index + 1}
-                            </div>
-                          )}
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => toggleInstruction(index)}
+                        className="flex-shrink-0 mt-1 cursor-pointer hover:scale-110 transition-transform"
+                        aria-label={checkedInstructions.has(index) ? "Mark step as incomplete" : "Mark step as complete"}
+                      >
+                        {checkedInstructions.has(index) ? (
+                          <CheckCircle className="w-5 h-5 text-green-500" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-secondary-400 dark:text-secondary-500" />
+                        )}
+                      </button>
                       <div className={`transition-all ${checkedInstructions.has(index)
                         ? 'text-secondary-500 dark:text-secondary-400'
                         : 'text-secondary-900 dark:text-secondary-100'}`}>
-                        {step}
+                        <span className="font-medium text-primary-600 dark:text-primary-400">
+                          Step {index + 1}:
+                        </span>
+                        <span className="ml-2">{step}</span>
                       </div>
                     </li>
                   ))}
@@ -460,7 +440,7 @@ const RecipeDetail: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-secondary-600 dark:text-secondary-400 flex items-center">
-                      <Info className="w-4 h-4 mr-2" />
+                      <Calendar className="w-4 h-4 mr-2" />
                       Created
                     </span>
                     <span className="font-medium text-secondary-900 dark:text-secondary-100">
@@ -475,7 +455,7 @@ const RecipeDetail: React.FC = () => {
             <Card variant="glass">
               <CardBody>
                 <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-2 flex items-center">
-                  <Info className="w-4 h-4 mr-2 text-primary-500 dark:text-primary-400" />
+                  <Sparkles className="w-4 h-4 mr-2 text-primary-500 dark:text-primary-400" />
                   Tips & Notes
                 </h3>
                 <div className="text-secondary-600 dark:text-secondary-400 space-y-2">

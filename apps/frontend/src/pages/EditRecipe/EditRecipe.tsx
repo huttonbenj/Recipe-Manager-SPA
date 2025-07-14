@@ -5,7 +5,6 @@
 
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeft, X, Plus, Minus, Clock, Users, ChefHat,
   Save, Eye, Camera, AlertCircle, Tag, Hash, User, Heart, Bookmark, Info
@@ -18,9 +17,9 @@ import {
 } from '@/components/ui'
 
 // Services and hooks
-import { recipesApi } from '@/services/api/recipes'
 import { uploadApi } from '@/services/api/upload'
 import { useAuth } from '@/hooks/useAuth'
+import { useRecipe, useUpdateRecipe } from '@/hooks/useRecipes'
 import { formatCookTime } from '@/utils'
 
 // Types
@@ -61,7 +60,6 @@ interface FormErrors {
 const EditRecipe: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const { user } = useAuth()
   const { error: showError } = useToast()
 
@@ -85,26 +83,10 @@ const EditRecipe: React.FC = () => {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false)
 
   // Fetch existing recipe data
-  const { data: recipe, isLoading: isLoadingRecipe, error: recipeError } = useQuery({
-    queryKey: ['recipe', id],
-    queryFn: () => recipesApi.getRecipe(id!),
-    enabled: !!id,
-  })
+  const { data: recipe, isLoading: isLoadingRecipe, error: recipeError } = useRecipe(id!)
 
   // Update recipe mutation
-  const updateMutation = useMutation({
-    mutationFn: (data: RecipeFormData) => recipesApi.updateRecipe(id!, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recipe', id] })
-      queryClient.invalidateQueries({ queryKey: ['recipes'] })
-      navigate(`/recipes/${id}`)
-    },
-    onError: (error: any) => {
-      setErrors({
-        submit: error?.response?.data?.message || 'Failed to update recipe. Please try again.'
-      })
-    }
-  })
+  const updateMutation = useUpdateRecipe()
 
   // Initialize form with existing recipe data
   useEffect(() => {
@@ -253,7 +235,17 @@ const EditRecipe: React.FC = () => {
       imageUrl: previewImage || formData.imageUrl || undefined
     }
 
-    updateMutation.mutate(submitData)
+    updateMutation.mutate({ id: id!, updates: submitData }, {
+      onSuccess: () => {
+        // Navigate back to recipe detail page
+        navigate(`/recipes/${id}`)
+      },
+      onError: (error: any) => {
+        setErrors({
+          submit: error?.response?.data?.message || 'Failed to update recipe. Please try again.'
+        })
+      }
+    })
   }
 
   /**
