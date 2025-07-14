@@ -13,6 +13,9 @@ import rateLimit from 'express-rate-limit'
 import { config } from './config'
 import { logger } from './utils/logger'
 import { errorHandler } from './middleware/errorHandler'
+import { setCacheHeaders } from './middleware/cache'
+import { securityHeaders, sanitizeRequest, securityLogger, apiRateLimit } from './middleware/security'
+import { monitoringService } from './services/monitoringService'
 import routes from './routes'
 
 const app = express()
@@ -45,6 +48,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }))
 
+// Security middleware
+app.use(securityHeaders)
+app.use(sanitizeRequest)
+app.use(securityLogger)
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: config.rateLimiting.windowMs,
@@ -55,6 +63,12 @@ const limiter = rateLimit({
 })
 app.use('/api/', limiter)
 
+// Additional API rate limiting
+app.use('/api/', apiRateLimit)
+
+// Cache headers middleware
+app.use(setCacheHeaders)
+
 // Compression middleware
 app.use(compression())
 
@@ -62,6 +76,18 @@ app.use(compression())
 app.use(morgan(config.logging.format, {
   stream: { write: (message) => logger.info(message.trim()) }
 }))
+
+// Request tracking middleware for monitoring
+app.use((req, res, next) => {
+  const startTime = Date.now()
+  
+  res.on('finish', () => {
+    const responseTime = Date.now() - startTime
+    monitoringService.recordRequest(responseTime, res.statusCode)
+  })
+  
+  next()
+})
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }))
@@ -94,6 +120,10 @@ app.get('/health', (req, res) => {
     environment: config.server.nodeEnv,
   })
 })
+
+// Health check routes (no /api prefix for Docker health checks)
+import healthRoutes from './routes/health'
+app.use('/', healthRoutes)
 
 // API routes
 app.use('/api', routes)

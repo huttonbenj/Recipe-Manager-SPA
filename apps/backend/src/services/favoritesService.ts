@@ -3,7 +3,6 @@
  * Handles user favorites and bookmarks for recipes
  */
 
-import { PrismaClient } from '@prisma/client'
 import { 
   UserFavoriteWithRecipe, 
   UserBookmarkWithRecipe, 
@@ -11,8 +10,7 @@ import {
   NotFoundError,
   ValidationError 
 } from '../types'
-
-const prisma = new PrismaClient()
+import { prisma } from '../config/database'
 
 export class FavoritesService {
   // Favorites methods

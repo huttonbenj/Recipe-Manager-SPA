@@ -5,10 +5,8 @@
 
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
 import { User } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../config/database'
 
 interface RegisterData {
   email: string

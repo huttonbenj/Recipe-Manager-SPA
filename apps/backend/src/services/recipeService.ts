@@ -4,9 +4,8 @@
  * search, filtering, and pagination
  */
 
-import { PrismaClient, Recipe, Difficulty, Prisma } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { Recipe, Difficulty, Prisma } from '@prisma/client'
+import { prisma } from '../config/database'
 
 interface CreateRecipeData {
   title: string

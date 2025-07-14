@@ -7,6 +7,7 @@ import { Router } from 'express'
 import uploadController from '../controllers/uploadController'
 import uploadService from '../services/uploadService'
 import { authenticateToken, optionalAuth } from '../middleware/auth'
+import { uploadRateLimit } from '../middleware/security'
 
 const router = Router()
 
@@ -14,7 +15,7 @@ const router = Router()
 const upload = uploadService.getMulterConfig()
 
 // POST /api/upload/image - Upload image (optional auth)
-router.post('/image', optionalAuth, upload.single('image'), uploadController.uploadImage)
+router.post('/image', uploadRateLimit, optionalAuth, upload.single('image'), uploadController.uploadImage)
 
 // DELETE /api/upload/image - Delete image (protected)
 router.delete('/image', authenticateToken, uploadController.deleteImage)
