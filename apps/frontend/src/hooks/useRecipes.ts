@@ -72,11 +72,11 @@ export function useRecipes(params?: RecipeSearchParams) {
 /**
  * Hook to get single recipe by ID
  */
-export function useRecipe(id: string) {
+export function useRecipe(id: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: recipeKeys.detail(id),
     queryFn: () => recipesApi.getRecipe(id),
-    enabled: !!id,
+    enabled: !!id && (options?.enabled !== false),
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

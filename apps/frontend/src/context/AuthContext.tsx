@@ -20,7 +20,7 @@ interface AuthProviderProps {
  * Authentication provider component
  * Wraps app to provide auth state to all components
  */
-export function AuthProvider({ children }: AuthProviderProps) {
+export default function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useLocalStorage<User | null>(USER_STORAGE_KEY, null)
   const [token, setToken] = useLocalStorage<string | null>(TOKEN_STORAGE_KEY, null)
   const [refreshTokenStored, setRefreshTokenStored] = useLocalStorage<string | null>(REFRESH_TOKEN_STORAGE_KEY, null)

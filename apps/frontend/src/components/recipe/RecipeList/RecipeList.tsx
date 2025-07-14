@@ -199,7 +199,7 @@ const RecipeList: React.FC<RecipeListProps> = ({
 
                         {/* Page Numbers */}
                         {getPageNumbers().map((pageNum, index) => (
-                            <li key={index}>
+                            <li key={`page-${pageNum}-${index}`}>
                                 {pageNum === '...' ? (
                                     <span className="px-3 py-2 text-secondary-500 dark:text-secondary-400">...</span>
                                 ) : (
