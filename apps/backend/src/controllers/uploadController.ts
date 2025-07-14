@@ -23,8 +23,11 @@ export class UploadController {
         return
       }
 
+      // File exists at this point, safe to use
+      const file = req.file
+
       // Validate the uploaded file
-      const validationErrors = uploadService.validateImageFile(req.file)
+      const validationErrors = uploadService.validateImageFile(file)
       if (validationErrors.length > 0) {
         res.status(400).json({
           success: false,
@@ -38,7 +41,7 @@ export class UploadController {
       const userId = req.user?.userId
 
       // Process the image
-      const processedImage = await uploadService.processImage(req.file, userId)
+      const processedImage = await uploadService.processImage(file, userId)
 
       // Return response in the format expected by frontend
       res.status(200).json({

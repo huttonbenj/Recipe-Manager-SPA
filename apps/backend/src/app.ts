@@ -9,6 +9,7 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import compression from 'compression'
 import rateLimit from 'express-rate-limit'
+import multer from 'multer'
 
 import { config } from './config'
 import { logger } from './utils/logger'
@@ -135,6 +136,49 @@ app.use('*', (req, res) => {
     error: 'Route not found',
     message: `Cannot ${req.method} ${req.originalUrl}`,
   })
+})
+
+// Multer error handling middleware
+app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (error instanceof multer.MulterError) {
+    let message = 'File upload error'
+    
+    switch (error.code) {
+      case 'LIMIT_FILE_SIZE':
+        message = `File too large. Maximum size is ${Math.floor(config.upload.maxFileSize / (1024 * 1024))}MB`
+        break
+      case 'LIMIT_UNEXPECTED_FILE':
+        message = 'Unexpected file field'
+        break
+      case 'LIMIT_FILE_COUNT':
+        message = 'Too many files'
+        break
+      default:
+        message = error.message
+    }
+    
+    return res.status(400).json({
+      success: false,
+      error: 'Upload error',
+      message
+    })
+  }
+  
+  // Handle other upload-related errors (like file type validation)
+  if (error.message && (
+    error.message.includes('Invalid file type') ||
+    error.message.includes('File too large') ||
+    error.message.includes('Only JPEG, PNG, and WebP images are allowed')
+  )) {
+    return res.status(400).json({
+      success: false,
+      error: 'Validation error',
+      message: error.message
+    })
+  }
+  
+  // Pass to generic error handler
+  return next(error)
 })
 
 // Global error handler

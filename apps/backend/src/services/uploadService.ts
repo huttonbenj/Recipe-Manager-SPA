@@ -24,7 +24,7 @@ interface ProcessedImage {
 
 export class UploadService {
   private readonly uploadDir = path.resolve(config.upload.uploadPath)
-  private readonly maxFileSize = config.upload.maxFileSize
+  private readonly maxFileSize = isNaN(config.upload.maxFileSize) ? 10 * 1024 * 1024 : config.upload.maxFileSize
   private readonly allowedMimeTypes = config.upload.allowedFileTypes
 
   constructor() {
@@ -49,14 +49,12 @@ export class UploadService {
       fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
         // Check file type
         if (!this.allowedMimeTypes.includes(file.mimetype)) {
-          cb(new Error('Invalid file type. Only JPEG, PNG, and WebP images are allowed.'))
-          return
+          return cb(new Error('Invalid file type. Only JPEG, PNG, and WebP images are allowed.'))
         }
 
         // Check file size (additional check)
         if (file.size && file.size > this.maxFileSize) {
-          cb(new Error('File too large. Maximum size is 10MB.'))
-          return
+          return cb(new Error('File too large. Maximum size is 10MB.'))
         }
 
         cb(null, true)
@@ -205,7 +203,7 @@ export class UploadService {
   }
 
   /**
-   * Validate image file
+   * Validate uploaded image file
    */
   validateImageFile(file: Express.Multer.File): string[] {
     const errors: string[] = []

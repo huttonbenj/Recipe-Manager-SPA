@@ -12,9 +12,10 @@ export const uploadApi = {
   async uploadImage(file: File): Promise<UploadResponse> {
     const formData = createFormData({ image: file })
     
+    // Remove Content-Type header to let browser set it correctly for FormData
     const response = await apiClient.post('/upload/image', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': undefined, // Let browser set multipart/form-data
       },
     })
     
@@ -34,7 +35,7 @@ export const uploadApi = {
     
     const response = await apiClient.post('/upload/images', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': undefined, // Let browser set multipart/form-data
       },
     })
     
