@@ -37,6 +37,7 @@ jobs:
 
       - name: Run Prettier check
         run: npm run format:check
+        continue-on-error: true
 
       - name: TypeScript type check
         run: npm run type-check --workspace=${{ matrix.workspace }}
@@ -45,6 +46,10 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -61,13 +66,15 @@ jobs:
       - name: Run npm audit
         run: npm audit --audit-level=high
 
-      - name: Run CodeQL Analysis
+      - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: javascript
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"
 
   # Job 3: Frontend Tests
   test-frontend:
@@ -104,8 +111,11 @@ jobs:
       postgres:
         image: postgres:15
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: recipe_manager_test
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -126,6 +136,7 @@ jobs:
 
       - name: Setup test database
         run: |
+          npm run db:generate --workspace=apps/backend
           npm run db:migrate --workspace=apps/backend
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_manager_test

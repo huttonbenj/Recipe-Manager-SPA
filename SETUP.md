@@ -39,27 +39,29 @@ cp apps/frontend/env.template apps/frontend/.env
 
 **Note**: The default environment values are pre-configured for local development and should work out of the box.
 
-### 3. Start Database
+### 3. Setup Database
 
 ```bash
-# Start PostgreSQL with Docker
-docker-compose up -d postgres
-```
+# Start PostgreSQL and run migrations (from project root)
+npm run db:setup
 
-### 4. Setup Database
-
-```bash
-# Navigate to backend
-cd apps/backend
-
-# Run database migrations
-npx prisma migrate dev --schema=src/prisma/schema.prisma --name init
-
-# Seed with sample data (12 recipes + 3 demo users)
+# Optional: Seed with sample data (12 recipes + 3 demo users)
 npm run db:seed
 ```
 
-### 5. Start Applications
+**Manual Database Commands:**
+```bash
+# Start PostgreSQL with Docker
+npm run docker:up postgres
+
+# Run migrations manually
+npm run db:migrate
+
+# Reset database (if needed)
+npm run db:reset
+```
+
+### 4. Start Applications
 
 **Terminal 1 - Backend:**
 

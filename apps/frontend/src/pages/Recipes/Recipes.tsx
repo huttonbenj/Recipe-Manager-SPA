@@ -727,7 +727,7 @@ const Recipes: React.FC = () => {
 
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <p className="text-secondary-700 dark:text-secondary-300">
+          <div className="text-secondary-700 dark:text-secondary-300">
             {isLoading ? (
               <span className="flex items-center gap-2">
                 <Loading variant="spinner" size="sm" />
@@ -742,7 +742,7 @@ const Recipes: React.FC = () => {
                 </span> recipes
               </span>
             )}
-          </p>
+          </div>
         </div>
 
         {/* Loading State */}
