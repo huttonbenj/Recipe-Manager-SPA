@@ -45,6 +45,7 @@ export default {
           700: 'var(--color-secondary-700)',
           800: 'var(--color-secondary-800)',
           900: 'var(--color-secondary-900)',
+          950: 'var(--color-secondary-950)',
         },
         // Accent colors
         accent: {
@@ -58,7 +59,11 @@ export default {
           700: 'var(--color-accent-700)',
           800: 'var(--color-accent-800)',
           900: 'var(--color-accent-900)',
-        }
+        },
+        // Semantic colors
+        success: 'var(--color-success)',
+        warning: 'var(--color-warning)',
+        danger: 'var(--color-danger)',
       },
       // Animation for smooth theme transitions
       transitionProperty: {

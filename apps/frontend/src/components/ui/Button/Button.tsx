@@ -7,7 +7,7 @@ import React from 'react'
 import { cn } from '@/utils'
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'outline-white' | 'link';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'outline-white' | 'link' | 'ghost-white' | 'danger-outline';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   isFullWidth?: boolean;
@@ -39,7 +39,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       secondary: 'btn-secondary',
       danger: 'btn-danger',
       ghost: 'btn-ghost',
+      'ghost-white': 'btn-ghost-white',
       outline: 'btn-outline',
+      'danger-outline': 'btn-danger-outline',
       'outline-white': 'btn-outline-white',
       link: 'btn-link'
     };

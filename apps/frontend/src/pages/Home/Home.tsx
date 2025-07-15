@@ -3,8 +3,8 @@
  * Public landing page for unauthenticated users to showcase the app
  */
 
-import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Search,
   Heart,
@@ -14,730 +14,401 @@ import {
   ChefHat,
   Clock,
   ArrowRight,
-  Check,
   Sparkles,
+  Trophy,
+  User,
+  Palette,
   Sun,
   Moon,
   Monitor,
-  Palette,
-  Trophy,
-  Utensils,
-  User
-} from 'lucide-react'
-import { Button } from '../../components/ui'
-import { useTheme, type ColorTheme, type DisplayMode } from '../../hooks/useTheme'
+  Check,
+} from 'lucide-react';
+import { Button } from '../../components/ui';
+import { Card } from '@/components/ui';
+import { RecipeCard } from '@/components/recipe';
+import { useTheme, ColorTheme, DisplayMode, ThemeConfig } from '@/context/ThemeContext';
+import { Recipe } from '@/types/recipe';
 
-// UI Components
-import { Card } from '@/components/ui'
-import { RecipeCard } from '@/components/recipe'
+// --- Data (as provided) ---
 
+const activityFeed = [
+  'Sarah just shared a Vegan Lasagna',
+  'Mike bookmarked Spicy Ramen',
+  '3 new recipes added today',
+  'Anna commented on Chocolate Cake',
+  'Liam favorited Avocado Toast',
+];
 
-/**
- * Feature highlights for the landing page
- */
+const avatarColors = ['#0ea5e9', '#f59e42', '#ef4444', '#22c55e', '#a855f7', '#f43f5e'];
+const avatarInitials = ['SA', 'MI', 'AN', 'LI', 'PR', 'CA'];
+
 const features = [
   {
     title: 'Discover Amazing Recipes',
-    description: 'Browse thousands of recipes from our community of passionate home cooks',
+    description: 'Browse thousands of recipes from our community of passionate home cooks.',
     icon: Search,
-    color: 'from-primary-500 to-primary-600'
+    color: 'from-primary-500 to-primary-600',
   },
   {
     title: 'Quick & Easy Cooking',
-    description: 'Find recipes that fit your schedule with our time-based filters',
+    description: 'Find recipes that fit your schedule with our time-based filters.',
     icon: Clock,
-    color: 'from-accent-500 to-accent-600'
+    color: 'from-accent-500 to-accent-600',
   },
   {
     title: 'Community Favorites',
-    description: 'Discover what other food lovers are cooking and sharing',
+    description: 'Discover what other food lovers are cooking and sharing.',
     icon: Heart,
-    color: 'from-primary-600 to-primary-700'
+    color: 'from-pink-500 to-rose-500',
   },
   {
     title: 'Save & Organize',
-    description: 'Keep your favorite recipes organized and easily accessible',
+    description: 'Keep your favorite recipes organized and easily accessible.',
     icon: Bookmark,
-    color: 'from-primary-400 to-primary-500'
-  }
-]
+    color: 'from-fuchsia-500 to-purple-600',
+  },
+];
 
-/**
- * App statistics to showcase community
- */
 const stats = [
   { label: 'Recipes Shared', value: '10,000+', icon: ChefHat },
   { label: 'Home Cooks', value: '2,500+', icon: Users },
   { label: 'Five Star Recipes', value: '1,200+', icon: Star },
-  { label: 'Countries', value: '50+', icon: Trophy }
-]
+  { label: 'Countries', value: '50+', icon: Trophy },
+];
 
-// Theme showcase data
 const THEME_SHOWCASE = [
-  {
-    name: 'Ocean Blue',
-    key: 'default' as ColorTheme,
-    colors: ['#0ea5e9', '#64748b', '#ef4444'],
-    primaryColor: '#0ea5e9',
-  },
-  {
-    name: 'Emerald Forest',
-    key: 'emerald' as ColorTheme,
-    colors: ['#10b981', '#64748b', '#f59e0b'],
-    primaryColor: '#10b981',
-  },
-  {
-    name: 'Royal Blue',
-    key: 'blue' as ColorTheme,
-    colors: ['#3b82f6', '#64748b', '#d946ef'],
-    primaryColor: '#3b82f6',
-  },
-  {
-    name: 'Purple Haze',
-    key: 'purple' as ColorTheme,
-    colors: ['#a855f7', '#64748b', '#f97316'],
-    primaryColor: '#a855f7',
-  },
-  {
-    name: 'Rose Garden',
-    key: 'rose' as ColorTheme,
-    colors: ['#f43f5e', '#64748b', '#22c55e'],
-    primaryColor: '#f43f5e',
-  },
-  {
-    name: 'Sunset Orange',
-    key: 'orange' as ColorTheme,
-    colors: ['#f97316', '#64748b', '#eab308'],
-    primaryColor: '#f97316',
-  },
-  {
-    name: 'Amber Sunset',
-    key: 'sunset' as ColorTheme,
-    colors: ['#f59e0b', '#475569', '#0ea5e9'],
-    primaryColor: '#f59e0b',
-  },
-  {
-    name: 'Deep Teal',
-    key: 'teal' as ColorTheme,
-    colors: ['#14b8a6', '#475569', '#06b6d4'],
-    primaryColor: '#14b8a6',
-  },
-  {
-    name: 'Crimson Red',
-    key: 'crimson' as ColorTheme,
-    colors: ['#ef4444', '#475569', '#f43f5e'],
-    primaryColor: '#ef4444',
-  },
-  {
-    name: 'Lush Violet',
-    key: 'violet' as ColorTheme,
-    colors: ['#8b5cf6', '#475569', '#ec4899'],
-    primaryColor: '#8b5cf6',
-  },
-  {
-    name: 'Forest Green',
-    key: 'green' as ColorTheme,
-    colors: ['#22c55e', '#475569', '#16a34a'],
-    primaryColor: '#22c55e',
-  },
-  {
-    name: 'Cotton Candy',
-    key: 'pink' as ColorTheme,
-    colors: ['#ec4899', '#475569', '#f472b6'],
-    primaryColor: '#ec4899',
-  },
-]
+  { name: 'Ocean Blue', key: 'default', colors: ['#0ea5e9', '#64748b', '#ef4444'] },
+  { name: 'Emerald Forest', key: 'emerald', colors: ['#10b981', '#64748b', '#f59e0b'] },
+  { name: 'Royal Blue', key: 'blue', colors: ['#3b82f6', '#64748b', '#d946ef'] },
+  { name: 'Purple Haze', key: 'purple', colors: ['#a855f7', '#64748b', '#f97316'] },
+  { name: 'Rose Garden', key: 'rose', colors: ['#f43f5e', '#64748b', '#22c55e'] },
+  { name: 'Sunset Orange', key: 'orange', colors: ['#f97316', '#64748b', '#eab308'] },
+];
 
 const DISPLAY_MODES = [
-  {
-    mode: 'light',
-    name: 'Light Mode',
-    icon: Sun,
-    description: 'Clean and bright interface',
-    bgColor: 'bg-white',
-    textColor: 'text-gray-900',
-  },
-  {
-    mode: 'dark',
-    name: 'Dark Mode',
-    icon: Moon,
-    description: 'Easy on the eyes',
-    bgColor: 'bg-gray-900',
-    textColor: 'text-white',
-  },
-  {
-    mode: 'system',
-    name: 'System Mode',
-    icon: Monitor,
-    description: 'Follows your system preference',
-    bgColor: 'bg-gradient-to-br from-white to-gray-100',
-    textColor: 'text-gray-900',
-  },
-]
+  { mode: 'light', name: 'Light', icon: Sun },
+  { mode: 'dark', name: 'Dark', icon: Moon },
+  { mode: 'system', name: 'System', icon: Monitor },
+];
+
+// --- Refined & Unified Home Page ---
 
 export const Home: React.FC = () => {
-  const [isPageLoaded, setIsPageLoaded] = useState(false)
+  const { theme, setColorTheme, setDisplayMode } = useTheme();
+  const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
+  const [recipesLoading, setRecipesLoading] = useState(true);
+  const [recipesError, setRecipesError] = useState<string | null>(null);
 
-  // Refs for scroll animations
-  const featuresRef = useRef<HTMLDivElement>(null)
-  const statsRef = useRef<HTMLDivElement>(null)
-  const featuredRecipesRef = useRef<HTMLDivElement>(null)
-  const ctaRef = useRef<HTMLDivElement>(null)
+  // --- Hooks ---
+  useIntersectionObserver();
+  useFeaturedRecipes(setFeaturedRecipes, setRecipesLoading, setRecipesError);
 
-  // Fade in elements on load
+  return (
+    <div className="bg-secondary-50 dark:bg-secondary-950 transition-colors duration-500">
+      <HeroSection />
+      <div className="relative z-10">
+        <AngledDivider topColor="dark:bg-secondary-950 bg-secondary-50" bottomColor="dark:bg-secondary-900 bg-white" />
+        <FeaturesSection />
+        <AngledDivider topColor="dark:bg-secondary-900 bg-white" bottomColor="dark:bg-gradient-stats bg-gradient-stats" isGradient />
+        <StatsSection />
+        <AngledDivider topColor="dark:bg-gradient-stats bg-gradient-stats" bottomColor="dark:bg-secondary-900 bg-white" isGradient />
+        <FeaturedRecipesSection loading={recipesLoading} error={recipesError} recipes={featuredRecipes} />
+        <AngledDivider topColor="dark:bg-secondary-900 bg-white" bottomColor="dark:bg-secondary-950 bg-secondary-50" />
+        <ThemeShowcaseSection theme={theme} setColorTheme={setColorTheme} setDisplayMode={setDisplayMode} />
+        <AngledDivider topColor="dark:bg-secondary-950 bg-secondary-50" bottomColor="dark:bg-secondary-900 bg-white" />
+        <FinalCTASection />
+      </div>
+    </div>
+  );
+};
+
+// --- Page Sections ---
+
+const HeroSection = () => {
+  const [trustedCount] = useAnimatedCounter(2500, 1200);
+
+  return (
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-hero-light dark:bg-gradient-hero-dark transition-colors duration-700" aria-label="Landing Hero">
+      <FloatingShapes />
+      <div className="relative z-20 flex flex-col items-center justify-center px-6 py-24 text-center">
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-secondary-900 dark:text-white drop-shadow-lg mb-4 animate-slide-up">
+          Cook, Share,{' '}
+          <span className="relative inline-block">
+            <span className="bg-gradient-to-r from-accent-400 to-primary-500 bg-clip-text text-transparent animate-shimmer">Discover</span>
+            <svg className="absolute left-0 -bottom-2 w-full h-3" viewBox="0 0 120 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 10 Q 60 2 115 10" stroke="url(#accent-gradient)" strokeWidth="3" fill="none" strokeLinecap="round" />
+              <defs><linearGradient id="accent-gradient"><stop stopColor="#f59e42" /><stop offset="1" stopColor="#f43f5e" /></linearGradient></defs>
+            </svg>
+          </span>
+        </h1>
+        <p className="text-lg sm:text-xl md:text-2xl text-secondary-600 dark:text-primary-100 mb-8 animate-fade-in max-w-2xl mx-auto">
+          Find inspiration for your next meal, share your favorite recipes, and join a vibrant community of food lovers.
+        </p>
+        <div className="flex items-center justify-center gap-2 mb-8 animate-fade-in" aria-label="Live users">
+          {avatarInitials.map((initials, i) => (
+            <span key={i} className="relative inline-block">
+              <svg className="w-10 h-10 rounded-full shadow-lg" viewBox="0 0 40 40">
+                <circle cx="20" cy="20" r="20" fill={avatarColors[i % avatarColors.length]} />
+                <text x="50%" y="54%" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#fff" dy=".3em">{initials}</text>
+              </svg>
+              <span className="absolute -inset-1 rounded-full border-2 border-primary-400/80 animate-pulse-soft" aria-hidden="true"></span>
+            </span>
+          ))}
+          <span className="ml-3 text-secondary-600 dark:text-primary-100 text-sm font-medium">Live now with {activityFeed.length} updates</span>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up-delay-2 mx-auto max-w-fit">
+          <Link to="/register"><Button size="lg" className="w-full sm:w-auto px-8 py-4 text-lg font-semibold" leftIcon={<User className="mr-2 h-5 w-5" />}>Get Started Free</Button></Link>
+          <Link to="/recipes"><Button variant="ghost" size="lg" className="w-full sm:w-auto px-8 py-4 text-lg font-semibold border-0" leftIcon={<Search className="mr-2 h-5 w-5" />}>Browse Recipes</Button></Link>
+        </div>
+        <div className="flex items-center justify-center gap-2 mt-8 animate-fade-in" aria-label="Trusted by home cooks">
+          <Users className="w-5 h-5 text-primary-500 dark:text-primary-200" />
+          <span className="text-secondary-600 dark:text-primary-100 font-semibold" aria-live="polite">Trusted by {trustedCount.toLocaleString()}+ home cooks</span>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FeaturesSection = () => (
+  <section className="py-20 md:py-28 bg-white dark:bg-secondary-900 transition-colors duration-500">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-16">
+        <SectionBadge text="Why Choose Our Platform" icon={Sparkles} />
+        <h2 className="text-4xl md:text-5xl font-bold text-secondary-900 dark:text-white mb-4">Everything You Need to <span className="text-primary-600 dark:text-primary-400">Cook Better</span></h2>
+        <p className="text-xl text-secondary-600 dark:text-secondary-300 max-w-3xl mx-auto">From discovering new recipes to organizing your favorites, we&apos;ve got everything to make your cooking journey delightful.</p>
+      </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {features.map((feature, index) => (
+          <Card key={index} className="feature-card p-8 text-center transition-all duration-300 border-transparent hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-2xl hover:-translate-y-2 bg-secondary-50/50 dark:bg-secondary-800/20">
+            <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+              <feature.icon className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-secondary-900 dark:text-white mb-2">{feature.title}</h3>
+            <p className="text-secondary-600 dark:text-secondary-300">{feature.description}</p>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const StatsSection = () => (
+  <section className="py-20 bg-gradient-stats dark:bg-gradient-stats" aria-label="Community Statistics">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-16">
+        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-secondary-900 dark:text-white">Join Our Growing Community</h2>
+        <p className="text-xl max-w-3xl mx-auto text-secondary-600 dark:text-secondary-300">Thousands of home cooks are already sharing their passion for food.</p>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+        {stats.map((stat, index) => (
+          <div key={index} className="text-center group">
+            <div className="w-20 h-20 mx-auto mb-6 bg-white/40 dark:bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <stat.icon className="w-10 h-10 text-secondary-700 dark:text-white" />
+            </div>
+            <div className="text-3xl md:text-4xl font-bold mb-2 text-secondary-900 dark:text-white">{stat.value}</div>
+            <div className="text-lg text-secondary-600 dark:text-secondary-300">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const FeaturedRecipesSection = ({ loading, error, recipes }: { loading: boolean; error: string | null; recipes: Recipe[] }) => (
+  <section className="py-20 md:py-28 bg-white dark:bg-secondary-900 transition-colors duration-500">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-16">
+        <SectionBadge text="Community Favorites" icon={ChefHat} />
+        <h2 className="text-4xl md:text-5xl font-bold text-secondary-900 dark:text-white mb-4">Recently Shared <span className="text-primary-600 dark:text-primary-400">Recipes</span></h2>
+        <p className="text-xl text-secondary-600 dark:text-secondary-300 max-w-3xl mx-auto">Discover what our community is cooking and get inspired for your next meal.</p>
+      </div>
+      {loading && <RecipeGridSkeleton />}
+      {error && <ErrorMessage message={error} />}
+      {!loading && !error && (
+        recipes.length > 0 ? (
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {recipes.map((recipe, index) => (
+                <div key={recipe.id} style={{ animationDelay: `${index * 0.1}s` }} className="animate-fade-in transition-transform duration-300 hover:scale-105">
+                  <RecipeCard recipe={recipe} />
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-16">
+              <Link to="/register"><Button size="lg" className="px-8 py-4 text-lg" leftIcon={<ArrowRight className="w-5 h-5" />}>Join to See More Recipes</Button></Link>
+            </div>
+          </>
+        ) : <NoRecipesMessage />
+      )}
+    </div>
+  </section>
+);
+
+interface ThemeShowcaseProps {
+  theme: ThemeConfig;
+  setColorTheme: (theme: ColorTheme) => void;
+  setDisplayMode: (mode: DisplayMode) => void;
+}
+
+const ThemeShowcaseSection = ({ theme, setColorTheme, setDisplayMode }: ThemeShowcaseProps) => (
+  <section className="py-20 md:py-28 bg-secondary-50 dark:bg-secondary-950 transition-colors duration-500" aria-label="Theme Showcase">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-16">
+        <SectionBadge text="Personalize Your Experience" icon={Palette} />
+        <h2 className="text-4xl md:text-5xl font-extrabold text-secondary-900 dark:text-white mb-4">Instantly Switch <span className="text-primary-600 dark:text-primary-400">Themes</span></h2>
+        <p className="text-xl text-secondary-600 dark:text-secondary-300 max-w-3xl mx-auto">Try out beautiful color themes and display modes. Your changes are live!</p>
+      </div>
+      <div className="flex justify-center mb-12">
+        <div className="inline-flex rounded-full bg-secondary-200/70 dark:bg-secondary-800 p-1 shadow-inner">
+          {DISPLAY_MODES.map(({ mode, name, icon: Icon }) => {
+            const isSelected = theme.displayMode === mode;
+            return (
+              <button key={mode} onClick={() => setDisplayMode(mode as DisplayMode)} className={`flex items-center gap-2 px-4 py-2 font-semibold text-base rounded-full transition-all duration-300 focus-ring ${isSelected ? 'bg-primary-500 text-white shadow-md' : 'text-secondary-700 dark:text-secondary-300 hover:text-secondary-900 dark:hover:text-white'}`} aria-pressed={isSelected}>
+                <Icon className="w-5 h-5" /><span>{name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 justify-center">
+        {THEME_SHOWCASE.map(({ key, name, colors }) => {
+          const isSelected = theme.colorTheme === key;
+          return (
+            <button key={key} onClick={() => setColorTheme(key as ColorTheme)} className={`relative flex flex-col items-center justify-center cursor-pointer rounded-2xl p-4 transition-all duration-300 border-2 group focus-ring ${isSelected ? 'border-primary-500 shadow-2xl scale-105 bg-primary-50/80 dark:bg-secondary-900' : 'border-transparent hover:border-primary-300 hover:shadow-lg bg-white/60 dark:bg-secondary-800 dark:hover:bg-secondary-700'}`} aria-pressed={isSelected}>
+              <div className="w-20 h-12 rounded-lg mb-3 flex items-center justify-center gap-1 shadow-inner bg-secondary-100 dark:bg-secondary-950">
+                {colors.map(c => <div key={c} className="w-5 h-5 rounded-full" style={{ background: c }}></div>)}
+              </div>
+              <span className={`text-base font-semibold text-center leading-tight transition-colors ${isSelected ? 'text-primary-600 dark:text-primary-400' : 'text-secondary-700 dark:text-secondary-400'}`}>{name}</span>
+              {isSelected && <div className="absolute -top-2 -right-2 bg-primary-500 rounded-full p-1 shadow-lg"><Check className="w-4 h-4 text-white" /></div>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+);
+
+const FinalCTASection = () => (
+  <section className="py-20 md:py-28 bg-white dark:bg-secondary-900 transition-colors duration-500">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <SectionBadge text="Ready to Start Cooking?" icon={Users} />
+      <h2 className="text-4xl md:text-5xl font-bold text-secondary-900 dark:text-white mb-4">Your Culinary Journey <span className="text-primary-600 dark:text-primary-400">Starts Here</span></h2>
+      <p className="text-xl text-secondary-600 dark:text-secondary-300 mb-12 max-w-3xl mx-auto">Join thousands of home cooks sharing their passion. Start exploring, creating, and sharing your favorite recipes today.</p>
+      <div className="flex flex-col sm:flex-row gap-6 justify-center">
+        <Link to="/register"><Button size="lg" className="w-full sm:w-auto px-8 py-4 text-lg" leftIcon={<User className="w-5 h-5" />}>Create Free Account</Button></Link>
+        <Link to="/login"><Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-4 text-lg" leftIcon={<Search className="w-5 h-5" />}>Sign In</Button></Link>
+      </div>
+    </div>
+  </section>
+);
+
+// --- Reusable Components ---
+
+const AngledDivider = ({ topColor, bottomColor, isGradient = false }: { topColor: string, bottomColor: string, isGradient?: boolean }) => (
+  <div className={`relative h-20 md:h-32 ${topColor} transition-colors duration-500`}>
+    <div className={`absolute inset-x-0 bottom-0 h-full ${bottomColor} transition-colors duration-500`} style={{ clipPath: 'polygon(0 0, 100% 100%, 0 100%)' }}></div>
+    {isGradient && <div className={`absolute inset-x-0 bottom-0 h-full ${bottomColor}`} style={{ clipPath: 'polygon(0 0, 100% 100%, 0 100%)' }}></div>}
+  </div>
+);
+
+const SectionBadge = ({ text, icon: Icon }: { text: string; icon: React.ElementType }) => (
+  <div className="inline-flex items-center justify-center mb-6 px-4 py-2 rounded-full border bg-secondary-100/80 dark:bg-secondary-800/80 border-secondary-200 dark:border-secondary-700 shadow-sm">
+    <Icon className="w-5 h-5 mr-2 text-primary-600 dark:text-primary-400" />
+    <span className="text-base font-semibold text-secondary-700 dark:text-secondary-300">{text}</span>
+  </div>
+);
+
+const FloatingShapes = () => (
+  <>
+    <div className="absolute inset-0 z-0 opacity-50" style={{ backgroundImage: 'radial-gradient(circle at 15% 25%, var(--color-primary-400), transparent 30%), radial-gradient(circle at 85% 75%, var(--color-accent-500), transparent 30%)' }} />
+    <div className="absolute inset-0 z-10 opacity-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+  </>
+);
+
+const RecipeGridSkeleton = () => (
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {[...Array(3)].map((_, i) => (
+      <div key={i} className="animate-pulse">
+        <div className="bg-secondary-200 dark:bg-secondary-800 h-64 rounded-2xl mb-4"></div>
+        <div className="bg-secondary-200 dark:bg-secondary-800 h-6 rounded w-3/4 mb-3"></div>
+        <div className="bg-secondary-200 dark:bg-secondary-800 h-4 rounded w-1/2"></div>
+      </div>
+    ))}
+  </div>
+);
+
+const ErrorMessage = ({ message }: { message: string }) => (
+  <div className="text-center py-16">
+    <div className="w-20 h-20 mx-auto mb-6 bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center">
+      <ChefHat className="w-10 h-10 text-red-500" />
+    </div>
+    <h3 className="text-xl font-semibold mb-3 text-red-600 dark:text-red-400">Error loading recipes</h3>
+    <p className="text-secondary-600 dark:text-secondary-400">{message}</p>
+  </div>
+);
+
+const NoRecipesMessage = () => (
+  <div className="text-center py-16">
+    <div className="w-20 h-20 mx-auto mb-6 bg-secondary-200 dark:bg-secondary-700 rounded-2xl flex items-center justify-center">
+      <ChefHat className="w-10 h-10 text-secondary-400 dark:text-secondary-500" />
+    </div>
+    <h3 className="text-xl font-semibold mb-3 text-secondary-900 dark:text-white">No recipes available</h3>
+    <p className="text-secondary-600 dark:text-secondary-400">Be the first to share a delicious recipe with our community!</p>
+  </div>
+);
+
+// --- Custom Hooks ---
+
+function useIntersectionObserver() {
   useEffect(() => {
-    const pageLoadTimer = setTimeout(() => {
-      setIsPageLoaded(true)
-    }, 100)
-
-    // Intersection Observer for scroll animations
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible')
-            observer.unobserve(entry.target)
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
           }
-        })
-      },
-      { threshold: 0.1 }
-    )
-
-    const sections = [featuresRef, statsRef, featuredRecipesRef, ctaRef]
-    sections.forEach((ref) => {
-      if (ref.current) {
-        observer.observe(ref.current)
-      }
-    })
-
-    return () => {
-      clearTimeout(pageLoadTimer)
-      sections.forEach((ref) => {
-        if (ref.current) {
-          observer.unobserve(ref.current)
-        }
-      })
-    }
-  }, [])
-
-  // Fetch featured recipes to showcase (public endpoint)
-  const [featuredRecipes, setFeaturedRecipes] = useState<any[]>([])
-  const [recipesLoading, setRecipesLoading] = useState(true)
-  const [recipesError, setRecipesError] = useState<string | null>(null)
-
-  useEffect(() => {
-    const fetchFeaturedRecipes = async () => {
-      try {
-        setRecipesLoading(true)
-        setRecipesError(null)
-
-        console.log('Fetching featured recipes...')
-
-        // Try direct API call first
-        const response = await fetch('/api/recipes?limit=3&sortBy=createdAt&sortOrder=desc&_t=' + Date.now())
-        console.log('Direct fetch response:', response.status, response.ok)
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        const data = await response.json()
-        console.log('Direct fetch data:', data)
-
-        const recipes = data.data?.recipes || data.recipes || []
-        console.log('Extracted recipes:', recipes)
-
-        setFeaturedRecipes(recipes)
-      } catch (error) {
-        console.error('Error fetching featured recipes:', error)
-        setRecipesError(error instanceof Error ? error.message : 'Unknown error')
-      } finally {
-        setRecipesLoading(false)
-      }
-    }
-
-    fetchFeaturedRecipes()
-  }, [])
-
-  // Debug logging
-  console.log('Featured recipes state:', {
-    featuredRecipes,
-    recipesLoading,
-    recipesError,
-    featuredRecipesLength: featuredRecipes.length
-  })
-
-  // Theme showcase section
-  const ThemeShowcase = () => {
-    const { theme, setColorTheme, setDisplayMode } = useTheme()
-
-    // Detect system preference
-    const getSystemPreference = () => {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    }
-
-    const [systemPreference, setSystemPreference] = useState(getSystemPreference())
-
-    useEffect(() => {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      const handleChange = () => setSystemPreference(getSystemPreference())
-
-      mediaQuery.addEventListener('change', handleChange)
-      return () => mediaQuery.removeEventListener('change', handleChange)
-    }, [])
-
-    const handleThemeChange = (newTheme: ColorTheme) => {
-      setColorTheme(newTheme)
-    }
-
-    const handleModeChange = (newMode: DisplayMode) => {
-      setDisplayMode(newMode)
-    }
-
-    return (
-      <section className="py-24 bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-secondary-900 dark:text-white mb-4">
-              <Palette className="inline-block w-8 h-8 mr-3 text-primary-600" />
-              Customize Your Experience
-            </h2>
-            <p className="text-xl text-secondary-600 dark:text-secondary-400 max-w-3xl mx-auto">
-              Choose from multiple display modes and beautiful color themes to make the app truly yours
-            </p>
-          </div>
-
-          {/* Display Mode Showcase */}
-          <div className="mb-16">
-            <h3 className="text-2xl font-semibold text-secondary-900 dark:text-white mb-8 text-center">
-              Display Modes
-            </h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              {DISPLAY_MODES.map((mode) => {
-                const Icon = mode.icon
-                const isSelected = theme.displayMode === mode.mode
-
-                // Define mode-specific colors to show what each mode looks like
-                const getModeColors = () => {
-                  switch (mode.mode) {
-                    case 'light':
-                      return {
-                        cardBg: 'bg-white border-secondary-200',
-                        iconBg: 'bg-secondary-100',
-                        iconColor: 'text-secondary-700',
-                        textColor: 'text-secondary-900',
-                        descColor: 'text-secondary-600'
-                      }
-                    case 'dark':
-                      return {
-                        cardBg: 'bg-secondary-800 border-secondary-700',
-                        iconBg: 'bg-secondary-700',
-                        iconColor: 'text-secondary-300',
-                        textColor: 'text-white',
-                        descColor: 'text-secondary-400'
-                      }
-                    case 'system':
-                      return systemPreference === 'dark' ? {
-                        cardBg: 'bg-secondary-800 border-secondary-700',
-                        iconBg: 'bg-secondary-700',
-                        iconColor: 'text-secondary-300',
-                        textColor: 'text-white',
-                        descColor: 'text-secondary-400'
-                      } : {
-                        cardBg: 'bg-white border-secondary-200',
-                        iconBg: 'bg-secondary-100',
-                        iconColor: 'text-secondary-700',
-                        textColor: 'text-secondary-900',
-                        descColor: 'text-secondary-600'
-                      }
-                    default:
-                      return {
-                        cardBg: 'bg-white border-secondary-200',
-                        iconBg: 'bg-secondary-100',
-                        iconColor: 'text-secondary-700',
-                        textColor: 'text-secondary-900',
-                        descColor: 'text-secondary-600'
-                      }
-                  }
-                }
-
-                const colors = getModeColors()
-
-                return (
-                  <div
-                    key={mode.mode}
-                    onClick={() => handleModeChange(mode.mode as DisplayMode)}
-                    className={`
-                      relative cursor-pointer rounded-xl p-6 transition-all duration-300 border-2
-                      ${isSelected
-                        ? 'border-primary-500 ring-4 ring-primary-500/20 shadow-lg scale-105'
-                        : 'border-transparent hover:border-primary-300 hover:shadow-md hover:scale-102'
-                      }
-                    `}
-                  >
-                    {/* Mode preview card */}
-                    <div className={`${colors.cardBg} rounded-lg p-4 mb-4 border transition-all duration-300`}>
-                      <div className={`${colors.iconBg} w-12 h-12 rounded-lg flex items-center justify-center mb-3`}>
-                        <Icon className={`w-6 h-6 ${colors.iconColor}`} />
-                      </div>
-                      <h4 className={`font-semibold ${colors.textColor} mb-1`}>
-                        {mode.name}
-                        {mode.mode === 'system' && (
-                          <span className={`text-sm font-normal ${colors.descColor} ml-2`}>
-                            ({systemPreference})
-                          </span>
-                        )}
-                      </h4>
-                      <p className={`text-sm ${colors.descColor}`}>
-                        {mode.mode === 'system'
-                          ? `Currently following ${systemPreference} mode`
-                          : mode.description
-                        }
-                      </p>
-                    </div>
-
-                    {/* Selection indicator */}
-                    {isSelected && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Color Theme Showcase */}
-          <div>
-            <h3 className="text-2xl font-semibold text-secondary-900 dark:text-white mb-8 text-center">
-              Color Themes
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {THEME_SHOWCASE.map((themeOption) => {
-                const isSelected = theme.colorTheme === themeOption.key
-                return (
-                  <div
-                    key={themeOption.name}
-                    onClick={() => handleThemeChange(themeOption.key)}
-                    className={`
-                      relative cursor-pointer rounded-lg p-4 transition-all duration-300 backdrop-blur-sm border-2
-                      ${isSelected
-                        ? 'border-primary-500 shadow-lg scale-105 bg-primary-50/50 dark:bg-primary-900/20'
-                        : 'border-transparent hover:border-primary-300 hover:shadow-md hover:scale-102 bg-secondary-100/50 dark:bg-secondary-800/50'
-                      }
-                    `}
-                  >
-                    <div className="flex justify-center gap-1 mb-3">
-                      {themeOption.colors.map((color, colorIndex) => (
-                        <div
-                          key={colorIndex}
-                          className={`w-4 h-4 rounded-full shadow-sm border-2 transition-all duration-200
-                            ${isSelected
-                              ? 'scale-105 border-white dark:border-white/80 shadow-md'
-                              : 'border-white/60 dark:border-secondary-600'
-                            }`}
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                    <p className={`text-xs font-medium text-center leading-tight transition-colors
-                      ${isSelected
-                        ? 'text-primary-600 dark:text-primary-300'
-                        : 'text-secondary-700 dark:text-secondary-300'
-                      }`}
-                      style={isSelected ? { color: themeOption.primaryColor } : {}}
-                    >
-                      {themeOption.name}
-                    </p>
-                    {isSelected && (
-                      <div className="absolute top-2 right-2">
-                        <div className="bg-primary-500 rounded-full p-0.5">
-                          <Check className="w-3 h-3 text-white" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-            <div className="text-center mt-8">
-              <p className="text-secondary-600 dark:text-secondary-400 mb-4">
-                12 beautiful color themes to match your style - try them out above!
-              </p>
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200 font-medium"
-              >
-                <Sparkles className="w-4 h-4" />
-                Get Started to Save Your Preferences
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  return (
-    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900">
-      {/* Hero Section */}
-      <section className={`relative h-screen flex items-center overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-700 to-secondary-900 dark:from-primary-800 dark:via-primary-900 dark:to-secondary-950"></div>
-
-        {/* Floating Icons & Texture */}
-        <div className="absolute inset-0 z-10 opacity-10">
-          <div className={`absolute inset-0 ${isPageLoaded ? 'animate-slow-pan' : ''}`} style={{
-            backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-            backgroundSize: '40px 40px',
-          }}></div>
-        </div>
-
-        {/* Floating cooking icons */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
-          <div className={`absolute top-1/4 left-[10%] opacity-20 hidden sm:block ${isPageLoaded ? 'animate-float-slow' : ''}`}>
-            <Utensils className="w-16 h-16 md:w-24 md:h-24 text-white" />
-          </div>
-          <div className={`absolute top-1/3 right-[15%] opacity-20 hidden sm:block ${isPageLoaded ? 'animate-float-medium' : ''}`}>
-            <ChefHat className="w-12 h-12 md:w-16 md:h-16 text-white" />
-          </div>
-          <div className={`absolute bottom-1/4 left-[20%] opacity-20 hidden sm:block ${isPageLoaded ? 'animate-float-fast' : ''}`}>
-            <Heart className="w-8 h-8 md:w-12 md:h-12 text-white" />
-          </div>
-          <div className={`absolute top-[15%] right-[30%] opacity-15 hidden md:block ${isPageLoaded ? 'animate-float-medium' : ''}`}>
-            <Search className="w-14 h-14 lg:w-20 lg:h-20 text-white" />
-          </div>
-          <div className={`absolute bottom-[30%] right-[25%] opacity-15 hidden md:block ${isPageLoaded ? 'animate-float-slow' : ''}`}>
-            <Bookmark className="w-10 h-10 lg:w-14 lg:h-14 text-white" />
-          </div>
-        </div>
-
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-20">
-          <div className="text-center">
-            <div className={`inline-flex items-center mb-4 sm:mb-6 bg-white/10 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-primary-50 ${isPageLoaded ? 'animate-fade-in' : 'opacity-0'}`}>
-              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-              <span className="text-xs sm:text-sm font-medium">Join thousands of home cooks</span>
-            </div>
-
-            <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 sm:mb-6 text-white drop-shadow-md ${isPageLoaded ? 'animate-slide-up' : 'opacity-0'}`}>
-              Cook, Share, Discover
-            </h1>
-            <p className={`text-base sm:text-lg md:text-xl lg:text-2xl text-primary-100 mb-6 sm:mb-8 max-w-3xl mx-auto ${isPageLoaded ? 'animate-slide-up-delay' : 'opacity-0'}`}>
-              Join a vibrant community of food lovers. Find inspiration for your next meal, share your favorite recipes, and discover culinary treasures from around the world.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center ${isPageLoaded ? 'animate-slide-up-delay-2' : 'opacity-0'}`}>
-              <Link to="/register">
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto"
-                  leftIcon={<User className="mr-2 h-4 w-4" />}>
-                  Get Started For Free
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button
-                  variant="outline-white"
-                  size="lg"
-                  className="w-full sm:w-auto mt-2 sm:mt-0"
-                  leftIcon={<Search className="mr-2 h-4 w-4" />}>
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Animated Wave Divider */}
-        <div className="absolute bottom-0 left-0 w-full h-48 sm:h-64 md:h-96 pointer-events-none">
-          <svg className="absolute bottom-0 left-0 w-full h-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            <path fill="var(--color-secondary-50)" fillOpacity="0.2" d="M0,160L48,170.7C96,181,192,203,288,208C384,213,480,203,576,176C672,149,768,107,864,112C960,117,1056,171,1152,192C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-          </svg>
-          <svg className="absolute bottom-0 left-0 w-full h-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            <path fill="var(--color-secondary-50)" fillOpacity="0.5" d="M0,224L48,208C96,192,192,160,288,165.3C384,171,480,213,576,240C672,267,768,277,864,256C960,235,1056,181,1152,160C1248,139,1344,149,1392,154.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-          </svg>
-          <svg className="absolute bottom-0 left-0 w-full h-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            <path className="fill-secondary-50 dark:fill-secondary-900" d="M0,288L48,272C96,256,192,224,288,218.7C384,213,480,235,576,245.3C672,256,768,256,864,240C960,224,1056,192,1152,186.7C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-          </svg>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section ref={featuresRef} className="section-reveal py-16 md:py-24 bg-white dark:bg-secondary-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center mb-4 backdrop-blur-sm px-4 py-2 rounded-full border badge-theme-section">
-              <Sparkles className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">Why Choose Our Platform</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-secondary-900 dark:text-white">
-              Everything You Need to Cook Better
-            </h2>
-            <p className="text-lg text-secondary-600 dark:text-secondary-300 max-w-2xl mx-auto">
-              From discovering new recipes to organizing your favorites, we&apos;ve got everything to make your cooking journey delightful.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <Card key={index} className="p-6 text-center hover:shadow-lg transition-shadow duration-300 border-0 bg-gradient-to-br from-white to-secondary-50 dark:from-secondary-700 dark:to-secondary-800">
-                <div className={`w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r ${feature.color} p-3 flex items-center justify-center`}>
-                  <feature.icon className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-secondary-900 dark:text-white">{feature.title}</h3>
-                <p className="text-secondary-600 dark:text-secondary-300 text-sm">{feature.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section ref={statsRef} className="section-reveal py-16 bg-gradient-to-r from-primary-500 to-primary-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Join Our Growing Community
-            </h2>
-            <p className="text-xl opacity-90">
-              Thousands of home cooks are already sharing their passion for food
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-full flex items-center justify-center">
-                  <stat.icon className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-2xl md:text-3xl font-bold mb-2">{stat.value}</div>
-                <div className="text-primary-100 text-sm">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Recipes Section */}
-      <section ref={featuredRecipesRef} className="section-reveal py-16 md:py-24 bg-secondary-50 dark:bg-secondary-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center mb-4 backdrop-blur-sm px-4 py-2 rounded-full border badge-theme-section">
-              <ChefHat className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">Community Favorites</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-secondary-900 dark:text-white">
-              Recently Shared Recipes
-            </h2>
-            <p className="text-lg text-secondary-600 dark:text-secondary-300 max-w-2xl mx-auto">
-              Discover what our community is cooking and get inspired for your next meal
-            </p>
-          </div>
-
-          {/* Loading State */}
-          {recipesLoading && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, index) => (
-                <div key={index} className="animate-pulse">
-                  <div className="bg-secondary-200 dark:bg-secondary-700 h-48 rounded-lg mb-4"></div>
-                  <div className="bg-secondary-200 dark:bg-secondary-700 h-4 rounded mb-2"></div>
-                  <div className="bg-secondary-200 dark:bg-secondary-700 h-4 rounded w-3/4"></div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Error State */}
-          {recipesError && (
-            <div className="text-center py-12">
-              <p className="text-red-600 dark:text-red-400 mb-4">
-                Error loading recipes: {recipesError}
-              </p>
-              <p className="text-sm text-secondary-600 dark:text-secondary-400">
-                Please try again later or check your connection
-              </p>
-            </div>
-          )}
-
-          {/* Featured Recipes */}
-          {!recipesLoading && !recipesError && featuredRecipes.length > 0 && (
-            <>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {featuredRecipes.map((recipe) => (
-                  <RecipeCard key={recipe.id} recipe={recipe} />
-                ))}
-              </div>
-
-              <div className="text-center mt-12">
-                <Link to="/register">
-                  <Button size="lg" leftIcon={<ArrowRight className="w-5 h-5" />}>
-                    Join to See More Recipes
-                  </Button>
-                </Link>
-              </div>
-            </>
-          )}
-
-          {/* No Recipes State */}
-          {!recipesLoading && !recipesError && featuredRecipes.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 bg-secondary-200 dark:bg-secondary-700 rounded-full flex items-center justify-center">
-                <ChefHat className="w-8 h-8 text-secondary-400 dark:text-secondary-500" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2 text-secondary-900 dark:text-white">
-                No recipes available
-              </h3>
-              <p className="text-secondary-600 dark:text-secondary-400 mb-6">
-                Be the first to share a delicious recipe with our community!
-              </p>
-              <Link to="/register">
-                <Button size="lg" leftIcon={<ArrowRight className="w-5 h-5" />}>
-                  Join to Share Recipes
-                </Button>
-              </Link>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Theme Showcase */}
-      <ThemeShowcase />
-
-      {/* Final CTA Section */}
-      <section ref={ctaRef} className="section-reveal py-16 md:py-24 bg-white dark:bg-secondary-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="mb-8">
-            <div className="inline-flex items-center justify-center mb-4 backdrop-blur-sm px-4 py-2 rounded-full border badge-theme-section">
-              <Users className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">Ready to Start Cooking?</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-secondary-900 dark:text-white">
-              Your Culinary Journey Starts Here
-            </h2>
-            <p className="text-lg text-secondary-600 dark:text-secondary-300 mb-8">
-              Join thousands of home cooks who are already sharing their passion for food. Start exploring, creating, and sharing your favorite recipes today.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register">
-              <Button size="lg" className="w-full sm:w-auto" leftIcon={<User className="w-5 h-5" />}>
-                Create Free Account
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto" leftIcon={<Search className="w-5 h-5" />}>
-                Sign In
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
-  )
+        });
+      }, { threshold: 0.1 }
+    );
+    document.querySelectorAll('.section-reveal').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 }
 
-export default Home
+function useFeaturedRecipes(setRecipes: (r: Recipe[]) => void, setLoading: (l: boolean) => void, setError: (e: string | null) => void) {
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch('/api/recipes?limit=3&sortBy=rating&sortOrder=desc&_t=' + Date.now());
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        setRecipes(data.data?.recipes || data.recipes || []);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRecipes();
+  }, [setRecipes, setLoading, setError]);
+}
+
+function useAnimatedCounter(end: number, duration: number) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const stepTime = Math.abs(Math.floor(duration / (end - start)));
+    const timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start === end) clearInterval(timer);
+    }, stepTime);
+    return () => clearInterval(timer);
+  }, [end, duration]);
+  return [count];
+}
+
+export default Home;

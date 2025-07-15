@@ -216,10 +216,7 @@ const RecipeList: React.FC<RecipeListProps> = ({
                                         variant={pageNum === pagination.page ? 'primary' : 'outline'}
                                         size="sm"
                                         onClick={() => handlePageChange(pageNum as number)}
-                                        className={`w-10 h-10 rounded-full text-base font-medium shadow-sm sm:rounded-lg 
-                                          ${pageNum === pagination.page
-                                                ? 'bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 dark:border-blue-700 text-white'
-                                                : 'bg-secondary-100 dark:bg-secondary-800 border-secondary-200 dark:border-secondary-700'}`}
+                                        className="w-10 h-10 rounded-full text-base font-medium shadow-sm sm:rounded-lg"
                                         aria-label={`Page ${pageNum}`}
                                         aria-current={pageNum === pagination.page ? 'page' : undefined}
                                     >

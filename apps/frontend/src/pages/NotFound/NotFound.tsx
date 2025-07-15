@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Home, Search, ChefHat, ArrowLeft, HelpCircle } from 'lucide-react'
+import { Home, Search, ChefHat, ArrowLeft, Frown } from 'lucide-react'
 
 // UI Components
 import { Card, Button } from '@/components/ui'
@@ -19,104 +19,94 @@ const NotFound: React.FC = () => {
       description: 'Discover amazing recipes from our community',
       icon: ChefHat,
       href: '/recipes',
-      color: 'text-primary-600 dark:text-primary-400'
     },
     {
       title: 'Search Recipes',
       description: 'Find specific recipes or ingredients',
       icon: Search,
       href: '/recipes?search=',
-      color: 'text-emerald-600 dark:text-emerald-400'
     },
     {
       title: 'Go Home',
       description: 'Return to the main page',
       icon: Home,
       href: '/',
-      color: 'text-primary-600 dark:text-primary-400'
     }
   ]
 
   return (
-    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 flex items-center justify-center px-4">
-      <div className="max-w-2xl mx-auto text-center">
-        {/* 404 Illustration */}
-        <div className="mb-8">
-          <div className="text-9xl font-bold text-secondary-200 dark:text-secondary-800 mb-4">404</div>
-          <div className="flex items-center justify-center text-secondary-400 dark:text-secondary-600 mb-4">
-            <HelpCircle className="w-16 h-16" />
-          </div>
-        </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-primary-50/90 via-secondary-50/90 to-primary-100/90 dark:from-secondary-900/90 dark:via-secondary-800/90 dark:to-primary-900/90 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto text-center space-y-12">
         {/* Error Message */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-secondary-900 dark:text-secondary-100 mb-4">
-            Oops! Page Not Found
+        <div className="space-y-4">
+          <div className="w-24 h-24 mx-auto bg-white/40 dark:bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+            <Frown className="w-16 h-16 text-primary-500" />
+          </div>
+          <h1 className="text-6xl md:text-8xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-secondary-700 to-secondary-900 dark:from-secondary-300 dark:to-white">
+            404
           </h1>
-          <p className="text-lg text-secondary-600 dark:text-secondary-400 mb-2">
-            The page you&apos;re looking for doesn&apos;t exist or may have been moved.
-          </p>
-          <p className="text-secondary-500 dark:text-secondary-500">
-            Don&apos;t worry, let&apos;s help you find what you&apos;re looking for!
+          <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 dark:text-white">
+            Page Not Found
+          </h2>
+          <p className="text-lg text-secondary-600 dark:text-secondary-400 max-w-xl mx-auto">
+            Oops! The page you are looking for does not exist. It might have been moved or deleted.
           </p>
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-8">
-          <div className="flex flex-wrap justify-center gap-4 mb-6">
-            <Button
-              onClick={() => navigate(-1)}
-              variant="secondary"
-              leftIcon={<ArrowLeft className="w-4 h-4" />}
-            >
-              Go Back
+        <div className="flex flex-wrap justify-center items-center gap-4">
+          <Button
+            onClick={() => navigate(-1)}
+            variant="outline"
+            size="lg"
+            leftIcon={<ArrowLeft className="w-5 h-5" />}
+          >
+            Go Back
+          </Button>
+          <Link to="/">
+            <Button size="lg" leftIcon={<Home className="w-5 h-5" />}>
+              Go to Homepage
             </Button>
-
-            <Link to="/">
-              <Button leftIcon={<Home className="w-4 h-4" />}>
-                Home Page
-              </Button>
-            </Link>
-          </div>
+          </Link>
         </div>
 
         {/* Helpful Suggestions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {suggestions.map((suggestion, index) => {
-            const Icon = suggestion.icon
-            return (
-              <Link key={index} to={suggestion.href}>
-                <Card
-                  hover
-                  clickable
-                  className="p-6 h-full transition-all duration-200 hover:scale-105"
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <Icon className={`w-12 h-12 mb-3 ${suggestion.color}`} />
-                    <h3 className="font-semibold text-secondary-900 dark:text-secondary-100 mb-2">
+        <div className="space-y-6 pt-6 border-t border-secondary-200 dark:border-secondary-700/50">
+          <h3 className="text-xl font-semibold text-secondary-800 dark:text-secondary-200">
+            Here are some helpful links:
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {suggestions.map((suggestion, index) => {
+              const Icon = suggestion.icon
+              return (
+                <Link key={index} to={suggestion.href} className="group">
+                  <Card className="p-6 h-full text-center transition-all duration-300 border-transparent hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-xl hover:-translate-y-1 bg-white/60 dark:bg-secondary-800/40">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary-100 to-secondary-100 dark:from-secondary-700 dark:to-secondary-600 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                      <Icon className="w-8 h-8 text-primary-600 dark:text-primary-300" />
+                    </div>
+                    <h4 className="text-lg font-bold text-secondary-900 dark:text-white mb-1">
                       {suggestion.title}
-                    </h3>
+                    </h4>
                     <p className="text-sm text-secondary-600 dark:text-secondary-400">
                       {suggestion.description}
                     </p>
-                  </div>
-                </Card>
-              </Link>
-            )
-          })}
+                  </Card>
+                </Link>
+              )
+            })}
+          </div>
         </div>
 
         {/* Additional Help */}
-        <div className="text-center text-secondary-500 dark:text-secondary-500">
+        <div className="text-center text-secondary-600 dark:text-secondary-400">
           <p className="text-sm">
             Still can&apos;t find what you&apos;re looking for?{' '}
             <Link
               to="/contact"
-              className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
+              className="font-semibold text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
             >
-              Contact us
-            </Link>{' '}
-            for help.
+              Contact Us
+            </Link>
           </p>
         </div>
       </div>

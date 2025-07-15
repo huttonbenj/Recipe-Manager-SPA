@@ -86,10 +86,10 @@ const Profile: React.FC = () => {
                 <Card className="mb-8 p-6 sm:p-8" variant="glass">
                     <div className="flex flex-col sm:flex-row items-center gap-6">
                         <div className="relative">
-                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
                                 <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
                             </div>
-                            <Button variant="primary" size="sm" className="absolute -bottom-1 -right-1 rounded-full h-8 w-8 shadow-md">
+                            <Button variant="primary" className="absolute -bottom-1 -right-1 rounded-full h-8 w-8 p-0 flex items-center justify-center shadow-md">
                                 <Edit className="w-4 h-4" />
                             </Button>
                         </div>
@@ -106,7 +106,7 @@ const Profile: React.FC = () => {
                             </p>
                         </div>
                         <div className="mt-4 sm:mt-0 sm:ml-auto">
-                            <Button onClick={handleLogout} variant="danger" size="sm" leftIcon={<LogOut className="w-4 h-4" />}>
+                            <Button onClick={handleLogout} variant="outline" size="sm" leftIcon={<LogOut className="w-4 h-4" />}>
                                 Logout
                             </Button>
                         </div>
@@ -121,14 +121,14 @@ const Profile: React.FC = () => {
                             hover
                             clickable
                             onClick={item.action}
-                            className="p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                            className="p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group"
                         >
                             <div className="flex items-start gap-4">
-                                <div className={`p-3 bg-secondary-100 dark:bg-secondary-800 rounded-lg ${item.color}`}>
-                                    <item.icon className="w-6 h-6" />
+                                <div className={`p-3 bg-secondary-100 dark:bg-secondary-800 rounded-lg ${item.color} transition-colors duration-300 group-hover:bg-primary-100 dark:group-hover:bg-primary-900/50`}>
+                                    <item.icon className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-1">
+                                    <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                                         {item.title}
                                     </h3>
                                     <p className="text-sm text-secondary-600 dark:text-secondary-400">

@@ -336,7 +336,7 @@ const CreateRecipe: React.FC = () => {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <Button
-              variant="secondary"
+              variant="outline"
               onClick={handlePreview}
               leftIcon={<Eye className="w-4 h-4" />}
               className="px-4 sm:px-6"
@@ -349,7 +349,7 @@ const CreateRecipe: React.FC = () => {
               form="recipe-form"
               disabled={createMutation.isPending}
               leftIcon={createMutation.isPending ? <Loading variant="spinner" size="sm" /> : <Save className="w-4 h-4" />}
-              className="px-4 sm:px-6 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              variant="primary"
               size="sm"
             >
               <span className="hidden sm:inline">{createMutation.isPending ? 'Creating...' : 'Create Recipe'}</span>

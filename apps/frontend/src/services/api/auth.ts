@@ -11,7 +11,6 @@ export const authApi = {
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     
-    try {
       const response = await apiClient.post<{ 
         success: boolean; 
         data: { 
@@ -27,9 +26,6 @@ export const authApi = {
         user: response.data.data.user,
         token: response.data.data.accessToken,
         refreshToken: response.data.data.refreshToken
-      }
-    } catch (error) {
-      throw error
     }
   },
 

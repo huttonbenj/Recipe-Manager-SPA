@@ -418,40 +418,35 @@ const EditRecipe: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50/30 dark:from-secondary-900 dark:via-secondary-800 dark:to-primary-900/20 py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-800 py-4 sm:py-8">
+      <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Button
               variant="ghost"
               onClick={handleBackClick}
               leftIcon={<ArrowLeft className="w-4 h-4" />}
               className="shrink-0"
+              size="sm"
             >
-              Back
+              <span className="hidden sm:inline">Back</span>
             </Button>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-secondary-900 to-primary-700 dark:from-secondary-100 dark:to-primary-300 bg-clip-text text-transparent">
-                Edit Recipe
-              </h1>
-              <p className="text-secondary-600 dark:text-secondary-400 mt-1 flex items-center gap-2">
-                Update your culinary creation
-                {isFormDirty && (
-                  <Badge variant="warning" className="text-orange-700 bg-orange-100 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800">
-                    Unsaved changes
-                  </Badge>
-                )}
+              <h1 className="text-2xl sm:text-3xl font-bold text-secondary-900 dark:text-secondary-100">Edit Recipe</h1>
+              <p className="text-secondary-600 dark:text-secondary-400 mt-1 text-sm sm:text-base">
+                Refine your culinary masterpiece
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
-              variant="secondary"
+              variant="outline"
               onClick={handlePreview}
               leftIcon={<Eye className="w-4 h-4" />}
-              className="px-6 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-secondary-700"
+              className="px-4 sm:px-6"
+              size="sm"
             >
               Preview
             </Button>
@@ -460,7 +455,8 @@ const EditRecipe: React.FC = () => {
               form="recipe-form"
               disabled={updateMutation.isPending || !isFormDirty}
               leftIcon={updateMutation.isPending ? <Loading variant="spinner" size="sm" /> : <Save className="w-4 h-4" />}
-              className="px-6 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg"
+              variant="primary"
+              size="sm"
             >
               {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>

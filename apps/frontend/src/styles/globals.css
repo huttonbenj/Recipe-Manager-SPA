@@ -23,16 +23,18 @@
   --color-primary-900: #0c4a6e;
   --color-primary-950: #082f49; /* Added for enhanced gradient */
   
-  --color-secondary-50: #f1f5f9; /* Slightly darker for better contrast against white in light mode */
-  --color-secondary-100: #e9eef5; /* Adjusted to maintain step difference */
-  --color-secondary-200: #e2e8f0;
-  --color-secondary-300: #cbd5e1;
+  /* UPDATED for better contrast in light mode */
+  --color-secondary-50: #e8ecf1; /* was #f1f5f9 */
+  --color-secondary-100: #dbe3ec; /* was #e9eef5 */
+  --color-secondary-200: #c8d1db; /* was #e2e8f0 */
+  --color-secondary-300: #b0bac7;
   --color-secondary-400: #94a3b8;
   --color-secondary-500: #64748b;
   --color-secondary-600: #475569;
   --color-secondary-700: #334155;
   --color-secondary-800: #1e293b;
   --color-secondary-900: #0f172a;
+  --color-secondary-950: #020617; /* Added for dark hero gradient */
   
   --color-accent-50: #fef2f2;
   --color-accent-100: #fee2e2;
@@ -44,6 +46,14 @@
   --color-accent-700: #b91c1c;
   --color-accent-800: #991b1b;
   --color-accent-900: #7f1d1d;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  /* Semantic colors */
+  --color-success: #22c55e; /* Green 500 */
+  --color-warning: #f59e0b; /* Amber 500 */
+  --color-danger: #ef4444;  /* Red 500 */
 
   /* Additional design tokens */
   --radius-sm: 0.25rem;
@@ -95,6 +105,7 @@ html, body {
 }
 
 body {
+  /* UPDATED: Use new secondary-50 and secondary-100 for more contrast */
   @apply bg-gradient-to-br from-secondary-50 via-secondary-50 to-secondary-100 dark:from-secondary-900 dark:via-secondary-900 dark:to-secondary-800 text-secondary-900 dark:text-secondary-100;
   @apply font-sans antialiased min-h-screen;
   background-attachment: fixed;
@@ -132,7 +143,7 @@ body {
     @apply inline-flex items-center justify-center font-medium rounded-lg;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
     @apply transform hover:translate-y-[-1px] active:translate-y-[1px];
-    @apply whitespace-nowrap;
+    @apply whitespace-nowrap border border-transparent;
     transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity, transform;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 200ms;
@@ -141,9 +152,9 @@ body {
   }
   
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg;
+    @apply bg-primary-600 hover:bg-primary-700 text-white shadow-lg;
     @apply focus:ring-primary-500 dark:focus:ring-primary-400;
-    @apply dark:from-primary-600 dark:to-primary-700 dark:hover:from-primary-700 dark:hover:to-primary-800;
+    @apply dark:bg-primary-600 dark:hover:bg-primary-700;
     /* Ensure text is always white for maximum contrast */
     color: white !important;
     box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.25), 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -183,15 +194,27 @@ body {
     @apply focus:ring-accent-500 dark:focus:ring-accent-400;
   }
   
+  .btn-danger-outline {
+    @apply bg-transparent border border-accent-500 text-accent-500;
+    @apply hover:bg-accent-500 hover:text-white;
+    @apply focus:ring-accent-500 dark:focus:ring-accent-400;
+    @apply dark:border-accent-500 dark:text-accent-500 dark:hover:bg-accent-500 dark:hover:text-white;
+  }
+  
   .btn-ghost {
     @apply bg-transparent hover:bg-secondary-100 text-secondary-900;
     @apply dark:hover:bg-secondary-800 dark:text-secondary-100;
     @apply focus:ring-secondary-500 dark:focus:ring-secondary-400;
   }
+
+  .btn-ghost-white {
+    @apply bg-transparent hover:bg-white/10 text-white;
+    @apply focus:ring-white;
+  }
   
   .btn-outline {
     background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.08);
     color: var(--color-secondary-700);
     backdrop-filter: blur(8px);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -214,26 +237,28 @@ body {
   }
 
   .dark .btn-outline {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: var(--color-secondary-300);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: var(--color-secondary-800);
+    border-color: var(--color-secondary-700);
+    color: var(--color-secondary-200);
+    backdrop-filter: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .dark .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--color-primary-500);
-    color: var(--color-primary-300);
+    background: var(--color-secondary-700);
+    border-color: var(--color-secondary-600);
+    color: var(--color-secondary-100);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   /* Enhanced card styles */
   .card-enhanced {
+    /* UPDATED: Use slightly darker background for better contrast */
     @apply backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300;
     @apply rounded-2xl overflow-hidden;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(100, 116, 139, 0.2);
+    background: var(--color-secondary-50);
+    border: 1px solid var(--color-secondary-200);
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   }
   
@@ -254,9 +279,10 @@ body {
 
   /* Glass effect for modals and overlays */
   .glass-effect {
+    /* UPDATED: Use new secondary-100 for glass backgrounds in light mode */
     @apply backdrop-blur-xl;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--color-secondary-100);
+    border: 1px solid var(--color-secondary-200);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
   
@@ -330,9 +356,10 @@ body {
   }
   
   .badge-secondary {
+    /* UPDATED: Use new secondary-100 for badge backgrounds in light mode */
     @apply text-secondary-700 dark:text-secondary-200 shadow-md;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(100, 116, 139, 0.2);
+    background: var(--color-secondary-100);
+    border: 1px solid var(--color-secondary-200);
     box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
   }
   
@@ -414,26 +441,7 @@ body {
     color: var(--color-primary-300);
   }
   
-  /* Adjust outline button padding to compensate for border */
-  .btn-outline.btn-sm,
-  .btn-outline-white.btn-sm {
-    padding-top: 3px;
-    padding-bottom: 3px;
-  }
-  
-  .btn-outline.btn-md,
-  .btn-outline-white.btn-md {
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
-  
-  .btn-outline.btn-lg,
-  .btn-outline-white.btn-lg {
-    padding-top: 9px;
-    padding-bottom: 9px;
-  }
-  
-  /* Size variants - reduced to match outline button total size */
+  /* Size variants */
   .btn-sm {
     @apply px-3 text-sm;
     padding-top: 4px;
@@ -1008,10 +1016,118 @@ body {
     animation: slide-up 0.5s ease-out both;
   }
   
-
+  .animate-slide-up-delay {
+    animation: slide-up 0.7s ease-out both;
+  }
+  
+  .animate-slide-up-delay-2 {
+    animation: slide-up 0.9s ease-out both;
+  }
+  
+  .animate-float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+  
+  .animate-float-medium {
+    animation: float-medium 4s ease-in-out infinite;
+  }
+  
+  .animate-float-fast {
+    animation: float-fast 3s ease-in-out infinite;
+  }
+  
+  .animate-slow-pan {
+    animation: slow-pan 20s linear infinite;
+  }
   
   .animate-bounce-gentle {
     animation: bounce-gentle 2s infinite;
+  }
+  
+  /* Section reveal animation */
+  .section-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  
+  .section-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes float-slow {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-10px) rotate(2deg);
+    }
+    50% {
+      transform: translateY(-5px) rotate(0deg);
+    }
+    75% {
+      transform: translateY(-8px) rotate(-2deg);
+    }
+  }
+  
+  @keyframes float-medium {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    33% {
+      transform: translateY(-8px) rotate(1deg);
+    }
+    66% {
+      transform: translateY(-3px) rotate(-1deg);
+    }
+  }
+  
+  @keyframes float-fast {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-6px) rotate(1deg);
+    }
+  }
+  
+  @keyframes slow-pan {
+    0% {
+      transform: translateX(0) translateY(0);
+    }
+    25% {
+      transform: translateX(-10px) translateY(-5px);
+    }
+    50% {
+      transform: translateX(-5px) translateY(-10px);
+    }
+    75% {
+      transform: translateX(-15px) translateY(-2px);
+    }
+    100% {
+      transform: translateX(0) translateY(0);
+    }
   }
   
   @keyframes bounce-gentle {
@@ -1136,9 +1252,27 @@ body {
   
   @media (min-width: 640px) {
     .truncate-mobile {
-      white-space: normal;
       overflow: visible;
-      text-overflow: clip;
+      text-overflow: initial;
+      white-space: normal;
     }
+  }
+}
+
+@layer utilities {
+  .bg-gradient-stats {
+    @apply bg-gradient-to-br from-secondary-50 to-secondary-200;
+  }
+
+  .dark .bg-gradient-stats {
+    @apply bg-gradient-to-br from-secondary-800 to-secondary-900;
+  }
+
+  .bg-gradient-hero-light {
+    @apply bg-gradient-to-br from-secondary-100 to-secondary-200;
+  }
+
+  .dark .bg-gradient-hero-dark {
+    @apply bg-gradient-to-br from-secondary-900 to-secondary-950;
   }
 }
