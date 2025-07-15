@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 import AppRoutes from '@/components/layout/AppRoutes'
 import ErrorBoundary from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import ToastContainer from '@/components/ui/ToastContainer'
+import ResponsiveTest from '@/components/ui/ResponsiveTest'
 import { registerServiceWorker } from '@/utils/serviceWorker'
 
 /**
@@ -40,6 +41,7 @@ function App() {
       <div className="min-h-screen transition-theme duration-300">
         <AppRoutes />
         <ToastContainer />
+        <ResponsiveTest show={import.meta.env.DEV} />
       </div>
     </ErrorBoundary>
   )

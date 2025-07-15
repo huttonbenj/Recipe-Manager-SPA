@@ -115,7 +115,7 @@ const Bookmarks: React.FC = () => {
 
                         {/* View mode toggle */}
                         {bookmarkedRecipes.length > 0 && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center border border-secondary-200 dark:border-secondary-700 rounded-lg p-1 w-fit">
                                 <Button
                                     variant={viewMode === 'grid' ? 'primary' : 'ghost'}
                                     onClick={() => setViewMode('grid')}

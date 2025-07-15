@@ -323,17 +323,19 @@ const Header: React.FC = () => {
             <div className="container mx-auto px-4 sm:px-6 py-6">
               {/* Mobile Navigation */}
               <nav className="space-y-1 mb-6">
-                {navigationItems.filter(item => !item.requireAuth || isAuthenticated).map((item) => (
+                {navigationItems.filter(item => !item.requireAuth || stableAuthState).map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
                     className={`flex items-center space-x-3 p-4 text-base font-medium rounded-xl transition-all duration-200 ${isActivePath(item.href)
-                      ? 'bg-primary-500/15 dark:bg-primary-400/20 backdrop-blur-sm border border-primary-500/20 dark:border-primary-400/25 text-primary-700 dark:text-primary-300 shadow-lg shadow-primary-500/10'
-                      : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100/70 dark:hover:bg-secondary-800/80 hover:backdrop-blur-sm'
+                        ? 'bg-primary-500/15 dark:bg-primary-400/20 backdrop-blur-sm border border-primary-500/20 dark:border-primary-400/25 text-primary-700 dark:text-primary-300 shadow-lg shadow-primary-500/10'
+                        : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100/70 dark:hover:bg-secondary-800/80 hover:backdrop-blur-sm'
                       }`}
                     onClick={closeMobileMenu}
                   >
-                    <item.icon className={`w-5 h-5 ${isActivePath(item.href) ? 'text-primary-600 dark:text-primary-400 drop-shadow-sm' : 'text-primary-500 opacity-70'
+                    <item.icon className={`w-5 h-5 ${isActivePath(item.href)
+                        ? 'text-primary-600 dark:text-primary-400 drop-shadow-sm'
+                        : 'text-primary-500 opacity-70'
                       }`} />
                     <span>{item.name}</span>
                   </Link>
@@ -347,7 +349,7 @@ const Header: React.FC = () => {
               </div>
 
               {/* Mobile Auth Section */}
-              {isAuthenticated ? (
+              {stableAuthState ? (
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3 p-4 bg-primary-500/10 dark:bg-primary-400/15 backdrop-blur-sm rounded-xl border border-primary-500/20 dark:border-primary-400/25 shadow-lg shadow-primary-500/5">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
@@ -368,12 +370,15 @@ const Header: React.FC = () => {
                         key={item.name}
                         to={item.href}
                         className={`flex items-center space-x-3 p-4 text-base font-medium rounded-xl transition-all duration-200 ${isActivePath(item.href)
-                          ? 'bg-primary-500/15 dark:bg-primary-400/20 backdrop-blur-sm border border-primary-500/20 dark:border-primary-400/25 text-primary-700 dark:text-primary-300 shadow-lg shadow-primary-500/10'
-                          : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100/70 dark:hover:bg-secondary-800/80 hover:backdrop-blur-sm'
+                            ? 'bg-primary-500/15 dark:bg-primary-400/20 backdrop-blur-sm border border-primary-500/20 dark:border-primary-400/25 text-primary-700 dark:text-primary-300 shadow-lg shadow-primary-500/10'
+                            : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100/70 dark:hover:bg-secondary-800/80 hover:backdrop-blur-sm'
                           }`}
                         onClick={closeMobileMenu}
                       >
-                        <item.icon className={`w-5 h-5 ${isActivePath(item.href) ? 'text-primary-600 dark:text-primary-400 drop-shadow-sm' : 'text-primary-500 opacity-70'}`} />
+                        <item.icon className={`w-5 h-5 ${isActivePath(item.href)
+                            ? 'text-primary-600 dark:text-primary-400 drop-shadow-sm'
+                            : 'text-primary-500 opacity-70'
+                          }`} />
                         <span>{item.name}</span>
                       </Link>
                     ))}

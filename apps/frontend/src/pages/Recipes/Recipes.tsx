@@ -9,7 +9,7 @@ import {
   Search, Clock, Heart, ChefHat, TrendingUp,
   SlidersHorizontal, X, Plus, Sparkles,
   ArrowUpDown, Calendar, Utensils, Globe, Timer,
-  LayoutGrid, LayoutList, Zap
+  LayoutGrid, LayoutList, Zap, Check
 } from 'lucide-react'
 
 // UI Components
@@ -20,6 +20,7 @@ import { RecipeList } from '@/components/recipe'
 import { useAuth } from '@/hooks/useAuth'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useRecipes, useDeleteRecipe } from '@/hooks/useRecipes'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 
 // Types
 import type { Recipe, RecipeSearchParams } from '@/types'
@@ -90,7 +91,7 @@ const quickFilters = [
 
 const Recipes: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [viewMode, setViewMode] = useLocalStorage<ViewMode>('recipe-view-mode', 'grid')
   const [showFilters, setShowFilters] = useState(false)
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest')
   const navigate = useNavigate()
@@ -99,6 +100,7 @@ const Recipes: React.FC = () => {
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
   const debouncedSearch = useDebounce(searchQuery, 300)
+  const [isSearching, setIsSearching] = useState(false)
 
   const [filters, setFilters] = useState({
     difficulty: searchParams.get('difficulty') || '',
@@ -152,6 +154,22 @@ const Recipes: React.FC = () => {
     }
     setSearchParams(params)
   }, [debouncedSearch, filters, pageSize, sortBy])
+
+  // Effect to manage search loading indicator
+  useEffect(() => {
+    if (searchQuery) {
+      setIsSearching(true)
+    }
+    // When debounced search updates, loading is finished
+    // A small delay makes the UX smoother
+    const timer = setTimeout(() => {
+      if (debouncedSearch === searchQuery) {
+        setIsSearching(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [debouncedSearch, searchQuery])
 
   // Separate useEffect for page changes (when user clicks pagination)
   useEffect(() => {
@@ -285,8 +303,6 @@ const Recipes: React.FC = () => {
   const recipes: Recipe[] = recipesData?.recipes || []
   const totalCount = recipesData?.total || 0
 
-
-
   /**
    * Delete recipe mutation
    */
@@ -380,6 +396,8 @@ const Recipes: React.FC = () => {
     (filters.myRecipes ? 1 : 0) +
     filters.quickFilters.length
   )
+  const [prevFilterCount, setPrevFilterCount] = useState(activeFilterCount)
+  const [animateBadge, setAnimateBadge] = useState(false)
 
   // After delete, if current page is empty and not page 1, go to previous page
   useEffect(() => {
@@ -388,25 +406,35 @@ const Recipes: React.FC = () => {
     }
   }, [recipes, isLoading, currentPage])
 
+  // Effect to animate filter badge
+  useEffect(() => {
+    if (activeFilterCount !== prevFilterCount) {
+      setAnimateBadge(true)
+      const timer = setTimeout(() => setAnimateBadge(false), 300) // Animation duration
+      setPrevFilterCount(activeFilterCount)
+      return () => clearTimeout(timer)
+    }
+  }, [activeFilterCount, prevFilterCount])
+
   return (
     <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Enhanced Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-secondary-900 dark:text-secondary-100 mb-2">
                 Discover Amazing Recipes
               </h1>
-              <p className="text-secondary-600 dark:text-secondary-400 text-lg">
+              <p className="text-secondary-600 dark:text-secondary-400 text-sm sm:text-base lg:text-lg">
                 Explore {totalCount.toLocaleString()} delicious recipes from our community
               </p>
             </div>
 
             {isAuthenticated && (
-              <Link to="/app/recipes/create">
+              <Link to="/app/recipes/create" className="shrink-0">
                 <Button
-                  className="shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="w-full sm:w-auto shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                   leftIcon={<Plus className="w-4 h-4" />}
                 >
                   Create Recipe
@@ -415,39 +443,40 @@ const Recipes: React.FC = () => {
             )}
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-            <Card className="p-4 text-center border-l-4 border-l-primary-500">
-              <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+          {/* Quick Stats - Responsive Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <Card className="p-3 sm:p-4 text-center border-l-4 border-l-primary-500 hover:shadow-md transition-shadow">
+              <div className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400">
                 {totalCount.toLocaleString()}
               </div>
-              <div className="text-sm text-secondary-600 dark:text-secondary-400">Total Recipes</div>
+              <div className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">Total Recipes</div>
             </Card>
-            <Card className="p-4 text-center border-l-4 border-l-green-500">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <Card className="p-3 sm:p-4 text-center border-l-4 border-l-green-500 hover:shadow-md transition-shadow">
+              <div className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
                 {Math.floor(totalCount * 0.3).toLocaleString()}
               </div>
-              <div className="text-sm text-secondary-600 dark:text-secondary-400">Quick & Easy</div>
+              <div className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">Quick & Easy</div>
             </Card>
-            <Card className="p-4 text-center border-l-4 border-l-orange-500">
-              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+            <Card className="p-3 sm:p-4 text-center border-l-4 border-l-orange-500 hover:shadow-md transition-shadow">
+              <div className="text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-400">
                 {Math.floor(totalCount * 0.4).toLocaleString()}
               </div>
-              <div className="text-sm text-secondary-600 dark:text-secondary-400">Popular</div>
+              <div className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">Popular</div>
             </Card>
-            <Card className="p-4 text-center border-l-4 border-l-purple-500">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+            <Card className="p-3 sm:p-4 text-center border-l-4 border-l-purple-500 hover:shadow-md transition-shadow">
+              <div className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {Math.floor(totalCount * 0.25).toLocaleString()}
               </div>
-              <div className="text-sm text-secondary-600 dark:text-secondary-400">Trending</div>
+              <div className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">Trending</div>
             </Card>
           </div>
         </div>
 
-        {/* Enhanced Search and Controls */}
-        <div className="mb-8">
+        {/* Enhanced Search and Filtering Section */}
+        <Card className="p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm border border-secondary-200/50 dark:border-secondary-700/50 shadow-lg">
+
           {/* Search Bar */}
-          <div className="relative mb-6">
+          <div className="mb-6">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-secondary-400 dark:text-secondary-500" />
               <Input
@@ -455,14 +484,19 @@ const Recipes: React.FC = () => {
                 placeholder="Search recipes, ingredients, cuisines, or cooking techniques..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-4 py-4 text-lg border-2 border-secondary-200 dark:border-secondary-700 focus:border-primary-500 rounded-xl shadow-sm"
+                className="pl-12 pr-12 py-3 sm:py-4 text-sm sm:text-base border-2 border-secondary-200 dark:border-secondary-700 focus:border-primary-500 rounded-xl shadow-sm hover:shadow-md transition-shadow"
               />
-              {searchQuery && (
+              {isSearching && (
+                <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
+                  <Loading variant="spinner" size="sm" />
+                </div>
+              )}
+              {searchQuery && !isSearching && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-secondary-100 dark:hover:bg-secondary-700 rounded-full"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -474,48 +508,63 @@ const Recipes: React.FC = () => {
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-primary-500" />
-              <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100">
+              <h3 className="text-base sm:text-lg font-semibold text-secondary-900 dark:text-secondary-100">
                 Quick Filters
               </h3>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {quickFilters.map((filter) => (
-                <Button
-                  key={filter.key}
-                  variant={filters.quickFilters.includes(filter.key) ? 'primary' : 'outline'}
-                  size="sm"
-                  onClick={() => handleQuickFilter(filter.key)}
-                  className={`relative overflow-hidden transition-all duration-200 ${filters.quickFilters.includes(filter.key)
-                    ? `bg-gradient-to-r ${filter.color} text-white border-transparent shadow-lg scale-[1.02]`
-                    : 'hover:scale-[1.02] hover:shadow-md'
-                    }`}
-                  leftIcon={
-                    typeof filter.icon === 'string' ? (
-                      <span className="text-lg">{filter.icon}</span>
-                    ) : (
-                      <filter.icon className="h-4 w-4" />
-                    )
-                  }
-                >
-                  {filter.label}
-                </Button>
-              ))}
+
+            {/* All screen sizes: Responsive flex wrap */}
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              {quickFilters.map((filter) => {
+                const isSelected = filters.quickFilters.includes(filter.key)
+                return (
+                  <Button
+                    key={filter.key}
+                    variant={isSelected ? 'primary' : 'outline'}
+                    size="sm"
+                    onClick={() => handleQuickFilter(filter.key)}
+                    className={`shrink-0 relative overflow-hidden transition-all duration-200 text-sm ${isSelected
+                        ? `bg-gradient-to-r ${filter.color} text-white border-transparent shadow-lg`
+                        : 'hover:shadow-md'
+                      }`}
+                    leftIcon={
+                      isSelected ? (
+                        <Check className="h-4 w-4" />
+                      ) : typeof filter.icon === 'string' ? (
+                        <span className="text-base">{filter.icon}</span>
+                      ) : (
+                        <filter.icon className="h-4 w-4" />
+                      )
+                    }
+                  >
+                    <span className="whitespace-nowrap">{filter.label}</span>
+                  </Button>
+                )
+              })}
             </div>
           </div>
 
           {/* Controls Row */}
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+            {/* Left Controls */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Button
                 variant={showFilters ? 'primary' : 'outline'}
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
-                className="shrink-0 transition-all duration-200"
+                className="shrink-0 transition-all duration-200 min-h-[44px] text-sm"
                 leftIcon={<SlidersHorizontal className="h-4 w-4" />}
               >
-                {showFilters ? 'Hide' : 'Show'} Advanced Filters
+                <span className="hidden sm:inline">{showFilters ? 'Hide' : 'Show'} </span>
+                <span className="sm:hidden">Filters</span>
+                <span className="hidden sm:inline">Advanced Filters</span>
                 {activeFilterCount > 0 && (
-                  <Badge variant="primary" size="sm" className="ml-2">
+                  <Badge
+                    variant="primary"
+                    size="sm"
+                    className={`ml-2 ${animateBadge ? 'animate-bounce-gentle' : ''}`}
+                  >
                     {activeFilterCount}
                   </Badge>
                 )}
@@ -527,7 +576,7 @@ const Recipes: React.FC = () => {
                   variant={filters.myRecipes ? 'primary' : 'outline'}
                   size="sm"
                   onClick={() => handleFilterChange('myRecipes', String(!filters.myRecipes))}
-                  className="shrink-0 transition-all duration-200"
+                  className="shrink-0 transition-all duration-200 min-h-[44px] text-sm"
                   leftIcon={<Heart className="h-4 w-4" />}
                 >
                   My Recipes
@@ -539,19 +588,20 @@ const Recipes: React.FC = () => {
                 size="sm"
                 onClick={clearFilters}
                 disabled={!hasActiveFilters}
-                className="shrink-0 transition-all duration-200"
+                className="shrink-0 transition-all duration-200 min-h-[44px] disabled:opacity-50 text-sm"
                 leftIcon={<X className="h-4 w-4" />}
               >
                 Clear All
               </Button>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Right Controls */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               {/* Sort Dropdown */}
               <Select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="min-w-[160px]"
+                className="min-w-[120px] sm:min-w-[160px] h-[44px] text-sm"
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -561,12 +611,12 @@ const Recipes: React.FC = () => {
               </Select>
 
               {/* View Mode Toggle */}
-              <div className="flex items-center border border-secondary-200 dark:border-secondary-700 rounded-lg p-1">
+              <div className="flex items-center border border-secondary-200 dark:border-secondary-700 rounded-lg p-1 bg-secondary-50 dark:bg-secondary-800">
                 <Button
                   variant={viewMode === 'grid' ? 'primary' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('grid')}
-                  className="p-2"
+                  className="p-2 h-8 w-8"
                 >
                   <LayoutGrid className="h-4 w-4" />
                 </Button>
@@ -574,32 +624,33 @@ const Recipes: React.FC = () => {
                   variant={viewMode === 'list' ? 'primary' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('list')}
-                  className="p-2"
+                  className="p-2 h-8 w-8"
                 >
                   <LayoutList className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Advanced Filters Panel */}
         {showFilters && (
-          <Card className="p-6 mb-8 bg-white/70 dark:bg-white/5 backdrop-blur-md border border-primary-200/50 dark:border-primary-700/50 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100">
+          <Card className="p-4 sm:p-6 mb-6 sm:mb-8 bg-white/90 dark:bg-secondary-800/90 backdrop-blur-md border border-primary-200/50 dark:border-primary-700/50 shadow-xl">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-secondary-900 dark:text-secondary-100">
                 Advanced Filters
               </h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowFilters(false)}
+                className="h-8 w-8 p-0 hover:bg-secondary-100 dark:hover:bg-secondary-700 rounded-full"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
               {/* Difficulty Filter */}
               <div>
                 <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-3">
@@ -613,7 +664,7 @@ const Recipes: React.FC = () => {
                       variant={filters.difficulty === option.value ? 'primary' : 'outline'}
                       size="sm"
                       onClick={() => handleFilterChange('difficulty', option.value)}
-                      className={`w-full justify-start transition-all duration-200 ${filters.difficulty === option.value
+                      className={`w-full justify-start transition-all duration-200 min-h-[44px] text-sm ${filters.difficulty === option.value
                         ? 'scale-[1.02] shadow-lg'
                         : 'hover:scale-[1.01]'
                         }`}
@@ -639,13 +690,13 @@ const Recipes: React.FC = () => {
                       variant={filters.cookTime === option.value ? 'primary' : 'outline'}
                       size="sm"
                       onClick={() => handleFilterChange('cookTime', option.value)}
-                      className={`w-full justify-start transition-all duration-200 ${filters.cookTime === option.value
+                      className={`w-full justify-start transition-all duration-200 min-h-[44px] text-sm ${filters.cookTime === option.value
                         ? 'scale-[1.02] shadow-lg'
                         : 'hover:scale-[1.01]'
                         }`}
                       leftIcon={<option.icon className="h-4 w-4" />}
                     >
-                      {option.label}
+                      <span className="truncate">{option.label}</span>
                     </Button>
                   ))}
                 </div>
@@ -664,13 +715,13 @@ const Recipes: React.FC = () => {
                       variant={filters.category === option.value ? 'primary' : 'outline'}
                       size="sm"
                       onClick={() => handleFilterChange('category', option.value)}
-                      className={`w-full justify-start transition-all duration-200 ${filters.category === option.value
+                      className={`w-full justify-start transition-all duration-200 min-h-[44px] text-sm ${filters.category === option.value
                         ? 'scale-[1.02] shadow-lg'
                         : 'hover:scale-[1.01]'
                         }`}
                     >
-                      <span className="text-lg mr-2">{option.icon}</span>
-                      {option.label}
+                      <span className="text-base mr-2">{option.icon}</span>
+                      <span className="truncate">{option.label}</span>
                     </Button>
                   ))}
                 </div>
@@ -689,38 +740,15 @@ const Recipes: React.FC = () => {
                       variant={filters.cuisine === option.value ? 'primary' : 'outline'}
                       size="sm"
                       onClick={() => handleFilterChange('cuisine', option.value)}
-                      className={`w-full justify-start transition-all duration-200 ${filters.cuisine === option.value
+                      className={`w-full justify-start transition-all duration-200 min-h-[44px] text-sm ${filters.cuisine === option.value
                         ? 'scale-[1.02] shadow-lg'
                         : 'hover:scale-[1.01]'
                         }`}
                     >
-                      <span className="text-lg mr-2">{option.flag}</span>
-                      {option.label}
+                      <span className="text-base mr-2">{option.flag}</span>
+                      <span className="truncate">{option.label}</span>
                     </Button>
                   ))}
-                </div>
-              </div>
-
-              {/* My Recipes Filter */}
-              <div>
-                <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-3">
-                  <Heart className="h-4 w-4 inline mr-2" />
-                  My Recipes
-                </label>
-                <div className="space-y-2">
-                  <Button
-                    variant={filters.myRecipes ? 'primary' : 'outline'}
-                    size="sm"
-                    onClick={() => handleFilterChange('myRecipes', String(!filters.myRecipes))}
-                    className={`w-full justify-start transition-all duration-200 ${filters.myRecipes
-                      ? 'scale-[1.02] shadow-lg'
-                      : 'hover:scale-[1.01]'
-                      }`}
-                  >
-                    <Badge variant="success" size="sm" className="mr-2">
-                      {filters.myRecipes ? 'Only My Recipes' : 'All Recipes'}
-                    </Badge>
-                  </Button>
                 </div>
               </div>
             </div>
@@ -728,9 +756,9 @@ const Recipes: React.FC = () => {
         )}
 
         {/* Results Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="text-secondary-600 dark:text-secondary-400">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div className="text-secondary-600 dark:text-secondary-400 text-sm sm:text-base">
               {isLoading ? (
                 <div className="flex items-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>

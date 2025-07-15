@@ -90,6 +90,10 @@
 }
 
 /* Base body styles */
+html, body {
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
 body {
   @apply bg-gradient-to-br from-secondary-50 via-secondary-50 to-secondary-100 dark:from-secondary-900 dark:via-secondary-900 dark:to-secondary-800 text-secondary-900 dark:text-secondary-100;
   @apply font-sans antialiased min-h-screen;
@@ -1004,9 +1008,7 @@ body {
     animation: slide-up 0.5s ease-out both;
   }
   
-  .animate-slide-in-right {
-    animation: slide-in-right 0.5s ease-out;
-  }
+
   
   .animate-bounce-gentle {
     animation: bounce-gentle 2s infinite;
@@ -1083,6 +1085,8 @@ body {
     }
   }
 
+
+
   /* Navigation active overlay styles */
   .nav-active-overlay {
     background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
@@ -1093,5 +1097,48 @@ body {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(8px);
+  }
+
+  .animate-bounce-gentle {
+    animation: bounce-gentle 0.3s ease-in-out;
+  }
+
+  @keyframes bounce-gentle {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.25);
+    }
+  }
+
+  /* Scrollbar hiding utilities for horizontal scroll containers */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+
+  /* Enhanced mobile touch targets */
+  @media (max-width: 768px) {
+    .min-touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  /* Improved responsive text truncation */
+  .truncate-mobile {
+    @apply truncate;
+  }
+  
+  @media (min-width: 640px) {
+    .truncate-mobile {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
   }
 }

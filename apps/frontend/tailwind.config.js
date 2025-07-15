@@ -6,6 +6,15 @@ export default {
   ],
   darkMode: 'class', // Enable class-based dark mode
   theme: {
+    // Define custom breakpoints according to requirements
+    screens: {
+      'xs': '475px',   // Extra small for better mobile control
+      'sm': '640px',   // Small devices (default)
+      'md': '768px',   // Tablet: 768px - matches requirement boundary
+      'lg': '1024px',  // Desktop: 1024px - matches requirement boundary
+      'xl': '1280px',  // Extra large (default)
+      '2xl': '1536px', // 2x Extra large (default)
+    },
     extend: {
       // Custom color themes
       colors: {
@@ -106,18 +115,7 @@ export default {
             transform: 'translate(0px, 0px) scale(1)',
           },
         },
-        'float-slow': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        'float-medium': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-30px)' },
-        },
-        'float-fast': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-40px)' },
-        },
+
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
