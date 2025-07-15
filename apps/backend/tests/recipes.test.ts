@@ -5,7 +5,7 @@
 
 import request from 'supertest'
 import app from '../src/app'
-import { createTestUser, createTestRecipe, getRecipeById, getAllRecipes, prisma } from './setup'
+import { createTestUser, createTestRecipe, getRecipeById, prisma } from './setup'
 import bcrypt from 'bcryptjs'
 
 describe('Recipe API', () => {
@@ -42,6 +42,17 @@ describe('Recipe API', () => {
   })
 
   describe('GET /recipes', () => {
+    afterEach(async () => {
+      // Clean up test recipes after each test
+      await prisma.recipe.deleteMany({
+        where: {
+          authorId: {
+            in: [userId, otherUserId]
+          }
+        }
+      })
+    })
+
     beforeEach(async () => {
       // Create test recipes
       await createTestRecipe({
