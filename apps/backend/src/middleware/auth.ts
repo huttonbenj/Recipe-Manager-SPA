@@ -80,7 +80,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 
     next()
   } catch (error) {
-    console.error('Authentication error:', error)
+    // Note: Auth error details intentionally not logged to prevent token exposure
     
     if (error instanceof Error) {
       if (error.message === 'Invalid access token') {
@@ -123,14 +123,14 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         }
       } catch (error) {
         // Ignore token verification errors for optional auth
-        console.log('Optional auth token verification failed:', error)
+        // Note: Error details intentionally not logged to prevent token exposure
       }
     }
 
     next()
   } catch (error) {
     // Don't fail on optional auth errors
-    console.error('Optional authentication error:', error)
+    // Note: Auth error details intentionally not logged to prevent token exposure
     next()
   }
 } 

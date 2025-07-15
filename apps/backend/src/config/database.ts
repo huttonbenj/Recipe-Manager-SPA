@@ -28,7 +28,8 @@ declare global {
 // Function to create the appropriate Prisma client based on environment
 function createPrismaClient(): PrismaClient {
   if (process.env.NODE_ENV === 'test' && TestPrismaClient) {
-    console.log('Using test Prisma client with DATABASE_URL:', process.env.DATABASE_URL)
+    // Only log that we're using test client, never log the actual DATABASE_URL
+    console.log('Using test Prisma client')
     return new TestPrismaClient({
       datasources: {
         db: {
@@ -46,7 +47,7 @@ function createPrismaClient(): PrismaClient {
 function getPrismaClient(): PrismaClient {
   // In test environment, check if DATABASE_URL has changed and recreate client
   if (process.env.NODE_ENV === 'test' && process.env.DATABASE_URL !== lastDatabaseUrl) {
-    console.log('Recreating Prisma client due to DATABASE_URL change')
+    console.log('Recreating Prisma client due to database configuration change')
     if (global.__prisma) {
       global.__prisma.$disconnect()
       global.__prisma = undefined

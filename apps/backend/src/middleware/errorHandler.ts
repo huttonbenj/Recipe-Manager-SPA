@@ -6,6 +6,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { Prisma } from '@prisma/client'
 import { ValidationError, NotFoundError, UnauthorizedError, ForbiddenError } from '../types'
+import { logger } from '../utils/logger'
 
 interface ErrorResponse {
   success: false
@@ -35,8 +36,12 @@ export const errorHandler = (
   let message = 'Something went wrong on the server'
   let details: any = undefined
 
-  // Log the error for debugging
-  console.error(`[${timestamp}] Error on ${req.method} ${path}:`, error)
+  // Log the error for debugging (using Winston logger for security)
+  logger.error(`Error on ${req.method} ${path}`, {
+    error: error.message,
+    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    timestamp
+  })
 
   // Handle different types of errors
   if (error instanceof ValidationError) {

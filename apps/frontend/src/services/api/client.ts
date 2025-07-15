@@ -24,7 +24,7 @@ function getValidToken(): string | null {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY)
     return token ? JSON.parse(token) : null
   } catch (error) {
-    console.warn('[API Client] Error parsing token:', error)
+    // Note: Token parsing error details intentionally not logged
     return null
   }
 }
@@ -34,7 +34,7 @@ function getValidRefreshToken(): string | null {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)
     return refreshToken ? JSON.parse(refreshToken) : null
   } catch (error) {
-    console.warn('[API Client] Error parsing refresh token:', error)
+    // Note: Token parsing error details intentionally not logged
     return null
   }
 }

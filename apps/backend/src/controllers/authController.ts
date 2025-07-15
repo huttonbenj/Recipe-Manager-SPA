@@ -159,7 +159,7 @@ export class AuthController {
         message: 'Token refreshed successfully'
       })
     } catch (error) {
-      console.error('Token refresh error:', error)
+      // Note: Token error details intentionally not logged to prevent token exposure
       
       if (error instanceof Error) {
         if (error.message === 'Invalid refresh token') {
