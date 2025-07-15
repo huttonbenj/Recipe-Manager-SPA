@@ -126,6 +126,10 @@ export const getRecipes = async (req: Request, res: Response) => {
       tags,
       cuisine,
       difficulty,
+      authorId,
+      sortBy,
+      sortOrder,
+      cookTimeMax,
       page = '1',
       limit = '20'
     } = req.query
@@ -158,6 +162,17 @@ export const getRecipes = async (req: Request, res: Response) => {
       filters.difficulty = difficulty
     }
 
+    if (authorId && typeof authorId === 'string') {
+      filters.authorId = authorId.trim()
+    }
+
+    if (cookTimeMax && typeof cookTimeMax === 'string') {
+      const maxTime = parseInt(cookTimeMax)
+      if (!isNaN(maxTime) && maxTime > 0) {
+        filters.cookTimeMax = maxTime
+      }
+    }
+
     logger.info('Fetching recipes with filters:', { 
       filters, 
       page: pageNum, 
@@ -165,8 +180,14 @@ export const getRecipes = async (req: Request, res: Response) => {
     })
 
     try {
+      // Parse sorting parameters
+      const sort = {
+        sortBy: (sortBy as string) || 'createdAt',
+        sortOrder: (sortOrder as string) || 'desc'
+      }
+
       // Search recipes
-      const result = await recipeService.getAll(filters, pageNum, limitNum)
+      const result = await recipeService.getAll(filters, pageNum, limitNum, sort)
 
       res.status(200).json({
         message: 'Recipes retrieved successfully',

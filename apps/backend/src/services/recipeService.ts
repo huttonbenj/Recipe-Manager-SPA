@@ -38,6 +38,13 @@ interface RecipeFilters {
   tags?: string[]
   cuisine?: string
   difficulty?: string
+  authorId?: string
+  cookTimeMax?: number
+}
+
+interface SortOptions {
+  sortBy?: string
+  sortOrder?: string
 }
 
 // Helper functions to handle schema differences
@@ -219,7 +226,7 @@ class RecipeService {
   /**
    * Get all recipes with filtering, searching, and pagination
    */
-  async getAll(filters: RecipeFilters = {}, page = 1, limit = 10) {
+  async getAll(filters: RecipeFilters = {}, page = 1, limit = 10, sort: SortOptions = {}) {
     try {
       const skip = (page - 1) * limit
       const where: any = {}
@@ -257,6 +264,18 @@ class RecipeService {
         where.difficulty = filters.difficulty
       }
 
+      // Filter by author
+      if (filters.authorId) {
+        where.authorId = filters.authorId
+      }
+
+      // Filter by maximum cook time
+      if (filters.cookTimeMax) {
+        where.cookTime = {
+          lte: filters.cookTimeMax
+        }
+      }
+
       // Tag filtering (different approach for PostgreSQL vs SQLite)
       if (filters.tags && filters.tags.length > 0) {
         if (isTestEnv) {
@@ -272,6 +291,10 @@ class RecipeService {
         }
       }
 
+      // Build sort order
+      const sortField = sort.sortBy || 'createdAt'
+      const sortDirection = sort.sortOrder === 'asc' ? 'asc' : 'desc'
+
       const [recipes, total] = await Promise.all([
         prisma.recipe.findMany({
           where,
@@ -286,7 +309,7 @@ class RecipeService {
               }
             }
           },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { [sortField]: sortDirection }
         }),
         prisma.recipe.count({ where })
       ])
@@ -444,8 +467,8 @@ class RecipeService {
   /**
    * Search recipes by multiple criteria
    */
-  async search(query: string, filters: RecipeFilters = {}, page = 1, limit = 10) {
-    return this.getAll({ ...filters, search: query }, page, limit)
+  async search(query: string, filters: RecipeFilters = {}, page = 1, limit = 10, sort: SortOptions = {}) {
+    return this.getAll({ ...filters, search: query }, page, limit, sort)
   }
 }
 
