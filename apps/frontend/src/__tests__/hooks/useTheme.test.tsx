@@ -26,8 +26,8 @@ describe('useTheme', () => {
 
         expect(result.current.theme).toEqual({
             colorTheme: 'default',
-            displayMode: 'system',
-            isDark: expect.any(Boolean),
+            displayMode: 'dark',
+            isDark: true,
         });
 
         expect(typeof result.current.setColorTheme).toBe('function');
@@ -65,28 +65,28 @@ describe('useTheme', () => {
     it('toggles display mode correctly', () => {
         const { result } = renderHook(() => useTheme(), { wrapper });
 
-        // Start with system mode
+        // Start with dark mode
+        expect(result.current.theme.displayMode).toBe('dark');
+
+        // First toggle: dark -> system
+        act(() => {
+            result.current.toggleDisplayMode();
+        });
         expect(result.current.theme.displayMode).toBe('system');
 
-        // First toggle: system -> light
+        // Second toggle: system -> light
         act(() => {
             result.current.toggleDisplayMode();
         });
         expect(result.current.theme.displayMode).toBe('light');
         expect(result.current.theme.isDark).toBe(false);
 
-        // Second toggle: light -> dark
+        // Third toggle: light -> dark
         act(() => {
             result.current.toggleDisplayMode();
         });
         expect(result.current.theme.displayMode).toBe('dark');
         expect(result.current.theme.isDark).toBe(true);
-
-        // Third toggle: dark -> system
-        act(() => {
-            result.current.toggleDisplayMode();
-        });
-        expect(result.current.theme.displayMode).toBe('system');
     });
 
     it('persists theme preferences to localStorage', async () => {
@@ -128,6 +128,6 @@ describe('useTheme', () => {
 
         // Should fall back to defaults
         expect(result.current.theme.colorTheme).toBe('default');
-        expect(result.current.theme.displayMode).toBe('system');
+        expect(result.current.theme.displayMode).toBe('dark');
     });
 }); 

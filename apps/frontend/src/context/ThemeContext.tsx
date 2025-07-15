@@ -488,7 +488,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
         // Validate saved displayMode
         const validDisplayModes: DisplayMode[] = ['light', 'dark', 'system'];
-        const validDisplayMode = savedTheme && validDisplayModes.includes(savedTheme as DisplayMode) ? savedTheme as DisplayMode : 'system';
+        const validDisplayMode = savedTheme && validDisplayModes.includes(savedTheme as DisplayMode) ? savedTheme as DisplayMode : 'dark';
 
         // Check for saved theme or use system preference
         if (savedTheme) {
@@ -501,12 +501,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
             };
         }
 
-        // No saved preference: default to system mode for first-time visitors
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // No saved preference: default to dark mode for first-time visitors
         return {
-            displayMode: 'system',
+            displayMode: 'dark',
             colorTheme: validColorTheme,
-            isDark: systemPrefersDark
+            isDark: true
         };
     });
 

@@ -160,7 +160,7 @@ const RecipeDetail: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <Button
             variant="outline"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/app/recipes')}
             className="w-fit"
             leftIcon={<ArrowLeft className="w-4 h-4" />}>
             Back to Recipes
