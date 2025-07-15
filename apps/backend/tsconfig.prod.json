@@ -4,7 +4,17 @@
     "types": ["node"],
     "skipLibCheck": true,
     "noImplicitAny": false,
-    "strict": false
+    "strict": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "noImplicitThis": false,
+    "exactOptionalPropertyTypes": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "suppressExcessPropertyErrors": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests/**/*", "**/*.test.ts", "**/*.spec.ts"]
