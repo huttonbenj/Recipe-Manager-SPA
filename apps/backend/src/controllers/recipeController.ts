@@ -190,9 +190,17 @@ export const getRecipes = async (req: Request, res: Response) => {
       const result = await recipeService.getAll(filters, pageNum, limitNum, sort)
 
       res.status(200).json({
-        message: 'Recipes retrieved successfully',
-        ...result,
-        success: true
+        success: true,
+        data: {
+          recipes: result.recipes,
+          total: result.pagination.total,
+          page: result.pagination.page,
+          limit: result.pagination.limit,
+          totalPages: result.pagination.pages,
+          hasNext: result.pagination.page < result.pagination.pages,
+          hasPrev: result.pagination.page > 1
+        },
+        message: 'Recipes retrieved successfully'
       })
     } catch (serviceError) {
       logger.error('Service error fetching recipes:', serviceError)
@@ -488,9 +496,17 @@ export const getRecipesByAuthor = async (req: Request, res: Response) => {
     const result = await recipeService.getByAuthor(userId, pageNum, limitNum)
 
     return res.status(200).json({
-      message: 'Author recipes retrieved successfully',
-      ...result,
-      success: true
+      success: true,
+      data: {
+        recipes: result.recipes,
+        total: result.pagination.total,
+        page: result.pagination.page,
+        limit: result.pagination.limit,
+        totalPages: result.pagination.pages,
+        hasNext: result.pagination.page < result.pagination.pages,
+        hasPrev: result.pagination.page > 1
+      },
+      message: 'Author recipes retrieved successfully'
     })
   } catch (error) {
     logger.error('Error fetching recipes by author:', error)

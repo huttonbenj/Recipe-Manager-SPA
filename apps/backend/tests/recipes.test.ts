@@ -78,9 +78,10 @@ describe('Recipe API', () => {
         .get('/api/recipes')
 
       expect(res.status).toBe(200)
-      expect(res.body).toHaveProperty('recipes')
-      expect(Array.isArray(res.body.recipes)).toBe(true)
-      expect(res.body.recipes.length).toBe(2)
+      expect(res.body).toHaveProperty('data')
+      expect(res.body.data).toHaveProperty('recipes')
+      expect(Array.isArray(res.body.data.recipes)).toBe(true)
+      expect(res.body.data.recipes.length).toBe(2)
     })
 
     it('should search recipes by title', async () => {
@@ -88,8 +89,8 @@ describe('Recipe API', () => {
         .get('/api/recipes?search=Pasta')
 
       expect(res.status).toBe(200)
-      expect(res.body.recipes.length).toBe(1)
-      expect(res.body.recipes[0].title).toContain('Pasta')
+      expect(res.body.data.recipes.length).toBe(1)
+      expect(res.body.data.recipes[0].title).toContain('Pasta')
     })
 
     it('should filter recipes by tags', async () => {
@@ -97,8 +98,8 @@ describe('Recipe API', () => {
         .get('/api/recipes?tags=italian')
 
       expect(res.status).toBe(200)
-      expect(res.body.recipes.length).toBe(1)
-      expect(res.body.recipes[0].title).toContain('Pasta')
+      expect(res.body.data.recipes.length).toBe(1)
+      expect(res.body.data.recipes[0].title).toContain('Pasta')
     })
 
     it('should filter recipes by cuisine', async () => {
@@ -106,8 +107,8 @@ describe('Recipe API', () => {
         .get('/api/recipes?cuisine=Mexican')
 
       expect(res.status).toBe(200)
-      expect(res.body.recipes.length).toBe(1)
-      expect(res.body.recipes[0].title).toContain('Tacos')
+      expect(res.body.data.recipes.length).toBe(1)
+      expect(res.body.data.recipes[0].title).toContain('Tacos')
     })
 
     it('should filter recipes by difficulty', async () => {
@@ -115,8 +116,8 @@ describe('Recipe API', () => {
         .get('/api/recipes?difficulty=EASY')
 
       expect(res.status).toBe(200)
-      expect(res.body.recipes.length).toBe(1)
-      expect(res.body.recipes[0].difficulty).toBe('EASY')
+      expect(res.body.data.recipes.length).toBe(1)
+      expect(res.body.data.recipes[0].difficulty).toBe('EASY')
     })
 
     it('should return empty array when no recipes match search', async () => {
@@ -124,7 +125,7 @@ describe('Recipe API', () => {
         .get('/api/recipes?search=NonExistentRecipe')
 
       expect(res.status).toBe(200)
-      expect(res.body.recipes.length).toBe(0)
+      expect(res.body.data.recipes.length).toBe(0)
     })
   })
 
