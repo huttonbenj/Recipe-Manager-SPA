@@ -20,7 +20,13 @@ services:
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 7d
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 30d
       - key: FRONTEND_URL
+        value: https://recipe-manager-frontend.onrender.com
+      - key: ALLOWED_ORIGINS
         value: https://recipe-manager-frontend.onrender.com
   - name: recipe-manager-frontend
     type: web
