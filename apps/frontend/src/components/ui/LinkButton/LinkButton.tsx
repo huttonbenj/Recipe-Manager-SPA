@@ -32,6 +32,8 @@ const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
             ghost: 'btn-ghost',
             outline: 'btn-outline',
             'outline-white': 'btn-outline-white',
+            'ghost-white': 'btn-ghost-white',
+            'danger-outline': 'btn-danger-outline',
             link: 'btn-link'
         };
 
