@@ -330,7 +330,10 @@ const Header: React.FC = () => {
                 </Link>
               ))}
             </div>
-            <div className="pt-4 pb-3 border-t border-secondary-200/60 dark:border-secondary-700/60">
+            <div className="pt-4 pb-3 relative">
+              {/* Simple visible divider */}
+              <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
               {isAuthenticated ? (
                 <>
                   <div className="flex items-center px-5">
@@ -379,7 +382,10 @@ const Header: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="p-4 border-t border-secondary-200/60 dark:border-secondary-700/60">
+            <div className="p-4 relative">
+              {/* Simple visible divider */}
+              <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
               <h3 className="text-sm font-semibold text-secondary-900 dark:text-white mb-2 px-1">Choose Your Theme</h3>
               <ThemeSelector variant="grid" />
             </div>

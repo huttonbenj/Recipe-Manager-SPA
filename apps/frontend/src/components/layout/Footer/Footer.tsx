@@ -55,45 +55,50 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="mt-auto bg-secondary-900 text-secondary-300">
-      {/* Logo and description */}
-      <div className="container mx-auto py-12 px-6 text-center">
-        <Link to="/" className="inline-flex items-center gap-2">
-          <div className="flex items-center justify-center h-10 w-10 rounded-md bg-primary-500">
-            <ChefHat className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-bold text-white">Recipe Manager</span>
-        </Link>
-
-        <p className="mt-4 text-sm text-secondary-400 max-w-md mx-auto">
-          Your personal culinary companion for discovering, creating, and sharing amazing recipes.
-        </p>
-
-        {/* Social links */}
-        <div className="flex justify-center space-x-4 mt-6">
-          {socialLinks.map((social) => {
-            const Icon = social.icon
-            return (
-              <a
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center h-10 w-10 rounded-full bg-secondary-800 text-secondary-400 hover:text-primary-400 hover:bg-secondary-700 transition-colors"
-                aria-label={social.name}
-              >
-                <Icon className="w-4 h-4" />
-              </a>
-            )
-          })}
-        </div>
-      </div>
-
       {/* Horizontal line */}
       <div className="border-t border-secondary-800"></div>
 
       {/* Links section with card-like sections */}
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Recipe Manager */}
+          <div className="overflow-hidden rounded-lg border border-[#2a3749] bg-[#1e293b] text-center">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-primary-400 mb-4">
+                Recipe Manager
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-md bg-primary-500">
+                    <ChefHat className="h-4 w-4 text-white" />
+                  </div>
+                </div>
+                <p className="text-xs text-secondary-400">
+                  Your personal culinary companion for discovering, creating, and sharing amazing recipes.
+                </p>
+
+                {/* Social links */}
+                <div className="flex justify-center space-x-3 mt-4">
+                  {socialLinks.map((social) => {
+                    const Icon = social.icon
+                    return (
+                      <a
+                        key={social.name}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center h-8 w-8 rounded-full bg-secondary-800 text-secondary-400 hover:text-primary-400 hover:bg-secondary-700 transition-colors"
+                        aria-label={social.name}
+                      >
+                        <Icon className="w-3 h-3" />
+                      </a>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Navigation */}
           <div className="overflow-hidden rounded-lg border border-[#2a3749] bg-[#1e293b] text-center">
             <div className="p-6">

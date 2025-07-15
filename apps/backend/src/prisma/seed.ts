@@ -349,7 +349,7 @@ async function main() {
       tags: ['korean', 'beef', 'grilled', 'marinated', 'asian', 'lunch', 'dinner'],
       cuisine: 'korean',
       authorId: chefKenji.id,
-      imageUrl: 'https://images.unsplash.com/photo-1625937306014-8e17ce8c0fee?w=800&auto=format&fit=crop&q=60',
+      imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Moroccan Tagine',
@@ -447,7 +447,7 @@ async function main() {
       tags: ['british', 'beef', 'pastry', 'luxury', 'special-occasion', 'dinner'],
       cuisine: 'british',
       authorId: chefPierre.id,
-      imageUrl: 'https://images.unsplash.com/photo-1558030089-6c3b027c2e81?w=800&auto=format&fit=crop&q=60',
+      imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Mexican Street Tacos',
@@ -490,7 +490,7 @@ async function main() {
       tags: ['mexican', 'beef', 'tacos', 'street-food', 'authentic', 'lunch', 'dinner'],
       cuisine: 'mexican',
       authorId: chefMaria.id,
-      imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&auto=format&fit=crop&q=60',
+      imageUrl: 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Homemade Ramen',
@@ -536,7 +536,7 @@ async function main() {
       tags: ['japanese', 'ramen', 'noodles', 'broth', 'comfort-food', 'lunch', 'dinner'],
       cuisine: 'japanese',
       authorId: chefKenji.id,
-      imageUrl: 'https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=800&auto=format&fit=crop&q=60',
+      imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'Mediterranean Quinoa Bowl',
@@ -710,7 +710,7 @@ async function main() {
       tags: ['italian', 'pasta', 'eggs', 'pancetta', 'classic', 'lunch', 'dinner'],
       cuisine: 'italian',
       authorId: chefMaria.id,
-      imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=800&auto=format&fit=crop&q=60',
+      imageUrl: 'https://images.unsplash.com/photo-1551892374-ecf8754cf8b0?w=800&auto=format&fit=crop&q=60',
     },
     {
       title: 'BBQ Pulled Pork Sandwiches',
