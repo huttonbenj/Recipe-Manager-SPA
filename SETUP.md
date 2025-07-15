@@ -50,6 +50,7 @@ npm run db:seed
 ```
 
 **Manual Database Commands:**
+
 ```bash
 # Start PostgreSQL with Docker
 npm run docker:up postgres
