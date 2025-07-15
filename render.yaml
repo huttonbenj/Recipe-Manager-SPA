@@ -25,7 +25,6 @@ services:
   - name: recipe-manager-frontend
     type: web
     runtime: static
-    plan: free
     branch: main
     rootDir: ./
     buildCommand: "npm install && npm run build --workspace=apps/frontend"
@@ -41,5 +40,4 @@ services:
 databases:
   - name: recipe-manager-db
     plan: free
-    region: oregon
-    postgresMajorVersion: "14" 
+    region: oregon 
