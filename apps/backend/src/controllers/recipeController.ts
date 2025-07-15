@@ -93,9 +93,11 @@ export const createRecipe = async (req: Request, res: Response): Promise<void> =
       const recipe = await recipeService.create(recipeData)
 
       res.status(201).json({
-        message: 'Recipe created successfully',
-        recipe,
-        success: true
+        success: true,
+        data: {
+          recipe
+        },
+        message: 'Recipe created successfully'
       })
     } catch (serviceError) {
       logger.error('Service error creating recipe:', serviceError)
@@ -214,9 +216,11 @@ export const getRecipe = async (req: Request, res: Response) => {
       }
 
       return res.status(200).json({
-        message: 'Recipe retrieved successfully',
-        recipe,
-        success: true
+        success: true,
+        data: {
+          recipe
+        },
+        message: 'Recipe retrieved successfully'
       })
     } catch (serviceError) {
       logger.error('Service error fetching recipe:', serviceError)
@@ -304,9 +308,11 @@ export const updateRecipe = async (req: Request, res: Response) => {
       const recipe = await recipeService.update(id, value)
 
       return res.status(200).json({
-        message: 'Recipe updated successfully',
-        recipe,
-        success: true
+        success: true,
+        data: {
+          recipe
+        },
+        message: 'Recipe updated successfully'
       })
     } catch (serviceError) {
       logger.error('Service error updating recipe:', serviceError)

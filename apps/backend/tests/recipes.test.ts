@@ -146,9 +146,9 @@ describe('Recipe API', () => {
         .get(`/api/recipes/${recipeId}`)
 
       expect(res.status).toBe(200)
-      expect(res.body.recipe).toHaveProperty('id', recipeId)
-      expect(res.body.recipe).toHaveProperty('title', 'Test Recipe')
-      expect(res.body.recipe).toHaveProperty('author')
+      expect(res.body.data.recipe).toHaveProperty('id', recipeId)
+      expect(res.body.data.recipe).toHaveProperty('title', 'Test Recipe')
+      expect(res.body.data.recipe).toHaveProperty('author')
     })
 
     it('should return 404 for non-existent recipe', async () => {
@@ -181,12 +181,12 @@ describe('Recipe API', () => {
         .send(validRecipe)
 
       expect(res.status).toBe(201)
-      expect(res.body.recipe).toHaveProperty('id')
-      expect(res.body.recipe.title).toBe(validRecipe.title)
-      expect(res.body.recipe.authorId).toBe(userId)
+      expect(res.body.data.recipe).toHaveProperty('id')
+      expect(res.body.data.recipe.title).toBe(validRecipe.title)
+      expect(res.body.data.recipe.authorId).toBe(userId)
 
       // Verify in database
-      const dbRecipe = await getRecipeById(res.body.recipe.id)
+      const dbRecipe = await getRecipeById(res.body.data.recipe.id)
       expect(dbRecipe).toBeTruthy()
     })
 
@@ -267,9 +267,9 @@ describe('Recipe API', () => {
         .send(updateData)
 
       expect(res.status).toBe(200)
-      expect(res.body.recipe.title).toBe(updateData.title)
-      expect(res.body.recipe.description).toBe(updateData.description)
-      expect(res.body.recipe.cookTime).toBe(updateData.cookTime)
+      expect(res.body.data.recipe.title).toBe(updateData.title)
+      expect(res.body.data.recipe.description).toBe(updateData.description)
+      expect(res.body.data.recipe.cookTime).toBe(updateData.cookTime)
     })
 
     it('should reject updating other user recipe', async () => {
