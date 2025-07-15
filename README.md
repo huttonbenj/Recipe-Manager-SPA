@@ -1,292 +1,342 @@
 # Recipe Manager SPA
 
-A full-stack Recipe Management application built with React, Node.js, TypeScript, and PostgreSQL. This project demonstrates modern web development practices including monorepo architecture, comprehensive testing, CI/CD, and Docker containerization.
+A full-stack recipe management application built with modern web technologies. Create, discover, and organize your favorite recipes with a beautiful, responsive interface.
 
-## 🚀 Features
+![Recipe Manager](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
+![Node.js](https://img.shields.io/badge/Node.js-20+-green)
+![React](https://img.shields.io/badge/React-18+-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)
+![Tests](https://img.shields.io/badge/Tests-82%20passing-brightgreen)
 
-### Core Functionality
+## ✨ Features
 
-- **User Authentication**: Secure JWT-based authentication with registration and login
-- **Recipe Management**: Create, read, update, and delete recipes with detailed information
-- **Rich Recipe Data**: Support for ingredients, cooking steps, prep time, cook time, difficulty levels, and cuisine types
-- **User Profiles**: Manage personal information and account settings
-- **Search & Filtering**: Find recipes by title, difficulty, cuisine type, and more
-- **Responsive Design**: Mobile-first design that works on all devices
+### 🎨 **Beautiful UI/UX**
 
-### Technical Features
+- **12 Stunning Color Themes** - Ocean Blue, Emerald Forest, Royal Blue, Purple Haze, Rose Garden, and more
+- **Dark Mode by Default** - Automatic dark theme with light/system options
+- **Fully Responsive** - Perfect on desktop, tablet, and mobile devices
+- **Modern Design** - Clean, intuitive interface with smooth animations
 
-- **Type Safety**: Full TypeScript implementation across frontend and backend
-- **Monorepo Architecture**: Organized codebase with shared types and utilities
-- **Comprehensive Testing**: Unit tests with high coverage (94%+ statements, 85%+ branches)
-- **CI/CD Pipeline**: GitHub Actions for automated testing and deployment
-- **Docker Support**: Full containerization for development and production
-- **Security**: Input validation, SQL injection prevention, and secure authentication
-- **Performance**: Optimized database queries and efficient React components
+### 🔐 **Authentication & Security**
 
-## 🏗️ Architecture
+- **JWT Authentication** - Secure login with 7-day token expiration
+- **Password Security** - Bcrypt hashing with salt rounds
+- **Protected Routes** - Secure access to user-specific features
+- **Session Persistence** - Stay logged in across browser sessions
 
-### Project Structure
+### 📱 **Recipe Management**
 
-```
-recipe-manager-spa/
-├── packages/
-│   ├── client/          # React frontend application
-│   ├── server/          # Node.js backend API
-│   └── shared/          # Shared TypeScript types and utilities
-├── docker-compose.yml   # Docker development environment
-├── .github/workflows/   # CI/CD pipeline configuration
-└── docs/               # Additional documentation
-```
+- **CRUD Operations** - Create, view, edit, and delete recipes
+- **Rich Media Support** - Upload images with automatic WebP optimization
+- **Detailed Recipe Info** - Ingredients, instructions, cook time, difficulty, and more
+- **Recipe Categories** - Organize by cuisine, dietary restrictions, and tags
 
-### Technology Stack
+### 🔍 **Advanced Search & Filtering**
 
-**Frontend:**
+- **Real-time Search** - Instant results as you type
+- **Multi-criteria Filtering** - Search by title, tags, cuisine, difficulty, cook time
+- **Smart Sorting** - By date, popularity, cook time, or alphabetical
+- **Quick Filters** - Easy access to vegetarian, quick meals, and more
+- **"My Recipes"** - Filter to see only your created recipes
 
-- React 18 with TypeScript
-- React Router for routing
-- Modern CSS with utility classes
-- Vite for build tooling
-- ESLint + Prettier for code quality
+### ⭐ **Favorites & Bookmarks**
 
-**Backend:**
+- **Favorites System** - Mark recipes you love with a star
+- **Bookmarks** - Save recipes to try later
+- **Personal Collections** - Dedicated pages for your saved recipes
+- **Quick Access** - Toggle favorites/bookmarks directly from recipe cards
 
-- Node.js with Express
-- TypeScript for type safety
-- PostgreSQL with connection pooling
-- JWT authentication
-- Zod for runtime validation
-- Comprehensive logging with Winston
+### 🚀 **Performance & Developer Experience**
 
-**DevOps:**
+- **Lightning Fast** - Optimized loading with pagination and image compression
+- **Type Safety** - Full TypeScript implementation
+- **Comprehensive Testing** - 82 tests covering all major functionality
+- **Modern Stack** - React 18, Node.js 20, PostgreSQL, Prisma ORM
 
-- Docker & Docker Compose
-- GitHub Actions CI/CD
-- Automated testing and linting
-- Multi-stage builds for production
+## 🛠️ Tech Stack
 
-## 🛠️ Quick Start
+### Frontend
+
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** for styling
+- **React Query** for data fetching and caching
+- **React Router** for navigation
+- **Vitest** for testing
+
+### Backend
+
+- **Node.js 20** with Express
+- **TypeScript** for type safety
+- **Prisma ORM** with PostgreSQL (production) / SQLite (development)
+- **JWT** for authentication
+- **Sharp** for image optimization
+- **Jest** for testing
+
+### Infrastructure
+
+- **PostgreSQL** for production database
+- **Docker** support for containerized deployment
+- **Nginx** for reverse proxy and static file serving
+- **PM2** for process management
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- PostgreSQL 15+ (or use Docker)
-- Docker and Docker Compose (optional)
+- Node.js 18+ (recommended: 20+)
+- npm 8+
+- PostgreSQL 13+ (for production)
 
-### Option 1: Docker Development (Recommended)
+### Installation
 
-1. **Clone the repository:**
+```bash
+# Clone the repository
+git clone <repository-url>
+cd Recipe-Manager-SPA
 
-   ```bash
-   git clone <repository-url>
-   cd recipe-manager-spa
-   ```
+# Install all dependencies (monorepo)
+npm install
 
-2. **Start the development environment:**
+# Set up environment variables
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
 
-   ```bash
-   docker-compose up
-   ```
+# Set up the database
+cd apps/backend
+npx prisma generate
+npx prisma migrate dev
+npm run seed
 
-3. **Access the application:**
-   - Frontend: <http://localhost:3000>
-   - Backend API: <http://localhost:3001>
-   - Database: localhost:5432
-
-### Option 2: Local Development
-
-1. **Clone and install dependencies:**
-
-   ```bash
-   git clone <repository-url>
-   cd recipe-manager-spa
-   npm install
-   ```
-
-2. **Set up the database:**
-
-   ```bash
-   # Create PostgreSQL database
-   createdb recipe_manager
-   
-   # Run migrations (if available)
-   npm run db:migrate
-   ```
-
-3. **Configure environment variables:**
-
-   ```bash
-   # Copy example environment files
-   cp packages/server/.env.example packages/server/.env
-   cp packages/client/.env.example packages/client/.env
-   
-   # Edit the files with your configuration
-   ```
-
-4. **Start the development servers:**
-
-   ```bash
-   # Terminal 1: Start backend
-   npm run dev:server
-   
-   # Terminal 2: Start frontend
-   npm run dev:client
-   ```
-
-## 📖 Usage
-
-### Getting Started
-
-1. **Register a new account** or login with existing credentials
-2. **Create your first recipe** using the "Add Recipe" button
-3. **Browse recipes** in the recipe list with search and filtering
-4. **View recipe details** by clicking on any recipe card
-5. **Edit or delete** your own recipes using the action buttons
-
-### API Endpoints
-
-The backend provides a RESTful API with the following main endpoints:
-
+# Start development servers (both frontend and backend)
+cd ../..
+npm run dev
 ```
-Authentication:
-POST /api/auth/register    # Register new user
-POST /api/auth/login       # User login
 
-Recipes:
-GET    /api/recipes        # Get all recipes (paginated)
-POST   /api/recipes        # Create new recipe
-GET    /api/recipes/:id    # Get specific recipe
-PUT    /api/recipes/:id    # Update recipe
-DELETE /api/recipes/:id    # Delete recipe
+### Access the Application
 
-User Profile:
-GET    /api/users/profile  # Get user profile
-PUT    /api/users/profile  # Update user profile
-```
+- **Frontend**: <http://localhost:5173>
+- **Backend API**: <http://localhost:3001>
+- **Health Check**: <http://localhost:3001/health>
+
+## 📖 Documentation
+
+### Core Documentation
+
+- **[Development Setup](./docs/development-setup.md)** - Complete local development guide
+- **[API Documentation](./docs/api-documentation.md)** - Comprehensive API reference
+- **[Deployment Guide](./docs/deployment-guide.md)** - Production deployment instructions
+- **[Architecture](./docs/architecture.md)** - System architecture and design diagrams
+
+### Feature & Implementation Guides
+
+- **[Favorites & Bookmarks](./docs/favorites-bookmarks.md)** - Feature implementation details
+- **[Technical Requirements](./docs/technical-requirements.md)** - Complete technical specifications
+- **[Testing Strategy](./docs/testing-strategy.md)** - Testing methodology and best practices
+- **[Troubleshooting](./docs/troubleshooting.md)** - Issue resolution and debugging guide
+
+### Quick Links
+
+- [Environment Setup](./docs/development-setup.md#environment-setup)
+- [Database Setup](./docs/development-setup.md#database-setup)
+- [API Endpoints](./docs/api-documentation.md#authentication-endpoints)
+- [Docker Deployment](./docs/deployment-guide.md#option-2-docker-deployment)
+- [System Architecture](./docs/architecture.md#system-overview)
+- [Test Coverage](./docs/testing-strategy.md#test-coverage)
+- [Common Issues](./docs/troubleshooting.md#quick-diagnostics)
+
+## 🎨 Themes & Customization
+
+The application features 12 beautiful color themes:
+
+| Theme | Description | Primary Color |
+|-------|-------------|---------------|
+| **Ocean Blue** | Default theme with sky blue accents | `#0ea5e9` |
+| **Emerald Forest** | Fresh green nature theme | `#10b981` |
+| **Royal Blue** | Classic professional blue | `#3b82f6` |
+| **Purple Haze** | Modern purple gradient | `#a855f7` |
+| **Rose Garden** | Elegant pink theme | `#f43f5e` |
+| **Sunset Orange** | Warm orange glow | `#f97316` |
+| **Amber Sunset** | Golden amber theme | `#f59e0b` |
+| **Deep Teal** | Sophisticated teal | `#14b8a6` |
+| **Crimson Red** | Bold red accents | `#dc2626` |
+| **Forest Green** | Deep natural green | `#059669` |
+| **Sunset Pink** | Soft pink sunset | `#ec4899` |
+| **Electric Purple** | Vibrant electric purple | `#8b5cf6` |
 
 ## 🧪 Testing
 
-### Running Tests
+The application includes comprehensive testing with 82 tests:
 
 ```bash
 # Run all tests
 npm test
 
-# Run tests with coverage
-npm run test:coverage
+# Backend tests (54 tests)
+cd apps/backend && npm test
 
-# Run tests in watch mode
+# Frontend tests (28 tests)  
+cd apps/frontend && npm test
+
+# Watch mode for development
 npm run test:watch
-
-# Run linting
-npm run lint
-
-# Run type checking
-npm run typecheck
 ```
 
 ### Test Coverage
 
-The project maintains high test coverage:
+- **Authentication**: Registration, login, JWT handling
+- **Recipe Management**: CRUD operations, filtering, search
+- **Favorites & Bookmarks**: Add/remove functionality
+- **Image Upload**: File validation and optimization
+- **API Endpoints**: All routes with error scenarios
+- **UI Components**: React component testing
+- **Hooks**: Custom hooks with edge cases
 
-- **Statements**: 94%+
-- **Branches**: 85%+
-- **Functions**: 86%+
-- **Lines**: 95%+
+## 🚢 Deployment
 
-## 🚀 Deployment
+### Option 1: Traditional Server
 
-### Production Build
+Deploy to any VPS or dedicated server with PostgreSQL, Nginx, and PM2.
 
-```bash
-# Build all packages
-npm run build
+### Option 2: Docker
 
-# Build specific package
-npm run build --workspace=@recipe-manager/client
-npm run build --workspace=@recipe-manager/server
+Containerized deployment with Docker Compose including database, backend, frontend, and reverse proxy.
+
+### Option 3: Cloud Platforms
+
+Deploy frontend to Vercel/Netlify and backend to Railway/Heroku with managed PostgreSQL.
+
+See the [Deployment Guide](./docs/deployment-guide.md) for detailed instructions.
+
+## 📊 Project Stats
+
+- **Languages**: TypeScript (95%), CSS (3%), HTML (2%)
+- **Total Lines**: ~15,000 lines of code
+- **Tests**: 82 passing tests (54 backend + 28 frontend)
+- **Components**: 25+ reusable React components
+- **API Endpoints**: 20+ RESTful endpoints
+- **Database Tables**: 4 main entities with relationships
+
+## 🏗️ Architecture
+
+```text
+Recipe-Manager-SPA/
+├── apps/
+│   ├── backend/                    # Node.js/Express API
+│   │   ├── src/
+│   │   │   ├── controllers/        # Route handlers
+│   │   │   ├── services/          # Business logic
+│   │   │   ├── middleware/        # Express middleware
+│   │   │   ├── routes/            # API routes
+│   │   │   ├── prisma/            # Database schema
+│   │   │   └── tests/             # Backend tests
+│   │   └── uploads/               # File uploads
+│   └── frontend/                   # React SPA
+│       ├── src/
+│       │   ├── components/        # UI components
+│       │   ├── pages/             # Route pages
+│       │   ├── hooks/             # Custom hooks
+│       │   ├── services/          # API client
+│       │   └── __tests__/         # Frontend tests
+├── packages/shared-types/          # Shared TypeScript types
+└── docs/                          # Documentation
 ```
 
-### Docker Production
+## 🔧 Key Features Deep Dive
 
-```bash
-# Build production images
-docker-compose -f docker-compose.prod.yml build
+### Recipe Creation & Management
 
-# Deploy to production
-docker-compose -f docker-compose.prod.yml up -d
-```
+- **Rich Text Editor**: Step-by-step instructions with formatting
+- **Ingredient Lists**: Organized ingredient management
+- **Image Upload**: Automatic WebP conversion and optimization
+- **Metadata**: Cook time, prep time, servings, difficulty ratings
+- **Tags & Categories**: Flexible organization system
 
-### Environment Variables
+### Search & Discovery
 
-**Server (.env):**
+- **Full-Text Search**: Searches across titles, descriptions, and ingredients
+- **Advanced Filters**: Multiple criteria with real-time updates
+- **Smart Sorting**: Multiple sort options with persistent preferences
+- **Pagination**: Efficient loading of large recipe collections
 
-```env
-NODE_ENV=production
-DATABASE_URL=postgresql://postgres:password@localhost:5432/recipe_manager
-JWT_SECRET=your-super-secret-jwt-key
-PORT=3001
-```
+### User Experience
 
-**Client (.env):**
+- **Responsive Design**: Mobile-first approach with perfect tablet/desktop scaling
+- **Accessibility**: ARIA labels, keyboard navigation, screen reader support
+- **Performance**: Optimized images, lazy loading, efficient data fetching
+- **Offline Ready**: Service worker for offline browsing (planned)
 
-```env
-VITE_API_URL=http://localhost:3001
-```
+## 🛣️ Roadmap
 
-## 🔧 Development
+### Short Term (Next Release)
 
-### Code Quality
+- [ ] Recipe collections and meal planning
+- [ ] Social features (recipe sharing, comments)
+- [ ] Advanced search with nutritional filters
+- [ ] Shopping list generation
+- [ ] Recipe rating system
 
-- **ESLint**: Configured with TypeScript and React rules
-- **Prettier**: Consistent code formatting
-- **Husky**: Pre-commit hooks for quality checks
-- **TypeScript**: Strict mode with additional checks
+### Long Term
 
-### Database Schema
-
-The application uses PostgreSQL with the following main tables:
-
-- `users`: User accounts and authentication
-- `recipes`: Recipe information and metadata
-- `recipe_ingredients`: Recipe ingredients with amounts
-- `recipe_steps`: Cooking instructions and steps
-
-### Adding New Features
-
-1. **Create feature branch**: `git checkout -b feature/new-feature`
-2. **Implement changes** with tests
-3. **Run quality checks**: `npm run lint && npm test`
-4. **Commit changes**: Follow conventional commit format
-5. **Create pull request** with description
+- [ ] Mobile app (React Native)
+- [ ] AI-powered recipe recommendations
+- [ ] Integration with grocery delivery services
+- [ ] Video tutorial support
+- [ ] Multi-language support
 
 ## 🤝 Contributing
 
-### Development Workflow
+We welcome contributions! Please see our contributing guidelines:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes with tests
-4. Ensure all tests pass
-5. Submit a pull request
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes** and add tests
+4. **Run the test suite**: `npm test`
+5. **Commit your changes**: `git commit -m 'Add amazing feature'`
+6. **Push to the branch**: `git push origin feature/amazing-feature`
+7. **Open a Pull Request**
 
-### Code Style
+### Development Guidelines
 
-- Use TypeScript for all new code
-- Follow the existing code style
-- Add tests for new functionality
-- Update documentation as needed
+- Follow TypeScript best practices
+- Maintain test coverage above 80%
+- Use conventional commit messages
+- Update documentation for new features
+- Ensure responsive design compliance
 
 ## 📝 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- Built with modern web technologies
-- Follows industry best practices
-- Designed for scalability and maintainability
-- Comprehensive testing and documentation
+- **Design Inspiration**: Modern recipe apps and food blogs
+- **UI Components**: Custom components built with Tailwind CSS
+- **Icons**: Lucide React icon library
+- **Image Optimization**: Sharp library for WebP conversion
+- **Database**: Prisma ORM for type-safe database operations
+
+## 📞 Support
+
+For support and questions:
+
+1. **Documentation**: Check the [docs folder](./docs/) for detailed guides
+   - [Troubleshooting Guide](./docs/troubleshooting.md) for common issues
+   - [Testing Strategy](./docs/testing-strategy.md) for test-related problems
+   - [Architecture Guide](./docs/architecture.md) for system understanding
+2. **Issues**: Create a GitHub issue for bugs or feature requests
+3. **Health Check**: Visit `/health` endpoint for system status
+4. **Logs**: Check application logs for debugging information
+
+## 🔗 Links
+
+- **Live Demo**: [Coming Soon]
+- **API Documentation**: [View Docs](./docs/api-documentation.md)
+- **Development Guide**: [Get Started](./docs/development-setup.md)
+- **Deployment Guide**: [Deploy Now](./docs/deployment-guide.md)
 
 ---
 
-For more detailed information, see the individual package README files in the `packages/` directory.
+**Built with ❤️ using modern web technologies**
+
+*Recipe Manager SPA - Making cooking and recipe management a delightful experience.*

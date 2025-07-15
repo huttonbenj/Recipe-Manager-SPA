@@ -5,60 +5,32 @@ services:
     image: postgres:15-alpine
     container_name: recipe-manager-db
     environment:
+      POSTGRES_USER: recipe_user
+      POSTGRES_PASSWORD: recipe_password
       POSTGRES_DB: recipe_manager
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./packages/server/src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U recipe_user -d recipe_manager"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  server:
-    build:
-      context: .
-      dockerfile: packages/server/Dockerfile
-    container_name: recipe-manager-server
-    environment:
-      NODE_ENV: development
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/recipe_manager
-      JWT_SECRET: your-super-secret-jwt-key-change-in-production
-      PORT: 3001
+  redis:
+    image: redis:7-alpine
+    container_name: recipe-manager-redis
     ports:
-      - "3001:3001"
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - "6379:6379"
+    command: redis-server --appendonly yes
     volumes:
-      - ./packages/server/src:/app/src
-      - ./packages/shared:/app/shared
-      - /app/node_modules
-    command: npm run dev
-    restart: unless-stopped
-
-  client:
-    build:
-      context: .
-      dockerfile: packages/client/Dockerfile
-    container_name: recipe-manager-client
-    environment:
-      NODE_ENV: development
-      VITE_API_URL: http://localhost:3001
-    ports:
-      - "3000:3000"
-    depends_on:
-      - server
-    volumes:
-      - ./packages/client/src:/app/src
-      - ./packages/shared:/app/shared
-      - /app/node_modules
-    command: npm run dev
-    restart: unless-stopped
+      - redis_data:/data
 
 volumes:
   postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: recipe-manager-network

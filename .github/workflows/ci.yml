@@ -6,12 +6,19 @@ on:
   pull_request:
     branches: [main, develop]
 
+env:
+  NODE_VERSION: '18'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  # Quality Checks Job
+  # Job 1: Code Quality Checks
   quality:
+    name: Code Quality
     runs-on: ubuntu-latest
-    name: Code Quality & Type Checking
-
+    strategy:
+      matrix:
+        workspace: [apps/frontend, apps/backend]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,30 +26,25 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Type checking
-        run: npm run typecheck
+      - name: Run ESLint
+        run: npm run lint --workspace=${{ matrix.workspace }}
 
-      - name: Strict type checking
-        run: npm run typecheck:strict
+      - name: Run Prettier check
+        run: npm run format:check
 
-      - name: Lint code
-        run: npm run lint
+      - name: TypeScript type check
+        run: npm run type-check --workspace=${{ matrix.workspace }}
 
-      - name: Check all quality gates
-        run: npm run check:all
-
-  # Unit & Integration Tests
-  test:
+  # Job 2: Security Scanning
+  security:
+    name: Security Scan
     runs-on: ubuntu-latest
-    name: Unit & Integration Tests
-    needs: quality
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,101 +52,65 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests with coverage
-        run: npm run test:coverage
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  # Job 3: Frontend Tests
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run frontend tests
+        run: npm run test:coverage --workspace=apps/frontend
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/clover.xml,./coverage/lcov.info
-          flags: unit-tests
-          name: unit-integration-coverage
-          fail_ci_if_error: true
+          file: ./apps/frontend/coverage/clover.xml
+          flags: frontend
+          name: frontend-coverage
 
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results
-          path: |
-            test-results/
-            coverage/
-          retention-days: 30
-
-  # End-to-End Tests (Cypress)
-  e2e-cypress:
+  # Job 4: Backend Tests
+  test-backend:
+    name: Backend Tests
     runs-on: ubuntu-latest
-    name: E2E Tests (Cypress)
-    needs: [quality, test]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build applications
-        run: |
-          npm run build --workspace=packages/shared
-          npm run build --workspace=packages/server
-          npm run build --workspace=packages/client
-
-      - name: Start server
-        run: |
-          npm run start --workspace=packages/server &
-          sleep 5
+    services:
+      postgres:
+        image: postgres:15
         env:
-          NODE_ENV: test
-
-      - name: Start client
-        run: |
-          npm run preview --workspace=packages/client &
-          sleep 5
-
-      - name: Wait for services
-        run: |
-          # Timeout should match TEST_CONFIG.CI_TIMEOUT from shared constants (60000ms)
-          npx wait-on http://localhost:3000 http://localhost:3001 --timeout 60000
-
-      - name: Run Cypress tests
-        run: npm run test:e2e:cypress:headless
-
-      - name: Upload Cypress screenshots
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: packages/e2e/cypress/screenshots
-          retention-days: 30
-
-      - name: Upload Cypress videos
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-videos
-          path: packages/e2e/cypress/videos
-          retention-days: 30
-
-  # End-to-End Tests (Playwright)
-  e2e-playwright:
-    runs-on: ubuntu-latest
-    name: E2E Tests (Playwright)
-    needs: [quality, test]
-
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: recipe_manager_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -152,80 +118,40 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Build applications
+      - name: Setup test database
         run: |
-          npm run build --workspace=packages/shared
-          npm run build --workspace=packages/server
-          npm run build --workspace=packages/client
-
-      - name: Start server
-        run: |
-          npm run start --workspace=packages/server &
-          sleep 5
+          npm run db:migrate --workspace=apps/backend
         env:
-          NODE_ENV: test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_manager_test
 
-      - name: Start client
-        run: |
-          npm run preview --workspace=packages/client &
-          sleep 5
+      - name: Run backend tests
+        run: npm run test:coverage --workspace=apps/backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_manager_test
+          JWT_SECRET: test-secret-key-for-ci-only-minimum-32-chars
+          JWT_REFRESH_SECRET: test-refresh-secret-key-for-ci-only-minimum-32-chars
 
-      - name: Wait for services
-        run: |
-          # Timeout should match TEST_CONFIG.CI_TIMEOUT from shared constants (60000ms)
-          npx wait-on http://localhost:3000 http://localhost:3001 --timeout 60000
-
-      - name: Run Playwright tests
-        run: npm run test:e2e
-
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
-        if: always()
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          file: ./apps/backend/coverage/clover.xml
+          flags: backend
+          name: backend-coverage
 
-  # Security Audit
-  security:
-    runs-on: ubuntu-latest
-    name: Security Audit
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run security audit
-        run: npm audit --audit-level=high
-
-      - name: Run license check
-        run: npx license-checker --summary
-
-  # Build & Deploy (Production)
+  # Job 5: Build Applications
   build:
-    runs-on: ubuntu-latest
     name: Build Applications
-    needs: [quality, test]
-    if: github.ref == 'refs/heads/main'
-
+    runs-on: ubuntu-latest
+    needs: [quality, security, test-frontend, test-backend]
+    strategy:
+      matrix:
+        workspace: [apps/frontend, apps/backend]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -233,66 +159,144 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build all packages
-        run: |
-          npm run build --workspace=packages/shared
-          npm run build --workspace=packages/server
-          npm run build --workspace=packages/client
+      - name: Build application
+        run: npm run build --workspace=${{ matrix.workspace }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: build-${{ matrix.workspace }}
           path: |
-            packages/*/dist/
-            packages/*/build/
-          retention-days: 7
+            ${{ matrix.workspace }}/dist
+            ${{ matrix.workspace }}/build
+          retention-days: 30
 
-  # Coverage Report
-  coverage-report:
+  # Job 6: Performance Tests
+  performance:
+    name: Performance Tests
     runs-on: ubuntu-latest
-    name: Coverage Report
-    needs: [test, e2e-cypress]
-    if: always()
-
+    needs: [build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download test artifacts
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: test-results
+          name: build-apps/frontend
+          path: apps/frontend/dist
 
-      - name: Generate coverage report
-        run: |
-          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo "Coverage reports have been uploaded to Codecov" >> $GITHUB_STEP_SUMMARY
-          echo "- Unit Tests: ✅" >> $GITHUB_STEP_SUMMARY
-          echo "- Integration Tests: ✅" >> $GITHUB_STEP_SUMMARY
-          echo "- E2E Tests: ✅" >> $GITHUB_STEP_SUMMARY
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './apps/frontend/lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
 
-  # Notification
-  notify:
+  # Job 7: Docker Build and Push
+  docker:
+    name: Docker Build & Push
     runs-on: ubuntu-latest
-    name: Notify Results
-    needs: [quality, test, e2e-cypress, e2e-playwright, security, build]
-    if: always()
-
+    needs: [build]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        service: [frontend, backend]
     steps:
-      - name: Notify success
-        if: needs.quality.result == 'success' && needs.test.result == 'success'
-        run: |
-          echo "🎉 All tests passed! Ready for deployment." >> $GITHUB_STEP_SUMMARY
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Notify failure
-        if: needs.quality.result == 'failure' || needs.test.result == 'failure'
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.service }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/${{ matrix.service }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Job 8: Deploy to Staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [docker]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    environment: staging
+    steps:
+      - name: Deploy to staging
         run: |
-          echo "❌ Tests failed. Please check the logs." >> $GITHUB_STEP_SUMMARY
-          exit 1
+          echo "Deploying to staging environment..."
+          # Add your deployment scripts here
+          # Example: kubectl apply -f k8s/staging/
+
+  # Job 9: Deploy to Production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [docker, performance]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment..."
+          # Add your deployment scripts here
+          # Example: kubectl apply -f k8s/production/
+
+  # Job 10: Notify Teams
+  notify:
+    name: Notify Teams
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success' || needs.deploy-staging.result == 'failure' || needs.deploy-production.result == 'failure')
+    steps:
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Deployment Status: ${{ job.status }}
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
