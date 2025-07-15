@@ -190,7 +190,7 @@ const RecipeList: React.FC<RecipeListProps> = ({
                     className="flex items-center justify-center mt-8"
                     aria-label="Pagination"
                 >
-                    <ul className="flex items-center space-x-2">
+                    <ul className="flex items-center space-x-3">
                         {/* Previous Button */}
                         <li>
                             <Button
@@ -198,10 +198,11 @@ const RecipeList: React.FC<RecipeListProps> = ({
                                 size="sm"
                                 onClick={() => handlePageChange(pagination.page - 1)}
                                 disabled={!pagination.hasPrev}
-                                className="flex items-center"
+                                className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary-100 dark:bg-secondary-800 border-secondary-200 dark:border-secondary-700 shadow-sm sm:rounded-lg sm:w-auto"
                                 aria-label="Previous page"
-                                leftIcon={<ChevronLeft className="h-4 w-4" />}>
-                                <span className="hidden sm:inline">Previous</span>
+                            >
+                                <ChevronLeft className="h-5 w-5 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline ml-1">Previous</span>
                             </Button>
                         </li>
 
@@ -209,13 +210,16 @@ const RecipeList: React.FC<RecipeListProps> = ({
                         {getPageNumbers().map((pageNum, index) => (
                             <li key={`page-${pageNum}-${index}`}>
                                 {pageNum === '...' ? (
-                                    <span className="px-3 py-2 text-secondary-500 dark:text-secondary-400">...</span>
+                                    <span className="flex items-center justify-center w-10 h-10 text-secondary-500 dark:text-secondary-400">...</span>
                                 ) : (
                                     <Button
                                         variant={pageNum === pagination.page ? 'primary' : 'outline'}
                                         size="sm"
                                         onClick={() => handlePageChange(pageNum as number)}
-                                        className="min-w-[2.5rem]"
+                                        className={`w-10 h-10 rounded-full text-base font-medium shadow-sm sm:rounded-lg 
+                                          ${pageNum === pagination.page
+                                                ? 'bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 dark:border-blue-700 text-white'
+                                                : 'bg-secondary-100 dark:bg-secondary-800 border-secondary-200 dark:border-secondary-700'}`}
                                         aria-label={`Page ${pageNum}`}
                                         aria-current={pageNum === pagination.page ? 'page' : undefined}
                                     >
@@ -232,10 +236,11 @@ const RecipeList: React.FC<RecipeListProps> = ({
                                 size="sm"
                                 onClick={() => handlePageChange(pagination.page + 1)}
                                 disabled={!pagination.hasNext}
-                                className="flex items-center"
+                                className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary-100 dark:bg-secondary-800 border-secondary-200 dark:border-secondary-700 shadow-sm sm:rounded-lg sm:w-auto"
                                 aria-label="Next page"
-                                rightIcon={<ChevronRight className="h-4 w-4" />}>
-                                <span className="hidden sm:inline">Next</span>
+                            >
+                                <span className="hidden sm:inline mr-1">Next</span>
+                                <ChevronRight className="h-5 w-5 sm:h-4 sm:w-4" />
                             </Button>
                         </li>
                     </ul>

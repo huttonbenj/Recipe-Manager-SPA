@@ -25,6 +25,19 @@ const Header: React.FC = () => {
   const userMenuRef = useRef<HTMLDivElement>(null)
   const themeMenuRef = useRef<HTMLDivElement>(null)
 
+  // Effect to lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    // Cleanup on component unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
   const handleLogout = async () => {
     try {
       await logout()
@@ -264,149 +277,116 @@ const Header: React.FC = () => {
                   )}
                 </div>
               ) : (
-                <div className="flex items-center space-x-2">
-                  <Link to="/login">
-                    <Button
-                      variant={isScrolled ? 'outline' : 'ghost'}
-                      size="sm"
-                      className="font-medium"
-                    >
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/register">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="font-medium bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
+                <Link to="/login">
+                  <Button variant="primary" size="sm" className="whitespace-nowrap">Sign In</Button>
+                </Link>
               )}
             </div>
 
-            {/* Enhanced Mobile Menu Button */}
-            <div className="flex items-center space-x-2 lg:hidden">
+            {/* Mobile Actions and Menu Toggle */}
+            <div className="lg:hidden flex items-center space-x-2">
               <ThemeToggle
                 variant="minimal"
                 size="sm"
-                className={`p-2 rounded-lg transition-all duration-300 backdrop-blur-sm ${isScrolled
-                  ? 'text-secondary-900 dark:text-secondary-300 bg-white/20 dark:bg-primary-500/10 border border-white/30 dark:border-primary-500/20 hover:bg-white/30 dark:hover:bg-primary-500/15'
-                  : 'text-secondary-600 dark:text-secondary-300 bg-white/30 dark:bg-primary-500/10 border border-white/40 dark:border-primary-500/20 hover:bg-white/40 dark:hover:bg-primary-500/15'
-                  }`}
+                className="w-9 h-9 p-1.5 rounded-lg text-secondary-700 dark:text-secondary-300 hover:bg-black/5 dark:hover:bg-white/10"
               />
               <button
                 onClick={toggleMobileMenu}
-                className={`p-2 rounded-lg transition-all duration-300 backdrop-blur-sm ${isMobileMenuOpen
-                  ? 'bg-primary-500/20 dark:bg-primary-400/20 border border-primary-500/30 dark:border-primary-400/25 text-primary-600 dark:text-primary-400 shadow-lg shadow-primary-500/10'
-                  : isScrolled
-                    ? 'text-secondary-900 dark:text-secondary-300 bg-white/20 dark:bg-primary-500/10 border border-white/30 dark:border-primary-500/20 hover:bg-white/30 dark:hover:bg-primary-500/15'
-                    : 'text-secondary-700 dark:text-secondary-300 bg-white/30 dark:bg-primary-500/10 border border-white/40 dark:border-primary-500/20 hover:bg-white/40 dark:hover:bg-primary-500/15'
-                  }`}
-                aria-label="Toggle mobile menu"
+                className="inline-flex items-center justify-center p-2 rounded-md text-secondary-700 dark:text-secondary-300 hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+                aria-controls="mobile-menu"
+                aria-expanded={isMobileMenuOpen}
               >
+                <span className="sr-only">Open main menu</span>
                 {isMobileMenuOpen ? (
-                  <X className="w-6 h-6 transition-transform duration-300 rotate-90" />
+                  <X className="block h-7 w-7" aria-hidden="true" />
                 ) : (
-                  <Menu className="w-6 h-6 transition-transform duration-300" />
+                  <Menu className="block h-7 w-7" aria-hidden="true" />
                 )}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Mobile Menu Panel */}
+        {/* Enhanced Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white dark:bg-secondary-900 backdrop-blur-xl border-t border-secondary-200/60 dark:border-secondary-700 shadow-2xl animate-fade-in max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <div className="container mx-auto px-4 sm:px-6 py-6">
-              {/* Mobile Navigation */}
-              <nav className="space-y-1 mb-6">
-                {navigationItems.filter(item => !item.requireAuth || stableAuthState).map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`flex items-center space-x-3 p-4 text-base font-medium rounded-xl transition-all duration-200 ${isActivePath(item.href)
-                        ? 'bg-primary-500/15 dark:bg-primary-400/20 backdrop-blur-sm border border-primary-500/20 dark:border-primary-400/25 text-primary-700 dark:text-primary-300 shadow-lg shadow-primary-500/10'
-                        : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100/70 dark:hover:bg-secondary-800/80 hover:backdrop-blur-sm'
-                      }`}
-                    onClick={closeMobileMenu}
-                  >
-                    <item.icon className={`w-5 h-5 ${isActivePath(item.href)
-                        ? 'text-primary-600 dark:text-primary-400 drop-shadow-sm'
-                        : 'text-primary-500 opacity-70'
-                      }`} />
-                    <span>{item.name}</span>
-                  </Link>
-                ))}
-              </nav>
-
-              {/* Mobile Theme Section */}
-              <div className="mb-6 p-4 bg-secondary-500/5 dark:bg-secondary-400/10 rounded-xl backdrop-blur-sm border border-secondary-500/15 dark:border-secondary-400/20 shadow-lg shadow-secondary-500/5">
-                <h3 className="text-sm font-semibold text-secondary-600 dark:text-secondary-300 mb-4">Theme Settings</h3>
-                <ThemeSelector variant="grid" />
-              </div>
-
-              {/* Mobile Auth Section */}
-              {stableAuthState ? (
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3 p-4 bg-primary-500/10 dark:bg-primary-400/15 backdrop-blur-sm rounded-xl border border-primary-500/20 dark:border-primary-400/25 shadow-lg shadow-primary-500/5">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
-                      <User className="w-6 h-6 text-white" />
+          <div
+            id="mobile-menu"
+            className="lg:hidden absolute top-full left-0 right-0 w-full bg-white dark:bg-secondary-900 shadow-lg animate-slide-up z-40 max-h-[calc(100vh-5rem)] overflow-y-auto"
+          >
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {navigationItems.filter(item => !item.requireAuth || stableAuthState).map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`group flex items-center px-3 py-3 text-base font-medium rounded-md transition-all duration-200 ${isActivePath(item.href)
+                    ? 'text-primary-600 dark:text-primary-300 bg-primary-100/50 dark:bg-primary-500/10'
+                    : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-200/40 dark:hover:bg-secondary-800/60'
+                    }`}
+                  onClick={closeMobileMenu}
+                >
+                  <item.icon className={`w-5 h-5 mr-3 transition-all duration-300 ${isActivePath(item.href) ? '' : 'group-hover:scale-110'
+                    }`} />
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            <div className="pt-4 pb-3 border-t border-secondary-200/60 dark:border-secondary-700/60">
+              {isAuthenticated ? (
+                <>
+                  <div className="flex items-center px-5">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-500 flex items-center justify-center">
+                      <User className="w-5 h-5 text-white" />
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-secondary-900 dark:text-white">
+                    <div className="ml-3">
+                      <div className="text-base font-medium text-secondary-800 dark:text-white">
                         {user?.name || 'User'}
-                      </p>
-                      <p className="text-xs text-secondary-500 dark:text-secondary-400 truncate">
+                      </div>
+                      <div className="text-sm font-medium text-secondary-600 dark:text-secondary-400">
                         {user?.email}
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-1">
+                  <div className="mt-3 px-2 space-y-1">
                     {userMenuItems.map((item) => (
                       <Link
                         key={item.name}
                         to={item.href}
-                        className={`flex items-center space-x-3 p-4 text-base font-medium rounded-xl transition-all duration-200 ${isActivePath(item.href)
-                            ? 'bg-primary-500/15 dark:bg-primary-400/20 backdrop-blur-sm border border-primary-500/20 dark:border-primary-400/25 text-primary-700 dark:text-primary-300 shadow-lg shadow-primary-500/10'
-                            : 'text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100/70 dark:hover:bg-secondary-800/80 hover:backdrop-blur-sm'
-                          }`}
+                        className="block rounded-md px-3 py-3 text-base font-medium text-secondary-700 dark:text-secondary-300 hover:bg-secondary-200/40 dark:hover:bg-secondary-800/60"
                         onClick={closeMobileMenu}
                       >
-                        <item.icon className={`w-5 h-5 ${isActivePath(item.href)
-                            ? 'text-primary-600 dark:text-primary-400 drop-shadow-sm'
-                            : 'text-primary-500 opacity-70'
-                          }`} />
-                        <span>{item.name}</span>
+                        <div className="flex items-center">
+                          <item.icon className="w-5 h-5 mr-3 text-secondary-500 dark:text-secondary-400" />
+                          <span>{item.name}</span>
+                        </div>
                       </Link>
                     ))}
                     <button
-                      onClick={() => { handleLogout(); closeMobileMenu(); }}
-                      className="flex items-center w-full space-x-3 p-4 text-base font-medium text-red-600 dark:text-red-400 hover:bg-red-500/15 dark:hover:bg-red-400/20 hover:backdrop-blur-sm hover:border hover:border-red-500/20 dark:hover:border-red-400/25 rounded-xl transition-all duration-200"
+                      onClick={handleLogout}
+                      className="w-full text-left block rounded-md px-3 py-3 text-base font-medium text-secondary-700 dark:text-secondary-300 hover:bg-secondary-200/40 dark:hover:bg-secondary-800/60"
                     >
-                      <LogOut className="w-5 h-5" />
-                      <span>Logout</span>
+                      <div className="flex items-center">
+                        <LogOut className="w-5 h-5 mr-3 text-secondary-500 dark:text-secondary-400" />
+                        <span>Log Out</span>
+                      </div>
                     </button>
                   </div>
-                </div>
+                </>
               ) : (
-                <div className="flex flex-col space-y-3">
-                  <Link to="/login" className="w-full" onClick={closeMobileMenu}>
-                    <Button variant="outline" className="w-full font-medium">Login</Button>
-                  </Link>
-                  <Link to="/register" className="w-full" onClick={closeMobileMenu}>
-                    <Button className="w-full font-medium bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700">
-                      Sign Up
-                    </Button>
+                <div className="px-5">
+                  <Link to="/login" onClick={closeMobileMenu}>
+                    <Button variant="primary" className="w-full">Sign In</Button>
                   </Link>
                 </div>
               )}
             </div>
+            <div className="p-4 border-t border-secondary-200/60 dark:border-secondary-700/60">
+              <h3 className="text-sm font-semibold text-secondary-900 dark:text-white mb-2 px-1">Choose Your Theme</h3>
+              <ThemeSelector variant="grid" />
+            </div>
           </div>
         )}
       </header>
+      <div className="h-20" /> {/* Spacer for the fixed header */}
     </>
   )
 }

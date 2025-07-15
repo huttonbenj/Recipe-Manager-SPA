@@ -97,13 +97,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
 
         {leftIcon && !isLoading && (
-          <span className="mr-2 -ml-1 flex-shrink-0">{leftIcon}</span>
+          <span className="mr-2 -ml-1 flex-grow-0 flex-shrink-0">{leftIcon}</span>
         )}
 
-        <span>{children}</span>
+        {children}
 
         {rightIcon && (
-          <span className="ml-2 -mr-1 flex-shrink-0">{rightIcon}</span>
+          <span className="ml-2 -mr-1 flex-grow-0 flex-shrink-0">{rightIcon}</span>
         )}
       </button>
     )

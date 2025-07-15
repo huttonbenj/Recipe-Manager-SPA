@@ -1,20 +1,33 @@
 /**
- * Footer component with navigation links and theme controls
+ * Footer component with modern design matching the app's dark theme
  * Provides consistent footer across all pages with responsive design
  */
 
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Github, Heart, Coffee, Mail } from 'lucide-react'
+import { Github, Heart, Coffee, Mail, Instagram, Twitter, ChefHat } from 'lucide-react'
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear()
 
   const navigationLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Recipes', href: '/recipes' },
-    { name: 'About', href: '/about' },
+    { name: 'Recipes', href: '/app/recipes' },
+    { name: 'Favorites', href: '/app/favorites' },
+    { name: 'My Recipes', href: '/app/recipes/create' },
+  ]
+
+  const resourceLinks = [
+    { name: 'About Us', href: '/about' },
+    { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
+    { name: 'Support', href: '/support' },
+  ]
+
+  const legalLinks = [
+    { name: 'Privacy Policy', href: '/privacy' },
+    { name: 'Terms of Service', href: '/terms' },
+    { name: 'Cookie Policy', href: '/cookies' },
   ]
 
   const socialLinks = [
@@ -28,100 +41,139 @@ const Footer: React.FC = () => {
       href: 'mailto:contact@recipemanager.com',
       icon: Mail,
     },
+    {
+      name: 'Instagram',
+      href: 'https://instagram.com/recipemanager',
+      icon: Instagram,
+    },
+    {
+      name: 'Twitter',
+      href: 'https://twitter.com/recipemanager',
+      icon: Twitter,
+    },
   ]
 
   return (
-    <footer className="bg-white dark:bg-secondary-800 border-t border-secondary-200 dark:border-secondary-700 mt-auto">
-      <div className="container mx-auto px-4 py-8 sm:py-12">
-        {/* Main footer content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-          {/* Brand section */}
-          <div className="col-span-1 sm:col-span-2">
-            <Link
-              to="/"
-              className="text-lg sm:text-xl font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <span className="text-xl sm:text-2xl">🍳</span>
-                <span>Recipe Manager</span>
-              </span>
-            </Link>
-            <p className="mt-2 sm:mt-3 text-xs sm:text-sm lg:text-base text-secondary-600 dark:text-secondary-400 max-w-md">
-              Discover, create, and share amazing recipes. Your personal culinary companion for
-              cooking adventures and recipe management.
-            </p>
+    <footer className="mt-auto bg-secondary-900 text-secondary-300">
+      {/* Logo and description */}
+      <div className="container mx-auto py-12 px-6 text-center">
+        <Link to="/" className="inline-flex items-center gap-2">
+          <div className="flex items-center justify-center h-10 w-10 rounded-md bg-primary-500">
+            <ChefHat className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-xl font-bold text-white">Recipe Manager</span>
+        </Link>
 
-            {/* Social links */}
-            <div className="flex space-x-3 sm:space-x-4 mt-3 sm:mt-4">
-              {socialLinks.map((social) => {
-                const Icon = social.icon
-                return (
-                  <a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-secondary-500 dark:text-secondary-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors p-1 rounded-md hover:bg-secondary-100 dark:hover:bg-secondary-700"
-                    aria-label={social.name}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </a>
-                )
-              })}
+        <p className="mt-4 text-sm text-secondary-400 max-w-md mx-auto">
+          Your personal culinary companion for discovering, creating, and sharing amazing recipes.
+        </p>
+
+        {/* Social links */}
+        <div className="flex justify-center space-x-4 mt-6">
+          {socialLinks.map((social) => {
+            const Icon = social.icon
+            return (
+              <a
+                key={social.name}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center h-10 w-10 rounded-full bg-secondary-800 text-secondary-400 hover:text-primary-400 hover:bg-secondary-700 transition-colors"
+                aria-label={social.name}
+              >
+                <Icon className="w-4 h-4" />
+              </a>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Horizontal line */}
+      <div className="border-t border-secondary-800"></div>
+
+      {/* Links section with card-like sections */}
+      <div className="container mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {/* Navigation */}
+          <div className="overflow-hidden rounded-lg border border-[#2a3749] bg-[#1e293b] text-center">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-primary-400 mb-4">
+                Navigation
+              </h3>
+              <ul className="space-y-3">
+                {navigationLinks.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      to={link.href}
+                      className="text-sm text-secondary-300 hover:text-primary-400 transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* Navigation links */}
-          <div className="col-span-1">
-            <h3 className="text-xs sm:text-sm font-semibold text-secondary-900 dark:text-secondary-100 uppercase tracking-wider mb-2 sm:mb-3 lg:mb-4">
-              Navigation
-            </h3>
-            <ul className="space-y-1 sm:space-y-2 lg:space-y-3">
-              {navigationLinks.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors block py-0.5 sm:py-1"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Resources */}
+          <div className="overflow-hidden rounded-lg border border-[#2a3749] bg-[#1e293b] text-center">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-primary-400 mb-4">
+                Resources
+              </h3>
+              <ul className="space-y-3">
+                {resourceLinks.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      to={link.href}
+                      className="text-sm text-secondary-300 hover:text-primary-400 transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Legal */}
+          <div className="overflow-hidden rounded-lg border border-[#2a3749] bg-[#1e293b] text-center">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-primary-400 mb-4">
+                Legal
+              </h3>
+              <ul className="space-y-3">
+                {legalLinks.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      to={link.href}
+                      className="text-sm text-secondary-300 hover:text-primary-400 transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom bar */}
-        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-secondary-200 dark:border-secondary-700">
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 gap-4">
-            {/* Copyright */}
-            <div className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400 text-center sm:text-left">
-              © {currentYear} Recipe Manager. All rights reserved.
-            </div>
-
-            {/* Legal links */}
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 items-center">
-              <Link
-                to="/privacy"
-                className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center py-1"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                to="/terms"
-                className="text-xs sm:text-sm text-secondary-600 dark:text-secondary-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center py-1"
-              >
-                Terms of Service
-              </Link>
-            </div>
-
+      {/* Bottom bar */}
+      <div className="border-t border-secondary-800">
+        <div className="container mx-auto px-6 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
             {/* Made with love */}
-            <div className="flex items-center text-xs sm:text-sm text-secondary-600 dark:text-secondary-400">
-              <span className="hidden sm:inline">Made with</span>
-              <span className="sm:hidden">Made with</span>
-              <Heart className="w-3 h-3 sm:w-4 sm:h-4 mx-1 text-red-500 animate-pulse" />
-              <span className="hidden sm:inline">and</span>
-              <Coffee className="w-3 h-3 sm:w-4 sm:h-4 ml-1 text-amber-600 dark:text-amber-500" />
+            <div className="flex items-center text-xs text-secondary-500">
+              <span>Made with</span>
+              <Heart className="w-3 h-3 mx-1 text-red-500 animate-pulse" />
+              <span>and</span>
+              <Coffee className="w-3 h-3 ml-1 text-amber-600" />
+            </div>
+
+            {/* Copyright */}
+            <div className="text-xs text-secondary-500">
+              © {currentYear} Recipe Manager. All rights reserved.
             </div>
           </div>
         </div>

@@ -141,13 +141,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                     padding="none"
                     className="overflow-hidden animate-fade-in"
                 >
-                    <div className="flex flex-col sm:flex-row items-stretch h-36">
+                    <div className="flex flex-row items-stretch h-44">
                         {/* Recipe Image */}
                         <Link
                             to={`/app/recipes/${recipe.id}`}
                             className="block group"
                         >
-                            <div className="relative w-full sm:w-48 h-full bg-secondary-200 dark:bg-secondary-700 flex-shrink-0">
+                            <div className="relative w-32 sm:w-48 h-full bg-secondary-200 dark:bg-secondary-700 flex-shrink-0">
                                 <img
                                     src={getImageUrl()}
                                     alt={recipe.title}
@@ -189,11 +189,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                         </h3>
                                     </Link>
 
-                                    {recipe.description && (
-                                        <p className="text-sm text-secondary-600 dark:text-secondary-400 line-clamp-2">
-                                            {recipe.description}
-                                        </p>
-                                    )}
+                                    {/* Set a min-height to prevent layout shifts when description is short or missing */}
+                                    <div className="min-h-[2.5rem]">
+                                        {recipe.description && (
+                                            <p className="text-sm text-secondary-600 dark:text-secondary-400 line-clamp-2">
+                                                {recipe.description}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Action buttons */}
@@ -252,38 +255,35 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                                 )}
                             </div>
 
-                            {/* Tags */}
-                            {recipe.tags && recipe.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mb-3">
-                                    {recipe.tags.slice(0, 4).map((tag) => (
-                                        <Badge key={tag} variant="secondary" className="text-xs">
-                                            {tag}
-                                        </Badge>
-                                    ))}
-                                    {recipe.tags.length > 4 && (
-                                        <Badge variant="secondary" className="text-xs">
-                                            +{recipe.tags.length - 4}
-                                        </Badge>
+                            {/* Footer with meta and tags */}
+                            <div className="mt-auto">
+                                {/* Tags */}
+                                {recipe.tags && recipe.tags.length > 0 && (
+                                    <div className="flex flex-wrap items-center gap-2 mb-2 h-7 overflow-hidden">
+                                        {recipe.tags.slice(0, 4).map(tag => (
+                                            <Badge key={tag} variant="secondary" size="sm">{tag}</Badge>
+                                        ))}
+                                        {recipe.tags.length > 4 && (
+                                            <Badge variant="secondary" size="sm">+{recipe.tags.length - 4}</Badge>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Meta info */}
+                                <div className="flex items-center space-x-4 text-sm text-secondary-600 dark:text-secondary-400 flex-shrink-0">
+                                    {recipe.cookTime && (
+                                        <div className="flex items-center">
+                                            <Clock className="h-4 w-4 mr-2" />
+                                            {formatCookTime(recipe.cookTime)}
+                                        </div>
+                                    )}
+                                    {recipe.servings && (
+                                        <div className="flex items-center">
+                                            <Users className="h-4 w-4 mr-2" />
+                                            {recipe.servings}
+                                        </div>
                                     )}
                                 </div>
-                            )}
-
-                            {/* Meta info */}
-                            <div className="flex items-center space-x-4 text-sm text-secondary-600 dark:text-secondary-400 mt-auto">
-                                <span className="flex items-center">
-                                    <Clock className="w-4 h-4 mr-1.5 text-secondary-400 dark:text-secondary-500" />
-                                    {formatCookTime(recipe.cookTime)}
-                                </span>
-                                <span className="flex items-center">
-                                    <Users className="w-4 h-4 mr-1.5 text-secondary-400 dark:text-secondary-500" />
-                                    {recipe.servings} serving{recipe.servings !== 1 ? 's' : ''}
-                                </span>
-                                {recipe.rating && recipe.rating > 0 && (
-                                    <span className="flex items-center">
-                                        <Star className="w-4 h-4 mr-1.5 text-yellow-500" />
-                                        {recipe.rating.toFixed(1)}
-                                    </span>
-                                )}
                             </div>
                         </div>
                     </div>
