@@ -39,6 +39,8 @@ export default defineConfig({
       '@/types': path.resolve(__dirname, './src/types'),
       '@/context': path.resolve(__dirname, './src/context'),
       '@/styles': path.resolve(__dirname, './src/styles'),
+      '@recipe-manager/shared-types': path.resolve(__dirname, '../../packages/shared-types/dist'),
+      '@/__tests__': path.resolve(__dirname, './src/__tests__'),
     }
   },
 })

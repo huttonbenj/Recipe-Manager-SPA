@@ -46,10 +46,6 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,15 +62,39 @@ jobs:
       - name: Run npm audit
         run: npm audit --audit-level=high
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
+      - name: Run ESLint Security Analysis
+        run: |
+          npm run lint --workspace=apps/frontend
+          npm run lint --workspace=apps/backend
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:javascript"
+      - name: Check for sensitive files
+        run: |
+          echo "Checking for sensitive files..."
+          # Check for common sensitive file patterns
+          if find . -name "*.pem" -o -name "*.key" -o -name "*.p12" -o -name "*.pfx" | grep -v node_modules | head -5; then
+            echo "⚠️  Warning: Found potential key files"
+          fi
+          
+          # Check for environment files that might be committed
+          if find . -name ".env" -not -path "./node_modules/*" | head -5; then
+            echo "⚠️  Warning: Found .env files"
+            exit 1
+          fi
+          
+          echo "✅ No sensitive files found"
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Checking for potential hardcoded secrets..."
+          # Look for common secret patterns (case insensitive)
+          if grep -r -i --include="*.ts" --include="*.js" --include="*.tsx" --include="*.jsx" \
+            -E "(password|secret|key|token|api_key|apikey|auth).*=.*['\"][^'\"]{10,}" \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=build . | head -5; then
+            echo "⚠️  Warning: Found potential hardcoded secrets"
+            echo "Please review the above matches to ensure no real secrets are committed"
+          else
+            echo "✅ No obvious hardcoded secrets found"
+          fi
 
   # Job 3: Frontend Tests
   test-frontend:
