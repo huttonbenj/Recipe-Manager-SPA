@@ -1,0 +1,129 @@
+name: CI/CD Pipeline (Lite)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # Combined job to reduce minutes usage
+  build-and-test:
+    name: Build, Test & Quality Check
+    runs-on: ubuntu-latest
+    # Only run on relevant changes to save minutes
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: recipe_manager_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Code Quality Checks
+      - name: Run ESLint (Frontend)
+        run: npm run lint --workspace=apps/frontend
+
+      - name: Run ESLint (Backend) 
+        run: npm run lint --workspace=apps/backend
+
+      - name: TypeScript Check (Frontend)
+        run: npm run type-check --workspace=apps/frontend
+
+      - name: TypeScript Check (Backend)
+        run: npm run type-check --workspace=apps/backend
+
+      # Security Scanning (lightweight)
+      - name: Security Audit
+        run: npm audit --audit-level=high
+
+      - name: Check for sensitive files
+        run: |
+          if find . -name ".env" -not -path "./node_modules/*" | head -1; then
+            echo "❌ Found .env files in repository"
+            exit 1
+          fi
+          echo "✅ No sensitive files found"
+
+      # Frontend Tests
+      - name: Build shared packages
+        run: npm run build --workspace=packages/shared-types
+
+      - name: Run Frontend Tests
+        run: npm run test --workspace=apps/frontend
+
+      # Backend Tests
+      - name: Setup test database
+        run: |
+          npm run db:generate --workspace=apps/backend
+          npm run db:migrate --workspace=apps/backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_manager_test
+
+      - name: Run Backend Tests
+        run: npm run test --workspace=apps/backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_manager_test
+          JWT_SECRET: test-secret-key-for-ci-only-minimum-32-chars
+          JWT_REFRESH_SECRET: test-refresh-secret-key-for-ci-only-minimum-32-chars
+
+      # Build Applications
+      - name: Build Frontend
+        run: npm run build --workspace=apps/frontend
+
+      - name: Build Backend
+        run: npm run build --workspace=apps/backend
+
+      # Simple deployment notification
+      - name: Deployment Status
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "✅ All checks passed! Ready for deployment."
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+
+  # Minimal Docker build (only on main branch to save minutes)
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [build-and-test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Frontend Docker Image
+        run: |
+          docker build -f apps/frontend/Dockerfile.prod -t recipe-frontend .
+          echo "✅ Frontend Docker image built successfully"
+
+      - name: Build Backend Docker Image  
+        run: |
+          docker build -f apps/backend/Dockerfile.prod -t recipe-backend .
+          echo "✅ Backend Docker image built successfully" 
