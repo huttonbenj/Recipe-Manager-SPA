@@ -15,8 +15,8 @@ const router = Router()
  */
 router.get('/health', async (req, res) => {
   try {
-    // Check database connection
-    await prisma.$queryRaw`SELECT 1`
+    // Check database connection with queryCompiler-compatible operation
+    await prisma.user.findFirst({ take: 1 })
     
     res.status(200).json({
       status: 'healthy',
@@ -66,8 +66,8 @@ router.get('/health/detailed', async (req, res) => {
  */
 router.get('/ready', async (req, res) => {
   try {
-    // Check if database is ready
-    await prisma.$queryRaw`SELECT 1`
+    // Check if database is ready with queryCompiler-compatible operation
+    await prisma.user.findFirst({ take: 1 })
     
     res.status(200).json({
       status: 'ready',

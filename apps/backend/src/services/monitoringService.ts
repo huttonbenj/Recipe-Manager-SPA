@@ -79,7 +79,7 @@ class MonitoringService {
     let dbResponseTime = 0
     
     try {
-      await prisma.$queryRaw`SELECT 1`
+      await prisma.user.findFirst({ take: 1 })
       dbConnectionStatus = true
       dbResponseTime = performance.now() - dbStartTime
     } catch (error) {
