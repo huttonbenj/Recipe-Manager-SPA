@@ -53,7 +53,7 @@ const RecipeDetail: React.FC = () => {
 
   // Fetch recipe data - disable during deletion to prevent 404 errors
   const { data: recipe, isLoading, error: queryError } = useRecipe(id!, {
-    enabled: !deleteMutation.isPending,
+    enabled: !deleteMutation.isPending && !deleteMutation.isSuccess,
   })
 
   // Loading state
@@ -131,8 +131,10 @@ const RecipeDetail: React.FC = () => {
   const confirmDelete = () => {
     deleteMutation.mutate(id!, {
       onSuccess: () => {
+        // Close the modal
+        setIsDeleteModalOpen(false)
         // Navigate back to recipes list after deletion
-        navigate('/recipes')
+        navigate('/recipes', { replace: true })
       }
     })
   }

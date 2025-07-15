@@ -57,7 +57,8 @@ const searchQuerySchema = Joi.object({
   page: Joi.number().min(1).optional(),
   limit: Joi.number().min(1).max(100).optional(),
   sortBy: Joi.string().valid('title', 'createdAt', 'cookTime', 'prepTime', 'difficulty', 'relevance').optional(),
-  sortOrder: Joi.string().valid('asc', 'desc').optional()
+  sortOrder: Joi.string().valid('asc', 'desc').optional(),
+  _t: Joi.string().optional() // Cache busting parameter
 })
 
 export class RecipeController {

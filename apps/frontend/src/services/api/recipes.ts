@@ -3,11 +3,16 @@
  */
 
 import { apiClient } from './client'
-import type { Recipe, CreateRecipeData, RecipeSearchParams, PaginationInfo } from '@/types'
+import type { Recipe, CreateRecipeData, RecipeSearchParams } from '@/types'
 
 export interface RecipeListResponse {
   recipes: Recipe[]
-  pagination: PaginationInfo
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+  hasNext: boolean
+  hasPrev: boolean
 }
 
 export const recipesApi = {
@@ -15,7 +20,7 @@ export const recipesApi = {
    * Get all recipes with optional filtering and pagination
    */
   async getRecipes(params?: RecipeSearchParams): Promise<RecipeListResponse> {
-    console.log('[API] getRecipes params:', params)
+
     const searchParams = new URLSearchParams()
     
     if (params) {
@@ -37,7 +42,6 @@ export const recipesApi = {
     }
     
     const response = await apiClient.get(`/recipes?${searchParams}`)
-    console.log('[API] getRecipes response:', response.data)
     
     // Extract data from the backend response structure
     // Backend returns: { success: boolean, data: { recipes: Recipe[], total: number, ... }, message: string }
@@ -45,14 +49,12 @@ export const recipesApi = {
     
     return {
       recipes: data.recipes || [],
-      pagination: {
-        total: data.total || 0,
-        page: data.page || 1,
-        limit: data.limit || 20,
-        totalPages: data.totalPages || 1,
-        hasNext: data.hasNext || false,
-        hasPrev: data.hasPrev || false
-      }
+      total: data.total || 0,
+      page: data.page || 1,
+      limit: data.limit || 20,
+      totalPages: data.totalPages || 1,
+      hasNext: data.hasNext || false,
+      hasPrev: data.hasPrev || false
     }
   },
 
@@ -140,14 +142,12 @@ export const recipesApi = {
     
     return {
       recipes: data.recipes || [],
-      pagination: {
-        total: data.total || 0,
-        page: data.page || 1,
-        limit: data.limit || 20,
-        totalPages: data.totalPages || 1,
-        hasNext: data.hasNext || false,
-        hasPrev: data.hasPrev || false
-      }
+      total: data.total || 0,
+      page: data.page || 1,
+      limit: data.limit || 20,
+      totalPages: data.totalPages || 1,
+      hasNext: data.hasNext || false,
+      hasPrev: data.hasPrev || false
     }
   },
 
@@ -182,14 +182,12 @@ export const recipesApi = {
     
     return {
       recipes: data.recipes || [],
-      pagination: {
-        total: data.total || 0,
-        page: data.page || 1,
-        limit: data.limit || 20,
-        totalPages: data.totalPages || 1,
-        hasNext: data.hasNext || false,
-        hasPrev: data.hasPrev || false
-      }
+      total: data.total || 0,
+      page: data.page || 1,
+      limit: data.limit || 20,
+      totalPages: data.totalPages || 1,
+      hasNext: data.hasNext || false,
+      hasPrev: data.hasPrev || false
     }
   },
 

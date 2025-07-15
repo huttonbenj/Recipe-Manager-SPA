@@ -29,36 +29,19 @@ export const recipeKeys = {
   lists: () => [...recipeKeys.all, 'list'],
   list: (params?: RecipeSearchParams) => {
     const normalizedParams = normalizeParams(params)
-    const key = [...recipeKeys.lists(), normalizedParams]
-    console.log('[QUERY KEY] recipeKeys.list:', key)
-    return key
+    return [...recipeKeys.lists(), normalizedParams]
   },
   details: () => [...recipeKeys.all, 'detail'],
   detail: (id: string) => [...recipeKeys.details(), id],
   recent: () => [...recipeKeys.all, 'recent'],
 }
 
-// Debug function to log cache state
-function debugCache(queryClient: any, action: string) {
-  const cache = queryClient.getQueryCache()
-  const allQueries = cache.getAll()
-  const recipeQueries = allQueries.filter((q: any) => q.queryKey[0] === 'recipes')
-  
-  console.log(`[CACHE DEBUG] ${action} - Recipe queries in cache:`, recipeQueries.length)
-  recipeQueries.forEach((q: any) => {
-    console.log(`  - ${JSON.stringify(q.queryKey)}: ${q.state.status} (${q.state.dataUpdatedAt})`)
-  })
-}
+
 
 /**
  * Hook to get recipes with search and pagination
  */
 export function useRecipes(params?: RecipeSearchParams) {
-  const queryClient = useQueryClient()
-  
-  // Debug cache state before query
-  debugCache(queryClient, 'BEFORE useRecipes query')
-  
   return useQuery({
     queryKey: recipeKeys.list(params),
     queryFn: () => recipesApi.getRecipes(params),
@@ -107,23 +90,17 @@ export function useCreateRecipe() {
     onSuccess: async (newRecipe) => {
       console.log('✅ useCreateRecipe: Recipe created successfully:', newRecipe.id)
       
-      // Debug cache state before clearing
-      debugCache(queryClient, 'BEFORE create cache clear')
-      
-      // Aggressively clear all recipe-related cache
-      queryClient.removeQueries({ queryKey: recipeKeys.all })
-      
-      // Force refetch all recipe queries that might be active
-      queryClient.invalidateQueries({ 
-        queryKey: recipeKeys.all,
-        refetchType: 'all'
-      })
-      
       // Set the new recipe in the detail cache immediately
       queryClient.setQueryData(recipeKeys.detail(newRecipe.id), newRecipe)
       
-      // Debug cache state after clearing
-      debugCache(queryClient, 'AFTER create cache clear')
+      // Clear all recipe list cache more aggressively
+      queryClient.removeQueries({ queryKey: recipeKeys.lists() })
+      
+      // Invalidate all list queries to refetch fresh data
+      queryClient.invalidateQueries({ 
+        queryKey: recipeKeys.lists(),
+        refetchType: 'active'
+      })
       
       showToast('Recipe created successfully!')
     },
@@ -149,23 +126,17 @@ export function useUpdateRecipe() {
     onSuccess: async (updatedRecipe, { id }) => {
       console.log('✅ useUpdateRecipe: Recipe updated successfully:', id)
       
-      // Debug cache state before clearing
-      debugCache(queryClient, 'BEFORE update cache clear')
-      
-      // Aggressively clear all recipe-related cache
-      queryClient.removeQueries({ queryKey: recipeKeys.all })
-      
-      // Force refetch all recipe queries that might be active
-      queryClient.invalidateQueries({ 
-        queryKey: recipeKeys.all,
-        refetchType: 'all'
-      })
-      
       // Update the recipe in the detail cache immediately
       queryClient.setQueryData(recipeKeys.detail(id), updatedRecipe)
       
-      // Debug cache state after clearing
-      debugCache(queryClient, 'AFTER update cache clear')
+      // Clear all recipe list cache more aggressively
+      queryClient.removeQueries({ queryKey: recipeKeys.lists() })
+      
+      // Invalidate all list queries to refetch fresh data
+      queryClient.invalidateQueries({ 
+        queryKey: recipeKeys.lists(),
+        refetchType: 'active'
+      })
       
       showToast('Recipe updated successfully!')
     },
@@ -191,20 +162,17 @@ export function useDeleteRecipe() {
     onSuccess: async (_, deletedId) => {
       console.log('✅ useDeleteRecipe: Recipe deleted successfully:', deletedId)
       
-      // Debug cache state before clearing
-      debugCache(queryClient, 'BEFORE delete cache clear')
+      // Remove the specific recipe from detail cache
+      queryClient.removeQueries({ queryKey: recipeKeys.detail(deletedId) })
       
-      // Aggressively clear all recipe-related cache
-      queryClient.removeQueries({ queryKey: recipeKeys.all })
+      // Clear all recipe-related cache more aggressively
+      queryClient.removeQueries({ queryKey: recipeKeys.lists() })
       
-      // Force refetch all recipe queries that might be active
+      // Invalidate all list queries to refetch fresh data
       queryClient.invalidateQueries({ 
-        queryKey: recipeKeys.all,
-        refetchType: 'all'
+        queryKey: recipeKeys.lists(),
+        refetchType: 'active'
       })
-      
-      // Debug cache state after clearing
-      debugCache(queryClient, 'AFTER delete cache clear')
       
       showToast('Recipe deleted successfully!')
     },

@@ -236,7 +236,18 @@ export class RecipeService {
 
     // Build order by clause
     const orderBy: any = {}
-    orderBy[sortBy] = sortOrder
+    
+    // Special handling for cookTime sorting
+    if (sortBy === 'cookTime') {
+      // Only include recipes with cookTime when sorting by cookTime
+      where.cookTime = { 
+        ...where.cookTime, 
+        not: null 
+      }
+      orderBy[sortBy] = sortOrder
+    } else {
+      orderBy[sortBy] = sortOrder
+    }
 
     // Execute queries
     const [recipes, total] = await Promise.all([
@@ -445,6 +456,13 @@ export class RecipeService {
       const orderBy: any = {}
       if (sortBy === 'relevance') {
         orderBy.createdAt = 'desc'
+      } else if (sortBy === 'cookTime') {
+        // Only include recipes with cookTime when sorting by cookTime
+        where.cookTime = { 
+          ...where.cookTime, 
+          not: null 
+        }
+        orderBy[sortBy] = sortOrder
       } else {
         orderBy[sortBy] = sortOrder
       }

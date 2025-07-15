@@ -12,6 +12,10 @@ export const apiClient = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
+    // Prevent browser caching of API responses
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   },
 })
 
@@ -81,7 +85,21 @@ const clearAuthData = () => {
   localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY)
 }
 
-// Request interceptor - add auth token to all requests
+// Helper to clear browser cache for API requests
+export const clearBrowserCache = async () => {
+  // Clear all caches if available
+  if ('caches' in window) {
+    try {
+      const cacheNames = await caches.keys()
+      await Promise.all(cacheNames.map(name => caches.delete(name)))
+      console.log('[API Client] Browser cache cleared')
+    } catch (error) {
+      console.warn('[API Client] Failed to clear browser cache:', error)
+    }
+  }
+}
+
+// Request interceptor - add auth token and cache busting to all requests
 apiClient.interceptors.request.use(
   (config) => {
     const token = getToken()
@@ -91,6 +109,13 @@ apiClient.interceptors.request.use(
     } else {
       console.log('[API Client] No valid token found')
     }
+    
+    // Add cache busting for GET requests
+    if (config.method === 'get') {
+      const separator = config.url?.includes('?') ? '&' : '?'
+      config.url = `${config.url}${separator}_t=${Date.now()}`
+    }
+    
     return config
   },
   (error) => {

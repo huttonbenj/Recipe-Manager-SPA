@@ -5,10 +5,9 @@
 
 import React, { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import {
   Search, Clock, Heart, ChefHat, TrendingUp,
-  SlidersHorizontal, X, Plus, Sparkles, Star,
+  SlidersHorizontal, X, Plus, Sparkles,
   ArrowUpDown, Calendar, Utensils, Globe, Timer,
   LayoutGrid, LayoutList, Zap
 } from 'lucide-react'
@@ -17,13 +16,10 @@ import {
 import { Button, Input, Card, Loading, Select, Badge } from '@/components/ui'
 import { RecipeList } from '@/components/recipe'
 
-// Services
-import { recipesApi } from '@/services/api/recipes'
-
 // Hooks
 import { useAuth } from '@/hooks/useAuth'
 import { useDebounce } from '@/hooks/useDebounce'
-import { recipeKeys, useDeleteRecipe } from '@/hooks/useRecipes'
+import { useRecipes, useDeleteRecipe } from '@/hooks/useRecipes'
 
 // Types
 import type { Recipe, RecipeSearchParams } from '@/types'
@@ -40,7 +36,6 @@ const sortOptions = [
   { value: 'newest', label: 'Newest First', icon: Calendar },
   { value: 'oldest', label: 'Oldest First', icon: Calendar },
   { value: 'popular', label: 'Most Popular', icon: TrendingUp },
-  { value: 'rating', label: 'Highest Rated', icon: Star },
   { value: 'quickest', label: 'Quickest to Make', icon: Timer },
   { value: 'alphabetical', label: 'A to Z', icon: ArrowUpDown }
 ]
@@ -128,8 +123,33 @@ const Recipes: React.FC = () => {
     if (filters.myRecipes) params.set('myRecipes', '1')
     params.set('page', '1') // Always reset to page 1 when filters/search/sort change
     params.set('limit', pageSize.toString())
-    params.set('sortBy', sortBy)
-    params.set('sortOrder', sortBy === 'newest' ? 'desc' : 'asc') // Simplified sort order mapping
+    // Handle sorting - map frontend values to backend values
+    switch (sortBy) {
+      case 'newest':
+        params.set('sortBy', 'createdAt')
+        params.set('sortOrder', 'desc')
+        break
+      case 'oldest':
+        params.set('sortBy', 'createdAt')
+        params.set('sortOrder', 'asc')
+        break
+      case 'popular':
+        params.set('sortBy', 'createdAt')
+        params.set('sortOrder', 'desc')
+        break
+
+      case 'quickest':
+        params.set('sortBy', 'cookTime')
+        params.set('sortOrder', 'asc')
+        break
+      case 'alphabetical':
+        params.set('sortBy', 'title')
+        params.set('sortOrder', 'asc')
+        break
+      default:
+        params.set('sortBy', 'createdAt')
+        params.set('sortOrder', 'desc')
+    }
     setSearchParams(params)
   }, [debouncedSearch, filters, pageSize, sortBy])
 
@@ -193,6 +213,11 @@ const Recipes: React.FC = () => {
         params.sortBy = 'createdAt'
         params.sortOrder = 'desc'
         break
+
+      case 'quickest':
+        params.sortBy = 'cookTime'
+        params.sortOrder = 'asc'
+        break
       case 'alphabetical':
         params.sortBy = 'title'
         params.sortOrder = 'asc'
@@ -249,32 +274,18 @@ const Recipes: React.FC = () => {
 
   // Fetch recipes data
   const searchParamsForApi = buildSearchParams()
-  console.log('[PAGE] Recipes: filter, search, pagination state:', searchParamsForApi)
+
   const {
     data: recipesData,
     isLoading,
     isError
-  } = useQuery({
-    queryKey: recipeKeys.list(searchParamsForApi),
-    queryFn: () => recipesApi.getRecipes(searchParamsForApi),
-    staleTime: 1 * 60 * 1000, // 1 minute - same as useRecipes hook
-    refetchOnMount: true, // Ensure we refetch when component mounts
-    refetchOnWindowFocus: false, // Don't refetch on window focus
-    refetchOnReconnect: true, // Refetch when reconnecting
-  })
+  } = useRecipes(searchParamsForApi)
 
   // Computed values
   const recipes: Recipe[] = recipesData?.recipes || []
-  const totalCount = recipesData?.pagination?.total || 0
+  const totalCount = recipesData?.total || 0
 
-  console.log('[RENDER] Recipes component data:', {
-    searchParams: searchParamsForApi,
-    recipesCount: recipes.length,
-    recipeIds: recipes.map(r => ({ id: r.id, title: r.title })),
-    totalCount,
-    isLoading,
-    isError
-  })
+
 
   /**
    * Delete recipe mutation
@@ -772,29 +783,26 @@ const Recipes: React.FC = () => {
 
         {/* Recipe List */}
         {!isLoading && !isError && (
-          <>
-            {console.log('[RENDER] Recipes list data:', recipes)}
-            <RecipeList
-              recipes={recipes}
-              loading={isLoading}
-              error={isError ? 'Failed to load recipes' : null}
-              viewMode={viewMode}
-              pagination={recipesData?.pagination ? {
-                page: currentPage,
-                limit: pageSize,
-                total: recipesData.pagination.total,
-                totalPages: recipesData.pagination.totalPages,
-                hasNext: currentPage < recipesData.pagination.totalPages,
-                hasPrev: currentPage > 1
-              } : undefined}
-              onPageChange={handlePageChange}
-              onEdit={handleRecipeEdit}
-              onDelete={handleRecipeDelete}
-              currentUserId={user?.id}
-              emptyMessage={hasActiveFilters ? "No recipes match your filters" : "No recipes found"}
-              emptyDescription={hasActiveFilters ? "Try adjusting your search or filters to find more recipes." : "Be the first to share a delicious recipe with our community!"}
-            />
-          </>
+          <RecipeList
+            recipes={recipes}
+            loading={isLoading}
+            error={isError ? 'Failed to load recipes' : null}
+            viewMode={viewMode}
+            pagination={recipesData ? {
+              page: recipesData.page || currentPage,
+              limit: recipesData.limit || pageSize,
+              total: recipesData.total || 0,
+              totalPages: recipesData.totalPages || 1,
+              hasNext: recipesData.hasNext || false,
+              hasPrev: recipesData.hasPrev || false
+            } : undefined}
+            onPageChange={handlePageChange}
+            onEdit={handleRecipeEdit}
+            onDelete={handleRecipeDelete}
+            currentUserId={user?.id}
+            emptyMessage={hasActiveFilters ? "No recipes match your filters" : "No recipes found"}
+            emptyDescription={hasActiveFilters ? "Try adjusting your search or filters to find more recipes." : "Be the first to share a delicious recipe with our community!"}
+          />
         )}
       </div>
     </div>

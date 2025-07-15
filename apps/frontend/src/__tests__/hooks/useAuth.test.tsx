@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useAuth } from '@/hooks/useAuth'
-import { AuthProvider } from '@/context/AuthContext'
+import AuthProvider from '@/context/AuthContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { authApi } from '@/services/api/auth'
 import React from 'react'
@@ -37,11 +37,13 @@ describe('useAuth', () => {
     })
 
     const createWrapper = () => {
-        return ({ children }: { children: React.ReactNode }) => (
+        const TestWrapper = ({ children }: { children: React.ReactNode }) => (
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>{children}</AuthProvider>
             </QueryClientProvider>
         )
+        TestWrapper.displayName = 'TestWrapper'
+        return TestWrapper
     }
 
     it('throws error when used outside AuthProvider', () => {
