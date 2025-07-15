@@ -10,7 +10,10 @@ COPY apps/backend/package*.json ./apps/backend/
 COPY packages/shared-types ./packages/shared-types/
 
 # Install ALL dependencies (including devDependencies for build)
-RUN npm ci --workspace=apps/backend --ignore-scripts
+RUN npm ci --workspace=apps/backend --workspace=packages/shared-types --ignore-scripts
+
+# Build shared-types package first (required for backend imports)
+RUN npm run build --workspace=packages/shared-types
 
 # Copy source code
 COPY apps/backend/ ./apps/backend/
