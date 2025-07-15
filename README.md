@@ -1,5 +1,9 @@
 # Recipe Manager SPA
 
+This is a single-page application for managing recipes.
+
+<!-- Triggering Vercel deployment -->
+
 A full-stack recipe management application built with modern web technologies. Create, discover, and organize your favorite recipes with a beautiful, responsive interface.
 
 ![Recipe Manager](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
