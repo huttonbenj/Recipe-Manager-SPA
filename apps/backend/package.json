@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc -p tsconfig.prod.json && npx prisma generate --schema=src/prisma/schema.prisma",
+    "prebuild": "npm run db:generate",
+    "build": "tsc -p tsconfig.prod.json",
     "start": "node dist/server.js",
     "start:dev": "nodemon",
     "lint": "eslint src --ext .ts",
