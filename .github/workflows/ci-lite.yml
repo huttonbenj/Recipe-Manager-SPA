@@ -70,11 +70,33 @@ jobs:
 
       - name: Check for sensitive files
         run: |
-          if find . -name ".env" -not -path "./node_modules/*" | head -1; then
-            echo "❌ Found .env files in repository"
+          echo "🔍 Searching for .env files..."
+          echo "Current directory: $(pwd)"
+          echo "Current branch: $(git branch --show-current)"
+          echo "Git status:"
+          git status --porcelain
+          
+          echo "🔍 Searching for any .env* files:"
+          find . -name ".env*" -not -path "./node_modules/*" -type f | while read -r file; do
+            echo "Found: $file"
+            echo "  Size: $(ls -lh "$file" | awk '{print $5}')"
+            echo "  Git status: $(git status --porcelain "$file" || echo 'not tracked')"
+          done
+          
+          echo "🔍 Specifically checking for .env files:"
+          env_files=$(find . -name ".env" -not -path "./node_modules/*" -type f)
+          if [ -n "$env_files" ]; then
+            echo "❌ Found .env files in repository:"
+            echo "$env_files" | while read -r file; do
+              echo "  📁 $file"
+              echo "     Size: $(ls -lh "$file" | awk '{print $5}')"
+              echo "     Git tracked: $(git ls-files "$file" | wc -l | xargs test 1 -eq && echo 'YES' || echo 'NO')"
+              echo "     First few lines:"
+              head -3 "$file" | sed 's/^/       /'
+            done
             exit 1
           fi
-          echo "✅ No sensitive files found"
+          echo "✅ No .env files found"
 
       # Frontend Tests
       - name: Run Frontend Tests
