@@ -9,9 +9,12 @@ COPY package*.json ./
 COPY apps/frontend/package*.json ./apps/frontend/
 COPY packages/shared-types ./packages/shared-types/
 
-# Install dependencies (workspace-aware, skip prepare scripts)
-RUN npm ci --workspace=apps/frontend --omit=dev --ignore-scripts && \
+# Install dependencies for both frontend and shared-types (workspace-aware, skip prepare scripts)
+RUN npm ci --workspace=apps/frontend --workspace=packages/shared-types --omit=dev --ignore-scripts && \
     npm install @types/node --workspace=apps/frontend
+
+# Build shared-types package first (required for frontend imports)
+RUN npm run build --workspace=packages/shared-types
 
 # Copy source code
 COPY apps/frontend/ ./apps/frontend/
