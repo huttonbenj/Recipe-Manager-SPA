@@ -975,11 +975,11 @@ async function main() {
   
   // Demo user favorites - variety of cuisines
   const demoUserFavorites = [
-    allRecipes.find(r => r.title === 'Classic Margherita Pizza'),
-    allRecipes.find(r => r.title === 'Chocolate Lava Cake'),
-    allRecipes.find(r => r.title === 'Authentic Butter Chicken'),
-    allRecipes.find(r => r.title === 'Korean Bulgogi'),
-    allRecipes.find(r => r.title === 'Mediterranean Quinoa Bowl'),
+    allRecipes.find((r: any) => r.title === 'Classic Margherita Pizza'),
+    allRecipes.find((r: any) => r.title === 'Chocolate Lava Cake'),
+    allRecipes.find((r: any) => r.title === 'Authentic Butter Chicken'),
+    allRecipes.find((r: any) => r.title === 'Korean Bulgogi'),
+    allRecipes.find((r: any) => r.title === 'Mediterranean Quinoa Bowl'),
   ].filter(Boolean)
 
   for (const recipe of demoUserFavorites) {
@@ -1002,10 +1002,10 @@ async function main() {
 
   // Chef Maria's favorites - Italian and French focus
   const mariaFavorites = [
-    allRecipes.find(r => r.title === 'Coq au Vin'),
-    allRecipes.find(r => r.title === 'Beef Wellington'),
-    allRecipes.find(r => r.title === 'Homemade Pasta Carbonara'),
-    allRecipes.find(r => r.title === 'French Onion Soup'),
+    allRecipes.find((r: any) => r.title === 'Coq au Vin'),
+    allRecipes.find((r: any) => r.title === 'Beef Wellington'),
+    allRecipes.find((r: any) => r.title === 'Homemade Pasta Carbonara'),
+    allRecipes.find((r: any) => r.title === 'French Onion Soup'),
   ].filter(Boolean)
 
   for (const recipe of mariaFavorites) {
@@ -1028,10 +1028,10 @@ async function main() {
 
   // Chef Kenji's favorites - Asian focus
   const kenjiFavorites = [
-    allRecipes.find(r => r.title === 'Authentic Chicken Pad Thai'),
-    allRecipes.find(r => r.title === 'Homemade Ramen'),
-    allRecipes.find(r => r.title === 'Thai Green Curry'),
-    allRecipes.find(r => r.title === 'Sushi Rolls (California Roll)'),
+    allRecipes.find((r: any) => r.title === 'Authentic Chicken Pad Thai'),
+    allRecipes.find((r: any) => r.title === 'Homemade Ramen'),
+    allRecipes.find((r: any) => r.title === 'Thai Green Curry'),
+    allRecipes.find((r: any) => r.title === 'Sushi Rolls (California Roll)'),
   ].filter(Boolean)
 
   for (const recipe of kenjiFavorites) {
@@ -1054,9 +1054,9 @@ async function main() {
 
   // Chef Aisha's favorites - Spicy and exotic
   const aishaFavorites = [
-    allRecipes.find(r => r.title === 'Moroccan Tagine'),
-    allRecipes.find(r => r.title === 'Shakshuka'),
-    allRecipes.find(r => r.title === 'Thai Green Curry'),
+    allRecipes.find((r: any) => r.title === 'Moroccan Tagine'),
+    allRecipes.find((r: any) => r.title === 'Shakshuka'),
+    allRecipes.find((r: any) => r.title === 'Thai Green Curry'),
   ].filter(Boolean)
 
   for (const recipe of aishaFavorites) {
@@ -1079,10 +1079,10 @@ async function main() {
 
   // Home chef's favorites - Easy and comfort food
   const homeFavorites = [
-    allRecipes.find(r => r.title === 'BBQ Pulled Pork Sandwiches'),
-    allRecipes.find(r => r.title === 'Banana Bread'),
-    allRecipes.find(r => r.title === 'Mediterranean Quinoa Bowl'),
-    allRecipes.find(r => r.title === 'Beef Stir Fry'),
+    allRecipes.find((r: any) => r.title === 'BBQ Pulled Pork Sandwiches'),
+    allRecipes.find((r: any) => r.title === 'Banana Bread'),
+    allRecipes.find((r: any) => r.title === 'Mediterranean Quinoa Bowl'),
+    allRecipes.find((r: any) => r.title === 'Beef Stir Fry'),
   ].filter(Boolean)
 
   for (const recipe of homeFavorites) {
@@ -1108,12 +1108,12 @@ async function main() {
   
   // Demo user bookmarks - different from favorites to show the distinction
   const demoUserBookmarks = [
-    allRecipes.find(r => r.title === 'Beef Wellington'),
-    allRecipes.find(r => r.title === 'Homemade Ramen'),
-    allRecipes.find(r => r.title === 'Thai Green Curry'),
-    allRecipes.find(r => r.title === 'Authentic Butter Chicken'),
-    allRecipes.find(r => r.title === 'Mexican Street Tacos'),
-    allRecipes.find(r => r.title === 'Coq au Vin'),
+    allRecipes.find((r: any) => r.title === 'Beef Wellington'),
+    allRecipes.find((r: any) => r.title === 'Homemade Ramen'),
+    allRecipes.find((r: any) => r.title === 'Thai Green Curry'),
+    allRecipes.find((r: any) => r.title === 'Authentic Butter Chicken'),
+    allRecipes.find((r: any) => r.title === 'Mexican Street Tacos'),
+    allRecipes.find((r: any) => r.title === 'Coq au Vin'),
   ].filter(Boolean)
 
   for (const recipe of demoUserBookmarks) {
@@ -1136,10 +1136,10 @@ async function main() {
 
   // Chef Maria's bookmarks - European cuisine focus
   const mariaBookmarks = [
-    allRecipes.find(r => r.title === 'Authentic Chicken Pad Thai'),
-    allRecipes.find(r => r.title === 'Korean Bulgogi'),
-    allRecipes.find(r => r.title === 'Chicken Tikka Masala'),
-    allRecipes.find(r => r.title === 'Chocolate Lava Cake'),
+    allRecipes.find((r: any) => r.title === 'Authentic Chicken Pad Thai'),
+    allRecipes.find((r: any) => r.title === 'Korean Bulgogi'),
+    allRecipes.find((r: any) => r.title === 'Chicken Tikka Masala'),
+    allRecipes.find((r: any) => r.title === 'Chocolate Lava Cake'),
   ].filter(Boolean)
 
   for (const recipe of mariaBookmarks) {
@@ -1162,9 +1162,9 @@ async function main() {
 
   // Chef Kenji's bookmarks - Western cuisine exploration
   const kenjiBookmarks = [
-    allRecipes.find(r => r.title === 'Classic Margherita Pizza'),
-    allRecipes.find(r => r.title === 'Beef Wellington'),
-    allRecipes.find(r => r.title === 'French Onion Soup'),
+    allRecipes.find((r: any) => r.title === 'Classic Margherita Pizza'),
+    allRecipes.find((r: any) => r.title === 'Beef Wellington'),
+    allRecipes.find((r: any) => r.title === 'French Onion Soup'),
   ].filter(Boolean)
 
   for (const recipe of kenjiBookmarks) {
@@ -1187,10 +1187,10 @@ async function main() {
 
   // Chef Aisha's bookmarks - International exploration
   const aishaBookmarks = [
-    allRecipes.find(r => r.title === 'Authentic Chicken Pad Thai'),
-    allRecipes.find(r => r.title === 'Korean Bulgogi'),
-    allRecipes.find(r => r.title === 'Classic Margherita Pizza'),
-    allRecipes.find(r => r.title === 'Homemade Ramen'),
+    allRecipes.find((r: any) => r.title === 'Authentic Chicken Pad Thai'),
+    allRecipes.find((r: any) => r.title === 'Korean Bulgogi'),
+    allRecipes.find((r: any) => r.title === 'Classic Margherita Pizza'),
+    allRecipes.find((r: any) => r.title === 'Homemade Ramen'),
   ].filter(Boolean)
 
   for (const recipe of aishaBookmarks) {
@@ -1213,9 +1213,9 @@ async function main() {
 
   // Chef Pierre's bookmarks - Asian cuisine exploration
   const pierreBookmarks = [
-    allRecipes.find(r => r.title === 'Homemade Ramen'),
-    allRecipes.find(r => r.title === 'Korean Bulgogi'),
-    allRecipes.find(r => r.title === 'Thai Green Curry'),
+    allRecipes.find((r: any) => r.title === 'Homemade Ramen'),
+    allRecipes.find((r: any) => r.title === 'Korean Bulgogi'),
+    allRecipes.find((r: any) => r.title === 'Thai Green Curry'),
   ].filter(Boolean)
 
   for (const recipe of pierreBookmarks) {
@@ -1238,9 +1238,9 @@ async function main() {
 
   // Home Chef's bookmarks - Restaurant-quality dishes to try
   const sarahBookmarks = [
-    allRecipes.find(r => r.title === 'Beef Wellington'),
-    allRecipes.find(r => r.title === 'Coq au Vin'),
-    allRecipes.find(r => r.title === 'Chocolate Lava Cake'),
+    allRecipes.find((r: any) => r.title === 'Beef Wellington'),
+    allRecipes.find((r: any) => r.title === 'Coq au Vin'),
+    allRecipes.find((r: any) => r.title === 'Chocolate Lava Cake'),
   ].filter(Boolean)
 
   for (const recipe of sarahBookmarks) {
