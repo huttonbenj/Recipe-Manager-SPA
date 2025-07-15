@@ -5,14 +5,14 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
-COPY ../../packages/shared-types ./packages/shared-types/
+COPY apps/backend/package*.json ./
+COPY packages/shared-types ./packages/shared-types/
 
 # Install ALL dependencies (including devDependencies for build)
 RUN npm ci
 
 # Copy source code
-COPY . .
+COPY apps/backend/ .
 
 # Generate Prisma client
 RUN npx prisma generate --schema=src/prisma/schema.prisma
@@ -31,8 +31,8 @@ RUN apk --no-cache add ca-certificates curl && \
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
-COPY ../../packages/shared-types ./packages/shared-types/
+COPY apps/backend/package*.json ./
+COPY packages/shared-types ./packages/shared-types/
 
 # Install only production dependencies
 RUN npm ci --only=production && \
