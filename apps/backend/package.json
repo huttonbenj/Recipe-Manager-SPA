@@ -7,11 +7,10 @@
     "seed": "ts-node src/prisma/seed.ts"
   },
   "scripts": {
-    "dev": "nodemon",
+    "dev": "nodemon --watch src --exec ts-node src/server.ts",
     "prebuild": "npm run db:generate",
-    "build": "prisma generate && tsc -p tsconfig.prod.json",
+    "build": "prisma generate --schema=src/prisma/schema.prisma && tsc -p tsconfig.prod.json",
     "start": "node dist/server.js",
-    "start:dev": "nodemon",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "test": "jest --passWithNoTests",
