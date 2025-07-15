@@ -2,12 +2,10 @@
  * Main Application Component
  * Routes are already wrapped in providers via main.tsx
  */
-import { useEffect } from 'react'
 import AppRoutes from '@/components/layout/AppRoutes'
 import ErrorBoundary from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import ToastContainer from '@/components/ui/ToastContainer'
 import ResponsiveTest from '@/components/ui/ResponsiveTest'
-import { registerServiceWorker } from '@/utils/serviceWorker'
 
 /**
  * Main App Component
