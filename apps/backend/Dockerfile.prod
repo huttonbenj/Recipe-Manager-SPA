@@ -4,17 +4,19 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy root package files for workspace setup
 COPY package*.json ./
-COPY ../../packages/shared-types ./packages/shared-types/
+COPY apps/backend/package*.json ./apps/backend/
+COPY packages/shared-types ./packages/shared-types/
 
 # Install ALL dependencies (including devDependencies for build)
-RUN npm ci
+RUN npm ci --workspace=apps/backend --ignore-scripts
 
 # Copy source code
-COPY . .
+COPY apps/backend/ ./apps/backend/
 
 # Generate Prisma client
+WORKDIR /app/apps/backend
 RUN npx prisma generate --schema=src/prisma/schema.prisma
 
 # Build the application
@@ -30,18 +32,19 @@ RUN apk --no-cache add ca-certificates curl && \
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy root package files for workspace setup
 COPY package*.json ./
-COPY ../../packages/shared-types ./packages/shared-types/
+COPY apps/backend/package*.json ./apps/backend/
+COPY packages/shared-types ./packages/shared-types/
 
 # Install only production dependencies
-RUN npm ci --only=production && \
+RUN npm ci --workspace=apps/backend --omit=dev --ignore-scripts && \
     npm cache clean --force
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/src/prisma ./src/prisma
+COPY --from=builder /app/apps/backend/dist ./dist
+COPY --from=builder /app/apps/backend/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/apps/backend/src/prisma ./src/prisma
 
 # Copy uploads directory structure
 RUN mkdir -p uploads logs

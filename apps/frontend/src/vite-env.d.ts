@@ -8,6 +8,8 @@ interface ImportMetaEnv {
   readonly VITE_ENABLE_IMAGE_UPLOAD: string
   readonly VITE_MAX_FILE_SIZE: string
   readonly VITE_ALLOWED_FILE_TYPES: string
+  readonly DEV: boolean
+  readonly PROD: boolean
 }
 
 interface ImportMeta {
