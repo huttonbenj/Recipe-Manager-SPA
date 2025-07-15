@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express'
-import { Prisma } from '@prisma/client'
+import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime/library'
 import { ValidationError, NotFoundError, UnauthorizedError, ForbiddenError } from '../types'
 import { logger } from '../utils/logger'
 
@@ -86,7 +86,7 @@ export const errorHandler = (
   }
   
   // Handle Prisma errors
-  else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  else if (error instanceof PrismaClientKnownRequestError) {
     switch (error.code) {
       case 'P2002':
         statusCode = 409
@@ -128,7 +128,7 @@ export const errorHandler = (
   }
   
   // Handle Prisma validation errors
-  else if (error instanceof Prisma.PrismaClientValidationError) {
+  else if (error instanceof PrismaClientValidationError) {
     statusCode = 400
     errorType = 'Validation Error'
     message = 'Invalid data provided to database'

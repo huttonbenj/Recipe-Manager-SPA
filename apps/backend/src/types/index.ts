@@ -4,7 +4,7 @@
  */
 
 import { Request } from 'express'
-import { User, Recipe, UserFavorite, UserBookmark } from '@prisma/client'
+import type { User, Recipe, UserFavorite, UserBookmark } from '@prisma/client'
 
 // Define Difficulty enum for both production and test environments
 export enum Difficulty {

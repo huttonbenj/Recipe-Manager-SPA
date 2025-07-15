@@ -4,7 +4,7 @@
  * search, filtering, and pagination
  */
 
-import { Prisma } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { prisma } from '../config/database'
 
 // Custom types that work with both production and test schemas
@@ -128,7 +128,7 @@ class RecipeService {
 
       return normalizeRecipeForOutput(recipe)
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new Error('Recipe with this title already exists')
         }
@@ -190,7 +190,7 @@ class RecipeService {
 
       return normalizeRecipeForOutput(recipe)
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new Error('Recipe not found')
         }
@@ -209,7 +209,7 @@ class RecipeService {
       })
       return { message: 'Recipe deleted successfully' }
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new Error('Recipe not found')
         }

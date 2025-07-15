@@ -3,10 +3,11 @@
  * Comprehensive test database setup and teardown with test-specific Prisma client
  */
 
-import { PrismaClient } from '../node_modules/.prisma/test-client'
+import { PrismaClient } from '@prisma/client'
 import { randomBytes } from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
+import jwt from 'jsonwebtoken';
 
 // Test environment variables
 process.env.NODE_ENV = 'test'
@@ -157,6 +158,8 @@ export const createTestRecipe = async (recipeData: {
   prepTime?: number
   servings?: number
 }) => {
+  // If Difficulty is a string union, use as const or type assertion if needed
+  const DIFFICULTY = 'EASY' as const;
   const recipe = await prisma.recipe.create({
     data: {
       title: recipeData.title,
@@ -166,7 +169,7 @@ export const createTestRecipe = async (recipeData: {
       cookTime: recipeData.cookTime || 30,
       prepTime: recipeData.prepTime || 15,
       servings: recipeData.servings || 4,
-      difficulty: recipeData.difficulty || 'MEDIUM',
+      difficulty: DIFFICULTY,
       tags: JSON.stringify(recipeData.tags || ['test']),
       cuisine: recipeData.cuisine || 'Test Cuisine',
       authorId: recipeData.authorId
@@ -205,6 +208,6 @@ export const getTestDatabase = (): PrismaClient => prisma
 
 // Simple authentication helper for tests that creates mock tokens
 export const generateTestToken = (userId: string): string => {
-  const jwt = require('jsonwebtoken')
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' })
+  const secret = process.env.JWT_SECRET || 'test-jwt-secret-key-for-testing-only';
+  return jwt.sign({ userId }, secret, { expiresIn: '1h' });
 }
