@@ -7,6 +7,7 @@ import { Request, Response } from 'express'
 import Joi from 'joi'
 import recipeService from '../services/recipeService'
 import { Difficulty } from '@prisma/client'
+import { logger } from '../utils/logger'
 
 // Validation schemas
 const createRecipeSchema = Joi.object({
@@ -103,7 +104,7 @@ export class RecipeController {
         message: 'Recipe created successfully'
       })
     } catch (error) {
-      console.error('Create recipe error:', error)
+      logger.error('Create recipe error:', error)
       
       res.status(500).json({
         success: false,
@@ -170,16 +171,14 @@ export class RecipeController {
       // Search recipes
       const result = await recipeService.searchRecipes(filters, pagination)
 
-      // Log the recipes returned for debugging
-      console.log('[DEBUG] getRecipes response:', result.recipes.map(r => ({ id: r.id, title: r.title })))
       res.status(200).json({
         success: true,
         data: result,
         message: 'Recipes retrieved successfully'
       })
     } catch (error) {
-      console.error('Get recipes error:', error)
-      
+      logger.error('Get recipes error:', error)
+
       res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -222,7 +221,7 @@ export class RecipeController {
         message: 'Recipe retrieved successfully'
       })
     } catch (error) {
-      console.error('Get recipe by ID error:', error)
+      logger.error('Get recipe by ID error:', error)
       
       res.status(500).json({
         success: false,
@@ -301,7 +300,7 @@ export class RecipeController {
         message: 'Recipe updated successfully'
       })
     } catch (error) {
-      console.error('Update recipe error:', error)
+      logger.error('Update recipe error:', error)
       
       res.status(500).json({
         success: false,
@@ -320,10 +319,7 @@ export class RecipeController {
       const { id } = req.params
       const userId = req.user?.userId
 
-      console.log('🗑️ Controller: Delete recipe request for ID:', id, 'by user:', userId)
-
       if (!id) {
-        console.log('❌ Controller: Missing recipe ID')
         res.status(400).json({
           success: false,
           error: 'Validation error',
@@ -332,10 +328,9 @@ export class RecipeController {
         return
       }
 
-      // Check if recipe exists and user owns it
+      // Check if recipe exists
       const existingRecipe = await recipeService.getRecipeById(id)
       if (!existingRecipe) {
-        console.log('❌ Controller: Recipe not found:', id)
         res.status(404).json({
           success: false,
           error: 'Not found',
@@ -344,8 +339,8 @@ export class RecipeController {
         return
       }
 
+      // Check if user owns the recipe
       if (existingRecipe.authorId !== userId) {
-        console.log('❌ Controller: User does not own recipe. Owner:', existingRecipe.authorId, 'User:', userId)
         res.status(403).json({
           success: false,
           error: 'Forbidden',
@@ -355,11 +350,9 @@ export class RecipeController {
       }
 
       // Delete recipe
-      console.log('🗑️ Controller: Deleting recipe:', id)
-      const success = await recipeService.deleteRecipe(id)
+      const deleted = await recipeService.deleteRecipe(id)
 
-      if (!success) {
-        console.log('❌ Controller: Failed to delete recipe:', id)
+      if (!deleted) {
         res.status(500).json({
           success: false,
           error: 'Internal server error',
@@ -368,15 +361,14 @@ export class RecipeController {
         return
       }
 
-      console.log('✅ Controller: Recipe deleted successfully:', id)
       res.status(200).json({
         success: true,
-        data: null,
+        data: { id },
         message: 'Recipe deleted successfully'
       })
     } catch (error) {
-      console.error('❌ Controller: Delete recipe error:', error)
-      
+      logger.error('Delete recipe error:', error)
+
       res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -401,7 +393,7 @@ export class RecipeController {
         message: 'Popular recipes retrieved successfully'
       })
     } catch (error) {
-      console.error('Get popular recipes error:', error)
+      logger.error('Get popular recipes error:', error)
       
       res.status(500).json({
         success: false,
@@ -425,7 +417,7 @@ export class RecipeController {
         message: 'Recipe statistics retrieved successfully'
       })
     } catch (error) {
-      console.error('Get recipe stats error:', error)
+      logger.error('Get recipe stats error:', error)
       
       res.status(500).json({
         success: false,
@@ -471,7 +463,7 @@ export class RecipeController {
         message: 'User recipes retrieved successfully'
       })
     } catch (error) {
-      console.error('Get my recipes error:', error)
+      logger.error('Get my recipes error:', error)
       
       res.status(500).json({
         success: false,

@@ -72,14 +72,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const initializeAuth = async () => {
       // Skip if already initialized
       if (initializationRef.current) {
-        console.log('[AuthContext] Already initialized, skipping')
         return
       }
-
-      console.log('[AuthContext] Initializing auth...', {
-        hasToken: !!token,
-        hasUser: !!user
-      })
 
       initializationRef.current = true
 
@@ -88,7 +82,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
         // If we have a token but no user, validate the token
         if (token && !user) {
-          console.log('[AuthContext] Token found, validating...')
           const userData = await validateToken()
 
           if (userData) {
@@ -99,11 +92,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           }
         } else if (!token && user) {
           // User data without token is invalid
-          console.log('[AuthContext] User data found without token, clearing...')
           clearAuthData()
         } else if (token && user) {
           // Both token and user exist, verify token is still valid
-          console.log('[AuthContext] Both token and user found, verifying token...')
           const userData = await validateToken()
 
           if (!userData) {
@@ -113,15 +104,12 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             // Update user data in case it changed
             setUser(userData)
           }
-        } else {
-          console.log('[AuthContext] No auth data found')
         }
       } catch (error) {
         console.error('[AuthContext] Auth initialization error:', error)
         clearAuthData()
       } finally {
         setIsLoading(false)
-        console.log('[AuthContext] Auth initialization complete')
       }
     }
 
@@ -131,166 +119,127 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   /**
    * Login user with credentials
    */
-  const login = async (credentials: LoginCredentials): Promise<void> => {
+  const login = useCallback(async (credentials: LoginCredentials): Promise<void> => {
     try {
       setIsLoading(true)
-      // Clear any previous errors
-      setErrors(prev => ({ ...prev, login: undefined }))
-      console.log('[AuthContext] Attempting login...')
+      setErrors({})
 
       const response = await authApi.login(credentials)
 
-      console.log('[AuthContext] Login successful', response.user)
+      // Store auth data
       setUser(response.user || null)
       setToken(response.token)
-
-      // Store refresh token if provided
-      if (response.refreshToken) {
-        setRefreshTokenStored(response.refreshToken)
-      }
-    } catch (error) {
+      setRefreshTokenStored(response.refreshToken || null)
+    } catch (error: any) {
       console.error('[AuthContext] Login failed:', error)
-      clearAuthData()
-
-      // Set error message
-      const errorMessage = error instanceof Error ? error.message : 'Login failed'
-      setErrors(prev => ({ ...prev, login: errorMessage }))
-
+      setErrors({ login: error.message || 'Login failed' })
       throw error
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [setUser, setToken, setRefreshTokenStored])
 
   /**
    * Register new user
    */
-  const register = async (userData: RegisterData): Promise<void> => {
+  const register = useCallback(async (userData: RegisterData): Promise<void> => {
     try {
       setIsLoading(true)
-      // Clear any previous errors
-      setErrors(prev => ({ ...prev, register: undefined }))
-      console.log('[AuthContext] Attempting registration...')
+      setErrors({})
 
       const response = await authApi.register(userData)
 
-      console.log('[AuthContext] Registration successful', response.user)
+      // Store auth data
       setUser(response.user || null)
       setToken(response.token)
-
-      // Store refresh token if provided
-      if (response.refreshToken) {
-        setRefreshTokenStored(response.refreshToken)
-      }
-    } catch (error) {
+      setRefreshTokenStored(response.refreshToken || null)
+    } catch (error: any) {
       console.error('[AuthContext] Registration failed:', error)
-      clearAuthData()
-
-      // Set error message
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed'
-      setErrors(prev => ({ ...prev, register: errorMessage }))
-
+      setErrors({ register: error.message || 'Registration failed' })
       throw error
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [setUser, setToken, setRefreshTokenStored])
 
   /**
    * Logout user
    */
-  const logout = async (): Promise<void> => {
+  const logout = useCallback(async (): Promise<void> => {
     try {
       setIsLoading(true)
-      console.log('[AuthContext] Logging out...')
 
-      await authApi.logout()
+      // Call logout API if we have a token
+      if (token) {
+        await authApi.logout()
+      }
 
-      console.log('[AuthContext] Logout successful')
+      // Clear auth data
       clearAuthData()
-      clearErrors()
-    } catch (error) {
+    } catch (error: any) {
       console.error('[AuthContext] Logout failed:', error)
-      // Clear data even if logout fails
+      // Still clear local auth data even if logout API fails
       clearAuthData()
-      clearErrors()
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [token, clearAuthData])
 
   /**
-   * Refresh authentication token
-   */
-  const refreshToken = async (): Promise<void> => {
-    try {
-      console.log('[AuthContext] Refreshing token...')
+ * Refresh auth token
+ */
+  const refreshToken = useCallback(async (): Promise<void> => {
+    if (!refreshTokenStored) {
+      return
+    }
 
-      if (!refreshTokenStored) {
-        throw new Error('No refresh token available')
-      }
+    try {
+      setIsLoading(true)
 
       const response = await authApi.refreshToken(refreshTokenStored)
 
-      console.log('[AuthContext] Token refresh successful')
-
-      // Use returned user data or keep current user
-      const userData = response.user || user
-      if (userData) {
-        setUser(userData)
-      }
-
+      // Update tokens
       setToken(response.token)
-
-      // Update refresh token if provided
-      if (response.refreshToken) {
-        setRefreshTokenStored(response.refreshToken)
-      }
-    } catch (error) {
+      setRefreshTokenStored(response.refreshToken || null)
+    } catch (error: any) {
       console.error('[AuthContext] Token refresh failed:', error)
 
-      // Refresh failed, logout user
+      // Clear auth data on refresh failure
       clearAuthData()
-      throw error
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [refreshTokenStored, setToken, setRefreshTokenStored, clearAuthData])
 
   /**
-   * Check if user is still authenticated (for periodic checks)
+   * Check if user is still authenticated
    */
   const checkAuthStatus = useCallback(async (): Promise<boolean> => {
-    if (!token || !user) {
+    if (!token) {
       return false
     }
 
     try {
-      const userData = await validateToken()
-      if (userData) {
-        // Update user data if it changed
-        if (JSON.stringify(userData) !== JSON.stringify(user)) {
-          setUser(userData)
-        }
-        return true
-      } else {
-        clearAuthData()
-        return false
-      }
-    } catch (error) {
+      const user = await authApi.getProfile()
+      setUser(user)
+      return true
+    } catch (error: any) {
       console.error('[AuthContext] Auth status check failed:', error)
       clearAuthData()
       return false
     }
-  }, [token, user, validateToken, clearAuthData, setUser])
+  }, [token, setUser, clearAuthData])
 
-  // Periodic auth status check (every 5 minutes)
+  /**
+   * Periodic auth check (every 5 minutes)
+   */
   useEffect(() => {
-    if (!isAuthenticated || !initializationRef.current) {
+    if (!isAuthenticated) {
       return
     }
 
-    const interval = setInterval(() => {
-      console.log('[AuthContext] Performing periodic auth check...')
-      checkAuthStatus()
+    const interval = setInterval(async () => {
+      await checkAuthStatus()
     }, 5 * 60 * 1000) // 5 minutes
 
     return () => clearInterval(interval)

@@ -84,12 +84,9 @@ export function useCreateRecipe() {
   
   return useMutation({
     mutationFn: (recipeData: CreateRecipeData) => {
-      console.log('📝 useCreateRecipe: Creating recipe:', recipeData.title)
       return recipesApi.createRecipe(recipeData)
     },
     onSuccess: async (newRecipe) => {
-      console.log('✅ useCreateRecipe: Recipe created successfully:', newRecipe.id)
-      
       // Set the new recipe in the detail cache immediately
       queryClient.setQueryData(recipeKeys.detail(newRecipe.id), newRecipe)
       
@@ -120,12 +117,9 @@ export function useUpdateRecipe() {
   
   return useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: Partial<CreateRecipeData> }) => {
-      console.log('📝 useUpdateRecipe: Updating recipe:', id)
       return recipesApi.updateRecipe(id, updates)
     },
     onSuccess: async (updatedRecipe, { id }) => {
-      console.log('✅ useUpdateRecipe: Recipe updated successfully:', id)
-      
       // Update the recipe in the detail cache immediately
       queryClient.setQueryData(recipeKeys.detail(id), updatedRecipe)
       
@@ -156,12 +150,9 @@ export function useDeleteRecipe() {
   
   return useMutation({
     mutationFn: (id: string) => {
-      console.log('🗑️ useDeleteRecipe: Deleting recipe:', id)
       return recipesApi.deleteRecipe(id)
     },
     onSuccess: async (_, deletedId) => {
-      console.log('✅ useDeleteRecipe: Recipe deleted successfully:', deletedId)
-      
       // Remove the specific recipe from detail cache
       queryClient.removeQueries({ queryKey: recipeKeys.detail(deletedId) })
       

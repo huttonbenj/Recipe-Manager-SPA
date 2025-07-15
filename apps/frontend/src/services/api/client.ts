@@ -2,125 +2,80 @@
  * Axios client configuration with interceptors
  */
 
-import axios, { AxiosError, AxiosResponse } from 'axios'
+import axios, { AxiosResponse, AxiosError } from 'axios'
 import { API_BASE_URL, TOKEN_STORAGE_KEY, REFRESH_TOKEN_STORAGE_KEY } from '@/utils/constants'
-import type { ApiResponse } from '@/types'
+import type { ApiResponse } from '@/types/api'
 
-// Create axios instance with default configuration
+// Create axios instance with base configuration
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-    // Prevent browser caching of API responses
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
-    'Expires': '0'
+    'Expires': '0',
   },
 })
 
-// Flag to prevent multiple refresh attempts
-let isRefreshing = false
-let failedQueue: Array<{
-  resolve: (value: any) => void
-  reject: (error: any) => void
-}> = []
-
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach(({ resolve, reject }) => {
-    if (error) {
-      reject(error)
-    } else {
-      resolve(token)
-    }
-  })
-  
-  failedQueue = []
-}
-
-// Helper to get clean token from localStorage
-const getToken = (): string | null => {
+// Utility functions for token management
+function getValidToken(): string | null {
   try {
-    const tokenRaw = localStorage.getItem(TOKEN_STORAGE_KEY)
-    if (!tokenRaw || tokenRaw === 'null' || tokenRaw === 'undefined') {
-      return null
-    }
-
-    // Handle JSON-wrapped tokens (from useLocalStorage)
-    if (tokenRaw.startsWith('"') && tokenRaw.endsWith('"')) {
-      return JSON.parse(tokenRaw)
-    }
-    
-    return tokenRaw
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY)
+    return token ? JSON.parse(token) : null
   } catch (error) {
     console.warn('[API Client] Error parsing token:', error)
     return null
   }
 }
 
-// Helper to get refresh token from localStorage
-const getRefreshToken = (): string | null => {
+function getValidRefreshToken(): string | null {
   try {
-    const refreshTokenRaw = localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)
-    if (!refreshTokenRaw || refreshTokenRaw === 'null' || refreshTokenRaw === 'undefined') {
-      return null
-    }
-
-    // Handle JSON-wrapped tokens (from useLocalStorage)
-    if (refreshTokenRaw.startsWith('"') && refreshTokenRaw.endsWith('"')) {
-      return JSON.parse(refreshTokenRaw)
-    }
-    
-    return refreshTokenRaw
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)
+    return refreshToken ? JSON.parse(refreshToken) : null
   } catch (error) {
     console.warn('[API Client] Error parsing refresh token:', error)
     return null
   }
 }
 
-// Helper to clear auth data
-const clearAuthData = () => {
-  localStorage.removeItem(TOKEN_STORAGE_KEY)
-  localStorage.removeItem('recipe_manager_user')
-  localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY)
-}
-
-// Helper to clear browser cache for API requests
-export const clearBrowserCache = async () => {
-  // Clear all caches if available
-  if ('caches' in window) {
-    try {
-      const cacheNames = await caches.keys()
-      await Promise.all(cacheNames.map(name => caches.delete(name)))
-      console.log('[API Client] Browser cache cleared')
-    } catch (error) {
-      console.warn('[API Client] Failed to clear browser cache:', error)
+// Clear browser cache utility
+export function clearBrowserCache(): void {
+  try {
+    // Clear caches if available
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          caches.delete(name)
+        })
+      })
     }
+    console.log('[API Client] Browser cache cleared')
+  } catch (error) {
+    console.warn('[API Client] Failed to clear browser cache:', error)
   }
 }
 
-// Request interceptor - add auth token and cache busting to all requests
+// Request interceptor - add auth token and cache busting
 apiClient.interceptors.request.use(
   (config) => {
-    const token = getToken()
+    // Add cache busting parameter to prevent browser caching
+    if (config.method === 'get') {
+      config.params = {
+        ...config.params,
+        _t: Date.now()
+      }
+    }
+
+    // Add auth token if available
+    const token = getValidToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
-      console.log('[API Client] Sending request with token:', token.substring(0, 20) + '...')
-    } else {
-      console.log('[API Client] No valid token found')
     }
-    
-    // Add cache busting for GET requests
-    if (config.method === 'get') {
-      const separator = config.url?.includes('?') ? '&' : '?'
-      config.url = `${config.url}${separator}_t=${Date.now()}`
-    }
-    
+
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 // Response interceptor - handle common responses and errors
@@ -148,89 +103,37 @@ apiClient.interceptors.response.use(
     apiError.status = error.response?.status
     apiError.details = details
 
-    console.log('[API Client] Creating error:', {
-      message: errorMessage,
-      status: error.response?.status,
-      details: details,
-      errorType: typeof apiError,
-      errorMessage: apiError.message,
-      errorKeys: Object.keys(apiError)
-    })
-
-    // Handle 401 - unauthorized (token expired)
+    // Handle 401 errors (authentication issues)
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        // If already refreshing, queue this request
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject })
-        }).then(token => {
-          originalRequest.headers.Authorization = `Bearer ${token}`
-          return apiClient(originalRequest)
-        }).catch(err => {
-          return Promise.reject(err)
-        })
-      }
-
       originalRequest._retry = true
-      isRefreshing = true
 
-      try {
-        console.log('[API Client] Token expired, attempting refresh...')
-        
-        const refreshToken = getRefreshToken()
-        if (!refreshToken) {
-          throw new Error('No refresh token available')
-        }
-        
-        // Try to refresh the token
-        const refreshResponse = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-          refreshToken
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
+              try {
+          const refreshToken = getValidRefreshToken()
+          if (refreshToken) {
+            const refreshResponse = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+              refreshToken
+            })
+            const newToken = refreshResponse.data?.data?.accessToken || refreshResponse.data?.data?.token
+            
+            // Update the token in storage
+            localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(newToken))
+            
+            // Update the authorization header and retry the request
+            originalRequest.headers.Authorization = `Bearer ${newToken}`
+            
+            return apiClient(originalRequest)
           }
-        })
-
-        const newToken = refreshResponse.data?.data?.accessToken
-        const newRefreshToken = refreshResponse.data?.data?.refreshToken
-        
-        if (newToken) {
-          console.log('[API Client] Token refresh successful')
+        } catch (refreshError) {
+          // Token refresh failed, clear auth data and redirect to login
+          localStorage.removeItem(TOKEN_STORAGE_KEY)
+          localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY)
+          localStorage.removeItem('recipe_manager_user')
           
-          // Update localStorage with new tokens
-          localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(newToken))
-          if (newRefreshToken) {
-            localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, JSON.stringify(newRefreshToken))
+          // Only redirect if not already on login page
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login'
           }
-          
-          // Update the original request with new token
-          originalRequest.headers.Authorization = `Bearer ${newToken}`
-          
-          // Process the queue with the new token
-          processQueue(null, newToken)
-          
-          // Retry the original request
-          return apiClient(originalRequest)
-        } else {
-          throw new Error('No token in refresh response')
         }
-      } catch (refreshError) {
-        console.warn('[API Client] Token refresh failed:', refreshError)
-        
-        // Refresh failed, clear auth data and redirect to login
-        processQueue(refreshError, null)
-        clearAuthData()
-        
-        // Only redirect if not already on login page
-        if (!window.location.pathname.includes('/login')) {
-          console.log('[API Client] Redirecting to login due to auth failure')
-          window.location.href = '/login'
-        }
-        
-        return Promise.reject(apiError)
-      } finally {
-        isRefreshing = false
-      }
     }
 
     return Promise.reject(apiError)

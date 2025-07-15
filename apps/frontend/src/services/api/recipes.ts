@@ -4,6 +4,7 @@
 
 import { apiClient } from './client'
 import type { Recipe, CreateRecipeData, RecipeSearchParams } from '@/types'
+import type { ApiResponse } from '@/types/api'
 
 export interface RecipeListResponse {
   recipes: Recipe[]
@@ -62,53 +63,40 @@ export const recipesApi = {
    * Get recipe by ID
    */
   async getRecipe(id: string): Promise<Recipe> {
-    console.log('[API] getRecipe id:', id)
-    const response = await apiClient.get(`/recipes/${id}`)
-    console.log('[API] getRecipe response:', response.data)
-    // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
-    const data = response.data.data || response.data
-    return data.recipe || data
+    const response = await apiClient.get<ApiResponse<Recipe>>(`/recipes/${id}`)
+    if (!response.data.data) {
+      throw new Error('Recipe not found')
+    }
+    return response.data.data
   },
 
   /**
    * Create new recipe
    */
   async createRecipe(recipeData: CreateRecipeData): Promise<Recipe> {
-    console.log('[API] createRecipe data:', recipeData)
-    console.log('🌐 recipesApi.createRecipe: Sending request:', recipeData.title)
-    const response = await apiClient.post('/recipes', recipeData)
-    console.log('🌐 recipesApi.createRecipe: Response received:', response.data)
-    // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
-    const data = response.data.data || response.data
-    const recipe = data.recipe || data
-    console.log('🌐 recipesApi.createRecipe: Returning recipe:', recipe.id)
-    return recipe
+    const response = await apiClient.post<ApiResponse<{ recipe: Recipe }>>('/recipes', recipeData)
+    if (!response.data.data?.recipe) {
+      throw new Error('Failed to create recipe')
+    }
+    return response.data.data.recipe
   },
 
   /**
    * Update existing recipe
    */
   async updateRecipe(id: string, updates: Partial<CreateRecipeData>): Promise<Recipe> {
-    console.log('[API] updateRecipe id:', id, 'data:', updates)
-    console.log('🌐 recipesApi.updateRecipe: Sending request for ID:', id)
-    const response = await apiClient.put(`/recipes/${id}`, updates)
-    console.log('🌐 recipesApi.updateRecipe: Response received:', response.data)
-    // Backend returns: { success: boolean, data: { recipe: Recipe }, message: string }
-    const data = response.data.data || response.data
-    const recipe = data.recipe || data
-    console.log('🌐 recipesApi.updateRecipe: Returning recipe:', recipe.id)
-    return recipe
+    const response = await apiClient.put<ApiResponse<{ recipe: Recipe }>>(`/recipes/${id}`, updates)
+    if (!response.data.data?.recipe) {
+      throw new Error('Failed to update recipe')
+    }
+    return response.data.data.recipe
   },
 
   /**
    * Delete recipe
    */
   async deleteRecipe(id: string): Promise<void> {
-    console.log('[API] deleteRecipe id:', id)
-    console.log('🌐 recipesApi.deleteRecipe: Sending request for ID:', id)
-    const response = await apiClient.delete(`/recipes/${id}`)
-    console.log('🌐 recipesApi.deleteRecipe: Response received:', response.data)
-    console.log('🌐 recipesApi.deleteRecipe: Delete completed for ID:', id)
+    await apiClient.delete<ApiResponse<null>>(`/recipes/${id}`)
   },
 
   /**
