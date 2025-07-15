@@ -27,8 +27,7 @@ services:
           type: web
           property: url
   - name: recipe-manager-frontend
-    type: web
-    runtime: static
+    type: static
     region: oregon
     plan: free
     branch: main
