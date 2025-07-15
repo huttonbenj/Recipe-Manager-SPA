@@ -47,16 +47,19 @@ jobs:
 
       # Code Quality Checks
       - name: Run ESLint (Frontend)
-        run: npm run lint --workspace=apps/frontend
+        run: npm run lint --prefix apps/frontend
 
       - name: Run ESLint (Backend) 
-        run: npm run lint --workspace=apps/backend
+        run: npm run lint --prefix apps/backend
+
+      - name: Build shared packages
+        run: npm run build --prefix packages/shared-types
 
       - name: TypeScript Check (Frontend)
-        run: npm run type-check --workspace=apps/frontend
+        run: npm run type-check --prefix apps/frontend
 
       - name: TypeScript Check (Backend)
-        run: npm run type-check --workspace=apps/backend
+        run: npm run type-check --prefix apps/backend
 
       # Security Scanning (lightweight)
       - name: Security Audit
@@ -71,22 +74,19 @@ jobs:
           echo "✅ No sensitive files found"
 
       # Frontend Tests
-      - name: Build shared packages
-        run: npm run build --workspace=packages/shared-types
-
       - name: Run Frontend Tests
-        run: npm run test --workspace=apps/frontend
+        run: npm run test --prefix apps/frontend
 
       # Backend Tests
       - name: Setup test database
         run: |
-          npm run db:generate --workspace=apps/backend
-          npm run db:migrate --workspace=apps/backend
+          npm run db:generate --prefix apps/backend
+          npm run db:migrate --prefix apps/backend
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_manager_test
 
       - name: Run Backend Tests
-        run: npm run test --workspace=apps/backend
+        run: npm run test --prefix apps/backend
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_manager_test
           JWT_SECRET: test-secret-key-for-ci-only-minimum-32-chars
@@ -94,10 +94,10 @@ jobs:
 
       # Build Applications
       - name: Build Frontend
-        run: npm run build --workspace=apps/frontend
+        run: npm run build --prefix apps/frontend
 
       - name: Build Backend
-        run: npm run build --workspace=apps/backend
+        run: npm run build --prefix apps/backend
 
       # Simple deployment notification
       - name: Deployment Status
