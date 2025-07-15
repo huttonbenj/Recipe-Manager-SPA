@@ -25,23 +25,9 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: 30d
       - key: FRONTEND_URL
-        value: https://recipe-manager-frontend.onrender.com
+        value: https://recipe-manager-spa-frontend.vercel.app
       - key: ALLOWED_ORIGINS
-        value: https://recipe-manager-frontend.onrender.com
-  - name: recipe-manager-frontend
-    type: web
-    runtime: static
-    branch: main
-    rootDir: ./
-    buildCommand: "npm run build --workspace=apps/frontend"
-    staticPublishPath: apps/frontend/dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_BASE_URL
-        value: https://recipe-manager-backend.onrender.com
+        value: https://recipe-manager-spa-frontend.vercel.app
 
 databases:
   - name: recipe-manager-db
