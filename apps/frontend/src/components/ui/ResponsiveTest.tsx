@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { getCurrentBreakpoint, logResponsiveTest, type BreakpointKey } from '@/utils/responsive-test'
+import { getCurrentBreakpoint, runResponsiveTests, type BreakpointKey } from '@/utils/responsive-test'
 
 interface ResponsiveTestProps {
     show?: boolean
@@ -27,7 +27,7 @@ const ResponsiveTest: React.FC<ResponsiveTestProps> = ({ show = false }) => {
 
     useEffect(() => {
         if (show) {
-            logResponsiveTest()
+            runResponsiveTests()
         }
     }, [currentBreakpoint, show])
 

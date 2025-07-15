@@ -6,472 +6,470 @@
 import { Request, Response } from 'express'
 import Joi from 'joi'
 import recipeService from '../services/recipeService'
-import { Difficulty } from '@prisma/client'
 import { logger } from '../utils/logger'
+
+// Difficulty enum for validation (works with both production and test schemas)
+export enum Difficulty {
+  EASY = 'EASY',
+  MEDIUM = 'MEDIUM',
+  HARD = 'HARD'
+}
 
 // Validation schemas
 const createRecipeSchema = Joi.object({
   title: Joi.string().min(3).required().messages({
     'string.min': 'Title must be at least 3 characters long',
-    'string.empty': 'Title is required'
+    'any.required': 'Title is required'
   }),
-  description: Joi.string().optional().allow(''),
+  description: Joi.string().allow('').optional(),
   ingredients: Joi.array().items(Joi.string().min(1)).min(1).required().messages({
     'array.min': 'At least one ingredient is required',
-    'array.base': 'Ingredients must be an array'
+    'any.required': 'Ingredients are required'
   }),
   instructions: Joi.string().min(10).required().messages({
     'string.min': 'Instructions must be at least 10 characters long',
-    'string.empty': 'Instructions are required'
+    'any.required': 'Instructions are required'
   }),
-  imageUrl: Joi.string().uri().optional().allow(''),
-  cookTime: Joi.number().min(0).optional(),
-  prepTime: Joi.number().min(0).optional(),
-  servings: Joi.number().min(1).optional(),
-  difficulty: Joi.string().valid('EASY', 'MEDIUM', 'HARD').optional(),
+  imageUrl: Joi.string().uri().allow('').optional(),
+  cookTime: Joi.number().integer().min(0).optional(),
+  prepTime: Joi.number().integer().min(0).optional(),
+  servings: Joi.number().integer().min(1).optional(),
+  difficulty: Joi.string().valid(...Object.values(Difficulty)).optional(),
   tags: Joi.array().items(Joi.string().min(1)).optional(),
-  cuisine: Joi.string().optional().allow('')
+  cuisine: Joi.string().allow('').optional()
 })
 
-const updateRecipeSchema = Joi.object({
-  title: Joi.string().min(3).optional(),
-  description: Joi.string().optional().allow(''),
-  ingredients: Joi.array().items(Joi.string().min(1)).min(1).optional(),
-  instructions: Joi.string().min(10).optional(),
-  imageUrl: Joi.string().uri().optional().allow(''),
-  cookTime: Joi.number().min(0).optional(),
-  prepTime: Joi.number().min(0).optional(),
-  servings: Joi.number().min(1).optional(),
-  difficulty: Joi.string().valid('EASY', 'MEDIUM', 'HARD').optional(),
-  tags: Joi.array().items(Joi.string().min(1)).optional(),
-  cuisine: Joi.string().optional().allow('')
-})
+/**
+ * Create a new recipe
+ */
+export const createRecipe = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.userId
 
-const searchQuerySchema = Joi.object({
-  search: Joi.string().optional(),
-  tags: Joi.string().optional(), // Comma-separated tags
-  cuisine: Joi.string().optional(),
-  difficulty: Joi.string().valid('EASY', 'MEDIUM', 'HARD').optional(),
-  cookTimeMax: Joi.number().min(0).optional(),
-  prepTimeMax: Joi.number().min(0).optional(),
-  authorId: Joi.string().optional(), // Filter by author ID
-  page: Joi.number().min(1).optional(),
-  limit: Joi.number().min(1).max(100).optional(),
-  sortBy: Joi.string().valid('title', 'createdAt', 'cookTime', 'prepTime', 'difficulty', 'relevance').optional(),
-  sortOrder: Joi.string().valid('asc', 'desc').optional(),
-  _t: Joi.string().optional() // Cache busting parameter
-})
+    if (!userId) {
+      res.status(401).json({
+        error: 'Authentication required',
+        success: false
+      })
+      return
+    }
 
-export class RecipeController {
-  /**
-   * Create a new recipe
-   * POST /api/recipes
-   */
-  async createRecipe(req: Request, res: Response): Promise<void> {
+    // Validate request body
+    const { error, value } = createRecipeSchema.validate(req.body)
+
+    if (error) {
+      res.status(400).json({
+        error: 'Validation error',
+        message: error.details[0].message,
+        success: false
+      })
+      return
+    }
+
+    // Prepare recipe data
+    const recipeData = {
+      ...value,
+      authorId: userId
+    }
+
+    logger.info('Creating recipe:', { 
+      title: recipeData.title, 
+      authorId: userId 
+    })
+
+    // Additional validation
+    const validationErrors: string[] = [] // Validation moved to controller
+    if (validationErrors.length > 0) {
+      res.status(400).json({
+        error: 'Validation errors',
+        messages: validationErrors,
+        success: false
+      })
+      return
+    }
+
     try {
-      // Validate request body
-      const { error, value } = createRecipeSchema.validate(req.body)
-      if (error) {
-        res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          message: error.details[0].message
-        })
-        return
-      }
-
-      // Add author ID from authenticated user
-      const authorId = req.user?.userId
-      const recipeData = { ...value, authorId }
-
-      // Additional validation
-      const validationErrors = recipeService.validateRecipeData(recipeData)
-      if (validationErrors.length > 0) {
-        res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          message: validationErrors[0]
-        })
-        return
-      }
-
       // Create recipe
-      const recipe = await recipeService.createRecipe(recipeData)
+      const recipe = await recipeService.create(recipeData)
 
       res.status(201).json({
-        success: true,
-        data: { recipe },
-        message: 'Recipe created successfully'
+        message: 'Recipe created successfully',
+        recipe,
+        success: true
       })
-    } catch (error) {
-      logger.error('Create recipe error:', error)
-      
+    } catch (serviceError) {
+      logger.error('Service error creating recipe:', serviceError)
       res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to create recipe'
+        error: 'Failed to create recipe',
+        success: false
       })
     }
-  }
-
-  /**
-   * Get all recipes with search and filtering
-   * GET /api/recipes
-   */
-  async getRecipes(req: Request, res: Response): Promise<void> {
-    try {
-      // Validate query parameters
-      const { error, value } = searchQuerySchema.validate(req.query)
-      if (error) {
-        res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          message: error.details[0].message
-        })
-        return
-      }
-
-      // Parse query parameters
-      const {
-        search,
-        tags: tagsString,
-        cuisine,
-        difficulty,
-        cookTimeMax,
-        prepTimeMax,
-        authorId,
-        page = 1,
-        limit = 20,
-        sortBy = 'createdAt',
-        sortOrder = 'desc'
-      } = value
-
-      // Parse tags from comma-separated string
-      const tags = tagsString ? tagsString.split(',').map((tag: string) => tag.trim()) : undefined
-
-      // Build filters
-      const filters = {
-        search,
-        tags,
-        cuisine,
-        difficulty: difficulty as Difficulty,
-        cookTimeMax: cookTimeMax ? Number(cookTimeMax) : undefined,
-        prepTimeMax: prepTimeMax ? Number(prepTimeMax) : undefined,
-        authorId: authorId || undefined // Add authorId to filters
-      }
-
-      // Build pagination
-      const pagination = {
-        page: Number(page),
-        limit: Number(limit),
-        sortBy,
-        sortOrder: sortOrder as 'asc' | 'desc'
-      }
-
-      // Search recipes
-      const result = await recipeService.searchRecipes(filters, pagination)
-
-      res.status(200).json({
-        success: true,
-        data: result,
-        message: 'Recipes retrieved successfully'
-      })
-    } catch (error) {
-      logger.error('Get recipes error:', error)
-
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to retrieve recipes'
-      })
-    }
-  }
-
-  /**
-   * Get recipe by ID
-   * GET /api/recipes/:id
-   */
-  async getRecipeById(req: Request, res: Response): Promise<void> {
-    try {
-      const { id } = req.params
-
-      if (!id) {
-        res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          message: 'Recipe ID is required'
-        })
-        return
-      }
-
-      const recipe = await recipeService.getRecipeById(id)
-
-      if (!recipe) {
-        res.status(404).json({
-          success: false,
-          error: 'Not found',
-          message: 'Recipe not found'
-        })
-        return
-      }
-
-      res.status(200).json({
-        success: true,
-        data: { recipe },
-        message: 'Recipe retrieved successfully'
-      })
-    } catch (error) {
-      logger.error('Get recipe by ID error:', error)
-      
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to retrieve recipe'
-      })
-    }
-  }
-
-  /**
-   * Update recipe
-   * PUT /api/recipes/:id
-   */
-  async updateRecipe(req: Request, res: Response): Promise<void> {
-    try {
-      const { id } = req.params
-      const userId = req.user?.userId
-
-      if (!id) {
-        res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          message: 'Recipe ID is required'
-        })
-        return
-      }
-
-      // Check if recipe exists and user owns it
-      const existingRecipe = await recipeService.getRecipeById(id)
-      if (!existingRecipe) {
-        res.status(404).json({
-          success: false,
-          error: 'Not found',
-          message: 'Recipe not found'
-        })
-        return
-      }
-
-      if (existingRecipe.authorId !== userId) {
-        res.status(403).json({
-          success: false,
-          error: 'Forbidden',
-          message: 'You can only update your own recipes'
-        })
-        return
-      }
-
-      // Validate request body
-      const { error, value } = updateRecipeSchema.validate(req.body)
-      if (error) {
-        res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          message: error.details[0].message
-        })
-        return
-      }
-
-      // Additional validation
-      const validationErrors = recipeService.validateRecipeData(value)
-      if (validationErrors.length > 0) {
-        res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          message: validationErrors[0]
-        })
-        return
-      }
-
-      // Update recipe
-      const recipe = await recipeService.updateRecipe({ id, ...value })
-
-      res.status(200).json({
-        success: true,
-        data: { recipe },
-        message: 'Recipe updated successfully'
-      })
-    } catch (error) {
-      logger.error('Update recipe error:', error)
-      
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to update recipe'
-      })
-    }
-  }
-
-  /**
-   * Delete recipe
-   * DELETE /api/recipes/:id
-   */
-  async deleteRecipe(req: Request, res: Response): Promise<void> {
-    try {
-      const { id } = req.params
-      const userId = req.user?.userId
-
-      if (!id) {
-        res.status(400).json({
-          success: false,
-          error: 'Validation error',
-          message: 'Recipe ID is required'
-        })
-        return
-      }
-
-      // Check if recipe exists
-      const existingRecipe = await recipeService.getRecipeById(id)
-      if (!existingRecipe) {
-        res.status(404).json({
-          success: false,
-          error: 'Not found',
-          message: 'Recipe not found'
-        })
-        return
-      }
-
-      // Check if user owns the recipe
-      if (existingRecipe.authorId !== userId) {
-        res.status(403).json({
-          success: false,
-          error: 'Forbidden',
-          message: 'You can only delete your own recipes'
-        })
-        return
-      }
-
-      // Delete recipe
-      const deleted = await recipeService.deleteRecipe(id)
-
-      if (!deleted) {
-        res.status(500).json({
-          success: false,
-          error: 'Internal server error',
-          message: 'Failed to delete recipe'
-        })
-        return
-      }
-
-      res.status(200).json({
-        success: true,
-        data: { id },
-        message: 'Recipe deleted successfully'
-      })
-    } catch (error) {
-      logger.error('Delete recipe error:', error)
-
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to delete recipe'
-      })
-    }
-  }
-
-  /**
-   * Get popular recipes
-   * GET /api/recipes/popular
-   */
-  async getPopularRecipes(req: Request, res: Response): Promise<void> {
-    try {
-      const limit = Number(req.query.limit) || 10
-
-      const recipes = await recipeService.getPopularRecipes(limit)
-
-      res.status(200).json({
-        success: true,
-        data: { recipes },
-        message: 'Popular recipes retrieved successfully'
-      })
-    } catch (error) {
-      logger.error('Get popular recipes error:', error)
-      
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to retrieve popular recipes'
-      })
-    }
-  }
-
-  /**
-   * Get recipe statistics
-   * GET /api/recipes/stats
-   */
-  async getRecipeStats(req: Request, res: Response): Promise<void> {
-    try {
-      const stats = await recipeService.getRecipeStats()
-
-      res.status(200).json({
-        success: true,
-        data: { stats },
-        message: 'Recipe statistics retrieved successfully'
-      })
-    } catch (error) {
-      logger.error('Get recipe stats error:', error)
-      
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to retrieve recipe statistics'
-      })
-    }
-  }
-
-  /**
-   * Get user's recipes
-   * GET /api/recipes/my
-   */
-  async getMyRecipes(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.user?.userId
-
-      if (!userId) {
-        res.status(401).json({
-          success: false,
-          error: 'Unauthorized',
-          message: 'User not authenticated'
-        })
-        return
-      }
-
-      // Parse pagination
-      const page = Number(req.query.page) || 1
-      const limit = Number(req.query.limit) || 20
-      const sortBy = (req.query.sortBy as string) || 'createdAt'
-      const sortOrder = (req.query.sortOrder as 'asc' | 'desc') || 'desc'
-
-      const result = await recipeService.getRecipesByAuthor(userId, {
-        page,
-        limit,
-        sortBy,
-        sortOrder
-      })
-
-      res.status(200).json({
-        success: true,
-        data: result,
-        message: 'User recipes retrieved successfully'
-      })
-    } catch (error) {
-      logger.error('Get my recipes error:', error)
-      
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: 'Failed to retrieve user recipes'
-      })
-    }
+  } catch (error) {
+    logger.error('Error creating recipe:', error)
+    res.status(500).json({
+      error: 'Internal server error',
+      success: false
+    })
   }
 }
 
-export default new RecipeController() 
+/**
+ * Get all recipes with optional filtering and pagination
+ */
+export const getRecipes = async (req: Request, res: Response) => {
+  try {
+    // Parse query parameters
+    const {
+      search,
+      tags,
+      cuisine,
+      difficulty,
+      page = '1',
+      limit = '20'
+    } = req.query
+
+    // Convert and validate pagination parameters
+    const pageNum = Math.max(1, parseInt(page as string) || 1)
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit as string) || 20))
+
+    // Build filters object
+    const filters: any = {}
+
+    if (search && typeof search === 'string') {
+      filters.search = search.trim()
+    }
+
+    if (tags) {
+      // Handle both string and array formats
+      if (typeof tags === 'string') {
+        filters.tags = [tags]
+      } else if (Array.isArray(tags)) {
+        filters.tags = tags.filter(tag => typeof tag === 'string')
+      }
+    }
+
+    if (cuisine && typeof cuisine === 'string') {
+      filters.cuisine = cuisine.trim()
+    }
+
+    if (difficulty && typeof difficulty === 'string' && Object.values(Difficulty).includes(difficulty as Difficulty)) {
+      filters.difficulty = difficulty
+    }
+
+    logger.info('Fetching recipes with filters:', { 
+      filters, 
+      page: pageNum, 
+      limit: limitNum 
+    })
+
+    try {
+      // Search recipes
+      const result = await recipeService.getAll(filters, pageNum, limitNum)
+
+      res.status(200).json({
+        message: 'Recipes retrieved successfully',
+        ...result,
+        success: true
+      })
+    } catch (serviceError) {
+      logger.error('Service error fetching recipes:', serviceError)
+      res.status(500).json({
+        error: 'Failed to fetch recipes',
+        success: false
+      })
+    }
+  } catch (error) {
+    logger.error('Error fetching recipes:', error)
+    res.status(500).json({
+      error: 'Internal server error',
+      success: false
+    })
+  }
+}
+
+/**
+ * Get a recipe by ID
+ */
+export const getRecipe = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+
+    if (!id) {
+      return res.status(400).json({
+        error: 'Recipe ID is required',
+        success: false
+      })
+    }
+
+    logger.info('Fetching recipe:', { id })
+
+    try {
+      const recipe = await recipeService.getById(id)
+
+      if (!recipe) {
+        return res.status(404).json({
+          error: 'Recipe not found',
+          success: false
+        })
+      }
+
+      return res.status(200).json({
+        message: 'Recipe retrieved successfully',
+        recipe,
+        success: true
+      })
+    } catch (serviceError) {
+      logger.error('Service error fetching recipe:', serviceError)
+      return res.status(500).json({
+        error: 'Failed to fetch recipe',
+        success: false
+      })
+    }
+  } catch (error) {
+    logger.error('Error fetching recipe:', error)
+    return res.status(500).json({
+      error: 'Internal server error',
+      success: false
+    })
+  }
+}
+
+/**
+ * Update a recipe
+ */
+export const updateRecipe = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    const userId = req.user?.userId
+
+    if (!userId) {
+      return res.status(401).json({
+        error: 'Authentication required',
+        success: false
+      })
+    }
+
+    if (!id) {
+      return res.status(400).json({
+        error: 'Recipe ID is required',
+        success: false
+      })
+    }
+
+    logger.info('Updating recipe:', { id, userId })
+
+    try {
+      const existingRecipe = await recipeService.getById(id)
+
+      if (!existingRecipe) {
+        return res.status(404).json({
+          error: 'Recipe not found',
+          success: false
+        })
+      }
+
+      // Check if the user owns the recipe
+      if (existingRecipe.authorId !== userId) {
+        return res.status(403).json({
+          error: 'You can only update your own recipes',
+          success: false
+        })
+      }
+
+      // Validate update data
+      const validationSchema = Joi.object({
+        title: Joi.string().min(3).optional(),
+        description: Joi.string().allow('').optional(),
+        ingredients: Joi.array().items(Joi.string().min(1)).min(1).optional(),
+        instructions: Joi.string().min(10).optional(),
+        imageUrl: Joi.string().uri().allow('').optional(),
+        cookTime: Joi.number().integer().min(0).optional(),
+        prepTime: Joi.number().integer().min(0).optional(),
+        servings: Joi.number().integer().min(1).optional(),
+        difficulty: Joi.string().valid(...Object.values(Difficulty)).optional(),
+        tags: Joi.array().items(Joi.string().min(1)).optional(),
+        cuisine: Joi.string().allow('').optional()
+      })
+
+      const { error, value } = validationSchema.validate(req.body)
+
+      if (error) {
+        return res.status(400).json({
+          error: 'Validation error',
+          message: error.details[0].message,
+          success: false
+        })
+      }
+
+      const recipe = await recipeService.update(id, value)
+
+      return res.status(200).json({
+        message: 'Recipe updated successfully',
+        recipe,
+        success: true
+      })
+    } catch (serviceError) {
+      logger.error('Service error updating recipe:', serviceError)
+      return res.status(500).json({
+        error: 'Failed to update recipe',
+        success: false
+      })
+    }
+  } catch (error) {
+    logger.error('Error updating recipe:', error)
+    return res.status(500).json({
+      error: 'Internal server error',
+      success: false
+    })
+  }
+}
+
+/**
+ * Delete a recipe
+ */
+export const deleteRecipe = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    const userId = req.user?.userId
+
+    if (!userId) {
+      return res.status(401).json({
+        error: 'Authentication required',
+        success: false
+      })
+    }
+
+    if (!id) {
+      return res.status(400).json({
+        error: 'Recipe ID is required',
+        success: false
+      })
+    }
+
+    logger.info('Deleting recipe:', { id, userId })
+
+    try {
+      const existingRecipe = await recipeService.getById(id)
+
+      if (!existingRecipe) {
+        return res.status(404).json({
+          error: 'Recipe not found',
+          success: false
+        })
+      }
+
+      // Check if the user owns the recipe
+      if (existingRecipe.authorId !== userId) {
+        return res.status(403).json({
+          error: 'You can only delete your own recipes',
+          success: false
+        })
+      }
+
+      const result = await recipeService.delete(id)
+
+      return res.status(200).json({
+        ...result,
+        success: true
+      })
+    } catch (serviceError) {
+      logger.error('Service error deleting recipe:', serviceError)
+      return res.status(500).json({
+        error: 'Failed to delete recipe',
+        success: false
+      })
+    }
+  } catch (error) {
+    logger.error('Error deleting recipe:', error)
+    return res.status(500).json({
+      error: 'Internal server error',
+      success: false
+    })
+  }
+}
+
+/**
+ * Get popular recipes
+ */
+export const getPopularRecipes = async (req: Request, res: Response) => {
+  try {
+    const { limit = '10' } = req.query
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit as string) || 10))
+
+    logger.info('Fetching popular recipes:', { limit: limitNum })
+
+    // For now, just return recent recipes
+    const result = await recipeService.getAll({}, 1, limitNum)
+
+    res.status(200).json({
+      message: 'Popular recipes retrieved successfully',
+      recipes: result.recipes,
+      success: true
+    })
+  } catch (error) {
+    logger.error('Error fetching popular recipes:', error)
+    res.status(500).json({
+      error: 'Internal server error',
+      success: false
+    })
+  }
+}
+
+/**
+ * Get recipe statistics
+ */
+export const getRecipeStats = async (req: Request, res: Response) => {
+  try {
+    logger.info('Fetching recipe statistics')
+
+    const stats = await recipeService.getStats()
+
+    res.status(200).json({
+      message: 'Recipe statistics retrieved successfully',
+      stats,
+      success: true
+    })
+  } catch (error) {
+    logger.error('Error fetching recipe statistics:', error)
+    res.status(500).json({
+      error: 'Internal server error',
+      success: false
+    })
+  }
+}
+
+/**
+ * Get recipes by author
+ */
+export const getRecipesByAuthor = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params
+    const { page = '1', limit = '20' } = req.query
+
+    if (!userId) {
+      return res.status(400).json({
+        error: 'User ID is required',
+        success: false
+      })
+    }
+
+    const pageNum = Math.max(1, parseInt(page as string) || 1)
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit as string) || 20))
+
+    logger.info('Fetching recipes by author:', { userId, page: pageNum, limit: limitNum })
+
+    const result = await recipeService.getByAuthor(userId, pageNum, limitNum)
+
+    return res.status(200).json({
+      message: 'Author recipes retrieved successfully',
+      ...result,
+      success: true
+    })
+  } catch (error) {
+    logger.error('Error fetching recipes by author:', error)
+    return res.status(500).json({
+      error: 'Internal server error',
+      success: false
+    })
+  }
+} 

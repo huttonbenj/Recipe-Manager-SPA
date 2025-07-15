@@ -12,6 +12,17 @@ const RESPONSIVE_BREAKPOINTS = {
 
 export type BreakpointKey = keyof typeof RESPONSIVE_BREAKPOINTS
 
+// Define types for test cases
+interface ResponsiveTest {
+  breakpoint: BreakpointKey
+  expected: string
+}
+
+interface ResponsiveTestCase {
+  component: string
+  tests: ResponsiveTest[]
+}
+
 /**
  * Get current breakpoint based on window width
  */
@@ -50,37 +61,58 @@ export const RESPONSIVE_TEST_CASES = [
     ]
   },
   {
+    component: 'SearchForm',
+    tests: [
+      { breakpoint: 'mobile', expected: 'Stacked layout, full width inputs' },
+      { breakpoint: 'tablet', expected: 'Responsive horizontal layout' },
+      { breakpoint: 'desktop', expected: 'Optimized horizontal layout' }
+    ]
+  },
+  {
     component: 'RecipeList',
     tests: [
-      { breakpoint: 'mobile', expected: '1 column grid' },
-      { breakpoint: 'tablet', expected: '2 column grid' },
-      { breakpoint: 'desktop', expected: '3-4 column grid' }
-    ]
-  },
-  {
-    component: 'RecipeDetail',
-    tests: [
-      { breakpoint: 'mobile', expected: 'Single column layout' },
-      { breakpoint: 'tablet', expected: 'Single column layout' },
-      { breakpoint: 'desktop', expected: '2/3 main + 1/3 sidebar layout' }
-    ]
-  },
-  {
-    component: 'Forms',
-    tests: [
-      { breakpoint: 'mobile', expected: 'Stack layout, full width inputs' },
-      { breakpoint: 'tablet', expected: 'Stack layout, full width inputs' },
+      { breakpoint: 'mobile', expected: 'Single column, stacked cards' },
+      { breakpoint: 'tablet', expected: 'Two column grid' },
       { breakpoint: 'desktop', expected: 'Grid layout with sidebar' }
     ]
+  },
+  {
+    component: 'RecipeCard',
+    tests: [
+      { breakpoint: 'mobile', expected: 'Single column layout, full width cards' },
+      { breakpoint: 'tablet', expected: 'Two column grid layout' },
+      { breakpoint: 'desktop', expected: 'Three+ column grid layout' }
+    ]
+  },
+  {
+    component: 'RecipeFilters',
+    tests: [
+      { breakpoint: 'mobile', expected: 'Collapsed filters with toggle button' },
+      { breakpoint: 'tablet', expected: 'Expanded filters in sidebar' },
+      { breakpoint: 'desktop', expected: 'Expanded filters in sidebar' }
+    ]
+  },
+  {
+    component: 'SearchForm',
+    tests: [
+      { breakpoint: 'mobile', expected: 'Stacked inputs, full width' },
+      { breakpoint: 'tablet', expected: 'Horizontal layout with responsive inputs' },
+      { breakpoint: 'desktop', expected: 'Horizontal layout with responsive inputs' }
+    ]
   }
-] as const
+] satisfies ResponsiveTestCase[]
 
 /**
- * Log responsive test results
+ * Run responsive design tests in browser console
  */
-export const logResponsiveTest = () => {
+export const runResponsiveTests = (): void => {
+  if (typeof window === 'undefined') {
+    console.warn('Responsive tests can only run in browser environment')
+    return
+  }
+
+  const width = window.innerWidth
   const currentBreakpoint = getCurrentBreakpoint()
-  const width = typeof window !== 'undefined' ? window.innerWidth : 0
   
   console.group('🔍 Responsive Design Test')
   console.log(`Current viewport: ${width}px`)
@@ -88,7 +120,7 @@ export const logResponsiveTest = () => {
   console.log('Expected behavior:')
   
   RESPONSIVE_TEST_CASES.forEach(testCase => {
-    const relevantTest = testCase.tests.find(test => test.breakpoint === currentBreakpoint)
+    const relevantTest = testCase.tests.find((test: ResponsiveTest) => test.breakpoint === currentBreakpoint)
     if (relevantTest) {
       console.log(`  ${testCase.component}: ${relevantTest.expected}`)
     }

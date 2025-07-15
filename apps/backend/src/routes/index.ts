@@ -7,8 +7,12 @@ import authRoutes from './auth'
 import recipeRoutes from './recipes'
 import uploadRoutes from './upload'
 import favoritesRoutes from './favorites'
+import healthRoutes from './health'
 
 const router = Router()
+
+// Health check (no /api prefix needed for Docker health checks)
+router.use('/', healthRoutes)
 
 // Mount route modules
 router.use('/auth', authRoutes)
@@ -27,6 +31,7 @@ router.get('/', (req, res) => {
       upload: '/api/upload',
       favorites: '/api/user/favorites',
       bookmarks: '/api/user/bookmarks',
+      health: '/api/health',
     },
   })
 })

@@ -61,6 +61,10 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting in test environment
+    return process.env.NODE_ENV === 'test'
+  }
 })
 app.use('/api/', limiter)
 

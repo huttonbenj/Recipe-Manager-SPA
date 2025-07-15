@@ -4,7 +4,23 @@
  */
 
 import { Request } from 'express'
-import { User, Recipe, Difficulty, UserFavorite, UserBookmark } from '@prisma/client'
+import { User, Recipe, UserFavorite, UserBookmark } from '@prisma/client'
+
+// Define Difficulty enum for both production and test environments
+export enum Difficulty {
+  EASY = 'EASY',
+  MEDIUM = 'MEDIUM',
+  HARD = 'HARD'
+}
+
+// Try to import Difficulty from Prisma client if available, otherwise use our own
+let PrismaDifficulty: any
+try {
+  const prismaImports = require('@prisma/client')
+  PrismaDifficulty = prismaImports.Difficulty || Difficulty
+} catch {
+  PrismaDifficulty = Difficulty
+}
 
 // JWT and Authentication Types
 export interface JWTPayload {

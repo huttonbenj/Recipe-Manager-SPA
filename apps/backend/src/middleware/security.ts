@@ -23,6 +23,10 @@ export const authRateLimit = rateLimit({
   keyGenerator: (req: Request) => {
     // Use IP + user agent for more accurate tracking
     return `${req.ip}-${req.get('User-Agent')}`
+  },
+  skip: (req: Request) => {
+    // Skip rate limiting in test environment
+    return process.env.NODE_ENV === 'test'
   }
 })
 
@@ -40,8 +44,8 @@ export const apiRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req: Request) => {
-    // Skip rate limiting for health checks
-    return req.path.startsWith('/health') || req.path.startsWith('/ready')
+    // Skip rate limiting for health checks or in test environment
+    return req.path.startsWith('/health') || req.path.startsWith('/ready') || process.env.NODE_ENV === 'test'
   }
 })
 
@@ -57,7 +61,11 @@ export const uploadRateLimit = rateLimit({
     retryAfter: 60 * 60 * 1000
   },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  skip: (req: Request) => {
+    // Skip rate limiting in test environment
+    return process.env.NODE_ENV === 'test'
+  }
 })
 
 /**

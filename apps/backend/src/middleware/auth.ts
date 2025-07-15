@@ -25,12 +25,33 @@ declare global {
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const authHeader = req.headers.authorization
-    const token = authHeader && authHeader.split(' ')[1] // Bearer TOKEN
+    
+    // Check for authorization header
+    if (!authHeader) {
+      res.status(401).json({
+        success: false,
+        error: 'Access token required',
+        message: 'Authorization header missing'
+      })
+      return
+    }
+
+    // Check authorization format
+    if (!authHeader.startsWith('Bearer ')) {
+      res.status(401).json({
+        success: false,
+        error: 'Invalid authorization format',
+        message: 'Authorization header must start with Bearer'
+      })
+      return
+    }
+
+    const token = authHeader.split(' ')[1]
 
     if (!token) {
       res.status(401).json({
         success: false,
-        error: 'Access denied',
+        error: 'Access token required',
         message: 'No token provided'
       })
       return
@@ -44,7 +65,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     if (!user) {
       res.status(401).json({
         success: false,
-        error: 'Access denied',
+        error: 'Invalid access token',
         message: 'User not found'
       })
       return
@@ -64,7 +85,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
       if (error.message === 'Invalid access token') {
         res.status(401).json({
           success: false,
-          error: 'Access denied',
+          error: 'Invalid access token',
           message: 'Invalid or expired token'
         })
         return
