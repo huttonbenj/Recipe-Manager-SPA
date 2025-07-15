@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "build": "npm ci --include=dev && cd ../../packages/shared-types && npm ci && npm run build && cd - && prisma generate --schema=src/prisma/schema.prisma && tsc --project tsconfig.prod.json",
+    "build": "npm ci --include=dev && cd ../../packages/shared-types && npm ci && npm run build && cd - && npx prisma generate --schema=src/prisma/schema.prisma && npx tsc --project tsconfig.prod.json",
     "start": "node -r dotenv/config dist/server.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
