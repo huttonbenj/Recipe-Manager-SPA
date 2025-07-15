@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"]
+  },
+  "exclude": [
+    "**/*.test.*",
+    "**/*.spec.*", 
+    "**/__tests__/**/*",
+    "**/tests/**/*",
+    "src/__tests__/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
+} 
