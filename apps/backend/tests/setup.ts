@@ -3,11 +3,11 @@
  * Comprehensive test database setup and teardown with test-specific Prisma client
  */
 
-import { PrismaClient } from '@prisma/client'
 import { randomBytes } from 'crypto'
 import * as fs from 'fs'
 import * as path from 'path'
 import jwt from 'jsonwebtoken';
+import { getPrismaClient } from '../src/config/database'
 
 // Test environment variables
 process.env.NODE_ENV = 'test'
@@ -19,16 +19,14 @@ const testDbName = `test_${randomBytes(8).toString('hex')}.db`
 const testDbPath = path.join(__dirname, testDbName)
 process.env.DATABASE_URL = `file:${testDbPath}`
 
-let prisma: PrismaClient
+let prisma: any
 
 beforeAll(async () => {
   console.log('🧪 Setting up test database...')
   
   try {
-    // Initialize test-specific Prisma client
-    prisma = new PrismaClient({
-      log: ['error']
-    })
+    // Initialize test-specific Prisma client using database configuration
+    prisma = getPrismaClient()
     
     await prisma.$connect()
     
@@ -158,19 +156,17 @@ export const createTestRecipe = async (recipeData: {
   prepTime?: number
   servings?: number
 }) => {
-  // If Difficulty is a string union, use as const or type assertion if needed
-  const DIFFICULTY = 'EASY' as const;
   const recipe = await prisma.recipe.create({
     data: {
       title: recipeData.title,
       description: recipeData.description || 'Test recipe description',
-      ingredients: recipeData.ingredients || ['Test ingredient'],
+      ingredients: JSON.stringify(recipeData.ingredients || ['Test ingredient']),
       instructions: JSON.stringify(recipeData.instructions || ['Test instruction']),
       cookTime: recipeData.cookTime || 30,
       prepTime: recipeData.prepTime || 15,
       servings: recipeData.servings || 4,
-      difficulty: DIFFICULTY,
-      tags: recipeData.tags || ['test'],
+      difficulty: recipeData.difficulty || 'EASY',
+      tags: JSON.stringify(recipeData.tags || ['test']),
       cuisine: recipeData.cuisine || 'Test Cuisine',
       authorId: recipeData.authorId
     }
@@ -204,7 +200,7 @@ export const getAllRecipes = async () => {
 
 // Export for use in tests
 export { prisma }
-export const getTestDatabase = (): PrismaClient => prisma
+export const getTestDatabase = (): any => prisma
 
 // Simple authentication helper for tests that creates mock tokens
 export const generateTestToken = (userId: string): string => {

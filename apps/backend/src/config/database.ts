@@ -77,5 +77,5 @@ const prismaProxy = new Proxy({} as PrismaClient, {
   }
 })
 
-export { prismaProxy as prisma }
+export { prismaProxy as prisma, getPrismaClient }
 export default prismaProxy 
