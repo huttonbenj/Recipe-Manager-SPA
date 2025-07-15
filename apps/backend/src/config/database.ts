@@ -10,7 +10,7 @@ let TestPrismaClient: any
 if (process.env.NODE_ENV === 'test') {
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    TestPrismaClient = require('../../node_modules/.prisma/test-client').PrismaClient
+    TestPrismaClient = require('../../tests/node_modules/.prisma/test-client').PrismaClient
   } catch (error) {
     console.warn('Test Prisma client not found, using production client')
   }

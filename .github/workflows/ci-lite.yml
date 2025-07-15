@@ -58,11 +58,22 @@ jobs:
       - name: Generate Prisma Client
         run: npm run db:generate --prefix apps/backend
 
+      - name: Generate Test Prisma Client
+        run: npx prisma generate --schema=tests/test-schema.prisma
+        working-directory: apps/backend
+
       - name: TypeScript Check (Frontend)
         run: npm run type-check --prefix apps/frontend
 
       - name: TypeScript Check (Backend)
         run: npm run type-check --prefix apps/backend
+
+      # Test Suite
+      - name: Run Tests (Frontend)
+        run: npm test --prefix apps/frontend
+
+      - name: Run Tests (Backend)
+        run: npm test --prefix apps/backend
 
       # Security Scanning (lightweight)
       - name: Security Audit

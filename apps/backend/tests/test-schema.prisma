@@ -1,7 +1,7 @@
 // Test-specific Prisma schema for SQLite
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/test-client"
+  output   = "./node_modules/.prisma/test-client"
 }
 
 datasource db {
