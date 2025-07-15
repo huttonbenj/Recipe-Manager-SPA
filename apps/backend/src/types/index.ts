@@ -3,15 +3,8 @@
  * Comprehensive types for API responses, database models, and service interfaces
  */
 
-import { Request } from 'express'
-import type { User, Recipe, UserFavorite, UserBookmark } from '@prisma/client'
-
-// Define Difficulty enum for both production and test environments
-export enum Difficulty {
-  EASY = 'EASY',
-  MEDIUM = 'MEDIUM',
-  HARD = 'HARD'
-}
+import type { Request } from 'express'
+import type { User, Recipe, UserFavorite, UserBookmark, Difficulty } from '@prisma/client'
 
 // Recipe and User Types
 export interface BaseRecipe {

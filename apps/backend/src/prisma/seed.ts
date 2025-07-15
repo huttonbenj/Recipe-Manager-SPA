@@ -3,7 +3,14 @@
  * Populates the database with comprehensive sample data to showcase all features
  */
 
-import { PrismaClient, Difficulty } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+
+// Difficulty enum values as constants
+const Difficulty = {
+  EASY: 'EASY' as const,
+  MEDIUM: 'MEDIUM' as const,
+  HARD: 'HARD' as const
+}
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
