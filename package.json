@@ -1,19 +1,73 @@
 {
-  "name": "recipe-manager-spa",
+  "name": "recipe-manager-monorepo",
   "version": "1.0.0",
+  "description": "Recipe Manager Full-Stack Application - Monorepo",
   "private": true,
   "workspaces": [
+    "apps/frontend",
+    "apps/backend",
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=packages/client & npm run dev --workspace=packages/server",
+    "dev": "concurrently \"npm:dev:*\"",
+    "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "dev:backend": "npm run dev --workspace=apps/backend",
     "build": "npm run build --workspaces",
+    "build:frontend": "npm run build --workspace=apps/frontend",
+    "build:backend": "npm run build --workspace=apps/backend",
     "test": "npm run test --workspaces",
+    "test:frontend": "npm run test --workspace=apps/frontend",
+    "test:backend": "npm run test --workspace=apps/backend",
+    "test:coverage": "npm run test:coverage --workspaces",
     "lint": "npm run lint --workspaces",
-    "clean": "npm run clean --workspaces"
+    "lint:fix": "npm run lint:fix --workspaces",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "type-check": "npm run type-check --workspaces",
+    "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "db:setup": "docker-compose up -d postgres && npm run db:migrate --workspace=apps/backend",
+    "db:reset": "npm run db:reset --workspace=apps/backend",
+    "db:migrate": "npm run db:migrate --workspace=apps/backend",
+    "db:seed": "npm run db:seed --workspace=apps/backend",
+    "db:studio": "npm run db:studio --workspace=apps/backend",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^5.1.3",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.2"
   },
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  }
-}
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/recipe-manager-spa.git"
+  },
+  "keywords": [
+    "recipe",
+    "manager",
+    "react",
+    "typescript",
+    "node",
+    "express",
+    "postgresql",
+    "prisma",
+    "full-stack",
+    "monorepo"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+} 

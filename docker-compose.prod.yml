@@ -1,0 +1,130 @@
+services:
+  # Frontend (React app)
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.prod
+    container_name: recipe-manager-frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    ports:
+      - '3000:80'
+    depends_on:
+      - backend
+    networks:
+      - recipe-manager-network
+
+  # Backend (Node.js API)
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.prod
+    container_name: recipe-manager-backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://recipe_user:recipe_password@postgres:5432/recipe_manager?connection_limit=20&pool_timeout=20&schema=public
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
+      - PORT=3001
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - uploaded_files:/app/uploads
+    networks:
+      - recipe-manager-network
+
+  # Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: recipe-manager-db-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: recipe_user
+      POSTGRES_PASSWORD: recipe_password
+      POSTGRES_DB: recipe_manager
+      POSTGRES_INITDB_ARGS: '--auth-host=scram-sha-256'
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./apps/backend/src/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U recipe_user -d recipe_manager']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - recipe-manager-network
+
+  # Redis (for caching)
+  redis:
+    image: redis:7-alpine
+    container_name: recipe-manager-redis-prod
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - recipe-manager-network
+
+  # Nginx (reverse proxy and static file serving)
+  nginx:
+    image: nginx:alpine
+    container_name: recipe-manager-nginx
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - uploaded_files:/var/www/uploads:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - recipe-manager-network
+
+  # Certbot for SSL certificates
+  certbot:
+    image: certbot/certbot
+    container_name: recipe-manager-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt:rw
+      - ./certbot/www:/var/www/certbot:rw
+    depends_on:
+      - nginx
+    networks:
+      - recipe-manager-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  uploaded_files:
+    driver: local
+
+networks:
+  recipe-manager-network:
+    driver: bridge
+    name: recipe-manager-prod-network

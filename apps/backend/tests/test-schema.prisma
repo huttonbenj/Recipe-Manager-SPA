@@ -1,0 +1,66 @@
+// Test-specific Prisma schema for SQLite
+generator client {
+  provider = "prisma-client-js"
+  output   = "./node_modules/.prisma/test-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  avatar    String?
+  recipes   Recipe[]
+  favorites UserFavorite[]
+  bookmarks UserBookmark[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recipe {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  ingredients  String   // JSON string for SQLite
+  instructions String   // JSON string for SQLite  
+  imageUrl     String?
+  cookTime     Int?
+  prepTime     Int?
+  servings     Int?
+  difficulty   String   @default("MEDIUM") // String instead of enum for SQLite
+  tags         String   // JSON string for SQLite
+  cuisine      String?
+  author       User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId     String?
+  favorites    UserFavorite[]
+  bookmarks    UserBookmark[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model UserFavorite {
+  id       String @id @default(cuid())
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
+
+model UserBookmark {
+  id       String @id @default(cuid())
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
