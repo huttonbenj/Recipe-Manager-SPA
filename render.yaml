@@ -6,7 +6,7 @@ services:
     plan: free
     branch: main
     rootDir: ./
-    buildCommand: "npm install --include=dev && npm run build --workspaces"
+    buildCommand: "npm install --include=dev --force && npm run build --workspaces"
     startCommand: "npm run start --workspace=apps/backend"
     healthCheckPath: /api/health
     envVars:
