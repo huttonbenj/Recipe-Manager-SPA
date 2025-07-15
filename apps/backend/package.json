@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",
-    "@recipe-manager/shared-types": "file:../../packages/shared-types",
+    "@recipe-manager/shared-types": "workspace:*",
     "@types/bcryptjs": "^2.4.2",
     "@types/compression": "^1.7.2",
     "@types/cors": "^2.8.13",
