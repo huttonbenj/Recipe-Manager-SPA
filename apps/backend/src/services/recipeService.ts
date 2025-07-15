@@ -308,7 +308,7 @@ class RecipeService {
         prisma.recipe.count({ where })
       ])
 
-      const normalizedRecipes = recipes.map(recipe => normalizeRecipeForOutput(recipe))
+      const normalizedRecipes = recipes.map((recipe: any) => normalizeRecipeForOutput(recipe))
 
       return {
         recipes: normalizedRecipes,
