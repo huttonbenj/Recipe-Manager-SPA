@@ -55,6 +55,9 @@ jobs:
       - name: Build shared packages
         run: npm run build --prefix packages/shared-types
 
+      - name: Generate Prisma Client
+        run: npm run db:generate --prefix apps/backend
+
       - name: TypeScript Check (Frontend)
         run: npm run type-check --prefix apps/frontend
 
