@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "nodemon",
     "prebuild": "npm run db:generate",
-    "build": "tsc -p tsconfig.prod.json",
+    "build": "prisma generate && tsc -p tsconfig.prod.json",
     "start": "node dist/server.js",
     "start:dev": "nodemon",
     "lint": "eslint src --ext .ts",
