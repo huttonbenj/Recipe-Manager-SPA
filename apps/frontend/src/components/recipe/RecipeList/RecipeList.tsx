@@ -104,7 +104,7 @@ const RecipeList: React.FC<RecipeListProps> = ({
                     : 'grid-cols-1'
                     }`}>
                     {Array.from({ length: 8 }).map((_, index) => (
-                        <div key={index} className="skeleton-card">
+                        <div key={index} className="skeleton-card animate-pulse">
                             <div className="skeleton-image"></div>
                             <div className="space-y-3">
                                 <div className="skeleton-title w-3/4"></div>
@@ -163,16 +163,24 @@ const RecipeList: React.FC<RecipeListProps> = ({
                 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                 : 'grid-cols-1'
                 }`}>
-                {recipes.map((recipe) => (
-                    <RecipeCard
+                {recipes.map((recipe, index) => (
+                    <div
                         key={recipe.id}
-                        recipe={recipe}
-                        viewMode={viewMode}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        currentUserId={currentUserId}
-                        showActions={true}
-                    />
+                        className="animate-slide-up"
+                        style={{
+                            animationDelay: `${index * 0.1}s`,
+                            animationFillMode: 'both'
+                        }}
+                    >
+                        <RecipeCard
+                            recipe={recipe}
+                            viewMode={viewMode}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                            currentUserId={currentUserId}
+                            showActions={true}
+                        />
+                    </div>
                 ))}
             </div>
 

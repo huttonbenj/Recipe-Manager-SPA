@@ -181,7 +181,7 @@ const Header: React.FC = () => {
                   </button>
                   {isThemeMenuOpen && (
                     <div
-                      className="absolute top-full right-0 mt-2 w-96 bg-white/95 dark:bg-secondary-900 backdrop-blur-xl border border-secondary-200 dark:border-secondary-700 rounded-xl shadow-lg animate-fade-in z-50 p-1"
+                      className="absolute top-full right-0 mt-2 w-96 glass-effect rounded-xl shadow-xl animate-scale-in z-50 p-1"
                     >
                       <div className="p-1">
                         <h4 className="text-sm font-semibold text-secondary-600 dark:text-secondary-400 px-2 mb-1">Display Mode</h4>

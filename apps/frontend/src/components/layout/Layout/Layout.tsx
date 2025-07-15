@@ -44,7 +44,7 @@ const Layout: React.FC = () => {
 
   // Get page-specific classes
   const getMainClasses = () => {
-    const baseClasses = 'flex-1 transition-all duration-300 ease-in-out'
+    const baseClasses = 'flex-1 transition-all duration-300 ease-in-out animate-fade-in'
 
     // Add specific styling based on route
     switch (location.pathname) {

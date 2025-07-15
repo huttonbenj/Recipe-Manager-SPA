@@ -37,11 +37,11 @@ const Card: React.FC<CardProps> = ({
 
   // Variant classes
   const variantClasses = {
-    default: 'bg-white dark:bg-secondary-800 shadow-sm',
-    bordered: 'bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 shadow-sm',
-    elevated: 'bg-white dark:bg-secondary-800 shadow-md',
-    outlined: 'bg-transparent border-2 border-secondary-300 dark:border-secondary-600',
-    glass: 'glass-effect shadow-sm'
+    default: 'card-enhanced',
+    bordered: 'card-enhanced border border-secondary-200 dark:border-secondary-700',
+    elevated: 'card-enhanced shadow-xl',
+    outlined: 'bg-transparent border-2 border-secondary-300 dark:border-secondary-600 hover:border-primary-400 dark:hover:border-primary-500',
+    glass: 'glass-effect shadow-lg'
   };
 
   // Padding classes

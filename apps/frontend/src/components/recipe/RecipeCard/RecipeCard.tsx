@@ -137,9 +137,9 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                 onMouseLeave={() => setIsHovered(false)}
             >
                 <Card
-                    variant="bordered"
+                    variant="default"
                     padding="none"
-                    className="overflow-hidden hover:shadow-lg transition-all duration-300"
+                    className="overflow-hidden animate-fade-in"
                 >
                     <div className="flex flex-col sm:flex-row items-stretch h-36">
                         {/* Recipe Image */}
@@ -301,9 +301,9 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             onMouseLeave={() => setIsHovered(false)}
         >
             <Card
-                variant="bordered"
+                variant="default"
                 padding="none"
-                className="h-full overflow-hidden hover:shadow-lg transition-all duration-300"
+                className="h-full overflow-hidden animate-fade-in"
             >
                 {/* Recipe Image */}
                 <div className="relative h-48 bg-secondary-200 dark:bg-secondary-700">

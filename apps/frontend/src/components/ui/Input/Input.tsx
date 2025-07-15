@@ -52,18 +52,18 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const inputClasses = cn(
       // Base styles
-      'w-full border transition-colors duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed',
-      // Variant styles
+      'input focus-enhanced w-full border-0 disabled:opacity-50 disabled:cursor-not-allowed',
+      // Variant styles (using global input classes)
       {
-        'bg-white dark:bg-secondary-800 border-secondary-300 dark:border-secondary-600 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-200 dark:focus:ring-primary-800 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 dark:placeholder-secondary-500': variant === 'default',
-        'bg-secondary-50 dark:bg-secondary-900 border-secondary-200 dark:border-secondary-700 focus:bg-white dark:focus:bg-secondary-800 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-200 dark:focus:ring-primary-800 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 dark:placeholder-secondary-500': variant === 'filled',
-        'bg-transparent border-2 border-secondary-300 dark:border-secondary-600 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-200 dark:focus:ring-primary-800 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 dark:placeholder-secondary-500': variant === 'outlined',
+        '': variant === 'default', // Uses default input class
+        'input-filled': variant === 'filled',
+        'input-outlined': variant === 'outlined',
       },
-      // Size styles
+      // Size styles (using global input classes)
       {
-        'px-3 py-1.5 text-sm rounded-md': size === 'sm',
-        'px-4 py-2 text-base rounded-lg': size === 'md',
-        'px-5 py-3 text-lg rounded-lg': size === 'lg',
+        'input-sm': size === 'sm',
+        'input-md': size === 'md',
+        'input-lg': size === 'lg',
       },
       // Error state
       {
