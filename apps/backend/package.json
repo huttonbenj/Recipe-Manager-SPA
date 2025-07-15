@@ -15,11 +15,11 @@
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset",
+    "db:migrate": "prisma migrate dev --schema=src/prisma/schema.prisma",
+    "db:reset": "prisma migrate reset --schema=src/prisma/schema.prisma",
     "db:seed": "ts-node src/prisma/seed.ts",
-    "db:studio": "prisma studio",
-    "db:generate": "prisma generate"
+    "db:studio": "prisma studio --schema=src/prisma/schema.prisma",
+    "db:generate": "prisma generate --schema=src/prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",
