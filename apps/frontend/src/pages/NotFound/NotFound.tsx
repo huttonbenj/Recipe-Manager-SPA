@@ -54,10 +54,10 @@ const NotFound: React.FC = () => {
             Oops! Page Not Found
           </h1>
           <p className="text-lg text-secondary-600 dark:text-secondary-400 mb-2">
-            The page you're looking for doesn't exist or may have been moved.
+            The page you&apos;re looking for doesn&apos;t exist or may have been moved.
           </p>
           <p className="text-secondary-500 dark:text-secondary-500">
-            Don't worry, let's help you find what you're looking for!
+            Don&apos;t worry, let&apos;s help you find what you&apos;re looking for!
           </p>
         </div>
 
@@ -109,7 +109,7 @@ const NotFound: React.FC = () => {
         {/* Additional Help */}
         <div className="text-center text-secondary-500 dark:text-secondary-500">
           <p className="text-sm">
-            Still can't find what you're looking for?{' '}
+            Still can&apos;t find what you&apos;re looking for?{' '}
             <Link
               to="/contact"
               className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"

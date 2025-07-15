@@ -5,17 +5,14 @@
 
 import express from 'express'
 import cors from 'cors'
-import helmet from 'helmet'
-import morgan from 'morgan'
 import compression from 'compression'
-import rateLimit from 'express-rate-limit'
 import multer from 'multer'
 
 import { config } from './config'
 import { logger } from './utils/logger'
 import { errorHandler } from './middleware/errorHandler'
 import { setCacheHeaders } from './middleware/cache'
-import { securityHeaders, sanitizeRequest, securityLogger, apiRateLimit } from './middleware/security'
+import { securityHeaders, sanitizeRequest, securityLogger, apiRateLimit, authRateLimit, uploadRateLimit } from './middleware/security'
 import { monitoringService } from './services/monitoringService'
 import routes from './routes'
 
@@ -24,63 +21,57 @@ const app = express()
 // Trust proxy for rate limiting and security
 app.set('trust proxy', 1)
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'img-src': [
-        "'self'", 
-        'data:', 
-        ...(config.server.nodeEnv === 'development' 
-          ? ['http://localhost:3001', 'http://localhost:5173']
-          : [`https://${config.server.backendHost}`]
-        )
-      ],
-    },
-  },
-}))
+// Security middleware must come first
+app.use(securityHeaders)
+app.use(sanitizeRequest)
+app.use(securityLogger)
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // CORS configuration
 app.use(cors({
   origin: config.cors.allowedOrigins,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
 }))
 
-// Security middleware
-app.use(securityHeaders)
-app.use(sanitizeRequest)
-app.use(securityLogger)
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: config.rateLimiting.windowMs,
-  max: config.rateLimiting.maxRequests,
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req) => {
-    // Skip rate limiting in test environment
-    return process.env.NODE_ENV === 'test'
-  }
-})
-app.use('/api/', limiter)
-
-// Additional API rate limiting
-app.use('/api/', apiRateLimit)
-
-// Cache headers middleware
+// Cache headers
 app.use(setCacheHeaders)
 
 // Compression middleware
 app.use(compression())
 
-// Logging middleware
-app.use(morgan(config.logging.format, {
-  stream: { write: (message) => logger.info(message.trim()) }
-}))
+// SECURE Logging middleware - excludes sensitive data
+app.use((req, res, next) => {
+  const startTime = Date.now()
+  
+  res.on('finish', () => {
+    const responseTime = Date.now() - startTime
+    const logData = {
+      method: req.method,
+      url: req.url,
+      status: res.statusCode,
+      responseTime: `${responseTime}ms`,
+      userAgent: req.get('User-Agent'),
+      ip: req.ip,
+      // NEVER log request body to prevent password exposure
+    }
+    
+    // Log different levels based on status code
+    if (res.statusCode >= 500) {
+      logger.error('HTTP Request', logData)
+    } else if (res.statusCode >= 400) {
+      logger.warn('HTTP Request', logData)
+    } else {
+      logger.info('HTTP Request', logData)
+    }
+  })
+  
+  next()
+})
 
 // Request tracking middleware for monitoring
 app.use((req, res, next) => {
@@ -94,9 +85,14 @@ app.use((req, res, next) => {
   next()
 })
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }))
-app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+// Apply SPECIFIC rate limiting only to auth endpoints
+app.use('/api/auth/', authRateLimit)
+
+// Apply upload rate limiting only to upload endpoints  
+app.use('/api/upload/', uploadRateLimit)
+
+// General API rate limiting (more permissive than auth)
+app.use('/api/', apiRateLimit)
 
 // Static file serving for uploads with proper CORS configuration
 app.use('/uploads', cors({

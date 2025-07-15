@@ -29,9 +29,7 @@ interface CreateRecipeData {
   authorId?: string
 }
 
-interface UpdateRecipeData extends Partial<CreateRecipeData> {
-  id: string
-}
+
 
 interface RecipeFilters {
   search?: string
@@ -143,24 +141,20 @@ class RecipeService {
    * Get recipe by ID
    */
   async getById(id: string) {
-    try {
-      const recipe = await prisma.recipe.findUnique({
-        where: { id },
-        include: {
-          author: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
+    const recipe = await prisma.recipe.findUnique({
+      where: { id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true
           }
         }
-      })
+      }
+    })
 
-      return normalizeRecipeForOutput(recipe)
-    } catch (error) {
-      throw error
-    }
+    return normalizeRecipeForOutput(recipe)
   }
 
   /**
@@ -169,6 +163,7 @@ class RecipeService {
   async update(id: string, data: Partial<CreateRecipeData>) {
     try {
       // Prepare update data, excluding authorId for security
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { authorId, ...updateFields } = data
       const normalizedData = normalizeRecipeForStorage(updateFields as CreateRecipeData)
       
@@ -227,106 +222,102 @@ class RecipeService {
    * Get all recipes with filtering, searching, and pagination
    */
   async getAll(filters: RecipeFilters = {}, page = 1, limit = 10, sort: SortOptions = {}) {
-    try {
-      const skip = (page - 1) * limit
-      const where: any = {}
+    const skip = (page - 1) * limit
+    const where: any = {}
 
-      // Text search in title and description
-      if (filters.search) {
-        if (isTestEnv) {
-          // SQLite doesn't support insensitive mode, but searching is already case-insensitive by default
-          where.OR = [
-            { title: { contains: filters.search } },
-            { description: { contains: filters.search } }
-          ]
-        } else {
-          // PostgreSQL supports case-insensitive mode
-          where.OR = [
-            { title: { contains: filters.search, mode: 'insensitive' } },
-            { description: { contains: filters.search, mode: 'insensitive' } }
-          ]
+    // Text search in title and description
+    if (filters.search) {
+      if (isTestEnv) {
+        // SQLite doesn't support insensitive mode, but searching is already case-insensitive by default
+        where.OR = [
+          { title: { contains: filters.search } },
+          { description: { contains: filters.search } }
+        ]
+      } else {
+        // PostgreSQL supports case-insensitive mode
+        where.OR = [
+          { title: { contains: filters.search, mode: 'insensitive' } },
+          { description: { contains: filters.search, mode: 'insensitive' } }
+        ]
+      }
+    }
+
+    // Filter by cuisine
+    if (filters.cuisine) {
+      if (isTestEnv) {
+        // SQLite doesn't support insensitive mode
+        where.cuisine = filters.cuisine
+      } else {
+        // PostgreSQL supports case-insensitive mode
+        where.cuisine = { equals: filters.cuisine, mode: 'insensitive' }
+      }
+    }
+
+    // Filter by difficulty
+    if (filters.difficulty) {
+      where.difficulty = filters.difficulty
+    }
+
+    // Filter by author
+    if (filters.authorId) {
+      where.authorId = filters.authorId
+    }
+
+    // Filter by maximum cook time
+    if (filters.cookTimeMax) {
+      where.cookTime = {
+        lte: filters.cookTimeMax
+      }
+    }
+
+    // Tag filtering (different approach for PostgreSQL vs SQLite)
+    if (filters.tags && filters.tags.length > 0) {
+      if (isTestEnv) {
+        // For SQLite, search within JSON string
+        where.AND = filters.tags.map(tag => ({
+          tags: { contains: tag }
+        }))
+      } else {
+        // For PostgreSQL, use array operations
+        where.tags = {
+          hasSome: filters.tags
         }
       }
+    }
 
-      // Filter by cuisine
-      if (filters.cuisine) {
-        if (isTestEnv) {
-          // SQLite doesn't support insensitive mode
-          where.cuisine = filters.cuisine
-        } else {
-          // PostgreSQL supports case-insensitive mode
-          where.cuisine = { equals: filters.cuisine, mode: 'insensitive' }
-        }
-      }
+    // Build sort order
+    const sortField = sort.sortBy || 'createdAt'
+    const sortDirection = sort.sortOrder === 'asc' ? 'asc' : 'desc'
 
-      // Filter by difficulty
-      if (filters.difficulty) {
-        where.difficulty = filters.difficulty
-      }
-
-      // Filter by author
-      if (filters.authorId) {
-        where.authorId = filters.authorId
-      }
-
-      // Filter by maximum cook time
-      if (filters.cookTimeMax) {
-        where.cookTime = {
-          lte: filters.cookTimeMax
-        }
-      }
-
-      // Tag filtering (different approach for PostgreSQL vs SQLite)
-      if (filters.tags && filters.tags.length > 0) {
-        if (isTestEnv) {
-          // For SQLite, search within JSON string
-          where.AND = filters.tags.map(tag => ({
-            tags: { contains: tag }
-          }))
-        } else {
-          // For PostgreSQL, use array operations
-          where.tags = {
-            hasSome: filters.tags
-          }
-        }
-      }
-
-      // Build sort order
-      const sortField = sort.sortBy || 'createdAt'
-      const sortDirection = sort.sortOrder === 'asc' ? 'asc' : 'desc'
-
-      const [recipes, total] = await Promise.all([
-        prisma.recipe.findMany({
-          where,
-          skip,
-          take: limit,
-          include: {
-            author: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
+    const [recipes, total] = await Promise.all([
+      prisma.recipe.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true
             }
-          },
-          orderBy: { [sortField]: sortDirection }
-        }),
-        prisma.recipe.count({ where })
-      ])
+          }
+        },
+        orderBy: { [sortField]: sortDirection }
+      }),
+      prisma.recipe.count({ where })
+    ])
 
-      const normalizedRecipes = recipes.map(recipe => normalizeRecipeForOutput(recipe))
+    const normalizedRecipes = recipes.map(recipe => normalizeRecipeForOutput(recipe))
 
-      return {
-        recipes: normalizedRecipes,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit)
-        }
+    return {
+      recipes: normalizedRecipes,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
       }
-    } catch (error) {
-      throw error
     }
   }
 
@@ -334,41 +325,35 @@ class RecipeService {
    * Get recipes by author
    */
   async getByAuthor(authorId: string, page = 1, limit = 10) {
-    try {
-      const skip = (page - 1) * limit
-
-      const [recipes, total] = await Promise.all([
-        prisma.recipe.findMany({
-          where: { authorId },
-          skip,
-          take: limit,
-          include: {
-            author: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
+    const skip = (page - 1) * limit
+    
+    const [recipes, total] = await Promise.all([
+      prisma.recipe.findMany({
+        where: { authorId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true
             }
-          },
-          orderBy: { createdAt: 'desc' }
-        }),
-        prisma.recipe.count({ where: { authorId } })
-      ])
-
-      const normalizedRecipes = recipes.map(recipe => normalizeRecipeForOutput(recipe))
-
-      return {
-        recipes: normalizedRecipes,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit)
+          }
         }
+      }),
+      prisma.recipe.count({ where: { authorId } })
+    ])
+
+    return {
+      recipes: recipes.map(normalizeRecipeForOutput),
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
       }
-    } catch (error) {
-      throw error
     }
   }
 
@@ -376,47 +361,43 @@ class RecipeService {
    * Get recipe statistics
    */
   async getStats() {
-    try {
-      const [totalRecipes, totalAuthors] = await Promise.all([
-        prisma.recipe.count(),
-        prisma.recipe.groupBy({
-          by: ['authorId'],
-          _count: {
-            authorId: true
-          }
-        }).then(result => result.length)
-      ])
-
-      // Get recipes by difficulty
-      const difficultyStats = await prisma.recipe.groupBy({
-        by: ['difficulty'],
+    const [totalRecipes, totalAuthors] = await Promise.all([
+      prisma.recipe.count(),
+      prisma.recipe.groupBy({
+        by: ['authorId'],
         _count: {
-          difficulty: true
+          authorId: true
         }
-      })
+      }).then(result => result.length)
+    ])
 
-      // Get popular cuisines
-      const cuisineStats = await prisma.recipe.groupBy({
-        by: ['cuisine'],
-        _count: {
-          cuisine: true
-        },
-        orderBy: {
-          _count: {
-            cuisine: 'desc'
-          }
-        },
-        take: 10
-      })
-
-      return {
-        totalRecipes,
-        totalAuthors,
-        byDifficulty: difficultyStats,
-        popularCuisines: cuisineStats
+    // Get recipes by difficulty
+    const difficultyStats = await prisma.recipe.groupBy({
+      by: ['difficulty'],
+      _count: {
+        difficulty: true
       }
-    } catch (error) {
-      throw error
+    })
+
+    // Get popular cuisines
+    const cuisineStats = await prisma.recipe.groupBy({
+      by: ['cuisine'],
+      _count: {
+        cuisine: true
+      },
+      orderBy: {
+        _count: {
+          cuisine: 'desc'
+        }
+      },
+      take: 10
+    })
+
+    return {
+      totalRecipes,
+      totalAuthors,
+      byDifficulty: difficultyStats,
+      popularCuisines: cuisineStats
     }
   }
 
@@ -424,12 +405,11 @@ class RecipeService {
    * Get trending tags
    */
   async getTrendingTags(limit = 20) {
-    try {
-      const recipes = await prisma.recipe.findMany({
-        select: { tags: true }
-      })
+    const recipes = await prisma.recipe.findMany({
+      select: { tags: true }
+    })
 
-      const tagCounts: Record<string, number> = {}
+    const tagCounts: Record<string, number> = {}
 
              recipes.forEach((recipe: any) => {
          let tags: string[]
@@ -459,9 +439,6 @@ class RecipeService {
         .sort(([, a], [, b]) => b - a)
         .slice(0, limit)
         .map(([tag, count]) => ({ tag, count }))
-    } catch (error) {
-      throw error
-    }
   }
 
   /**

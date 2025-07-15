@@ -71,7 +71,8 @@ export class AuthService {
     })
 
     // Return user without password
-    const { password: _, ...userWithoutPassword } = user
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...userWithoutPassword } = user
 
     return {
       user: userWithoutPassword,
@@ -109,7 +110,8 @@ export class AuthService {
     })
 
     // Return user without password
-    const { password: _, ...userWithoutPassword } = user
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password2, ...userWithoutPassword } = user
 
     return {
       user: userWithoutPassword,
@@ -159,7 +161,8 @@ export class AuthService {
       return null
     }
 
-    const { password: _, ...userWithoutPassword } = user
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password3, ...userWithoutPassword } = user
     return userWithoutPassword
   }
 

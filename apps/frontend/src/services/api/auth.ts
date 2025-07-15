@@ -10,7 +10,6 @@ export const authApi = {
    * Login user with email and password
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    console.log('🔵 Auth API login called with:', credentials)
     
     try {
       const response = await apiClient.post<{ 
@@ -22,7 +21,6 @@ export const authApi = {
         } 
       }>('/auth/login', credentials)
       
-      console.log('✅ Auth API login successful:', response.data)
       
       // Map backend response to frontend interface
       return {
@@ -31,7 +29,6 @@ export const authApi = {
         refreshToken: response.data.data.refreshToken
       }
     } catch (error) {
-      console.log('❌ Auth API login error:', error)
       throw error
     }
   },

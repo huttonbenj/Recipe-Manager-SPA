@@ -293,7 +293,7 @@ const Login: React.FC = () => {
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-4 bg-white dark:bg-secondary-800 text-secondary-500 dark:text-secondary-400">
-                    Don't have an account?
+                    Don&apos;t have an account?
                   </span>
                 </div>
               </div>

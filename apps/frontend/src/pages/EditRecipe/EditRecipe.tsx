@@ -144,7 +144,7 @@ const EditRecipe: React.FC = () => {
           </div>
           <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
           <p className="text-secondary-600 dark:text-secondary-400 mb-4">
-            You don't have permission to edit this recipe.
+            You don&apos;t have permission to edit this recipe.
           </p>
           <Button onClick={() => navigate('/app/recipes')}>
             Browse Recipes
@@ -407,7 +407,7 @@ const EditRecipe: React.FC = () => {
           </div>
           <h2 className="text-xl font-semibold mb-2">Recipe Not Found</h2>
           <p className="text-secondary-600 dark:text-secondary-400 mb-4">
-            The recipe you're trying to edit doesn't exist or you don't have permission to edit it.
+            The recipe you&apos;re trying to edit doesn&apos;t exist or you don&apos;t have permission to edit it.
           </p>
           <Button onClick={() => navigate('/app/recipes')}>
             Browse Recipes
@@ -493,7 +493,7 @@ const EditRecipe: React.FC = () => {
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-secondary-900 dark:text-secondary-100">Basic Information</h2>
-                      <p className="text-sm text-secondary-600 dark:text-secondary-400">Update your recipe's name and description</p>
+                      <p className="text-sm text-secondary-600 dark:text-secondary-400">Update your recipe&apos;s name and description</p>
                     </div>
                   </div>
                 </CardHeader>
@@ -670,7 +670,7 @@ const EditRecipe: React.FC = () => {
                     </div>
                   ))}
                   <div className="text-xs text-secondary-500 dark:text-secondary-400 mt-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-200/50 dark:border-blue-800/50">
-                    💡 <strong>Tip:</strong> Be specific with measurements (e.g., "2 cups diced onions" instead of "onions")
+                    💡 <strong>Tip:</strong> Be specific with measurements (e.g., &quot;2 cups diced onions&quot; instead of &quot;onions&quot;)
                   </div>
                 </CardBody>
               </Card>

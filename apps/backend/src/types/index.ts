@@ -13,13 +13,22 @@ export enum Difficulty {
   HARD = 'HARD'
 }
 
-// Try to import Difficulty from Prisma client if available, otherwise use our own
-let PrismaDifficulty: any
-try {
-  const prismaImports = require('@prisma/client')
-  PrismaDifficulty = prismaImports.Difficulty || Difficulty
-} catch {
-  PrismaDifficulty = Difficulty
+// Recipe and User Types
+export interface BaseRecipe {
+  id: string
+  title: string
+  description: string
+  ingredients: string[]
+  instructions: string[]
+  prepTime: number
+  cookTime: number
+  servings: number
+  difficulty: Difficulty
+  imageUrl?: string
+  tags: string[]
+  authorId: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 // JWT and Authentication Types

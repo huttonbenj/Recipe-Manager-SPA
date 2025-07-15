@@ -24,7 +24,7 @@ export const authRateLimit = rateLimit({
     // Use IP + user agent for more accurate tracking
     return `${req.ip}-${req.get('User-Agent')}`
   },
-  skip: (req: Request) => {
+  skip: (_req: Request) => {
     // Skip rate limiting in test environment
     return process.env.NODE_ENV === 'test'
   }
@@ -62,7 +62,7 @@ export const uploadRateLimit = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req: Request) => {
+  skip: (_req: Request) => {
     // Skip rate limiting in test environment
     return process.env.NODE_ENV === 'test'
   }
@@ -157,7 +157,7 @@ export const sanitizeRequest = (req: Request, res: Response, next: NextFunction)
  */
 function sanitizeObject(obj: any): void {
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       if (typeof obj[key] === 'string') {
         obj[key] = obj[key]
           .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')

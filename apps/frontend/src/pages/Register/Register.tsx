@@ -146,6 +146,7 @@ const Register: React.FC = () => {
     }
 
     // Submit registration request
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...registerData } = formData
     registerMutation.mutate(registerData)
   }

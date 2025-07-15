@@ -7,7 +7,7 @@
     "seed": "ts-node src/prisma/seed.ts"
   },
   "scripts": {
-    "dev": "nodemon -r dotenv/config -r tsconfig-paths/register src/server.ts",
+    "dev": "nodemon",
     "build": "tsc",
     "start": "node -r dotenv/config dist/server.js",
     "lint": "eslint src --ext .ts",
