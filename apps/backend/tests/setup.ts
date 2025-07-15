@@ -164,13 +164,13 @@ export const createTestRecipe = async (recipeData: {
     data: {
       title: recipeData.title,
       description: recipeData.description || 'Test recipe description',
-      ingredients: JSON.stringify(recipeData.ingredients || ['Test ingredient']),
+      ingredients: recipeData.ingredients || ['Test ingredient'],
       instructions: JSON.stringify(recipeData.instructions || ['Test instruction']),
       cookTime: recipeData.cookTime || 30,
       prepTime: recipeData.prepTime || 15,
       servings: recipeData.servings || 4,
       difficulty: DIFFICULTY,
-      tags: JSON.stringify(recipeData.tags || ['test']),
+      tags: recipeData.tags || ['test'],
       cuisine: recipeData.cuisine || 'Test Cuisine',
       authorId: recipeData.authorId
     }
