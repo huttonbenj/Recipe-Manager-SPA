@@ -1,237 +1,189 @@
-# Production Deployment Guide
+# Deployment Guide
 
 ## Overview
 
-This guide covers deploying the Recipe Manager application to production environments with comprehensive security, monitoring, and performance optimizations.
+This guide covers deploying the Recipe Manager SPA to production environments. The application consists of a React frontend and Node.js backend with PostgreSQL database.
 
-## Production Architecture
+**Stack:**
 
-### Components
-
-- **Frontend**: React SPA with nginx, service worker, and optimized bundles
-- **Backend**: Node.js API with security middleware, caching, and monitoring
-- **Database**: PostgreSQL with connection pooling and optimized queries
-- **Reverse Proxy**: nginx with SSL termination and rate limiting
-- **Caching**: Redis for session storage and API response caching
-- **Monitoring**: Health checks, metrics collection, and alerting
-- **Security**: CSP, HSTS, rate limiting, IP whitelisting, and request sanitization
-
-### Docker Production Setup
-
-The application includes a complete production Docker setup with:
-
-- Multi-stage builds for optimized image sizes
-- Security hardening with non-root users
-- Health checks for all services
-- Persistent volumes for data and uploads
-- SSL certificate management with Let's Encrypt
-- nginx reverse proxy with performance optimizations
+- **Frontend**: React + Vite + TypeScript
+- **Backend**: Node.js + Express + TypeScript + Prisma ORM
+- **Database**: PostgreSQL (production), SQLite (development/testing)
+- **File Storage**: Local filesystem with optimized image processing
 
 ## Prerequisites
 
-- Docker and Docker Compose
-- Domain name and DNS configuration
-- SSL certificates (Let's Encrypt recommended)
-- PostgreSQL database (managed service recommended)
-- Redis instance (optional, for caching)
-- Monitoring service (optional, for alerting)
+### System Requirements
+
+- **Node.js**: v18.0+ (recommended: v20+)
+- **PostgreSQL**: v13+ with connection pooling
+- **Memory**: Minimum 1GB RAM (recommended: 2GB+)
+- **Storage**: 10GB+ for application and uploads
+- **SSL Certificate**: Required for production HTTPS
+
+### Domain and DNS
+
+- Configured domain name (e.g., `yourdomain.com`)
+- DNS A records pointing to your server
+- SSL certificate (Let's Encrypt recommended)
 
 ## Environment Configuration
 
-### Backend Environment Variables
+### Backend Environment (.env)
 
 Create `apps/backend/.env.production`:
 
 ```env
-# Database Configuration
-DATABASE_URL=postgresql://user:password@host:5432/database?pgbouncer=true&connection_limit=20&pool_timeout=20
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/recipe_manager?schema=public"
+NODE_ENV="production"
 
 # Authentication
-JWT_SECRET=your-super-secure-jwt-secret-at-least-32-characters-long
-JWT_REFRESH_SECRET=your-super-secure-refresh-secret-at-least-32-characters-long
+JWT_SECRET="your-super-secure-jwt-secret-at-least-32-characters-long"
+JWT_EXPIRES_IN="7d"
 
-# Application Configuration
-NODE_ENV=production
+# Server
 PORT=3001
-FRONTEND_URL=https://yourdomain.com
-ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+FRONTEND_URL="https://yourdomain.com"
 
-# Security Configuration
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-RATE_LIMIT_AUTH_MAX=5
-RATE_LIMIT_UPLOAD_MAX=10
-ADMIN_WHITELIST_IPS=127.0.0.1,::1
+# File Upload
+MAX_FILE_SIZE=5242880
+UPLOAD_DIR="/var/www/recipe-manager/uploads"
 
-# File Upload Configuration
-UPLOAD_MAX_SIZE=5242880
-UPLOAD_DIR=/app/uploads
+# Logging
+LOG_LEVEL="info"
 
-# Caching Configuration
-CACHE_TTL_SECONDS=3600
-REDIS_URL=redis://redis:6379
-
-# Monitoring Configuration
-ENABLE_MONITORING=true
-METRICS_ENDPOINT_ENABLED=true
-HEALTH_CHECK_INTERVAL=30000
-
-# Logging Configuration
-LOG_LEVEL=info
-LOG_FORMAT=json
-LOG_FILE=/app/logs/app.log
+# Security (optional)
+ALLOWED_ORIGINS="https://yourdomain.com,https://www.yourdomain.com"
 ```
 
-### Frontend Environment Variables
+### Frontend Environment (.env.production)
 
 Create `apps/frontend/.env.production`:
 
 ```env
 # API Configuration
-VITE_API_BASE_URL=https://api.yourdomain.com
+VITE_API_URL="https://yourdomain.com/api"
 
-# Application Configuration
-VITE_APP_NAME=Recipe Manager
-VITE_APP_VERSION=1.0.0
-
-# Upload Configuration
-VITE_MAX_UPLOAD_SIZE=5242880
-
-# Feature Flags
-VITE_ENABLE_PWA=true
-VITE_ENABLE_ANALYTICS=true
-VITE_ENABLE_SENTRY=true
-
-# External Services
-VITE_SENTRY_DSN=https://your-sentry-dsn
-VITE_ANALYTICS_ID=your-analytics-id
+# Environment
+VITE_NODE_ENV="production"
 ```
 
-## Docker Production Deployment
+## Deployment Options
 
-### 1. Build Production Images
+### Option 1: Traditional Server Deployment
 
-```bash
-# Build all production images
-docker-compose -f docker-compose.prod.yml build
-
-# Or build individually
-docker build -f apps/frontend/Dockerfile.prod -t recipe-manager-frontend .
-docker build -f apps/backend/Dockerfile.prod -t recipe-manager-backend .
-```
-
-### 2. Start Production Services
+#### 1. Server Setup
 
 ```bash
-# Start all services
-docker-compose -f docker-compose.prod.yml up -d
-
-# Check service status
-docker-compose -f docker-compose.prod.yml ps
-
-# View logs
-docker-compose -f docker-compose.prod.yml logs -f
-```
-
-### 3. SSL Certificate Setup
-
-```bash
-# Generate SSL certificates with Let's Encrypt
-docker-compose -f docker-compose.prod.yml run --rm certbot certonly \
-  --webroot -w /var/www/certbot \
-  -d yourdomain.com -d www.yourdomain.com
-
-# Reload nginx to use certificates
-docker-compose -f docker-compose.prod.yml exec nginx nginx -s reload
-```
-
-### 4. Database Migration
-
-```bash
-# Run database migrations
-docker-compose -f docker-compose.prod.yml exec backend npx prisma migrate deploy
-
-# Seed initial data (optional)
-docker-compose -f docker-compose.prod.yml exec backend npm run db:seed
-```
-
-## Manual Deployment (VPS/Dedicated Server)
-
-### 1. Server Preparation
-
-```bash
-# Update system packages
+# Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js 18
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Install PostgreSQL
-sudo apt-get install -y postgresql postgresql-contrib
-
-# Install nginx
-sudo apt-get install -y nginx
+sudo apt install postgresql postgresql-contrib
 
 # Install PM2 for process management
 sudo npm install -g pm2
 
-# Install certbot for SSL
-sudo apt-get install -y certbot python3-certbot-nginx
+# Install Nginx for reverse proxy
+sudo apt install nginx
+
+# Install Certbot for SSL
+sudo apt install certbot python3-certbot-nginx
 ```
 
-### 2. Database Setup
+#### 2. Database Setup
 
 ```bash
-# Create database user and database
+# Switch to postgres user
 sudo -u postgres psql
-CREATE USER recipe_user WITH PASSWORD 'secure_password';
-CREATE DATABASE recipe_manager OWNER recipe_user;
+
+# Create database and user
+CREATE DATABASE recipe_manager;
+CREATE USER recipe_user WITH ENCRYPTED PASSWORD 'your_secure_password';
 GRANT ALL PRIVILEGES ON DATABASE recipe_manager TO recipe_user;
 \q
-
-# Configure PostgreSQL for production
-sudo nano /etc/postgresql/14/main/postgresql.conf
-# Set max_connections, shared_buffers, etc.
-
-# Configure pg_hba.conf for authentication
-sudo nano /etc/postgresql/14/main/pg_hba.conf
 ```
 
-### 3. Application Deployment
+#### 3. Application Deployment
 
 ```bash
+# Create app directory
+sudo mkdir -p /var/www/recipe-manager
+sudo chown $USER:$USER /var/www/recipe-manager
+
 # Clone repository
-git clone https://github.com/yourusername/recipe-manager.git
-cd recipe-manager
+cd /var/www/recipe-manager
+git clone <your-repo-url> .
 
 # Install dependencies
 npm install
-cd apps/frontend && npm install
-cd ../backend && npm install
 
-# Build frontend
-cd apps/frontend
+# Build applications
 npm run build
 
-# Build backend
-cd ../backend
-npm run build
-
-# Set up environment variables
-cp .env.example .env.production
-nano .env.production
+# Set up uploads directory
+mkdir -p uploads
+chmod 755 uploads
 
 # Run database migrations
+cd apps/backend
 npx prisma migrate deploy
+npx prisma generate
 
-# Start application with PM2
-pm2 start ecosystem.config.js --env production
-pm2 save
-pm2 startup
+# Seed database (optional)
+npm run seed
 ```
 
-### 4. nginx Configuration
+#### 4. PM2 Configuration
+
+Create `ecosystem.config.js`:
+
+```javascript
+module.exports = {
+  apps: [
+    {
+      name: 'recipe-manager-backend',
+      script: 'apps/backend/dist/server.js',
+      cwd: '/var/www/recipe-manager',
+      instances: 'max',
+      exec_mode: 'cluster',
+      env: {
+        NODE_ENV: 'production',
+        PORT: 3001
+      },
+      error_file: '/var/log/recipe-manager/backend-error.log',
+      out_file: '/var/log/recipe-manager/backend-out.log',
+      log_file: '/var/log/recipe-manager/backend.log',
+      time: true
+    }
+  ]
+};
+```
+
+Start the application:
+
+```bash
+# Create log directory
+sudo mkdir -p /var/log/recipe-manager
+sudo chown $USER:$USER /var/log/recipe-manager
+
+# Start with PM2
+pm2 start ecosystem.config.js
+
+# Save PM2 configuration
+pm2 save
+
+# Set up PM2 auto-startup
+pm2 startup
+sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u $USER --hp $HOME
+```
+
+#### 5. Nginx Configuration
 
 Create `/etc/nginx/sites-available/recipe-manager`:
 
@@ -240,46 +192,31 @@ Create `/etc/nginx/sites-available/recipe-manager`:
 server {
     listen 80;
     server_name yourdomain.com www.yourdomain.com;
-    
-    # Redirect HTTP to HTTPS
-    return 301 https://$server_name$request_uri;
-}
+    root /var/www/recipe-manager/apps/frontend/dist;
+    index index.html;
 
-server {
-    listen 443 ssl http2;
-    server_name yourdomain.com www.yourdomain.com;
-    
-    # SSL Configuration
-    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
-    
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.yourdomain.com;" always;
-    
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
     # Gzip compression
     gzip on;
     gzip_vary on;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-    
-    # Frontend static files
-    location / {
-        root /var/www/recipe-manager/apps/frontend/dist;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-        
-        # Cache static assets
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-            expires 1y;
-            add_header Cache-Control "public, immutable";
-        }
+    gzip_min_length 1024;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
+
+    # Static assets with long cache
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
     }
-    
-    # API proxy
-    location /api {
+
+    # API proxy to backend
+    location /api/ {
         proxy_pass http://localhost:3001;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -290,28 +227,53 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
         
-        # Rate limiting
-        limit_req zone=api burst=20 nodelay;
-        limit_req_status 429;
+        # Timeout settings
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
     }
-    
-    # Health checks
-    location /health {
+
+    # Uploads proxy to backend
+    location /uploads/ {
         proxy_pass http://localhost:3001;
-        access_log off;
-    }
-    
-    # Upload files
-    location /uploads {
-        proxy_pass http://localhost:3001;
-        client_max_body_size 5M;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         
         # Cache uploaded images
-        location ~* \.(jpg|jpeg|png|gif|webp)$ {
-            proxy_pass http://localhost:3001;
-            expires 7d;
-            add_header Cache-Control "public";
-        }
+        expires 1M;
+        add_header Cache-Control "public";
+    }
+
+    # Health check
+    location /health {
+        proxy_pass http://localhost:3001;
+        proxy_set_header Host $host;
+        access_log off;
+    }
+
+    # SPA fallback - serve index.html for client-side routing
+    location / {
+        try_files $uri $uri/ /index.html;
+        
+        # Security headers for HTML
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+    }
+
+    # Block access to sensitive files
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    location ~ \.(env|log|conf)$ {
+        deny all;
+        access_log off;
+        log_not_found off;
     }
 }
 ```
@@ -319,150 +281,507 @@ server {
 Enable the site:
 
 ```bash
+# Enable site
 sudo ln -s /etc/nginx/sites-available/recipe-manager /etc/nginx/sites-enabled/
+
+# Remove default site
+sudo rm /etc/nginx/sites-enabled/default
+
+# Test configuration
 sudo nginx -t
-sudo systemctl reload nginx
+
+# Restart Nginx
+sudo systemctl restart nginx
 ```
 
-### 5. SSL Certificate Setup
+#### 6. SSL Certificate
 
 ```bash
-# Generate SSL certificate
+# Get SSL certificate
 sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
 
-# Set up auto-renewal
-sudo crontab -e
-# Add: 0 12 * * * /usr/bin/certbot renew --quiet
+# Test auto-renewal
+sudo certbot renew --dry-run
 ```
 
-## Cloud Platform Deployment
+### Option 2: Docker Deployment
 
-### Vercel (Frontend)
+#### 1. Create Production Dockerfiles
 
-1. **Install Vercel CLI:**
-   ```bash
-   npm install -g vercel
-   ```
+**Backend Dockerfile (`apps/backend/Dockerfile.prod`):**
 
-2. **Deploy frontend:**
-   ```bash
-   cd apps/frontend
-   vercel --prod
-   ```
+```dockerfile
+FROM node:20-alpine AS builder
 
-3. **Configure environment variables in Vercel dashboard**
+WORKDIR /app
 
-### Railway (Backend)
+# Copy package files
+COPY package*.json ./
+COPY apps/backend/package*.json ./apps/backend/
+COPY packages/shared-types/package*.json ./packages/shared-types/
 
-1. **Connect GitHub repository**
-2. **Set environment variables**
-3. **Deploy automatically on push**
+# Install dependencies
+RUN npm ci --only=production
 
-### Heroku (Backend)
+# Copy source code
+COPY apps/backend ./apps/backend
+COPY packages/shared-types ./packages/shared-types
 
-1. **Install Heroku CLI:**
-   ```bash
-   npm install -g heroku
-   ```
+# Build application
+WORKDIR /app/apps/backend
+RUN npm run build
 
-2. **Create Heroku app:**
-   ```bash
-   heroku create recipe-manager-api
-   ```
+# Production stage
+FROM node:20-alpine AS production
 
-3. **Set environment variables:**
-   ```bash
-   heroku config:set DATABASE_URL=postgresql://...
-   heroku config:set JWT_SECRET=...
-   ```
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S recipe-manager -u 1001
 
-4. **Deploy:**
-   ```bash
-   git push heroku main
-   ```
+WORKDIR /app
 
-### AWS (Full Stack)
+# Copy built application
+COPY --from=builder --chown=recipe-manager:nodejs /app/apps/backend/dist ./dist
+COPY --from=builder --chown=recipe-manager:nodejs /app/apps/backend/node_modules ./node_modules
+COPY --from=builder --chown=recipe-manager:nodejs /app/apps/backend/package.json ./package.json
 
-1. **Frontend**: Deploy to S3 + CloudFront
-2. **Backend**: Deploy to Elastic Beanstalk or ECS
-3. **Database**: Use RDS PostgreSQL
-4. **Redis**: Use ElastiCache
-5. **CDN**: CloudFront for static assets
+# Copy Prisma files
+COPY --from=builder --chown=recipe-manager:nodejs /app/apps/backend/src/prisma ./prisma
 
-## Database Deployment
+# Create uploads directory
+RUN mkdir -p ./uploads && chown recipe-manager:nodejs ./uploads
 
-### Managed Database Services
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
-**Recommended providers:**
-- **Neon**: PostgreSQL with generous free tier
-- **Supabase**: Full-stack PostgreSQL platform
-- **AWS RDS**: Managed PostgreSQL with high availability
-- **Google Cloud SQL**: Managed PostgreSQL
-- **Azure Database**: PostgreSQL service
+USER recipe-manager
 
-### Database Configuration
+EXPOSE 3001
 
-```sql
--- Create optimized database
-CREATE DATABASE recipe_manager
-  WITH ENCODING = 'UTF8'
-       LC_COLLATE = 'en_US.UTF-8'
-       LC_CTYPE = 'en_US.UTF-8'
-       TEMPLATE = template0;
-
--- Configure connection pooling
-ALTER SYSTEM SET max_connections = 100;
-ALTER SYSTEM SET shared_buffers = '256MB';
-ALTER SYSTEM SET effective_cache_size = '1GB';
-ALTER SYSTEM SET maintenance_work_mem = '64MB';
-ALTER SYSTEM SET checkpoint_completion_target = 0.9;
-ALTER SYSTEM SET wal_buffers = '16MB';
-ALTER SYSTEM SET default_statistics_target = 100;
+CMD ["node", "dist/server.js"]
 ```
 
-### Database Migration
+**Frontend Dockerfile (`apps/frontend/Dockerfile.prod`):**
+
+```dockerfile
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY apps/frontend/package*.json ./apps/frontend/
+COPY packages/shared-types/package*.json ./packages/shared-types/
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY apps/frontend ./apps/frontend
+COPY packages/shared-types ./packages/shared-types
+
+# Build application
+WORKDIR /app/apps/frontend
+RUN npm run build
+
+# Production stage with Nginx
+FROM nginx:alpine AS production
+
+# Copy custom nginx config
+COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built app
+COPY --from=builder /app/apps/frontend/dist /usr/share/nginx/html
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:80/health || exit 1
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+**Frontend Nginx config (`apps/frontend/nginx.conf`):**
+
+```nginx
+server {
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    # Static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Health check
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    # SPA fallback
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+#### 2. Docker Compose for Production
+
+Create `docker-compose.prod.yml`:
+
+```yaml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: recipe-manager-db
+    environment:
+      POSTGRES_DB: recipe_manager
+      POSTGRES_USER: recipe_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U recipe_user -d recipe_manager"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile.prod
+    container_name: recipe-manager-backend
+    environment:
+      DATABASE_URL: postgresql://recipe_user:${DB_PASSWORD}@postgres:5432/recipe_manager
+      JWT_SECRET: ${JWT_SECRET}
+      NODE_ENV: production
+      PORT: 3001
+      FRONTEND_URL: https://${DOMAIN}
+    volumes:
+      - uploads_data:/app/uploads
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile.prod
+      args:
+        - VITE_API_URL=https://${DOMAIN}/api
+    container_name: recipe-manager-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    container_name: recipe-manager-proxy
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - uploads_data:/var/www/uploads:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  uploads_data:
+    driver: local
+```
+
+#### 3. Environment Setup
+
+Create `.env.prod`:
+
+```env
+# Database
+DB_PASSWORD=your_secure_database_password
+
+# Authentication
+JWT_SECRET=your-super-secure-jwt-secret-at-least-32-characters-long
+
+# Domain
+DOMAIN=yourdomain.com
+```
+
+#### 4. Deploy with Docker
 
 ```bash
-# Production migration
+# Create production environment file
+cp .env.prod .env
+
+# Build and start services
+docker-compose -f docker-compose.prod.yml up -d
+
+# Run database migrations
+docker-compose -f docker-compose.prod.yml exec backend npx prisma migrate deploy
+
+# Seed database (optional)
+docker-compose -f docker-compose.prod.yml exec backend npm run seed
+
+# Check service health
+docker-compose -f docker-compose.prod.yml ps
+```
+
+### Option 3: Cloud Platform Deployment
+
+#### Vercel (Frontend) + Railway (Backend)
+
+**Frontend on Vercel:**
+
+1. Connect GitHub repository to Vercel
+2. Set build command: `cd apps/frontend && npm run build`
+3. Set output directory: `apps/frontend/dist`
+4. Set environment variables:
+
+   ```env
+   VITE_API_URL=https://your-backend-url.railway.app/api
+   ```
+
+**Backend on Railway:**
+
+1. Connect GitHub repository to Railway
+2. Set root directory: `apps/backend`
+3. Set build command: `npm run build`
+4. Set start command: `npm start`
+5. Add PostgreSQL database service
+6. Set environment variables:
+
+   ```env
+   DATABASE_URL=postgresql://user:pass@host:port/db
+   JWT_SECRET=your-jwt-secret
+   FRONTEND_URL=https://your-frontend-url.vercel.app
+   NODE_ENV=production
+   ```
+
+#### Heroku Deployment
+
+**Prepare for Heroku:**
+
+Create `Procfile`:
+
+```bash
+web: cd apps/backend && npm start
+```
+
+Create `package.json` in root:
+
+```json
+{
+  "name": "recipe-manager-monorepo",
+  "scripts": {
+    "build": "npm install && cd apps/backend && npm run build",
+    "start": "cd apps/backend && npm start",
+    "heroku-postbuild": "npm run build"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
+```
+
+**Deploy:**
+
+```bash
+# Login to Heroku
+heroku login
+
+# Create app
+heroku create your-recipe-manager-api
+
+# Add PostgreSQL
+heroku addons:create heroku-postgresql:mini
+
+# Set environment variables
+heroku config:set JWT_SECRET=your-jwt-secret
+heroku config:set NODE_ENV=production
+heroku config:set FRONTEND_URL=https://your-frontend-domain.com
+
+# Deploy
+git push heroku main
+
+# Run migrations
+heroku run npx prisma migrate deploy --app your-recipe-manager-api
+```
+
+## Database Management
+
+### Backup Strategy
+
+```bash
+#!/bin/bash
+# backup-db.sh
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/backups/recipe-manager"
+DB_NAME="recipe_manager"
+
+mkdir -p $BACKUP_DIR
+
+# Create backup
+pg_dump -U recipe_user -h localhost $DB_NAME | gzip > $BACKUP_DIR/backup_$DATE.sql.gz
+
+# Keep only last 30 days
+find $BACKUP_DIR -name "backup_*.sql.gz" -mtime +30 -delete
+
+echo "Backup completed: backup_$DATE.sql.gz"
+```
+
+### Restore from Backup
+
+```bash
+# Restore database
+gunzip -c /backups/recipe-manager/backup_20250115_120000.sql.gz | psql -U recipe_user -h localhost recipe_manager
+```
+
+### Migration Management
+
+```bash
+# Production migration deployment
+cd apps/backend
+
+# Deploy pending migrations
 npx prisma migrate deploy
 
-# Reset database (if needed)
-npx prisma migrate reset --force
+# Check migration status
+npx prisma migrate status
 
-# Generate Prisma client
-npx prisma generate
+# Reset database (DANGEROUS - only for development)
+npx prisma migrate reset
 ```
+
+## Monitoring and Logging
+
+### Health Monitoring
+
+Set up monitoring for:
+
+```bash
+# Check application health
+curl https://yourdomain.com/health
+
+# Expected response:
+{
+  "status": "healthy",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "uptime": 3600,
+  "environment": "production",
+  "database": "connected",
+  "version": "1.0.0"
+}
+```
+
+### Log Management
+
+**PM2 Logs:**
+
+```bash
+# View logs
+pm2 logs recipe-manager-backend
+
+# Log rotation
+pm2 install pm2-logrotate
+pm2 set pm2-logrotate:max_size 10M
+pm2 set pm2-logrotate:retain 30
+```
+
+**Docker Logs:**
+
+```bash
+# View application logs
+docker-compose -f docker-compose.prod.yml logs -f backend
+
+# Log rotation with Docker
+docker-compose -f docker-compose.prod.yml up -d --log-opt max-size=10m --log-opt max-file=3
+```
+
+### Monitoring Alerts
+
+Set up alerts for:
+
+- Application downtime (health check fails)
+- High error rates (>5% 5xx responses)
+- Database connection issues
+- High memory/CPU usage (>80%)
+- Disk space low (<10% free)
 
 ## Security Configuration
 
 ### SSL/TLS Setup
 
-1. **Use HTTP/2 and TLS 1.3**
-2. **Configure strong cipher suites**
-3. **Enable HSTS**
-4. **Use certificate pinning**
+**Certbot with Nginx:**
+
+```bash
+# Install certbot
+sudo snap install core; sudo snap refresh core
+sudo snap install --classic certbot
+
+# Get certificate
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+# Auto-renewal
+sudo crontab -e
+# Add: 0 12 * * * /usr/bin/certbot renew --quiet
+```
 
 ### Security Headers
 
+Ensure these headers are set:
+
 ```nginx
-# Security headers configuration
+# Security headers
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 add_header X-Frame-Options "SAMEORIGIN" always;
 add_header X-Content-Type-Options "nosniff" always;
 add_header X-XSS-Protection "1; mode=block" always;
-add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.yourdomain.com;" always;
-```
-
-### Rate Limiting
-
-```bash
-# nginx rate limiting
-http {
-    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
-    limit_req_zone $binary_remote_addr zone=auth:10m rate=5r/m;
-    limit_req_zone $binary_remote_addr zone=upload:10m rate=2r/m;
-}
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;" always;
 ```
 
 ### Firewall Configuration
@@ -473,191 +792,283 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw allow ssh
 sudo ufw allow 'Nginx Full'
+sudo ufw allow 5432  # PostgreSQL (if external access needed)
 sudo ufw enable
 ```
-
-## Monitoring and Logging
-
-### Health Checks
-
-The application includes comprehensive health endpoints:
-
-- **Basic Health**: `GET /health`
-- **Detailed Health**: `GET /health/detailed`
-- **Readiness Probe**: `GET /health/ready`
-- **Liveness Probe**: `GET /health/live`
-- **Metrics**: `GET /health/metrics`
-
-### Monitoring Setup
-
-1. **Application Metrics**:
-   - CPU and memory usage
-   - Request latency and throughput
-   - Database performance
-   - Cache hit rates
-
-2. **Infrastructure Monitoring**:
-   - Server resources
-   - Network performance
-   - Disk usage
-   - Load balancer health
-
-3. **Alerting**:
-   - High error rates
-   - Performance degradation
-   - Database connection issues
-   - Security incidents
-
-### Logging Configuration
-
-```javascript
-// Winston logging configuration
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' }),
-    new winston.transports.Console({
-      format: winston.format.simple()
-    })
-  ]
-});
-```
-
-### Log Management
-
-1. **Centralized Logging**: Use ELK stack or similar
-2. **Log Rotation**: Configure logrotate
-3. **Log Analysis**: Set up dashboards and alerts
-4. **Error Tracking**: Use Sentry or similar service
 
 ## Performance Optimization
 
 ### Database Optimization
 
-1. **Connection Pooling**: Use PgBouncer or built-in pooling
-2. **Query Optimization**: Analyze slow queries
-3. **Indexing**: Add indexes for frequently queried columns
-4. **Caching**: Implement Redis caching
+```sql
+-- Add indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_recipes_author_id ON "Recipe"("authorId");
+CREATE INDEX IF NOT EXISTS idx_recipes_created_at ON "Recipe"("createdAt");
+CREATE INDEX IF NOT EXISTS idx_recipes_cuisine ON "Recipe"("cuisine");
+CREATE INDEX IF NOT EXISTS idx_recipes_difficulty ON "Recipe"("difficulty");
+CREATE INDEX IF NOT EXISTS idx_recipes_cook_time ON "Recipe"("cookTime");
 
-### Frontend Optimization
-
-1. **Bundle Optimization**: Code splitting and tree shaking
-2. **Image Optimization**: WebP format and lazy loading
-3. **Service Worker**: Offline support and caching
-4. **CDN**: Use CloudFront or similar
-
-### Backend Optimization
-
-1. **API Caching**: Cache GET responses
-2. **Database Queries**: Use prepared statements
-3. **Memory Management**: Monitor and optimize memory usage
-4. **Process Management**: Use PM2 for clustering
-
-## Backup and Recovery
-
-### Database Backup
-
-```bash
-# Daily backup script
-#!/bin/bash
-DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/backups/database"
-DB_NAME="recipe_manager"
-
-# Create backup
-pg_dump -h localhost -U recipe_user -d $DB_NAME > $BACKUP_DIR/backup_$DATE.sql
-
-# Compress backup
-gzip $BACKUP_DIR/backup_$DATE.sql
-
-# Remove old backups (keep 30 days)
-find $BACKUP_DIR -name "backup_*.sql.gz" -mtime +30 -delete
+-- Full-text search index
+CREATE INDEX IF NOT EXISTS idx_recipes_search ON "Recipe" USING gin(to_tsvector('english', title || ' ' || description));
 ```
 
-### File Backup
+### Nginx Optimization
 
-```bash
-# Backup uploads directory
-rsync -av /app/uploads/ /backups/uploads/
+```nginx
+# Worker processes
+worker_processes auto;
+worker_rlimit_nofile 65535;
+
+events {
+    worker_connections 1024;
+    use epoll;
+    multi_accept on;
+}
+
+http {
+    # Basic settings
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    client_max_body_size 5M;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_comp_level 6;
+    gzip_min_length 1000;
+    gzip_proxied any;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+}
 ```
 
-### Disaster Recovery
-
-1. **Database Restore**: Test restore procedures regularly
-2. **Application Deployment**: Automate deployment process
-3. **DNS Failover**: Configure DNS failover
-4. **Load Balancing**: Use multiple servers
-
-## Scaling Strategies
+## Scaling Considerations
 
 ### Horizontal Scaling
 
-1. **Load Balancing**: Use nginx or AWS ALB
-2. **Database Scaling**: Read replicas and sharding
-3. **Caching Layer**: Redis cluster
-4. **CDN**: Global content delivery
+**Load Balancer Configuration:**
 
-### Vertical Scaling
+```nginx
+upstream backend {
+    least_conn;
+    server 127.0.0.1:3001;
+    server 127.0.0.1:3002;
+    server 127.0.0.1:3003;
+}
 
-1. **Server Resources**: Increase CPU and memory
-2. **Database Optimization**: Tune PostgreSQL settings
-3. **Application Optimization**: Profile and optimize code
+server {
+    location /api/ {
+        proxy_pass http://backend;
+        # ... other proxy settings
+    }
+}
+```
+
+**PM2 Cluster Mode:**
+
+```javascript
+// ecosystem.config.js
+module.exports = {
+  apps: [{
+    name: 'recipe-manager-backend',
+    script: 'dist/server.js',
+    instances: 'max',  // Use all CPU cores
+    exec_mode: 'cluster',
+    max_memory_restart: '1G',
+    // ... other settings
+  }]
+};
+```
+
+### Database Scaling
+
+**Read Replicas:**
+
+```javascript
+// Prisma with read replicas
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL, // Primary (write)
+    },
+  },
+});
+
+const readPrisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.READ_DATABASE_URL, // Read replica
+    },
+  },
+});
+```
+
+### CDN Integration
+
+For static assets and images:
+
+```javascript
+// Configure CDN for uploads
+const CDN_BASE_URL = process.env.CDN_BASE_URL || '';
+
+function getCdnUrl(path) {
+  return CDN_BASE_URL ? `${CDN_BASE_URL}${path}` : path;
+}
+```
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Database Connection**: Check connection string and pool settings
-2. **Memory Leaks**: Monitor memory usage and restart services
-3. **SSL Issues**: Verify certificate configuration
-4. **Rate Limiting**: Check nginx and application rate limits
+**1. Database Connection Errors:**
 
-### Debugging Tools
+```bash
+# Check PostgreSQL status
+sudo systemctl status postgresql
 
-1. **Application Logs**: Check Winston logs
-2. **nginx Logs**: Review access and error logs
-3. **Database Logs**: Check PostgreSQL logs
-4. **System Monitoring**: Use htop, iotop, netstat
+# Check connection
+psql -U recipe_user -h localhost -d recipe_manager
 
-### Performance Issues
+# Check connection limits
+SELECT count(*) FROM pg_stat_activity;
+```
 
-1. **Database**: Use EXPLAIN ANALYZE for slow queries
-2. **API**: Check response times in metrics
-3. **Frontend**: Use browser dev tools
-4. **Network**: Monitor network latency
+**2. Memory Issues:**
+
+```bash
+# Check memory usage
+free -h
+htop
+
+# Check Node.js memory
+pm2 monit
+```
+
+**3. SSL Certificate Issues:**
+
+```bash
+# Check certificate expiry
+sudo certbot certificates
+
+# Renew certificate
+sudo certbot renew
+
+# Test SSL configuration
+openssl s_client -connect yourdomain.com:443
+```
+
+**4. Application Errors:**
+
+```bash
+# Check application logs
+pm2 logs recipe-manager-backend
+
+# Check Nginx logs
+sudo tail -f /var/log/nginx/error.log
+
+# Check system logs
+sudo journalctl -u nginx -f
+```
+
+### Performance Debugging
+
+**1. Database Performance:**
+
+```sql
+-- Check slow queries
+SELECT query, mean_time, calls, total_time
+FROM pg_stat_statements
+ORDER BY mean_time DESC LIMIT 10;
+
+-- Check connection pool
+SELECT count(*), state
+FROM pg_stat_activity
+GROUP BY state;
+```
+
+**2. Application Performance:**
+
+```bash
+# Check PM2 metrics
+pm2 monit
+
+# Check system resources
+htop
+iotop
+```
 
 ## Maintenance
 
 ### Regular Tasks
 
-1. **Security Updates**: Apply OS and package updates
-2. **Database Maintenance**: Vacuum and analyze
-3. **Log Rotation**: Clean up old logs
-4. **Certificate Renewal**: Renew SSL certificates
-5. **Backup Verification**: Test backup restore
+**Daily:**
 
-### Monitoring Checklist
+- Monitor application health endpoints
+- Check error logs for issues
+- Verify backup completion
 
-- [ ] Health endpoints responding
-- [ ] SSL certificates valid
-- [ ] Database connections healthy
-- [ ] API response times acceptable
-- [ ] Error rates within limits
-- [ ] Disk space available
-- [ ] Memory usage normal
-- [ ] Security logs reviewed
+**Weekly:**
+
+- Review application metrics
+- Check disk space usage
+- Update system packages
+
+**Monthly:**
+
+- Security updates
+- Certificate renewal check
+- Database maintenance
+- Performance review
+
+### Update Procedure
+
+```bash
+# 1. Backup database
+./backup-db.sh
+
+# 2. Update code
+git pull origin main
+
+# 3. Install dependencies
+npm install
+
+# 4. Build application
+npm run build
+
+# 5. Run migrations
+cd apps/backend
+npx prisma migrate deploy
+
+# 6. Restart application
+pm2 restart ecosystem.config.js
+
+# 7. Verify deployment
+curl https://yourdomain.com/health
+```
 
 ## Support
 
-For technical support and questions:
+For deployment issues:
 
-1. **Documentation**: Check API documentation
-2. **Logs**: Review application and server logs
-3. **Metrics**: Check health endpoints
-4. **Community**: GitHub issues and discussions
+1. **Check Health Endpoint**: `/health` for system status
+2. **Review Logs**: Application and system logs for errors
+3. **Monitor Resources**: CPU, memory, and disk usage
+4. **Database Status**: Connection and query performance
+5. **SSL Certificate**: Expiry and configuration
+
+## Related Documentation
+
+- [Development Setup](./development-setup.md) - Local development guide
+- [API Documentation](./api-documentation.md) - Complete API reference
+- [Favorites & Bookmarks](./favorites-bookmarks.md) - Feature details

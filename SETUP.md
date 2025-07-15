@@ -75,6 +75,12 @@ cd apps/frontend
 npm run dev
 ```
 
+**Or start both with one command from root:**
+
+```bash
+npm run dev
+```
+
 ### 6. Access Application
 
 - **Frontend**: <http://localhost:5173>
@@ -234,7 +240,10 @@ Key features:
 - `?tags=tag1,tag2` - Filter by tags
 - `?cuisine=italian` - Filter by cuisine
 - `?difficulty=easy` - Filter by difficulty
-- `?limit=20&offset=0` - Pagination
+- `?sortBy=title&sortOrder=asc` - Sorting options
+- `?authorId=userId` - Filter by author ("My Recipes")
+- `?cookTimeMax=30` - Maximum cook time filter
+- `?limit=20&page=1` - Pagination
 
 ## 🎨 Frontend Features
 
@@ -244,7 +253,7 @@ Key features:
 - **RecipeList** - Paginated recipe browsing
 - **RecipeFilters** - Advanced search and filtering
 - **SearchForm** - Debounced search with suggestions
-- **Theme System** - 6 color themes + light/dark mode
+- **Theme System** - 12 color themes + light/dark mode
 
 ### Pages
 
@@ -305,7 +314,6 @@ Key features:
 
 ### Bundle Optimization
 
-- Reduced bundle size from 545KB to 362KB
 - Code splitting and tree shaking
 - Lazy loading for components
 - WebP image optimization
@@ -433,11 +441,14 @@ Create production `.env` files with:
 ### Run Tests
 
 ```bash
-# Frontend tests (87 tests)
+# All tests (82 tests total)
+npm test
+
+# Frontend tests (28 tests)
 cd apps/frontend
 npm test
 
-# Backend tests
+# Backend tests (54 tests)
 cd apps/backend
 npm test
 
@@ -457,19 +468,36 @@ npm run test:watch
 
 ## 📚 Documentation
 
-- **API Documentation**: Complete API reference
-- **Development Guide**: Setup and workflow
-- **Deployment Guide**: Production deployment
-- **Architecture**: System design and decisions
+### Core Documentation
+
+- **[Development Setup](./docs/development-setup.md)** - Detailed development guide
+- **[API Documentation](./docs/api-documentation.md)** - Complete API reference
+- **[Architecture Guide](./docs/architecture.md)** - System architecture and design
+- **[Deployment Guide](./docs/deployment-guide.md)** - Production deployment
+- **[Favorites & Bookmarks](./docs/favorites-bookmarks.md)** - Feature implementation details
+
+### Technical Specifications
+
+- **[Technical Requirements](./docs/technical-requirements.md)** - Comprehensive requirements specification
+- **[Testing Strategy](./docs/testing-strategy.md)** - Complete testing methodology and practices
+- **[Troubleshooting Guide](./docs/troubleshooting.md)** - Common issues and solutions
+- **System Architecture**: High-level system design with visual diagrams
+- **Database Schema**: Entity relationships and data flow
+- **API Design**: RESTful endpoints with request/response examples
+- **Security Implementation**: Authentication flow and security measures
+- **Performance Optimizations**: Caching, database indexing, bundle optimization
 
 ## 🎯 Production Ready Features
 
-✅ **87 tests passing** - Comprehensive test coverage  
+✅ **82 tests passing** - Comprehensive test coverage (54 backend + 28 frontend)  
 ✅ **Security hardened** - Rate limiting, CSP, input validation  
 ✅ **Performance optimized** - Caching, connection pooling, bundle optimization  
 ✅ **Docker production ready** - Multi-stage builds, health checks  
 ✅ **Monitoring integrated** - Health checks, metrics, logging  
-✅ **Documentation complete** - API, setup, deployment guides  
+✅ **Documentation complete** - API, setup, deployment, architecture guides  
+✅ **12 Color Themes** - Beautiful themes with dark mode by default  
+✅ **Fully Responsive** - Mobile-first design with perfect scaling  
+✅ **Advanced Filtering** - Search, sort, and filter with pagination  
 
 ## 🤝 Getting Help
 
@@ -477,6 +505,7 @@ npm run test:watch
 2. **Health Checks**: Use `/health` endpoints for system status
 3. **Logs**: Check browser console and server logs
 4. **GitHub Issues**: Report bugs and request features
+5. **Architecture Guide**: Review system design in docs/architecture.md
 
 ---
 

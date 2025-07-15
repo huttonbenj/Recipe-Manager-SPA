@@ -2,41 +2,75 @@
 
 ## Overview
 
-The Recipe Manager API is a RESTful service built with Node.js, Express, and TypeScript. It provides comprehensive functionality for managing recipes, user authentication, and file uploads.
+The Recipe Manager API is a RESTful service built with Node.js, Express, TypeScript, and Prisma ORM. It provides comprehensive recipe management capabilities with authentication, file upload, favorites, bookmarks, and advanced filtering.
 
-**Base URL:** `http://localhost:3001/api`
+**Base URL**: `http://localhost:3001` (development)  
+**API Version**: v1  
+**Content Type**: `application/json`
 
 ## Authentication
 
-The API uses JWT (JSON Web Tokens) for authentication. Include the token in the Authorization header:
+The API uses JWT (JSON Web Tokens) for authentication with a 7-day expiration period.
 
-```
-Authorization: Bearer <your-jwt-token>
+### Headers
+
+All authenticated endpoints require the following header:
+
+```json
+Authorization: Bearer <jwt-token>
 ```
 
 ### Token Lifecycle
 
-- **Access Token:** Expires in 15 minutes
-- **Refresh Token:** Expires in 7 days
+- **Expiration**: 7 days from issue
+- **Storage**: Store securely on client (localStorage/sessionStorage)
+- **Refresh**: Re-authenticate when token expires
 
-## Standard Response Format
+## Response Format
 
-All API responses follow this standard format:
+All API responses follow a consistent structure:
+
+### Success Response
 
 ```json
 {
-  "success": boolean,
-  "data": object | null,
-  "error": string | null,
-  "message": string,
-  "pagination": {
-    "total": number,
-    "page": number,
-    "limit": number,
-    "totalPages": number,
-    "hasNext": boolean,
-    "hasPrev": boolean
-  }
+  "success": true,
+  "data": {
+    // Response data here
+  },
+  "message": "Operation completed successfully"
+}
+```
+
+### Error Response
+
+```json
+{
+  "success": false,
+  "error": "Error message",
+  "details": "Additional error details (optional)"
+}
+```
+
+### Pagination Response
+
+For paginated endpoints (like `/api/recipes`):
+
+```json
+{
+  "success": true,
+  "data": {
+    "recipes": [
+      // Recipe objects
+    ],
+    "total": 25,
+    "page": 1,
+    "limit": 12,
+    "totalPages": 3,
+    "hasNext": true,
+    "hasPrev": false
+  },
+  "message": "Recipes retrieved successfully"
 }
 ```
 
@@ -44,9 +78,9 @@ All API responses follow this standard format:
 
 ### Register User
 
-**POST** `/api/auth/register`
-
-Register a new user account.
+```http
+POST /api/auth/register
+```
 
 **Request Body:**
 
@@ -54,35 +88,40 @@ Register a new user account.
 {
   "email": "user@example.com",
   "password": "password123",
-  "name": "John Doe" // optional
+  "username": "johndoe"
 }
 ```
 
-**Response (201):**
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
     "user": {
-      "id": "clr123...",
+      "id": "user-id",
       "email": "user@example.com",
-      "name": "John Doe",
-      "createdAt": "2024-01-15T10:30:00Z",
-      "updatedAt": "2024-01-15T10:30:00Z"
+      "username": "johndoe",
+      "createdAt": "2025-01-15T10:30:00.000Z",
+      "updatedAt": "2025-01-15T10:30:00.000Z"
     },
-    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIs..."
+    "accessToken": "jwt-token-here"
   },
   "message": "User registered successfully"
 }
 ```
 
+**Status Codes:**
+
+- `201`: User created successfully
+- `400`: Validation error or user already exists
+- `500`: Internal server error
+
 ### Login User
 
-**POST** `/api/auth/login`
-
-Authenticate user and get tokens.
+```http
+POST /api/auth/login
+```
 
 **Request Body:**
 
@@ -93,85 +132,73 @@ Authenticate user and get tokens.
 }
 ```
 
-**Response (200):**
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
     "user": {
-      "id": "clr123...",
+      "id": "user-id",
       "email": "user@example.com",
-      "name": "John Doe",
-      "createdAt": "2024-01-15T10:30:00Z",
-      "updatedAt": "2024-01-15T10:30:00Z"
+      "username": "johndoe",
+      "createdAt": "2025-01-15T10:30:00.000Z",
+      "updatedAt": "2025-01-15T10:30:00.000Z"
     },
-    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIs..."
+    "accessToken": "jwt-token-here"
   },
   "message": "Login successful"
 }
 ```
 
-### Refresh Token
+**Status Codes:**
 
-**POST** `/api/auth/refresh`
+- `200`: Login successful
+- `401`: Invalid credentials
+- `400`: Validation error
+- `500`: Internal server error
 
-Get new access token using refresh token.
+### Get Current User
 
-**Request Body:**
-
-```json
-{
-  "refreshToken": "eyJhbGciOiJIUzI1NiIs..."
-}
+```http
+GET /api/auth/me
 ```
 
-**Response (200):**
+**Headers:** `Authorization: Bearer <token>`
 
-```json
-{
-  "success": true,
-  "data": {
-    "accessToken": "eyJhbGciOiJIUzI1NiIs...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIs..."
-  },
-  "message": "Token refreshed successfully"
-}
-```
-
-### Get Current User Profile
-
-**GET** `/api/auth/me`
-
-Get authenticated user's profile. Requires authentication.
-
-**Response (200):**
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
     "user": {
-      "id": "clr123...",
+      "id": "user-id",
       "email": "user@example.com",
-      "name": "John Doe",
-      "avatar": "/uploads/avatar.jpg",
-      "createdAt": "2024-01-15T10:30:00Z",
-      "updatedAt": "2024-01-15T10:30:00Z"
+      "username": "johndoe",
+      "createdAt": "2025-01-15T10:30:00.000Z",
+      "updatedAt": "2025-01-15T10:30:00.000Z"
     }
   },
-  "message": "Profile retrieved successfully"
+  "message": "User retrieved successfully"
 }
 ```
 
-### Logout
+**Status Codes:**
 
-**DELETE** `/api/auth/logout`
+- `200`: User retrieved successfully
+- `401`: Unauthorized or invalid token
+- `500`: Internal server error
 
-Logout user (client-side token removal).
+### Logout User
 
-**Response (200):**
+```http
+POST /api/auth/logout
+```
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response:**
 
 ```json
 {
@@ -181,36 +208,44 @@ Logout user (client-side token removal).
 }
 ```
 
+**Status Codes:**
+
+- `200`: Logout successful
+- `401`: Unauthorized
+- `500`: Internal server error
+
 ## Recipe Endpoints
 
 ### Get All Recipes
 
-**GET** `/api/recipes`
-
-Get recipes with optional search, filtering, and pagination. Supports full-text search.
+```http
+GET /api/recipes
+```
 
 **Query Parameters:**
 
-- `search` (string): Full-text search query
-- `tags` (string): Comma-separated tags (e.g., "italian,vegetarian")
-- `cuisine` (string): Filter by cuisine
-- `difficulty` (string): EASY | MEDIUM | HARD
-- `cookTimeMax` (number): Maximum cook time in minutes
-- `prepTimeMax` (number): Maximum prep time in minutes
-- `page` (number): Page number (default: 1)
-- `limit` (number): Items per page (default: 20, max: 100)
-- `sortBy` (string): title | createdAt | cookTime | prepTime | difficulty | relevance
-- `sortOrder` (string): asc | desc
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `page` | number | Page number (default: 1) | `?page=2` |
+| `limit` | number | Items per page (default: 12, max: 50) | `?limit=20` |
+| `search` | string | Search in title and description | `?search=pasta` |
+| `tags` | string | Comma-separated tags | `?tags=vegetarian,quick` |
+| `cuisine` | string | Filter by cuisine | `?cuisine=Italian` |
+| `difficulty` | string | Filter by difficulty (EASY/MEDIUM/HARD) | `?difficulty=EASY` |
+| `cookTimeMax` | number | Maximum cook time in minutes | `?cookTimeMax=30` |
+| `authorId` | string | Filter by recipe author | `?authorId=user-id` |
+| `sortBy` | string | Sort field (createdAt/title/cookTime) | `?sortBy=cookTime` |
+| `sortOrder` | string | Sort direction (asc/desc) | `?sortOrder=asc` |
 
-**Examples:**
+**Example URLs:**
 
+```json
+GET /api/recipes?search=pasta&cuisine=Italian&difficulty=EASY
+GET /api/recipes?sortBy=cookTime&sortOrder=asc&cookTimeMax=30
+GET /api/recipes?authorId=user-id&page=2&limit=10
 ```
-GET /api/recipes?search=chicken&tags=asian,quick&sortBy=relevance
-GET /api/recipes?cuisine=italian&difficulty=EASY&page=2&limit=10
-GET /api/recipes?cookTimeMax=30&sortBy=cookTime&sortOrder=asc
-```
 
-**Response (200):**
+**Response:**
 
 ```json
 {
@@ -218,153 +253,211 @@ GET /api/recipes?cookTimeMax=30&sortBy=cookTime&sortOrder=asc
   "data": {
     "recipes": [
       {
-        "id": "clr123...",
-        "title": "Chicken Pad Thai",
-        "description": "Authentic Thai stir-fried noodles",
-        "ingredients": ["rice noodles", "chicken breast", "fish sauce"],
-        "instructions": "1. Soak noodles...",
-        "imageUrl": "/uploads/recipe_123.jpg",
+        "id": "recipe-id",
+        "title": "Delicious Pasta",
+        "description": "A simple and tasty pasta recipe",
+        "instructions": "1. Boil water\n2. Add pasta\n3. Cook for 8 minutes",
+        "ingredients": ["pasta", "tomato sauce", "cheese"],
+        "tags": ["vegetarian", "quick"],
+        "cuisine": "Italian",
+        "difficulty": "EASY",
+        "prepTime": 10,
         "cookTime": 15,
-        "prepTime": 30,
-        "servings": 3,
-        "difficulty": "MEDIUM",
-        "tags": ["thai", "asian", "noodles"],
-        "cuisine": "thai",
+        "servings": 4,
+        "imageUrl": "/uploads/recipe-image.webp",
+        "createdAt": "2025-01-15T10:30:00.000Z",
+        "updatedAt": "2025-01-15T10:30:00.000Z",
         "author": {
-          "id": "clr456...",
-          "name": "Chef Kenji",
-          "email": "kenji@chef.com"
-        },
-        "createdAt": "2024-01-15T10:30:00Z",
-        "updatedAt": "2024-01-15T10:30:00Z"
+          "id": "author-id",
+          "username": "chef123",
+          "email": "chef@example.com"
+        }
       }
     ],
-    "total": 1,
+    "total": 25,
     "page": 1,
-    "limit": 20,
-    "totalPages": 1,
-    "hasNext": false,
+    "limit": 12,
+    "totalPages": 3,
+    "hasNext": true,
     "hasPrev": false
   },
   "message": "Recipes retrieved successfully"
 }
 ```
 
-### Get Recipe by ID
+**Status Codes:**
 
-**GET** `/api/recipes/:id`
+- `200`: Recipes retrieved successfully
+- `400`: Invalid query parameters
+- `500`: Internal server error
 
-Get a specific recipe by ID.
+### Get Single Recipe
 
-**Response (200):**
+```http
+GET /api/recipes/:id
+```
+
+**Path Parameters:**
+
+- `id`: Recipe ID (string)
+
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
     "recipe": {
-      "id": "clr123...",
-      "title": "Chicken Pad Thai",
-      "description": "Authentic Thai stir-fried noodles",
-      "ingredients": ["rice noodles", "chicken breast", "fish sauce"],
-      "instructions": "1. Soak noodles...",
-      "imageUrl": "/uploads/recipe_123.jpg",
+      "id": "recipe-id",
+      "title": "Delicious Pasta",
+      "description": "A simple and tasty pasta recipe",
+      "instructions": "1. Boil water\n2. Add pasta\n3. Cook for 8 minutes",
+      "ingredients": ["pasta", "tomato sauce", "cheese"],
+      "tags": ["vegetarian", "quick"],
+      "cuisine": "Italian",
+      "difficulty": "EASY",
+      "prepTime": 10,
       "cookTime": 15,
-      "prepTime": 30,
-      "servings": 3,
-      "difficulty": "MEDIUM",
-      "tags": ["thai", "asian", "noodles"],
-      "cuisine": "thai",
+      "servings": 4,
+      "imageUrl": "/uploads/recipe-image.webp",
+      "createdAt": "2025-01-15T10:30:00.000Z",
+      "updatedAt": "2025-01-15T10:30:00.000Z",
       "author": {
-        "id": "clr456...",
-        "name": "Chef Kenji",
-        "email": "kenji@chef.com"
-      },
-      "createdAt": "2024-01-15T10:30:00Z",
-      "updatedAt": "2024-01-15T10:30:00Z"
+        "id": "author-id",
+        "username": "chef123",
+        "email": "chef@example.com"
+      }
     }
   },
   "message": "Recipe retrieved successfully"
 }
 ```
 
+**Status Codes:**
+
+- `200`: Recipe retrieved successfully
+- `404`: Recipe not found
+- `500`: Internal server error
+
 ### Create Recipe
 
-**POST** `/api/recipes`
+```http
+POST /api/recipes
+```
 
-Create a new recipe. Requires authentication.
+**Headers:** `Authorization: Bearer <token>`
 
 **Request Body:**
 
 ```json
 {
-  "title": "Chicken Pad Thai",
-  "description": "Authentic Thai stir-fried noodles",
-  "ingredients": ["rice noodles", "chicken breast", "fish sauce"],
-  "instructions": "1. Soak noodles in warm water...",
-  "imageUrl": "/uploads/recipe_123.jpg",
-  "cookTime": 15,
-  "prepTime": 30,
-  "servings": 3,
-  "difficulty": "MEDIUM",
-  "tags": ["thai", "asian", "noodles"],
-  "cuisine": "thai"
+  "title": "New Pasta Recipe",
+  "description": "A delicious new pasta dish",
+  "instructions": "1. Boil water\n2. Add pasta\n3. Cook for 8 minutes\n4. Add sauce",
+  "ingredients": ["pasta", "tomato sauce", "basil", "cheese"],
+  "tags": ["vegetarian", "italian"],
+  "cuisine": "Italian",
+  "difficulty": "EASY",
+  "prepTime": 15,
+  "cookTime": 20,
+  "servings": 4,
+  "imageUrl": "/uploads/recipe-image.webp"
 }
 ```
 
-**Response (201):**
+**Field Requirements:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `title` | string | Yes | Recipe title (3-100 chars) |
+| `description` | string | Yes | Recipe description (10-500 chars) |
+| `instructions` | string | Yes | Cooking instructions (20+ chars) |
+| `ingredients` | string[] | Yes | List of ingredients (1+ items) |
+| `tags` | string[] | No | Recipe tags |
+| `cuisine` | string | No | Cuisine type |
+| `difficulty` | enum | No | EASY, MEDIUM, or HARD |
+| `prepTime` | number | No | Prep time in minutes (>= 0) |
+| `cookTime` | number | No | Cook time in minutes (>= 0) |
+| `servings` | number | No | Number of servings (>= 1) |
+| `imageUrl` | string | No | Image URL from upload endpoint |
+
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
     "recipe": {
-      "id": "clr789...",
-      "title": "Chicken Pad Thai",
-      // ... full recipe object
+      "id": "new-recipe-id",
+      "title": "New Pasta Recipe",
+      "description": "A delicious new pasta dish",
+      "instructions": "1. Boil water\n2. Add pasta\n3. Cook for 8 minutes\n4. Add sauce",
+      "ingredients": ["pasta", "tomato sauce", "basil", "cheese"],
+      "tags": ["vegetarian", "italian"],
+      "cuisine": "Italian",
+      "difficulty": "EASY",
+      "prepTime": 15,
+      "cookTime": 20,
+      "servings": 4,
+      "imageUrl": "/uploads/recipe-image.webp",
+      "createdAt": "2025-01-15T10:30:00.000Z",
+      "updatedAt": "2025-01-15T10:30:00.000Z",
+      "author": {
+        "id": "author-id",
+        "username": "chef123",
+        "email": "chef@example.com"
+      }
     }
   },
   "message": "Recipe created successfully"
 }
 ```
 
+**Status Codes:**
+
+- `201`: Recipe created successfully
+- `400`: Validation error
+- `401`: Unauthorized
+- `500`: Internal server error
+
 ### Update Recipe
 
-**PUT** `/api/recipes/:id`
-
-Update an existing recipe. Requires authentication. Only recipe owner can update.
-
-**Request Body:** (partial update supported)
-
-```json
-{
-  "title": "Updated Chicken Pad Thai",
-  "cookTime": 20,
-  "tags": ["thai", "asian", "noodles", "updated"]
-}
+```http
+PUT /api/recipes/:id
 ```
 
-**Response (200):**
+**Headers:** `Authorization: Bearer <token>`
 
-```json
-{
-  "success": true,
-  "data": {
-    "recipe": {
-      // ... updated recipe object
-    }
-  },
-  "message": "Recipe updated successfully"
-}
-```
+**Path Parameters:**
+
+- `id`: Recipe ID (string)
+
+**Request Body:** Same as Create Recipe (all fields optional)
+
+**Response:** Same as Create Recipe response
+
+**Status Codes:**
+
+- `200`: Recipe updated successfully
+- `400`: Validation error
+- `401`: Unauthorized
+- `403`: Not recipe owner
+- `404`: Recipe not found
+- `500`: Internal server error
 
 ### Delete Recipe
 
-**DELETE** `/api/recipes/:id`
+```http
+DELETE /api/recipes/:id
+```
 
-Delete a recipe. Requires authentication. Only recipe owner can delete.
+**Headers:** `Authorization: Bearer <token>`
 
-**Response (200):**
+**Path Parameters:**
+
+- `id`: Recipe ID (string)
+
+**Response:**
 
 ```json
 {
@@ -374,738 +467,596 @@ Delete a recipe. Requires authentication. Only recipe owner can delete.
 }
 ```
 
-### Get Popular Recipes
+**Status Codes:**
 
-**GET** `/api/recipes/popular`
+- `200`: Recipe deleted successfully
+- `401`: Unauthorized
+- `403`: Not recipe owner
+- `404`: Recipe not found
+- `500`: Internal server error
 
-Get popular recipes (most recent).
+## Favorites Endpoints
 
-**Query Parameters:**
+### Get User Favorites
 
-- `limit` (number): Number of recipes to return (default: 10)
+```http
+GET /api/user/favorites
+```
 
-**Response (200):**
+**Headers:** `Authorization: Bearer <token>`
+
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
-    "recipes": [
-      // ... array of recipe objects
+    "favorites": [
+      {
+        "id": "favorite-id",
+        "recipeId": "recipe-id",
+        "userId": "user-id",
+        "createdAt": "2025-01-15T10:30:00.000Z",
+        "recipe": {
+          "id": "recipe-id",
+          "title": "Favorite Recipe",
+          "description": "Description here",
+          "imageUrl": "/uploads/image.webp",
+          "author": {
+            "username": "chef123"
+          }
+        }
+      }
     ]
   },
-  "message": "Popular recipes retrieved successfully"
+  "message": "Favorites retrieved successfully"
 }
 ```
 
-### Get Recipe Statistics
+**Status Codes:**
 
-**GET** `/api/recipes/stats`
+- `200`: Favorites retrieved successfully
+- `401`: Unauthorized
+- `500`: Internal server error
 
-Get recipe statistics.
+### Add Recipe to Favorites
 
-**Response (200):**
+```http
+POST /api/user/favorites/:recipeId
+```
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Path Parameters:**
+
+- `recipeId`: Recipe ID to add to favorites
+
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
-    "stats": {
-      "totalRecipes": 150,
-      "totalAuthors": 25,
-      "avgCookTime": 35,
-      "mostPopularCuisines": [
-        {"cuisine": "italian", "count": 30},
-        {"cuisine": "asian", "count": 25}
-      ],
-      "mostPopularTags": [
-        {"tag": "quick", "count": 45},
-        {"tag": "vegetarian", "count": 38}
-      ]
+    "favorite": {
+      "id": "favorite-id",
+      "recipeId": "recipe-id",
+      "userId": "user-id",
+      "createdAt": "2025-01-15T10:30:00.000Z"
     }
   },
-  "message": "Recipe statistics retrieved successfully"
+  "message": "Recipe added to favorites"
 }
 ```
 
-### Get My Recipes
+**Status Codes:**
 
-**GET** `/api/recipes/my`
+- `201`: Added to favorites successfully
+- `400`: Recipe already in favorites
+- `401`: Unauthorized
+- `404`: Recipe not found
+- `500`: Internal server error
 
-Get current user's recipes. Requires authentication.
+### Remove Recipe from Favorites
 
-**Query Parameters:**
-
-- `page` (number): Page number (default: 1)
-- `limit` (number): Items per page (default: 20)
-- `sortBy` (string): createdAt | title | cookTime
-- `sortOrder` (string): asc | desc
-
-**Response (200):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "recipes": [
-      // ... array of user's recipes
-    ],
-    "total": 5,
-    "page": 1,
-    "limit": 20,
-    "totalPages": 1,
-    "hasNext": false,
-    "hasPrev": false
-  },
-  "message": "User recipes retrieved successfully"
-}
+```http
+DELETE /api/user/favorites/:recipeId
 ```
 
-## Upload Endpoints
+**Headers:** `Authorization: Bearer <token>`
 
-### Upload Image
+**Path Parameters:**
 
-**POST** `/api/upload/image`
+- `recipeId`: Recipe ID to remove from favorites
 
-Upload and process an image file. Optional authentication (better file naming if authenticated).
-
-**Request:** `multipart/form-data`
-
-- `image` (file): Image file (JPEG, PNG, WebP, max 10MB)
-
-**Response (200):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "image": {
-      "originalUrl": "/uploads/user123_1642234567_abc123_original.webp",
-      "thumbnailUrl": "/uploads/user123_1642234567_abc123_thumb.webp",
-      "webpUrl": "/uploads/user123_1642234567_abc123_optimized.webp",
-      "metadata": {
-        "width": 1920,
-        "height": 1080,
-        "size": 2048576,
-        "format": "jpeg"
-      }
-    }
-  },
-  "message": "Image uploaded and processed successfully"
-}
-```
-
-### Delete Image
-
-**DELETE** `/api/upload/image`
-
-Delete an uploaded image. Requires authentication.
-
-**Request Body:**
-
-```json
-{
-  "imageUrl": "/uploads/user123_1642234567_abc123_original.webp"
-}
-```
-
-**Response (200):**
+**Response:**
 
 ```json
 {
   "success": true,
   "data": null,
-  "message": "Image deleted successfully"
+  "message": "Recipe removed from favorites"
 }
 ```
 
-### Get Image Info
+**Status Codes:**
 
-**GET** `/api/upload/image/info`
+- `200`: Removed from favorites successfully
+- `401`: Unauthorized
+- `404`: Recipe not in favorites
+- `500`: Internal server error
 
-Get information about an uploaded image.
+## Bookmarks Endpoints
 
-**Query Parameters:**
+### Get User Bookmarks
 
-- `imageUrl` (string): URL of the image
+```http
+GET /api/user/bookmarks
+```
 
-**Response (200):**
+**Headers:** `Authorization: Bearer <token>`
+
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
-    "imageInfo": {
-      "exists": true,
-      "size": 2048576,
-      "metadata": {
-        "width": 1920,
-        "height": 1080,
-        "format": "webp"
+    "bookmarks": [
+      {
+        "id": "bookmark-id",
+        "recipeId": "recipe-id",
+        "userId": "user-id",
+        "createdAt": "2025-01-15T10:30:00.000Z",
+        "recipe": {
+          "id": "recipe-id",
+          "title": "Bookmarked Recipe",
+          "description": "Description here",
+          "imageUrl": "/uploads/image.webp",
+          "author": {
+            "username": "chef123"
+          }
+        }
       }
+    ]
+  },
+  "message": "Bookmarks retrieved successfully"
+}
+```
+
+**Status Codes:**
+
+- `200`: Bookmarks retrieved successfully
+- `401`: Unauthorized
+- `500`: Internal server error
+
+### Add Recipe to Bookmarks
+
+```http
+POST /api/user/bookmarks/:recipeId
+```
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Path Parameters:**
+
+- `recipeId`: Recipe ID to add to bookmarks
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "bookmark": {
+      "id": "bookmark-id",
+      "recipeId": "recipe-id",
+      "userId": "user-id",
+      "createdAt": "2025-01-15T10:30:00.000Z"
     }
   },
-  "message": "Image information retrieved successfully"
+  "message": "Recipe added to bookmarks"
 }
 ```
 
-## Error Responses
+**Status Codes:**
 
-### Validation Error (400)
+- `201`: Added to bookmarks successfully
+- `400`: Recipe already in bookmarks
+- `401`: Unauthorized
+- `404`: Recipe not found
+- `500`: Internal server error
+
+### Remove Recipe from Bookmarks
+
+```http
+DELETE /api/user/bookmarks/:recipeId
+```
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Path Parameters:**
+
+- `recipeId`: Recipe ID to remove from bookmarks
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": null,
+  "message": "Recipe removed from bookmarks"
+}
+```
+
+**Status Codes:**
+
+- `200`: Removed from bookmarks successfully
+- `401`: Unauthorized
+- `404`: Recipe not in bookmarks
+- `500`: Internal server error
+
+## File Upload Endpoint
+
+### Upload Recipe Image
+
+```http
+POST /api/upload
+```
+
+**Headers:**
+
+- `Authorization: Bearer <token>`
+- `Content-Type: multipart/form-data`
+
+**Request Body:**
+
+- Form field: `image` (file)
+
+**Supported Formats:**
+
+- JPEG (.jpg, .jpeg)
+- PNG (.png)
+- WebP (.webp)
+- Maximum size: 5MB
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "url": "/uploads/user-id_timestamp_filename_optimized.webp",
+    "originalName": "recipe-photo.jpg",
+    "size": 245760,
+    "optimized": true
+  },
+  "message": "Image uploaded successfully"
+}
+```
+
+**Features:**
+
+- Automatic WebP conversion for optimization
+- Image resizing and compression
+- Unique filename generation to prevent conflicts
+- Secure file validation
+
+**Status Codes:**
+
+- `200`: Image uploaded successfully
+- `400`: Invalid file format or size
+- `401`: Unauthorized
+- `500`: Internal server error
+
+## Health Check Endpoint
+
+### System Health Check
+
+```http
+GET /health
+```
+
+**Response:**
+
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "uptime": 3600,
+  "environment": "development",
+  "database": "connected",
+  "version": "1.0.0"
+}
+```
+
+**Status Codes:**
+
+- `200`: System healthy
+- `503`: System unhealthy
+
+## Error Handling
+
+### Common Error Responses
+
+#### Validation Error (400)
 
 ```json
 {
   "success": false,
-  "error": "Validation error",
-  "message": "Title must be at least 3 characters long"
+  "error": "Validation failed",
+  "details": [
+    {
+      "field": "email",
+      "message": "Invalid email format"
+    },
+    {
+      "field": "password",
+      "message": "Password must be at least 6 characters"
+    }
+  ]
 }
 ```
 
-### Unauthorized (401)
+#### Unauthorized (401)
 
 ```json
 {
   "success": false,
-  "error": "Access denied",
-  "message": "No token provided"
+  "error": "Unauthorized",
+  "details": "Invalid or expired token"
 }
 ```
 
-### Forbidden (403)
+#### Forbidden (403)
 
 ```json
 {
   "success": false,
   "error": "Forbidden",
-  "message": "You can only update your own recipes"
+  "details": "You don't have permission to perform this action"
 }
 ```
 
-### Not Found (404)
+#### Not Found (404)
 
 ```json
 {
   "success": false,
   "error": "Not found",
-  "message": "Recipe not found"
+  "details": "Recipe not found"
 }
 ```
 
-### Conflict (409)
-
-```json
-{
-  "success": false,
-  "error": "User already exists",
-  "message": "User already exists with this email"
-}
-```
-
-### Internal Server Error (500)
+#### Internal Server Error (500)
 
 ```json
 {
   "success": false,
   "error": "Internal server error",
-  "message": "Failed to create recipe"
+  "details": "An unexpected error occurred"
 }
 ```
-
-## Data Models
-
-### User
-
-```typescript
-interface User {
-  id: string
-  email: string
-  name: string | null
-  avatar: string | null
-  createdAt: Date
-  updatedAt: Date
-}
-```
-
-### Recipe
-
-```typescript
-interface Recipe {
-  id: string
-  title: string
-  description: string | null
-  ingredients: string[]
-  instructions: string
-  imageUrl: string | null
-  cookTime: number | null
-  prepTime: number | null
-  servings: number | null
-  difficulty: 'EASY' | 'MEDIUM' | 'HARD' | null
-  tags: string[]
-  cuisine: string | null
-  authorId: string | null
-  author?: {
-    id: string
-    name: string
-    email: string
-  }
-  createdAt: Date
-  updatedAt: Date
-}
-```
-
-## Features
-
-### Full-Text Search
-
-The API implements PostgreSQL's full-text search using `tsvector` for optimized recipe searching. When a search query is provided, the system:
-
-1. Uses `plainto_tsquery` for intelligent query parsing
-2. Searches across title, description, ingredients, tags, and cuisine
-3. Returns results ranked by relevance using `ts_rank`
-4. Supports sorting by relevance score
-
-### Image Processing
-
-Uploaded images are automatically processed to create three optimized versions:
-
-- **Original**: Resized to max 1200x1200px, WebP format, 90% quality
-- **Thumbnail**: 300x300px crop, WebP format, 80% quality  
-- **Optimized**: Resized to max 800x800px, WebP format, 85% quality
-
-### Security Features
-
-- JWT authentication with access and refresh tokens
-- Password hashing with bcrypt (12 rounds)
-- Rate limiting (100 requests per 15 minutes)
-- CORS protection
-- Helmet security headers
-- Input validation with Joi
-- File upload restrictions (type, size)
-
-### Performance Optimizations
-
-- Database indexing on search fields
-- Efficient pagination
-- Image optimization with Sharp
-- Response compression
-- Database connection pooling
 
 ## Rate Limiting
 
-API endpoints are rate-limited to prevent abuse:
+The API implements rate limiting to prevent abuse:
 
-- **Window:** 15 minutes
-- **Max Requests:** 100 per IP
-- **Scope:** All `/api/*` endpoints
+- **Authentication endpoints**: 5 requests per 15 minutes per IP
+- **General API endpoints**: 100 requests per 15 minutes per IP
+- **Upload endpoint**: 10 requests per 15 minutes per authenticated user
 
-When rate limit is exceeded, the API returns:
-
-```json
-{
-  "error": "Too many requests from this IP, please try again later."
-}
-```
-
-## Health Check Endpoints
-
-The API provides comprehensive health check endpoints for monitoring and alerting.
-
-### Basic Health Check
-
-**GET** `/health`
-
-Simple health check to verify the API is running.
-
-**Response (200):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "status": "healthy",
-    "timestamp": "2024-01-15T10:30:00Z",
-    "uptime": 3600.5
-  },
-  "message": "API is healthy"
-}
-```
-
-### Detailed Health Check
-
-**GET** `/health/detailed`
-
-Comprehensive health information including system metrics and dependencies.
-
-**Response (200):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "status": "healthy",
-    "timestamp": "2024-01-15T10:30:00Z",
-    "uptime": 3600.5,
-    "system": {
-      "platform": "linux",
-      "nodeVersion": "18.17.0",
-      "memory": {
-        "used": 52428800,
-        "total": 134217728,
-        "percentage": 39.06
-      },
-      "cpu": {
-        "usage": 15.2,
-        "loadAverage": [0.5, 0.8, 0.6]
-      }
-    },
-    "database": {
-      "status": "connected",
-      "connectionPool": {
-        "active": 3,
-        "idle": 7,
-        "total": 10
-      },
-      "latency": 5.2
-    },
-    "cache": {
-      "status": "connected",
-      "hitRate": 0.85,
-      "memoryUsage": 1048576
-    }
-  },
-  "message": "Detailed health check completed"
-}
-```
-
-### Readiness Probe
-
-**GET** `/health/ready`
-
-Kubernetes/Docker readiness probe to check if the API is ready to serve requests.
-
-**Response (200):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "status": "ready",
-    "checks": {
-      "database": "connected",
-      "cache": "connected",
-      "migrations": "up-to-date"
-    }
-  },
-  "message": "API is ready"
-}
-```
-
-### Liveness Probe
-
-**GET** `/health/live`
-
-Kubernetes/Docker liveness probe to check if the API is running.
-
-**Response (200):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "status": "alive",
-    "timestamp": "2024-01-15T10:30:00Z"
-  },
-  "message": "API is alive"
-}
-```
-
-### Metrics Endpoint
-
-**GET** `/health/metrics`
-
-Application metrics for monitoring and alerting.
-
-**Response (200):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "requests": {
-      "total": 15420,
-      "success": 14830,
-      "error": 590,
-      "successRate": 0.962
-    },
-    "performance": {
-      "averageResponseTime": 45.2,
-      "p95ResponseTime": 120.5,
-      "p99ResponseTime": 250.8
-    },
-    "database": {
-      "totalQueries": 8952,
-      "averageQueryTime": 8.5,
-      "slowQueries": 12,
-      "connectionPool": {
-        "active": 3,
-        "idle": 7,
-        "total": 10,
-        "waitingClients": 0
-      }
-    },
-    "cache": {
-      "hits": 4520,
-      "misses": 1105,
-      "hitRate": 0.804,
-      "memoryUsage": 2097152,
-      "evictions": 45
-    },
-    "security": {
-      "rateLimitHits": 127,
-      "blockedRequests": 23,
-      "suspiciousActivity": 5
-    }
-  },
-  "message": "Metrics retrieved successfully"
-}
-```
-
-## Security Features
-
-### Rate Limiting
-
-The API implements comprehensive rate limiting to prevent abuse:
-
-**Authentication Endpoints** (`/api/auth/login`, `/api/auth/register`):
-- 5 requests per 15 minutes per IP
-- Returns 429 status when exceeded
-
-**API Endpoints** (all `/api/*` except auth):
-- 100 requests per 15 minutes per IP
-- Returns 429 status when exceeded
-
-**Upload Endpoints** (`/api/upload/*`):
-- 10 requests per 15 minutes per IP
-- Returns 429 status when exceeded
-
-### Content Security Policy
-
-The API sets comprehensive CSP headers:
-
-```
-Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.yourdomain.com;
-```
-
-### Security Headers
-
-All responses include security headers:
-
-- `X-Frame-Options: SAMEORIGIN`
-- `X-Content-Type-Options: nosniff`
-- `X-XSS-Protection: 1; mode=block`
-- `Strict-Transport-Security: max-age=31536000; includeSubDomains`
-- `Referrer-Policy: strict-origin-when-cross-origin`
-
-### Request Sanitization
-
-All user inputs are sanitized to prevent XSS attacks:
-
-- HTML tags are escaped
-- Script tags are removed
-- SQL injection patterns are blocked
-- File upload validation
-
-### IP Whitelisting
-
-Admin endpoints support IP whitelisting:
-
-- Configure allowed IPs in `ADMIN_WHITELIST_IPS` environment variable
-- Comma-separated list of IPs
-- Returns 403 for unauthorized IPs
-
-## Caching
-
-### API Response Caching
-
-GET requests are cached for improved performance:
-
-- Cache TTL: 1 hour (configurable)
-- Cache key: Request URL + query parameters
-- Cache headers: `Cache-Control`, `ETag`, `Last-Modified`
-- Cache invalidation: On data mutations
-
-### Static Asset Caching
-
-Static assets are cached with long TTL:
-
-- Images: 1 year
-- CSS/JS: 1 year with versioning
-- API responses: 1 hour
-
-## Performance Optimizations
-
-### Database Optimizations
-
-- Connection pooling with 20 connections
-- Query optimization with proper indexing
-- Prepared statements for security
-- Connection timeout: 20 seconds
-
-### Bundle Optimization
-
-- Code splitting for reduced bundle size
-- Tree shaking to remove unused code
-- Compression with gzip/brotli
-- Lazy loading for components
-
-### Service Worker
-
-- Offline support with cache-first strategy
-- Background sync for API requests
-- Push notifications support
-- Cache versioning for updates
-
-## Environment Variables
-
-### Required Variables
-
-```env
-# Database Configuration
-DATABASE_URL=postgresql://user:password@host:5432/database?pgbouncer=true&connection_limit=20&pool_timeout=20
-
-# Authentication
-JWT_SECRET=your-super-secure-jwt-secret-at-least-32-characters-long
-JWT_REFRESH_SECRET=your-super-secure-refresh-secret-at-least-32-characters-long
-
-# Server Configuration
-PORT=3001
-NODE_ENV=production
-FRONTEND_URL=https://yourdomain.com
-
-# CORS Configuration
-ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
-```
-
-### Optional Variables
-
-```env
-# Security Configuration
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-RATE_LIMIT_AUTH_MAX=5
-RATE_LIMIT_UPLOAD_MAX=10
-ADMIN_WHITELIST_IPS=127.0.0.1,::1
-
-# File Upload Configuration
-UPLOAD_MAX_SIZE=5242880
-UPLOAD_DIR=/app/uploads
-
-# Caching Configuration
-CACHE_TTL_SECONDS=3600
-REDIS_URL=redis://localhost:6379
-
-# Monitoring Configuration
-ENABLE_MONITORING=true
-METRICS_ENDPOINT_ENABLED=true
-HEALTH_CHECK_INTERVAL=30000
-
-# Logging Configuration
-LOG_LEVEL=info
-LOG_FORMAT=json
-LOG_FILE=/app/logs/app.log
-```
-
-## Error Handling
-
-### Standard Error Format
+When rate limit is exceeded:
 
 ```json
 {
   "success": false,
-  "error": "ERROR_CODE",
-  "message": "Human-readable error message",
-  "details": {
-    "field": "validation error details"
-  }
+  "error": "Rate limit exceeded",
+  "details": "Too many requests, please try again later"
 }
 ```
 
-### Common Error Codes
+## API Usage Examples
 
-- `VALIDATION_ERROR` - Request validation failed
-- `AUTHENTICATION_ERROR` - Authentication required or failed
-- `AUTHORIZATION_ERROR` - Insufficient permissions
-- `NOT_FOUND` - Resource not found
-- `RATE_LIMIT_EXCEEDED` - Too many requests
-- `UPLOAD_ERROR` - File upload failed
-- `DATABASE_ERROR` - Database operation failed
-- `CACHE_ERROR` - Cache operation failed
+### JavaScript/TypeScript
+
+```typescript
+// Login and get token
+const loginResponse = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123'
+  })
+});
+
+const { data } = await loginResponse.json();
+const token = data.accessToken;
+
+// Get recipes with filtering
+const recipesResponse = await fetch('/api/recipes?search=pasta&cuisine=Italian&page=1&limit=12', {
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+const recipes = await recipesResponse.json();
+
+// Create a new recipe
+const createResponse = await fetch('/api/recipes', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    title: 'My New Recipe',
+    description: 'A delicious recipe',
+    instructions: 'Step 1...\nStep 2...',
+    ingredients: ['ingredient1', 'ingredient2'],
+    difficulty: 'EASY',
+    cookTime: 30
+  })
+});
+```
+
+### cURL Examples
+
+```bash
+# Login
+curl -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"password123"}'
+
+# Get recipes with filtering
+curl -X GET "http://localhost:3001/api/recipes?search=pasta&sortBy=cookTime&sortOrder=asc" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Upload image
+curl -X POST http://localhost:3001/api/upload \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "image=@/path/to/image.jpg"
+
+# Create recipe
+curl -X POST http://localhost:3001/api/recipes \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "title": "New Recipe",
+    "description": "Recipe description",
+    "instructions": "Cook it well",
+    "ingredients": ["salt", "pepper"],
+    "difficulty": "EASY"
+  }'
+```
+
+## Data Models
+
+### User Model
+
+```typescript
+interface User {
+  id: string;
+  email: string;
+  username: string;
+  password: string; // hashed, never returned in responses
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Recipe Model
+
+```typescript
+interface Recipe {
+  id: string;
+  title: string;
+  description: string;
+  instructions: string;
+  ingredients: string[];
+  tags: string[];
+  cuisine?: string;
+  difficulty?: 'EASY' | 'MEDIUM' | 'HARD';
+  prepTime?: number;
+  cookTime?: number;
+  servings?: number;
+  imageUrl?: string;
+  authorId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  author: User;
+}
+```
+
+### Favorite Model
+
+```typescript
+interface Favorite {
+  id: string;
+  userId: string;
+  recipeId: string;
+  createdAt: Date;
+  user: User;
+  recipe: Recipe;
+}
+```
+
+### Bookmark Model
+
+```typescript
+interface Bookmark {
+  id: string;
+  userId: string;
+  recipeId: string;
+  createdAt: Date;
+  user: User;
+  recipe: Recipe;
+}
+```
+
+## Security Considerations
+
+1. **Authentication**: All sensitive endpoints require valid JWT tokens
+2. **Authorization**: Users can only modify their own recipes, favorites, and bookmarks
+3. **Input Validation**: All inputs are validated and sanitized
+4. **File Upload Security**: File type validation, size limits, and secure storage
+5. **Rate Limiting**: Protects against abuse and spam
+6. **CORS**: Configured to allow only trusted origins
+7. **SQL Injection Protection**: Prisma ORM provides automatic protection
+8. **Password Security**: Bcrypt hashing with salt rounds
+
+## Database Schema
+
+The API uses Prisma ORM with the following main entities:
+
+- **Users**: Authentication and user management
+- **Recipes**: Recipe data and relationships
+- **Favorites**: User favorite recipes (many-to-many)
+- **Bookmarks**: User bookmarked recipes (many-to-many)
+
+For detailed schema information, see `apps/backend/src/prisma/schema.prisma`.
 
 ## Testing
 
-### API Testing
+The API includes comprehensive test coverage:
 
-Run the test suite:
+- **54 Backend Tests**: Authentication, recipes, favorites, bookmarks, health checks
+- **Integration Tests**: Full request/response cycle testing
+- **Database Tests**: SQLite test database with automatic cleanup
+- **Error Handling Tests**: Various error scenarios
+
+Run tests:
 
 ```bash
 cd apps/backend
 npm test
 ```
 
-### Test Coverage
+## Changelog
 
-```bash
-npm run test:coverage
-```
+### Version 1.0.0 (Current)
 
-### Integration Testing
-
-```bash
-npm run test:integration
-```
-
-## Monitoring and Alerting
-
-### Metrics Collection
-
-Use the `/health/metrics` endpoint to collect:
-
-- Request metrics (total, success rate, response times)
-- Database performance (query times, connection pool)
-- Cache performance (hit rates, memory usage)
-- Security metrics (rate limit hits, blocked requests)
-
-### Alerting Rules
-
-Set up alerts for:
-
-- High error rates (>5%)
-- Slow response times (>500ms p95)
-- Database connection issues
-- High memory usage (>80%)
-- Rate limit violations
-- Security incidents
-
-### Log Analysis
-
-Monitor logs for:
-
-- Error patterns
-- Performance degradation
-- Security threats
-- Unusual traffic patterns
-
-## API Versioning
-
-Current API version: `v1`
-
-All endpoints are prefixed with `/api/v1/` for future versioning support.
+- ✅ Complete authentication system with JWT
+- ✅ Full CRUD operations for recipes
+- ✅ Advanced filtering and sorting
+- ✅ Favorites and bookmarks functionality
+- ✅ File upload with image optimization
+- ✅ Comprehensive error handling
+- ✅ Rate limiting and security measures
+- ✅ Health monitoring endpoints
+- ✅ Complete test coverage (54 tests)
+- ✅ Consistent API response structure
+- ✅ Fixed pagination metadata structure
 
 ## Support
 
-For API support and documentation updates:
+For API issues or questions:
 
-1. **GitHub Issues**: Report bugs and feature requests
-2. **Documentation**: Check this document for latest API changes
-3. **Health Checks**: Use health endpoints for monitoring
-4. **Logs**: Review application logs for detailed error information
+1. Check this documentation
+2. Review the test files for usage examples
+3. Check the health endpoint for system status
+4. Review server logs for detailed error information
+
+## Related Documentation
+
+- [Development Setup](./development-setup.md) - Local development guide
+- [Deployment Guide](./deployment-guide.md) - Production deployment
+- [Favorites & Bookmarks](./favorites-bookmarks.md) - Feature details
