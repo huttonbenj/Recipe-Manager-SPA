@@ -360,7 +360,7 @@ const Recipes: React.FC = () => {
    * Handle recipe actions
    */
   const handleRecipeEdit = (recipeId: string) => {
-    navigate(`/recipes/${recipeId}/edit`)
+    navigate(`/app/recipes/${recipeId}/edit`)
   }
 
   const handleRecipeDelete = (recipeId: string) => {
@@ -404,11 +404,10 @@ const Recipes: React.FC = () => {
             </div>
 
             {isAuthenticated && (
-              <Link to="/recipes/create">
+              <Link to="/app/recipes/create">
                 <Button
-                  size="lg"
-                  className="shadow-lg hover:shadow-xl transition-shadow"
-                  leftIcon={<Plus className="h-5 w-5" />}
+                  className="shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  leftIcon={<Plus className="w-4 h-4" />}
                 >
                   Create Recipe
                 </Button>

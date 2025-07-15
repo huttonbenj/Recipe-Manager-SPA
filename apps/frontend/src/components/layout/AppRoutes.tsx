@@ -10,6 +10,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from '@/components/layout/Layout'
 
 // Lazy-loaded page components for code splitting
+const Home = React.lazy(() => import('@/pages/Home'))
 const Login = React.lazy(() => import('@/pages/Login'))
 const Register = React.lazy(() => import('@/pages/Register'))
 const Recipes = React.lazy(() => import('@/pages/Recipes'))
@@ -76,10 +77,31 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
 
     // Redirect to recipes if already authenticated
     if (isAuthenticated && user) {
-        return <Navigate to="/recipes" replace />
+        return <Navigate to="/app/recipes" replace />
     }
 
     return <>{children}</>
+}
+
+/**
+ * Landing page route wrapper
+ * Shows home page for unauthenticated users, redirects authenticated users to recipes
+ */
+const LandingRoute: React.FC = () => {
+    const { user, isLoading, isAuthenticated } = useAuth()
+
+    // Show loading spinner while auth is being determined
+    if (isLoading) {
+        return <Loading variant="spinner" size="lg" text="Loading..." fullScreen />
+    }
+
+    // Redirect to recipes if already authenticated
+    if (isAuthenticated && user) {
+        return <Navigate to="/app/recipes" replace />
+    }
+
+    // Show landing page for unauthenticated users
+    return <Home />
 }
 
 /**
@@ -89,6 +111,9 @@ const AppRoutes: React.FC = () => {
     return (
         <Suspense fallback={<RouteLoadingFallback />}>
             <Routes>
+                {/* Landing page route */}
+                <Route path="/" element={<LandingRoute />} />
+
                 {/* Public routes */}
                 <Route
                     path="/login"
@@ -109,14 +134,14 @@ const AppRoutes: React.FC = () => {
 
                 {/* Protected routes with layout */}
                 <Route
-                    path="/"
+                    path="/app"
                     element={
                         <ProtectedRoute>
                             <Layout />
                         </ProtectedRoute>
                     }
                 >
-                    <Route index element={<Navigate to="/recipes" replace />} />
+                    <Route index element={<Navigate to="/app/recipes" replace />} />
                     <Route path="recipes" element={<Recipes />} />
                     <Route path="recipes/:id" element={<RecipeDetail />} />
                     <Route path="recipes/create" element={<CreateRecipe />} />
@@ -125,6 +150,64 @@ const AppRoutes: React.FC = () => {
                     <Route path="bookmarks" element={<Bookmarks />} />
                     <Route path="profile" element={<Profile />} />
                 </Route>
+
+                {/* Legacy protected routes - redirect to /app */}
+                <Route
+                    path="/recipes"
+                    element={
+                        <ProtectedRoute>
+                            <Navigate to="/app/recipes" replace />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/recipes/:id"
+                    element={
+                        <ProtectedRoute>
+                            <Navigate to="/app/recipes" replace />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/recipes/create"
+                    element={
+                        <ProtectedRoute>
+                            <Navigate to="/app/recipes/create" replace />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/recipes/:id/edit"
+                    element={
+                        <ProtectedRoute>
+                            <Navigate to="/app/recipes" replace />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/favorites"
+                    element={
+                        <ProtectedRoute>
+                            <Navigate to="/app/favorites" replace />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/bookmarks"
+                    element={
+                        <ProtectedRoute>
+                            <Navigate to="/app/bookmarks" replace />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <Navigate to="/app/profile" replace />
+                        </ProtectedRoute>
+                    }
+                />
 
                 {/* 404 Not Found */}
                 <Route path="*" element={<NotFound />} />

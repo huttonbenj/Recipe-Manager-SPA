@@ -71,23 +71,23 @@ const Header: React.FC = () => {
   }, [isAuthenticated, isLoading])
 
   const navigationItems = [
-    { name: 'Recipes', href: '/recipes', icon: Search, requireAuth: false },
-    { name: 'Create Recipe', href: '/recipes/create', icon: Plus, requireAuth: true },
-    { name: 'Favorites', href: '/favorites', icon: Heart, requireAuth: true },
-    { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark, requireAuth: true },
+    { name: 'Recipes', href: '/app/recipes', icon: Search, requireAuth: false },
+    { name: 'Create Recipe', href: '/app/recipes/create', icon: Plus, requireAuth: true },
+    { name: 'Favorites', href: '/app/favorites', icon: Heart, requireAuth: true },
+    { name: 'Bookmarks', href: '/app/bookmarks', icon: Bookmark, requireAuth: true },
   ]
 
   const userMenuItems = [
-    { name: 'Profile', href: '/profile', icon: Settings },
-    { name: 'Favorites', href: '/favorites', icon: Heart },
-    { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark },
+    { name: 'Profile', href: '/app/profile', icon: Settings },
+    { name: 'Favorites', href: '/app/favorites', icon: Heart },
+    { name: 'Bookmarks', href: '/app/bookmarks', icon: Bookmark },
   ]
 
   const isActivePath = (path: string) => {
     if (path === '/') return location.pathname === '/'
     // Exact match for specific paths to prevent multiple active states
-    if (path === '/recipes') return location.pathname === '/recipes'
-    if (path === '/recipes/create') return location.pathname === '/recipes/create'
+    if (path === '/app/recipes') return location.pathname === '/app/recipes'
+    if (path === '/app/recipes/create') return location.pathname === '/app/recipes/create'
     // For other paths, use exact match
     return location.pathname === path
   }

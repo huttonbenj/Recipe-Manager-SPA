@@ -146,7 +146,7 @@ const EditRecipe: React.FC = () => {
           <p className="text-secondary-600 dark:text-secondary-400 mb-4">
             You don't have permission to edit this recipe.
           </p>
-          <Button onClick={() => navigate('/recipes')}>
+          <Button onClick={() => navigate('/app/recipes')}>
             Browse Recipes
           </Button>
         </Card>
@@ -238,7 +238,7 @@ const EditRecipe: React.FC = () => {
     updateMutation.mutate({ id: id!, updates: submitData }, {
       onSuccess: () => {
         // Navigate back to recipe detail page
-        navigate(`/recipes/${id}`)
+        navigate(`/app/recipes/${id}`)
       },
       onError: (error: any) => {
         setErrors({
@@ -371,7 +371,7 @@ const EditRecipe: React.FC = () => {
       const confirmLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?')
       if (!confirmLeave) return
     }
-    navigate(`/recipes/${id}`)
+    navigate(`/app/recipes/${id}`)
   }
 
   /**
@@ -409,7 +409,7 @@ const EditRecipe: React.FC = () => {
           <p className="text-secondary-600 dark:text-secondary-400 mb-4">
             The recipe you're trying to edit doesn't exist or you don't have permission to edit it.
           </p>
-          <Button onClick={() => navigate('/recipes')}>
+          <Button onClick={() => navigate('/app/recipes')}>
             Browse Recipes
           </Button>
         </Card>

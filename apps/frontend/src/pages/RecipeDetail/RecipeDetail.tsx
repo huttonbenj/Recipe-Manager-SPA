@@ -134,7 +134,7 @@ const RecipeDetail: React.FC = () => {
         // Close the modal
         setIsDeleteModalOpen(false)
         // Navigate back to recipes list after deletion
-        navigate('/recipes', { replace: true })
+        navigate('/app/recipes', { replace: true })
       }
     })
   }
@@ -207,7 +207,7 @@ const RecipeDetail: React.FC = () => {
               <>
                 <Button
                   variant="secondary"
-                  onClick={() => navigate(`/recipes/${id}/edit`)}
+                  onClick={() => navigate(`/app/recipes/${id}/edit`)}
                   leftIcon={<Edit className="w-4 h-4" />}>
                   <span className="hidden sm:inline">Edit</span>
                 </Button>

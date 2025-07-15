@@ -165,7 +165,7 @@ const CreateRecipe: React.FC = () => {
     createMutation.mutate(cleanedData, {
       onSuccess: (newRecipe) => {
         // Navigate to the new recipe detail page to show the created recipe
-        navigate(`/recipes/${newRecipe.id}`)
+        navigate(`/app/recipes/${newRecipe.id}`)
       },
       onError: (error: any) => {
         setErrors({

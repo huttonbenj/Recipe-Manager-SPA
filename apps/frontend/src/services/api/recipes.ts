@@ -63,11 +63,11 @@ export const recipesApi = {
    * Get recipe by ID
    */
   async getRecipe(id: string): Promise<Recipe> {
-    const response = await apiClient.get<ApiResponse<Recipe>>(`/recipes/${id}`)
-    if (!response.data.data) {
+    const response = await apiClient.get<ApiResponse<{ recipe: Recipe }>>(`/recipes/${id}`)
+    if (!response.data.data?.recipe) {
       throw new Error('Recipe not found')
     }
-    return response.data.data
+    return response.data.data.recipe
   },
 
   /**

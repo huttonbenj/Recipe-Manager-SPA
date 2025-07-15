@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Bookmark, Grid, List, ArrowLeft } from 'lucide-react'
+import { Bookmark, Grid, List, ArrowLeft, Search } from 'lucide-react'
 
 // UI Components
 import { Button, Loading } from '@/components/ui'
@@ -95,10 +95,10 @@ const Bookmarks: React.FC = () => {
                 {/* Header */}
                 <div className="mb-6">
                     <LinkButton
-                        to="/recipes"
+                        to="/app/recipes"
                         variant="ghost"
                         leftIcon={<ArrowLeft className="w-4 h-4" />}
-                        className="mb-4"
+                        className="text-secondary-600 hover:text-secondary-800 dark:text-secondary-300 dark:hover:text-secondary-100"
                     >
                         Back to Recipes
                     </LinkButton>
@@ -145,10 +145,12 @@ const Bookmarks: React.FC = () => {
                         <p className="text-secondary-600 dark:text-secondary-400 mb-6">
                             Start exploring recipes and click the bookmark icon to save them for later.
                         </p>
-                        <Link to="/recipes">
-                            <Button variant="primary">
-                                Discover Recipes
-                            </Button>
+                        <Link
+                            to="/app/recipes"
+                            className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                        >
+                            <Search className="w-4 h-4 mr-2" />
+                            Discover Recipes
                         </Link>
                     </div>
                 ) : (

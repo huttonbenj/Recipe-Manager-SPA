@@ -144,7 +144,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                     <div className="flex flex-col sm:flex-row items-stretch h-36">
                         {/* Recipe Image */}
                         <Link
-                            to={`/recipes/${recipe.id}`}
+                            to={`/app/recipes/${recipe.id}`}
                             className="block group"
                         >
                             <div className="relative w-full sm:w-48 h-full bg-secondary-200 dark:bg-secondary-700 flex-shrink-0">
@@ -181,7 +181,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex-1 mr-4">
                                     <Link
-                                        to={`/recipes/${recipe.id}`}
+                                        to={`/app/recipes/${recipe.id}`}
                                         className="block group"
                                     >
                                         <h3 className="text-lg font-semibold text-secondary-900 dark:text-secondary-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-1 mb-1">
@@ -295,7 +295,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     // Grid view (default)
     return (
         <Link
-            to={`/recipes/${recipe.id}`}
+            to={`/app/recipes/${recipe.id}`}
             className={`block group ${className}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
