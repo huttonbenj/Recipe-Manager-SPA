@@ -5,11 +5,11 @@ services:
     region: oregon
     plan: free
     branch: main
-    rootDir: apps/backend
-    buildCommand: "npm install --include=dev && npm run build --workspace=apps/backend"
+    rootDir: ./
+    buildCommand: "npm install && npm run build --workspace=apps/backend"
     startCommand: "npm run start --workspace=apps/backend"
     healthCheckPath: /api/health
-    preDeployCommand: "npx prisma migrate deploy && npx prisma generate"
+    preDeployCommand: "npm run db:deploy --workspace=apps/backend"
     envVars:
       - key: NODE_ENV
         value: production
@@ -23,28 +23,27 @@ services:
         value: 7d
       - key: FRONTEND_URL
         fromService:
-          type: web
           name: recipe-manager-frontend
+          type: web
           property: url
-
   - name: recipe-manager-frontend
     type: web
     runtime: static
     region: oregon
     plan: free
     branch: main
-    rootDir: apps/frontend
+    rootDir: ./
     buildCommand: "npm install && npm run build --workspace=apps/frontend"
-    staticPublishPath: ./dist
+    staticPublishPath: apps/frontend/dist
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
     envVars:
-      - key: VITE_API_URL
+      - key: VITE_API_BASE_URL
         fromService:
-          type: web
           name: recipe-manager-backend
+          type: web
           property: url
 
 databases:
