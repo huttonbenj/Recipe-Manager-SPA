@@ -96,7 +96,7 @@ function normalizeRecipeForOutput(recipe: any) {
     ...recipe,
     ingredients,
     tags,
-    instructions: Array.isArray(instructions) ? instructions : [instructions]
+    instructions: Array.isArray(instructions) ? instructions.join('\n\n') : instructions
   }
 }
 
