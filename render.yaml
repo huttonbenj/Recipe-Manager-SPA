@@ -7,9 +7,8 @@ services:
     branch: main
     rootDir: ./
     buildCommand: "npm install && npm run build --workspace=apps/backend"
-    startCommand: "npm run start --workspace=apps/backend"
+    startCommand: "npm run db:deploy --workspace=apps/backend && npm run start --workspace=apps/backend"
     healthCheckPath: /api/health
-    preDeployCommand: "npm run db:deploy --workspace=apps/backend"
     envVars:
       - key: NODE_ENV
         value: production
@@ -22,14 +21,10 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: FRONTEND_URL
-        fromService:
-          name: recipe-manager-frontend
-          type: web
-          property: url
+        value: https://recipe-manager-frontend.onrender.com
   - name: recipe-manager-frontend
     type: web
     runtime: static
-    region: oregon
     plan: free
     branch: main
     rootDir: ./
@@ -41,10 +36,7 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        fromService:
-          name: recipe-manager-backend
-          type: web
-          property: url
+        value: https://recipe-manager-backend.onrender.com
 
 databases:
   - name: recipe-manager-db
