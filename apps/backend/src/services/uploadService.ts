@@ -9,6 +9,7 @@ import path from 'path'
 import fs from 'fs/promises'
 import { Request } from 'express'
 import { config } from '../config'
+import type { FileFilterCallback } from 'multer'
 
 interface ProcessedImage {
   originalUrl: string
@@ -46,7 +47,7 @@ export class UploadService {
       limits: {
         fileSize: this.maxFileSize
       },
-      fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+      fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
         // Check file type
         if (!this.allowedMimeTypes.includes(file.mimetype)) {
           return cb(new Error('Invalid file type. Only JPEG, PNG, and WebP images are allowed.'))

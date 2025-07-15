@@ -3,17 +3,26 @@
  * Populates the database with comprehensive sample data to showcase all features
  */
 
-import { PrismaClient } from '@prisma/client'
-
-// Difficulty enum values as constants
-const Difficulty = {
-  EASY: 'EASY' as const,
-  MEDIUM: 'MEDIUM' as const,
-  HARD: 'HARD' as const
-}
+import { PrismaClient, Difficulty } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
+
+// Define a type for the seed recipe data
+interface SeedRecipe {
+  title: string
+  description: string
+  ingredients: string[]
+  instructions: string
+  cookTime: number
+  prepTime: number
+  servings: number
+  difficulty: Difficulty
+  tags: string[]
+  cuisine: string
+  authorId: string
+  imageUrl: string
+}
 
 async function main() {
   console.log('🌱 Starting enhanced database seeding...')
@@ -90,7 +99,7 @@ async function main() {
   console.log('👥 Demo users created')
 
   // Enhanced sample recipes data with more variety
-  const recipes = [
+  const recipes: SeedRecipe[] = [
     {
       title: 'Classic Margherita Pizza',
       description: 'A traditional Italian pizza with fresh mozzarella, tomatoes, and basil. Simple ingredients that create the perfect harmony of flavors.',
