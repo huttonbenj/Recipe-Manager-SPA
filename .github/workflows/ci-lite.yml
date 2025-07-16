@@ -71,6 +71,8 @@ jobs:
       # Test Suite
       - name: Run Tests (Frontend)
         run: npm test --prefix apps/frontend
+        env:
+          VITE_API_BASE_URL: "http://localhost:10000/api"
 
       - name: Run Tests (Backend)
         run: npm test --prefix apps/backend
