@@ -9,6 +9,7 @@ import path from 'path'
 import fs from 'fs/promises'
 import { Request } from 'express'
 import { config } from '../config'
+import type { FileFilterCallback } from 'multer'
 
 interface ProcessedImage {
   originalUrl: string
@@ -28,11 +29,15 @@ export class UploadService {
   private readonly allowedMimeTypes = config.upload.allowedFileTypes
 
   constructor() {
-    this.ensureUploadDirectory()
+    this.initialize();
+  }
+
+  private async initialize(): Promise<void> {
+    await this.ensureUploadDirectory();
     // Run cleanup on startup (remove files older than 30 days)
     this.cleanupOldImages(30).catch(error => {
-      console.error('Failed to cleanup old images on startup:', error)
-    })
+      console.error('Failed to cleanup old images on startup:', error);
+    });
   }
 
   /**
@@ -46,7 +51,7 @@ export class UploadService {
       limits: {
         fileSize: this.maxFileSize
       },
-      fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+      fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
         // Check file type
         if (!this.allowedMimeTypes.includes(file.mimetype)) {
           return cb(new Error('Invalid file type. Only JPEG, PNG, and WebP images are allowed.'))

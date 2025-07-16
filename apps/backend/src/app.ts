@@ -18,6 +18,10 @@ import routes from './routes'
 
 const app = express()
 
+// Define CORS origins and regex once to be reused
+const allowedOrigins = config.cors.allowedOrigins;
+const vercelPreviewRegex = /^https:\/\/recipe-manager-spa-frontend-.*\.vercel\.app$/;
+
 // Trust proxy for rate limiting and security
 app.set('trust proxy', 1)
 
@@ -32,11 +36,20 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // CORS configuration
 app.use(cors({
-  origin: config.cors.allowedOrigins,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
-}))
+}));
 
 // Cache headers
 app.use(setCacheHeaders)
@@ -96,7 +109,16 @@ app.use('/api/', apiRateLimit)
 
 // Static file serving for uploads with proper CORS configuration
 app.use('/uploads', cors({
-  origin: config.cors.allowedOrigins,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'HEAD', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

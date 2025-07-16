@@ -3,7 +3,15 @@
  */
 
 // API Configuration
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api'
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+if (!VITE_API_BASE_URL) {
+  // This will now fail the build on Vercel if the env var is not set.
+  // It will also fail local development if .env is not set up, which is the intended behavior.
+  throw new Error('VITE_API_BASE_URL is not defined. Please set it in your .env file or hosting provider settings.')
+}
+
+export const API_BASE_URL = VITE_API_BASE_URL
 export const APP_NAME = import.meta.env.VITE_APP_NAME || 'Recipe Manager'
 
 // Authentication
