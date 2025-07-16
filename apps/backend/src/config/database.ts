@@ -4,6 +4,7 @@
  */
 
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 // Conditional import for test client
 let TestPrismaClient: any
@@ -39,7 +40,8 @@ function createPrismaClient(): PrismaClient {
     })
   } else {
     console.log('Using production Prisma client')
-    return new PrismaClient()
+    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
+    return new PrismaClient({ adapter })
   }
 }
 
