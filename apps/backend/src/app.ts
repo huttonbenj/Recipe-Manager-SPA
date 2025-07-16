@@ -48,7 +48,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
 }));
 
 // Cache headers
@@ -121,7 +121,7 @@ app.use('/uploads', cors({
   },
   credentials: true,
   methods: ['GET', 'HEAD', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Pragma'],
   // Remove problematic security headers for static assets
   preflightContinue: false,
   optionsSuccessStatus: 204
