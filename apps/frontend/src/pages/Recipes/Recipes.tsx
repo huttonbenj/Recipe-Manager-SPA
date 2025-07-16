@@ -418,12 +418,12 @@ const Recipes: React.FC = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-12">
         {/* Enhanced Header */}
-        <div className="mb-8 md:mb-12">
+        <div className="mb-6 md:mb-12">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
             <div className="text-center md:text-left">
-              <h1 className="text-4xl md:text-5xl font-bold text-secondary-900 dark:text-secondary-100 flex items-center gap-3">
+              <h1 className="text-4xl md:text-5xl font-bold text-secondary-900 dark:text-secondary-100 flex items-center gap-1 md:gap-3">
                 <ChefHat className="text-primary h-10 w-10" />
                 <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
                   Discover Recipes
@@ -435,10 +435,10 @@ const Recipes: React.FC = () => {
             </div>
 
             {isAuthenticated && (
-              <Link to="/app/recipes/create">
+              <Link to="/app/recipes/create" className="w-full md:w-auto">
                 <Button
                   size="lg"
-                  className="w-full md:w-auto"
+                  className="w-full"
                   leftIcon={<Plus className="w-5 h-5" />}
                 >
                   Create Recipe
