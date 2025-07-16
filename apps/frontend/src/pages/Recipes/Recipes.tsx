@@ -423,7 +423,7 @@ const Recipes: React.FC = () => {
         <div className="mb-6 md:mb-12">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
             <div className="text-center md:text-left">
-              <h1 className="text-4xl md:text-5xl font-bold text-secondary-900 dark:text-secondary-100 flex items-center gap-1 md:gap-3">
+              <h1 className="text-4xl md:text-5xl font-bold text-secondary-900 dark:text-secondary-100 flex items-center gap-0 md:gap-3">
                 <ChefHat className="text-primary h-10 w-10" />
                 <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
                   Discover Recipes
