@@ -3,6 +3,7 @@
  * Centralizes all environment variables and settings
  */
 
+import 'dotenv/config'
 import { z } from 'zod'
 
 // Environment variable validation schema
