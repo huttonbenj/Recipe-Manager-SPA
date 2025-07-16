@@ -44,9 +44,11 @@ COPY packages/shared-types ./packages/shared-types/
 RUN npm ci --workspace=apps/backend --omit=dev --ignore-scripts && \
     npm cache clean --force
 
+# Generate Prisma client in production image
+RUN npx prisma generate --schema=src/prisma/schema.prisma
+
 # Copy built application from builder stage
 COPY --from=builder /app/apps/backend/dist ./dist
-COPY --from=builder /app/apps/backend/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/apps/backend/src/prisma ./src/prisma
 
 # Copy uploads directory structure
