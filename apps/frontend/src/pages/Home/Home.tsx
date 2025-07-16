@@ -382,7 +382,8 @@ function useFeaturedRecipes(setRecipes: (r: Recipe[]) => void, setLoading: (l: b
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('/api/recipes?limit=3&sortBy=createdAt&sortOrder=desc&_t=' + Date.now());
+        const apiBase = import.meta.env.VITE_API_BASE_URL;
+        const response = await fetch(`${apiBase}/recipes?limit=3&sortBy=createdAt&sortOrder=desc&_t=${Date.now()}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setRecipes(data.data?.recipes || data.recipes || []);
