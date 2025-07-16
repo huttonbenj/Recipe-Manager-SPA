@@ -6,6 +6,7 @@
 import { Router } from 'express'
 import { prisma } from '../config/database'
 import { monitoringService } from '../services/monitoringService'
+import { logger } from '../utils/logger'
 
 const router = Router()
 
@@ -14,24 +15,33 @@ const router = Router()
  * Returns 200 if the application is running
  */
 router.get('/health', async (req, res) => {
+  logger.info('Health check endpoint called');
   try {
-    // Check database connection with queryCompiler-compatible operation
-    await prisma.user.findFirst({ take: 1 })
-    
+    logger.debug('Attempting DB query for health check');
+    const user = await prisma.user.findFirst({ take: 1 });
+    logger.debug('DB query succeeded', { user });
     res.status(200).json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
       service: 'recipe-manager-api',
       version: process.env.npm_package_version || '1.0.0',
       environment: process.env.NODE_ENV || 'development'
-    })
+    });
   } catch (error) {
+    let errMsg = 'Unknown error';
+    if (error instanceof Error) {
+      logger.error('Health check failed', { error: error.message, stack: error.stack });
+      errMsg = error.message;
+    } else {
+      logger.error('Health check failed', { error });
+      errMsg = String(error);
+    }
     res.status(503).json({
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
       service: 'recipe-manager-api',
-      error: 'Database connection failed'
-    })
+      error: errMsg
+    });
   }
 })
 
